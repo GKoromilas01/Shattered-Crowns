@@ -3258,52 +3258,50 @@ document.addEventListener('keydown',e=>{if(e.key==='F4'&&!e.ctrlKey&&!e.altKey){
 })();
 </script>
 
-<style id="sc161CityMotionStyle">
-/* Purely decorative: no pointer interception and no game-state mutation. */
-#sc161LifeLayer{position:fixed;inset:0;z-index:26;overflow:hidden;pointer-events:none}
-.sc161Bird{position:absolute;font:17px/1 serif;color:#283c32;text-shadow:0 1px 1px #dce8c0;opacity:.8;animation:sc161Flight 8s linear forwards;will-change:transform}
-@keyframes sc161Flight{0%{transform:translate(-40px,0) scale(.85);opacity:0}10%{opacity:.8}90%{opacity:.8}100%{transform:translate(260px,-65px) scale(.65);opacity:0}}
-.sc161Spark{position:absolute;width:5px;height:5px;border-radius:50%;background:#e5cb67;box-shadow:0 0 5px #f6dc80;animation:sc161Glow 3.4s ease-in-out forwards;will-change:transform,opacity}
-@keyframes sc161Glow{0%,100%{opacity:0;transform:translateY(6px)}40%{opacity:.9}70%{opacity:.5;transform:translateY(-18px)}}
-@media(prefers-reduced-motion:reduce){#sc161LifeLayer{display:none}}
+<style id="sc162CityMotionStyle">
+#sc162BirdLayer{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:45}
+.sc162Bird{position:absolute;width:38px;height:24px;opacity:0;filter:drop-shadow(0 1px 1px #eef0cd);animation:sc162Fly 7s linear forwards;will-change:transform,opacity}
+.sc162Bird svg{width:100%;height:100%;overflow:visible}
+.sc162Bird path{fill:none;stroke:#283b35;stroke-width:3.2;stroke-linecap:round}
+.sc162Bird .wing{animation:sc162Flap .45s ease-in-out infinite alternate;transform-origin:center}
+@keyframes sc162Flap{to{transform:scaleY(.45)}}
+@keyframes sc162Fly{0%{transform:translateX(-65px) translateY(8px) scale(.85);opacity:0}12%{opacity:1}88%{opacity:1}100%{transform:translateX(min(70vw,650px)) translateY(-70px) scale(.65);opacity:0}}
+#sc162Extra{border-top:1px solid #58716c;margin-top:7px;padding-top:7px;font:12px/1.4 system-ui;color:#dce9db}
+#sc162Extra summary{cursor:pointer;color:#f3d8a4;font-weight:700;padding:4px 0}
+#sc162Extra p{margin:5px 0}
+#sc162Extra button{font-size:11px;padding:5px 8px;border:1px solid #a28a58;border-radius:5px;background:#244b47;color:#fff0cf;cursor:pointer}
+@media(prefers-reduced-motion:reduce){#sc162BirdLayer{display:none}}
 </style>
-<div id="sc161LifeLayer" aria-hidden="true"></div>
-<script id="sc161CityAtmosphere">
+<div id="sc162BirdLayer" aria-hidden="true"></div>
+<script id="sc162VisibleBirdsAndAdvisorNotes">
 (()=>{'use strict';
- const layer=document.getElementById('sc161LifeLayer');
- const canvas=document.getElementById('field');
- if(!layer||!canvas)return;
- const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
- let active=0;
- const visible=()=>!document.hidden&&!reduced?.matches;
- function screenPoint(b){
-  const r=canvas.getBoundingClientRect();
-  if(!r.width||!r.height||!canvas.width||!canvas.height)return null;
-  const x=r.left+(b.x/canvas.width)*r.width,y=r.top+(b.y/canvas.height)*r.height;
-  return x>=20&&x<=innerWidth-30&&y>=65&&y<=innerHeight-60?{x,y}:null;
+ const layer=document.getElementById('sc162BirdLayer');
+ const field=document.getElementById('field');
+ const panel=document.getElementById('advisorCard');
+ let birdsSeen=0,enabled=true;
+ if(panel){
+  const section=document.createElement('details');section.id='sc162Extra';
+  section.innerHTML='<summary>🌿 City Life &amp; atmosphere (optional)</summary><p>Look for dark flying birds above the playable map. Birds are decorative and do not affect resources. More visible citizens, production and building detail are planned next.</p><p id="sc162BirdCount">Birds observed this session: 0</p><button type="button" id="sc162BirdDemo">🕊 Show birds now</button> <button type="button" id="sc162BirdToggle">Pause birds</button>';
+  panel.appendChild(section);
+  section.querySelector('#sc162BirdDemo').addEventListener('click',()=>{section.open=true;launchBird(true)});
+  section.querySelector('#sc162BirdToggle').addEventListener('click',e=>{enabled=!enabled;e.currentTarget.textContent=enabled?'Pause birds':'Resume birds'});
  }
- function particle(cls,content,p,life){
-  if(active>=9)return;
-  const n=document.createElement('span');n.className=cls;
-  n.style.left=p.x+'px';n.style.top=p.y+'px';n.textContent=content;
-  layer.appendChild(n);active++;
-  setTimeout(()=>{n.remove();active--},life);
+ function launchBird(force){
+  if(!layer||!field||!enabled||document.hidden||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
+  const rect=field.getBoundingClientRect();
+  const minY=Math.max(105,rect.top+70),maxY=Math.min(innerHeight-145,rect.bottom-100);
+  if(maxY<=minY)return;
+  const n=document.createElement('span');n.className='sc162Bird';
+  const startX=Math.max(30,Math.min(innerWidth-150,rect.left+Math.random()*Math.max(100,Math.min(360,rect.width*.35))));
+  n.style.left=startX+'px';n.style.top=(minY+Math.random()*(maxY-minY))+'px';
+  n.innerHTML='<svg viewBox="0 0 42 24" aria-hidden="true"><path class="wing" d="M2 13 Q12 0 21 13 Q31 0 40 13"/></svg>';
+  layer.appendChild(n);setTimeout(()=>n.remove(),7200);
+  birdsSeen++;const count=document.getElementById('sc162BirdCount');if(count)count.textContent='Birds observed this session: '+birdsSeen;
+  if(force){setTimeout(()=>launchBird(false),550)}
  }
- // Birds cross the visible settlement occasionally; gentle lights near real homes.
- setInterval(()=>{
-  if(!visible())return;
-  const buildings=(window.scHoverBuildings||[]).filter(b=>b.team===0&&b.hp>0);
-  if(!buildings.length)return;
-  const homes=buildings.filter(b=>['house','farm','market','bakery'].includes(b.type));
-  if(homes.length){
-   const b=homes[Math.floor(Math.random()*homes.length)],p=screenPoint(b);
-   if(p)particle('sc161Spark','',{x:p.x+(Math.random()-.5)*24,y:p.y-10},3400);
-  }
-  if(Math.random()<.24){
-   const b=buildings[Math.floor(Math.random()*buildings.length)],p=screenPoint(b);
-   if(p)particle('sc161Bird','⌁',{x:Math.max(0,p.x-110),y:Math.max(70,p.y-100)},8000);
-  }
- },1250);
+ // More frequent and larger than previous tiny glyphs, but still unobtrusive.
+ setInterval(()=>{if(enabled)launchBird(false)},5500);
+ setTimeout(()=>launchBird(false),1300);
 })();
 </script>
 </body></html>
