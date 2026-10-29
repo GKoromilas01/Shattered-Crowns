@@ -3466,4 +3466,64 @@ function update(){const buildings=(window.scHoverBuildings||[]).filter(b=>b.team
 update();setInterval(update,1800);window.addEventListener('sc:built',update);
 })();
 </script>
+
+<style id="sc168PolishStyle">
+#sc168WorldDetails{position:fixed;inset:0;pointer-events:none;z-index:4;overflow:hidden}
+#sc168WorldDetails canvas{display:block;width:100%;height:100%}
+#sc168Version{position:fixed;bottom:91px;left:9px;z-index:85;color:#e9e0b7;background:#1b302bd9;padding:3px 7px;border-radius:4px;font:10px system-ui;pointer-events:none}
+@media(prefers-reduced-motion:reduce){#sc168WorldDetails{opacity:.65}}
+</style>
+<div id="sc168WorldDetails" aria-hidden="true"><canvas></canvas></div><div id="sc168Version">Shattered Crowns · V12.68 · Settlement detail</div>
+<script id="sc168WorldAndCommandPolish">
+(()=>{'use strict';
+ const field=document.getElementById('field'),overlay=document.querySelector('#sc168WorldDetails canvas'),bar=document.getElementById('sc140Bar');
+ if(!field||!overlay)return;
+ const ctx=overlay.getContext('2d');let lastSignature='',lastRect='',lastPaint=0;
+ function hash(n){let x=Math.sin(n*127.1+31.7)*43758.5453;return x-Math.floor(x)}
+ function draw(){
+  const dpr=Math.min(devicePixelRatio||1,2),w=innerWidth,h=innerHeight;
+  if(overlay.width!==Math.round(w*dpr)||overlay.height!==Math.round(h*dpr)){overlay.width=Math.round(w*dpr);overlay.height=Math.round(h*dpr)}
+  ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+  const rect=field.getBoundingClientRect();if(rect.width<=0||rect.height<=0)return;
+  const sx=rect.width/(field.width||2450),sy=rect.height/(field.height||900);
+  const buildings=(window.scHoverBuildings||[]).filter(b=>b.team===0&&b.hp>0&&Number.isFinite(b.x)&&Number.isFinite(b.y));
+  buildings.forEach((b,i)=>{
+   const x=rect.left+b.x*sx,y=rect.top+b.y*sy;
+   if(x < -100||x>w+100||y < -100||y>h+100)return;
+   // Small paths, gardens and cultivated ground are purely decorative, not new buildings.
+   if(['house','market','well','bakery','granary'].includes(b.type)){
+    ctx.save();ctx.strokeStyle='#b9a4758c';ctx.lineWidth=2;ctx.setLineDash([3,5]);
+    ctx.beginPath();ctx.moveTo(x+13,y+10);ctx.quadraticCurveTo(x+23,y+20,x+37,y+24);ctx.stroke();ctx.restore();
+    for(let k=0;k<3;k++){
+     const px=x+(hash(i*11+k)-.5)*64,py=y+20+hash(i*17+k)*23;
+     ctx.fillStyle=k===0?'#537944':'#9caa65';ctx.beginPath();ctx.arc(px,py,2+hash(i+k)*2,0,Math.PI*2);ctx.fill();
+    }
+   }
+   if(b.type==='farm'){
+    ctx.save();ctx.strokeStyle='#d4b16899';ctx.lineWidth=1.6;
+    for(let k=0;k<5;k++){ctx.beginPath();ctx.moveTo(x-21+k*8,y+15);ctx.lineTo(x-25+k*8,y+32);ctx.stroke()}
+    ctx.restore();
+   }
+   if(b.type==='lumberyard'){
+    for(let k=0;k<3;k++){const px=x+20+k*5,py=y+19+k*2;ctx.fillStyle='#78563a';ctx.fillRect(px,py,18,4);ctx.fillStyle='#bd9763';ctx.beginPath();ctx.arc(px+18,py+2,2.5,0,7);ctx.fill()}
+   }
+  });
+ }
+ function frame(t){if(t-lastPaint>850){draw();lastPaint=t}requestAnimationFrame(frame)}requestAnimationFrame(frame);
+ // The bottom bar must switch from an old selected building to the chosen construction action.
+ function buildingAction(el){if(!el)return false;const name=(el.title||el.textContent||'').trim();return /^(house|farm|road|market|well|lumber|fishery|granary|bakery|healer|garden|plaza|fortress|tower|wall)$/i.test(name)}
+ function clearSelection(){const ui=window.sc140UI;if(!ui)return;ui.showConstruction?.()}
+ // Run after older handlers to avoid retaining the castle inspector when picking a build item.
+ bar?.addEventListener('click',e=>{
+  const button=e.target.closest('button');if(!button)return;
+  if(button.id==='sc140Build'||(button.closest('#sc140Commands')&&buildingAction(button))){
+    queueMicrotask(clearSelection);
+  }
+ },false);
+ document.addEventListener('click',e=>{
+  const button=e.target.closest('#quickDock button[data-action]');if(!button)return;
+  if(/^(house|farm|road|market|well|lumberyard|fishery|granary|bakery|clinic|garden|plaza|fortress|tower|wall)$/i.test(button.dataset.action||''))queueMicrotask(clearSelection);
+ },false);
+})();
+</script>
 </body></html>
