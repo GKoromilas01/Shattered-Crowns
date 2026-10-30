@@ -3656,4 +3656,49 @@ function clearEmptyOverlay(){
 setTimeout(clearEmptyOverlay,300);setInterval(clearEmptyOverlay,2000);
 })();
 </script>
+
+<style id="sc185NoGhostAdvisor">
+#sc183Panel[hidden],#sc183Panel[aria-hidden="true"]{display:none!important}
+#advisorTop,#sc179Advisor,#sc178Advisor{display:none!important}
+</style>
+<script id="sc185NoGhostAdvisor">
+(()=>{'use strict';
+document.title='Shattered Crowns — V12.85';
+const badge=document.getElementById('sc183Version');
+if(badge)badge.textContent='V12.85 · Ghost panel cleanup';
+const toggle=document.getElementById('sc183Toggle');
+const panel=document.getElementById('sc183Panel');
+if(!toggle||!panel)return;
+function close(){
+ panel.hidden=true;panel.setAttribute('aria-hidden','true');
+ panel.style.setProperty('display','none','important');
+ toggle.textContent='📜 Advisor';toggle.setAttribute('aria-expanded','false');
+}
+function open(){
+ panel.hidden=false;panel.removeAttribute('aria-hidden');
+ panel.style.removeProperty('display');
+ toggle.textContent='📜 Hide Advisor';toggle.setAttribute('aria-expanded','true');
+}
+function sweep(){
+ // Remove stale empty right-side panels left by legacy controllers.
+ // Never touch the active Advisor, economy panel, or game canvas.
+ for(const el of document.querySelectorAll('body *')){
+  if(el===panel||el===toggle||el.contains(panel)||panel.contains(el))continue;
+  if(el.id==='sc176Economy'||el.closest('#sc176Economy'))continue;
+  if(el.closest('#sc140Bar')||el.closest('#sc140Utility'))continue;
+  const rect=el.getBoundingClientRect();
+  if(rect.width<180||rect.width>460||rect.height<9||rect.height>55)continue;
+  if(rect.right<innerWidth-10||rect.top<280||rect.top>560)continue;
+  const style=getComputedStyle(el);
+  if(!['fixed','absolute'].includes(style.position))continue;
+  if(el.textContent.trim()||el.querySelector('button,input,canvas,svg'))continue;
+  el.style.setProperty('display','none','important');
+  el.setAttribute('data-sc185-retired','');
+ }
+}
+toggle.addEventListener('click',()=>{queueMicrotask(()=>{if(panel.hidden)close();else open();sweep()})});
+panel.querySelector('.sc183Close')?.addEventListener('click',()=>queueMicrotask(()=>{close();sweep()}));
+close();setTimeout(sweep,350);setInterval(sweep,2000);
+})();
+</script>
 </body></html>
