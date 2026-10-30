@@ -3561,7 +3561,7 @@ for(const prior of ['shatteredCrowns.advisor.cityMilestones.v178','shatteredCrow
  try{const v=JSON.parse(localStorage.getItem(prior)||'{}');for(const [id,yes] of Object.entries(v||{})){if(yes)done[({food:'farming',trade:'market',town:'housing'})[id]||id]=true}}catch(_){ }
 }
 let open=true;
-function show(value){open=!!value;panel.hidden=!open;panel.classList.toggle('sc179Open',open);panel.classList.toggle('sc155Open',open);panel.style.setProperty('display',open?'block':'none','important');panel.style.setProperty('visibility',open?'visible':'hidden','important');btn.textContent='📜 Advisor';btn.setAttribute('aria-expanded',String(open))}
+function show(value){open=!!value;panel.hidden=!open;panel.classList.toggle('sc179Open',open);panel.classList.toggle('sc155Open',open);panel.classList.remove('sc146Collapsed');panel.style.setProperty('height','auto','important');panel.style.setProperty('min-height',open?'210px':'0px','important');panel.style.setProperty('max-height','calc(100dvh - 245px)','important');panel.style.setProperty('display',open?'block':'none','important');panel.style.setProperty('visibility',open?'visible':'hidden','important');btn.textContent='📜 Advisor';btn.setAttribute('aria-expanded',String(open))}
 // Capture at window, before legacy document listeners, so one click means one toggle.
 window.addEventListener('click',e=>{if(!e.target.closest?.('#sc154Advisor'))return;e.preventDefault();e.stopImmediatePropagation();show(!open)},true);
 window.addEventListener('keydown',e=>{if(e.key!=='F4'||e.ctrlKey||e.altKey)return;e.preventDefault();e.stopImmediatePropagation();show(!open)},true);
@@ -3580,7 +3580,15 @@ function refresh(){
 show(true);refresh();setInterval(refresh,2000);
 // Retire obsolete visible version badges, leaving one reliable build label.
 for(const id of ['sc171Recovery','sc174BuildLabel'])document.getElementById(id)?.remove();
-const badge=document.createElement('div');badge.id='sc179Version';badge.textContent='V12.81 · Stable recovery';badge.style.cssText='position:fixed;left:8px;bottom:112px;z-index:690;background:#183a35e8;color:#f5dba3;border:1px solid #7a8b65;border-radius:5px;padding:4px 8px;font:11px system-ui;pointer-events:none';document.body.append(badge);
+const badge=document.createElement('div');badge.id='sc179Version';badge.textContent='V12.82 · Advisor repair';badge.style.cssText='position:fixed;left:8px;bottom:112px;z-index:690;background:#183a35e8;color:#f5dba3;border:1px solid #7a8b65;border-radius:5px;padding:4px 8px;font:11px system-ui;pointer-events:none';document.body.append(badge);
 })();
 </script>
+
+<style id="sc182AdvisorFinalLayout">
+/* Explicitly override legacy collapsed/movable advisor styles without changing the game canvas. */
+#advisorTop.sc179Open,#advisorTop.sc179Open.sc146Collapsed{display:block!important;visibility:visible!important;opacity:1!important;height:auto!important;min-height:210px!important;max-height:calc(100dvh - 245px)!important;overflow-y:auto!important;top:194px!important;right:14px!important;bottom:auto!important;transform:none!important;}
+#advisorTop.sc179Open #advisorCard,#advisorTop.sc179Open #sc179Advisor{display:block!important;visibility:visible!important;height:auto!important;min-height:175px!important;max-height:none!important;overflow:visible!important;opacity:1!important;}
+#advisorTop:not(.sc179Open){display:none!important;visibility:hidden!important;}
+#advisorTop.sc179Open #advisorCard > #sc179Advisor{display:block!important;}
+</style>
 </body></html>
