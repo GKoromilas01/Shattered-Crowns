@@ -178,9 +178,9 @@ const c=document.getElementById('field'),ctx=c.getContext('2d'),W=c.width,H=c.he
 function scrollMapTo(x){mapViewport.scrollTo({left:Math.max(0,x),behavior:'smooth'})}
 el('scrollMapLeft').onclick=()=>scrollMapTo(mapViewport.scrollLeft-450);
 el('scrollMapRight').onclick=()=>scrollMapTo(mapViewport.scrollLeft+450);
-el('scrollMapHome').onclick=()=>scrollMapTo(500);
+el('scrollMapHome').onclick=()=>scrollMapTo(0);
 // Start with the friendly city in view and room to drag in EITHER direction.
-requestAnimationFrame(()=>{mapViewport.scrollLeft=500});
+requestAnimationFrame(()=>{mapViewport.scrollLeft=0;mapViewport.scrollTop=0});
 
 let tradeGoods=0,goodsSold=0;let aiGold=350,aiWood=180,trainQueue=[],aiQueue=[],trainTimer=0,aiTrainTimer=0,aiDecision=0,aiAttackTimer=0,difficulty="normal";let stats={},aiRally=null;let showLabels=false,showMinimap=true;let tutorialVisible=false;let visualTime=0;let projectiles=[];let combatTexts=[];let food=90,population=8,happiness=70,cityTimer=0,cityProsperity=0,wellCoverage=0,roadMarkets=0,healerCoverage=0,granaryCount=0;let employment={jobs:0,filled:0,available:0,byId:new Map()};let inspectedBuilding=null;let serviceOverlay='off';let wallPointer=null;let formation='line';let uiRefresh=0;let units=[],buildings=[],nodes=[],effects=[],gold,wood,stone,selected=[],drag=null,mode=null,paused=false,ended=false,elapsed=0,aiTimer=0,resourceTimer=0,nextId=1,last=performance.now();const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));const msg=t=>el('status').textContent=t;const addUnit=(team,type,x,y)=>{let stats={worker:[55,58,6,15,8],soldier:[115,64,15,24,23],archer:[70,60,10,120,29]}[type];let u={id:nextId++,team,type,x,y,hp:stats[0],max:stats[0],speed:stats[1],damage:stats[2],range:stats[3],radius:stats[4]/2,target:null,order:null,cool:0,carry:0};units.push(u);if(stats.spawned)stats.spawned[team]++;return u};const addBuilding=(team,type,x,y)=>{let hp=type==='house'?160:type==='farm'?130:type==='market'?230:type==='well'?190:type==='lumberyard'?210:type==='granary'?260:type==='bakery'?190:type==='clinic'?240:type==='road'?110:type==='wall'?400:type==='keep'?900:type==='fortress'?650:240;let b={id:nextId++,team,type,x,y,hp,max:hp,radius:type==='keep'?38:type==='fortress'?31:type==='wall'?25:type==='market'?29:type==='well'?13:type==='garden'?14:type==='plaza'?14:type==='lumberyard'?27:type==='granary'?28:type==='bakery'?18:type==='clinic'?15:type==='road'?15:type==='house'?16:type==='farm'?27:22,cool:0};buildings.push(b);
 if(team===0&&window.sc158TrackingEnabled){
@@ -3304,7 +3304,7 @@ document.addEventListener('keydown',e=>{if(e.key==='F4'&&!e.ctrlKey&&!e.altKey){
  setTimeout(()=>launchBird(false),1300);
 })();
 </script>
-<style id="sc171RecoveryMarker">#sc171Recovery{position:fixed;left:8px;bottom:142px;z-index:85;padding:4px 8px;border-radius:5px;background:#213b35;color:#e3d4a2;font:11px system-ui;pointer-events:none}</style><div id="sc171Recovery">V12.72 · Living settlement</div>
+<style id="sc171RecoveryMarker">#sc171Recovery{position:fixed;left:8px;bottom:142px;z-index:85;padding:4px 8px;border-radius:5px;background:#213b35;color:#e3d4a2;font:11px system-ui;pointer-events:none}</style><div id="sc171Recovery">V12.73 · Town life & planning</div>
 <style id="sc172Styles">
 #sc172Economy{border-top:1px solid #637c70;margin-top:9px;padding-top:8px;color:#dce9db;font:12px/1.45 system-ui}
 #sc172Economy summary{cursor:pointer;color:#f5d99e;font-weight:700;padding:5px 0}
@@ -3353,6 +3353,103 @@ document.addEventListener('keydown',e=>{if(e.key==='F4'&&!e.ctrlKey&&!e.altKey){
   });phase+=.65;
  }
  update();setInterval(update,2600);
+})();
+</script>
+
+<style id="sc173Style">
+#sc173Atmosphere{position:fixed;inset:0;pointer-events:none;z-index:42;overflow:hidden}
+.sc173Smoke{position:absolute;width:8px;height:8px;border-radius:50%;background:rgba(224,226,203,.36);box-shadow:0 0 9px rgba(245,224,180,.18);animation:sc173Rise 3.8s ease-out infinite;will-change:transform,opacity}
+@keyframes sc173Rise{0%{transform:translate(-50%,0) scale(.45);opacity:0}18%{opacity:.65}100%{transform:translate(-70%,-38px) scale(2.3);opacity:0}}
+#sc173Planning{border-top:1px solid #58716c;margin-top:8px;padding-top:7px;font:12px/1.5 system-ui;color:#e1e8d7}
+#sc173Planning summary{cursor:pointer;color:#f4d7a1;font-weight:700}
+#sc173Planning p{margin:5px 0}
+#sc173Planning .sc173Hint{color:#b4d3c0}
+@media(prefers-reduced-motion:reduce){#sc173Atmosphere{display:none}}
+</style>
+<div id="sc173Atmosphere" aria-hidden="true"></div>
+<script id="sc173PlanningAndAtmosphere">
+(()=>{'use strict';
+ const field=document.getElementById('field'),layer=document.getElementById('sc173Atmosphere');
+ if(!field||!layer)return;
+ const advisor=document.getElementById('advisorCard');
+ let details=null;
+ if(advisor){
+  details=document.createElement('details');details.id='sc173Planning';
+  details.innerHTML='<summary>🏛 Town planning (optional)</summary><p id="sc173TownStatus">Your town planning report will appear here.</p><p class="sc173Hint">Long-term plans: workshops, new resources, land trade routes, commercial harbors and military ports. This panel reports existing buildings; it does not add those systems yet.</p>';
+  advisor.appendChild(details);
+ }
+ const plumes=[];
+ function update(){
+  const buildings=(window.scHoverBuildings||[]).filter(b=>b&&b.team===0&&b.hp>0);
+  const count=t=>buildings.filter(b=>b.type===t).length;
+  if(details&&details.open){
+   const house=count('house'),farm=count('farm'),market=count('market'),well=count('well'),granary=count('granary');
+   const tips=[];
+   if(!house)tips.push('Build houses to establish a population.');
+   else if(!farm)tips.push('Add farms to develop food supply.');
+   else if(!granary)tips.push('Consider a granary for food storage.');
+   if(!well)tips.push('A well can serve nearby homes.');
+   if(!market)tips.push('A market supports local trade when staffed and road-connected.');
+   if(!tips.length)tips.push('Your basic settlement services are in place. Check road connections and staffing.');
+   details.querySelector('#sc173TownStatus').textContent=`Homes ${house} · Farms ${farm} · Markets ${market} · Wells ${well} · Granaries ${granary}. ${tips.join(' ')}`;
+  }
+  if(document.hidden||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
+  const sources=buildings.filter(b=>['house','bakery','lumberyard'].includes(b.type)&&Number.isFinite(b.x)&&Number.isFinite(b.y)).slice(0,10);
+  while(plumes.length>sources.length){plumes.pop().remove()}
+  while(plumes.length<sources.length){const e=document.createElement('span');e.className='sc173Smoke';e.style.animationDelay=`-${(plumes.length%5)*.7}s`;layer.appendChild(e);plumes.push(e)}
+  const rect=field.getBoundingClientRect();
+  plumes.forEach((e,i)=>{const b=sources[i];const x=rect.left+b.x*rect.width/field.width;const y=rect.top+b.y*rect.height/field.height-18;e.style.display=(x>0&&x<innerWidth&&y>100&&y<innerHeight-65)?'block':'none';e.style.left=`${x}px`;e.style.top=`${y}px`});
+ }
+ update();setInterval(update,2500);
+})();
+</script>
+
+<style id="sc174LayoutRepair">
+/* Keep City Life clear of the resource bar and primary controls. */
+#sc159Pulse{top:76px!important;left:10px!important;max-width:235px!important;z-index:690!important}
+#sc159Pulse.collapsed{max-width:145px!important}
+#sc159PulseData{grid-template-columns:1fr 1fr!important;gap:3px 8px!important;padding:4px 8px 8px!important;font-size:10px!important}
+#sc159Pulse button{padding:5px 7px!important}
+/* Keep the Advisor below top controls and above the command bar; internal scrolling is allowed. */
+#advisorTop.sc155Open{top:192px!important;right:14px!important;left:auto!important;bottom:auto!important;width:min(328px,calc(100vw - 24px))!important;max-width:328px!important;max-height:calc(100dvh - 315px)!important;overflow-y:auto!important;overscroll-behavior:contain!important}
+#advisorTop.sc155Open #advisorCard{overflow:visible!important}
+#sc140Bar{z-index:12050!important}
+@media(max-height:690px){#advisorTop.sc155Open{top:185px!important;max-height:calc(100dvh - 300px)!important}}
+@media(max-width:760px){#sc159Pulse{top:76px!important;max-width:170px!important}#advisorTop.sc155Open{top:185px!important;width:min(280px,calc(100vw - 20px))!important}}
+</style>
+<script id="sc174StartAndUIRepair">
+(()=>{'use strict';
+ const canvas=document.getElementById('field'),vp=canvas?.parentElement;
+ if(!canvas||!vp)return;
+ // Set initial camera to the friendly Royal Keep; do not run a continuous camera correction.
+ function home(){
+   const keep=(window.scHoverBuildings||[]).find(b=>b&&b.team===0&&b.type==='keep'&&b.hp>0);
+   if(!keep)return false;
+   const r=canvas.getBoundingClientRect(),scale=r.width/canvas.width;
+   vp.scrollLeft=Math.max(0,keep.x*scale-Math.min(240,vp.clientWidth*.25));
+   vp.scrollTop=Math.max(0,keep.y*r.height/canvas.height-vp.clientHeight*.5);
+   return true;
+ }
+ let retries=0;
+ function start(){if(!home()&&retries++<8)setTimeout(start,250)}
+ setTimeout(start,300);
+ // On an explicit restart, re-center once after the engine resets the world.
+ document.getElementById('restart')?.addEventListener('click',()=>setTimeout(home,300));
+ const life=document.getElementById('sc159Pulse');
+ if(life){life.classList.add('collapsed');life.querySelector('#sc159Arrow')?.replaceChildren(document.createTextNode('▸'))}
+ // Selecting a new construction command must dismiss the previous building inspector.
+ const popup=document.getElementById('scContextPanel');
+ function dismissInspector(){if(!popup)return;popup.hidden=true;popup.style.setProperty('display','none','important')}
+ document.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.id==='sc140Build'||b.id==='sc140Keep'||b.closest('#sc140Commands')||b.closest('#quickDock')||b.closest('#sc140Utility'))dismissInspector();
+ },true);
+ // A new building inspection can reopen the popup; remove our forced display override on map selection.
+ canvas.addEventListener('pointerdown',()=>{if(popup)popup.style.removeProperty('display')},true);
+ // Avoid stale advisor wording from the earlier manual Check Test flow.
+ const obsolete=document.getElementById('sc157AdvisorNote');
+ if(obsolete)obsolete.textContent=obsolete.textContent.replace(/Press Check Test after building\.?/gi,'Completed buildings are tracked automatically.');
+ const tag=document.createElement('small');tag.id='sc174BuildLabel';tag.textContent='V12.74 · UI & home camera';tag.style.cssText='position:fixed;left:8px;bottom:110px;z-index:90;background:#173631d9;color:#f4e4b5;padding:4px 7px;border-radius:4px;font:10px system-ui;pointer-events:none';document.body.append(tag);
 })();
 </script>
 </body></html>
