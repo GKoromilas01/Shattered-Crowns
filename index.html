@@ -3741,4 +3741,34 @@ document.title='Shattered Crowns — V12.89';
  document.title='Shattered Crowns — V12.93';
 })();
 </script>
+
+<style id="sc194CapacityStyle">
+#sc194Capacity{border-top:1px solid #647d69;margin-top:14px;padding-top:12px}
+#sc194Capacity h3{margin:0 0 8px;color:#ffe0a1;font-size:15px}
+#sc194Capacity .sc194Line{display:flex;justify-content:space-between;gap:10px;margin:6px 0;padding:7px;background:#28473e;border-radius:5px}
+#sc194Capacity .sc194Line strong{color:#ffe0a1}
+#sc194Capacity .sc194Foot{font-size:11px;color:#b7c8bc;line-height:1.5}
+</style>
+<script id="sc194CapacityPlanner">
+(()=>{'use strict';
+ const panel=document.getElementById('sc190ChroniclePanel');if(!panel)return;
+ const section=document.createElement('section');section.id='sc194Capacity';
+ section.innerHTML='<h3>👥 Population & work capacity</h3><div class="sc194Line"><span>Housing capacity</span><strong id="sc194Homes">—</strong></div><div class="sc194Line"><span>Visible workers</span><strong id="sc194Workers">—</strong></div><div class="sc194Line"><span>Production buildings</span><strong id="sc194Jobs">—</strong></div><div class="sc194Line"><span>Workforce balance</span><strong id="sc194Balance">—</strong></div><p class="sc194Foot">Planning estimates: each house represents space for 4 residents; each farm, fishery, lumberyard, bakery or market represents 2 potential jobs. Worker count comes from visible player units. These figures do not change resources, production or population.</p>';
+ panel.append(section);
+ const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+ function update(){if(panel.hidden)return;
+  const buildings=Array.isArray(window.scHoverBuildings)?window.scHoverBuildings:[];
+  const units=Array.isArray(window.scRTSUnits)?window.scRTSUnits:[];
+  const own=buildings.filter(b=>b&&b.team===0&&(b.hp===undefined||b.hp>0));
+  const homes=own.filter(b=>b.type==='house').length;
+  const jobs=own.filter(b=>['farm','fishery','lumberyard','bakery','market'].includes(b.type)).length*2;
+  const workers=units.filter(u=>u&&u.team===0&&(u.hp===undefined||u.hp>0)&&String(u.type||u.kind||'').toLowerCase().includes('worker')).length;
+  set('sc194Homes',String(homes*4)+' estimated spaces');set('sc194Workers',String(workers));set('sc194Jobs',String(jobs)+' potential jobs');
+  set('sc194Balance',jobs>workers?String(jobs-workers)+' unfilled potential jobs':workers>jobs?String(workers-jobs)+' workers beyond planned jobs':'Balanced');
+ }
+ document.getElementById('sc190ChronicleBtn')?.addEventListener('click',()=>setTimeout(update,0));
+ window.addEventListener('sc:built',update);setInterval(update,2500);
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V12.94 · Workforce planning';document.title='Shattered Crowns — V12.94';
+})();
+</script>
 </body></html>
