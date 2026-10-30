@@ -3701,4 +3701,30 @@ panel.querySelector('.sc183Close')?.addEventListener('click',()=>queueMicrotask(
 close();setTimeout(sweep,350);setInterval(sweep,2000);
 })();
 </script>
+
+<script id="sc186RemoveLegacyAdvisor">
+(()=>{'use strict';
+ document.title='Shattered Crowns — V12.86';
+ const badge=document.getElementById('sc183Version');
+ if(badge)badge.textContent='V12.86 · Advisor repair';
+ // Browser inspection identified the thin strip as #advisorTop, not #sc183Panel.
+ // Historical controllers force display:block!important inline on this obsolete node.
+ // Remove the obsolete node itself, preserving the standalone Advisor.
+ const legacy=document.getElementById('advisorTop');
+ if(legacy)legacy.remove();
+ const original=document.getElementById('sc183Toggle');
+ const panel=document.getElementById('sc183Panel');
+ if(original&&panel){
+  // Replace the button to discard conflicting historical click listeners.
+  const button=original.cloneNode(true);original.replaceWith(button);
+  const closeButton=panel.querySelector('.sc183Close');
+  if(closeButton){const fresh=closeButton.cloneNode(true);closeButton.replaceWith(fresh);fresh.addEventListener('click',()=>setOpen(false))}
+  function setOpen(open){panel.hidden=!open;panel.style.setProperty('display',open?'block':'none','important');button.textContent=open?'📜 Hide Advisor':'📜 Advisor';button.setAttribute('aria-expanded',String(open))}
+  button.addEventListener('click',()=>setOpen(panel.hidden));
+  setOpen(false);
+ }
+ const observer=new MutationObserver(()=>{const node=document.getElementById('advisorTop');if(node)node.remove()});
+ observer.observe(document.body,{childList:true,subtree:false});
+})();
+</script>
 </body></html>
