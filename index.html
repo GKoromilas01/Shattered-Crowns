@@ -3727,4 +3727,37 @@ close();setTimeout(sweep,350);setInterval(sweep,2000);
  observer.observe(document.body,{childList:true,subtree:false});
 })();
 </script>
+
+<style id="sc187ProductionStyles">
+#sc187Production{border-top:1px solid #72856a;margin-top:9px;padding-top:9px}
+#sc187Production h4{font:700 12px system-ui;color:#f2d99c;margin:0 0 6px}
+#sc187Production .sc187Row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:5px 0;padding:5px 7px;background:#28473d;border-radius:5px}
+#sc187Production .sc187Status{font-size:11px;text-align:right;color:#c6e0cc}
+#sc187Production .sc187Missing{color:#e7c1a0}
+#sc187Production .sc187Note{font:10px/1.4 system-ui;color:#c7d1c6;margin-top:7px}
+#sc187VersionMark{color:#e6d39a}
+</style>
+<script id="sc187ProductionOverview">
+(()=>{'use strict';
+ document.title='Shattered Crowns — V12.87 · Settlement production';
+ const badge=document.getElementById('sc183Version');
+ if(badge)badge.textContent='V12.87 · Settlement production';
+ const economy=document.querySelector('#sc176Economy .body');
+ if(!economy)return;
+ const section=document.createElement('section');section.id='sc187Production';
+ section.innerHTML='<h4>🏘 Production readiness</h4><div class="sc187Row"><span>🌾 Food network</span><span id="sc187Food" class="sc187Status">Checking…</span></div><div class="sc187Row"><span>🪵 Timber supply</span><span id="sc187Wood" class="sc187Status">Checking…</span></div><div class="sc187Row"><span>🛒 Local trade</span><span id="sc187Trade" class="sc187Status">Checking…</span></div><div class="sc187Row"><span>💧 Town services</span><span id="sc187Services" class="sc187Status">Checking…</span></div><p class="sc187Note">Planning overview based on buildings present. It does not add production or change resource rates.</p>';
+ economy.append(section);
+ const set=(id,ready,yes,no)=>{const el=document.getElementById(id);if(!el)return;el.textContent=ready?yes:no;el.classList.toggle('sc187Missing',!ready)};
+ function refresh(){
+  const b=(window.scHoverBuildings||[]).filter(x=>x&&x.team===0&&(x.hp===undefined||x.hp>0));
+  const count=type=>b.filter(x=>x.type===type).length;
+  const farms=count('farm'),granaries=count('granary'),lumber=count('lumberyard'),markets=count('market'),houses=count('house'),wells=count('well');
+  set('sc187Food',farms>0&&granaries>0,'Farms + storage ready',farms===0?'Needs farms':'Needs granary');
+  set('sc187Wood',lumber>0,'Lumberyard built','Needs lumberyard');
+  set('sc187Trade',markets>0&&houses>0,'Market + homes ready',markets===0?'Needs market':'Needs housing');
+  set('sc187Services',wells>0&&houses>0,'Water + homes ready',wells===0?'Needs well':'Needs housing');
+ }
+ refresh();setInterval(refresh,2600);
+})();
+</script>
 </body></html>
