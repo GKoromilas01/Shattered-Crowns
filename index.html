@@ -3620,4 +3620,36 @@ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='
 document.title='Shattered Crowns — V12.89';
 })();
 </script>
+
+<style id="sc190ChronicleStyle">
+#sc190ChronicleBtn{position:fixed;right:145px;top:276px;z-index:30000;background:#28473e;color:#fff0c5;border:1px solid #b7a16d;border-radius:5px;padding:9px 12px;font:600 13px system-ui;cursor:pointer}
+#sc190ChroniclePanel{position:fixed;right:14px;top:316px;bottom:96px;width:min(405px,calc(100vw - 28px));overflow:auto;z-index:30002;background:#142f2a;color:#e7ecdf;border:1px solid #b79b65;border-radius:8px;padding:16px;box-sizing:border-box;font:13px/1.5 system-ui;box-shadow:0 12px 30px #0008}
+#sc190ChroniclePanel[hidden]{display:none!important}#sc190ChroniclePanel h2{font-size:17px;margin:0 0 10px;color:#ffe0a1}
+#sc190ChroniclePanel button{float:right;background:#5b4527;border:1px solid #b79b65;color:#fff;padding:3px 9px;border-radius:4px;cursor:pointer}
+#sc190ChroniclePanel .sc190Stat{display:inline-block;background:#28473e;padding:5px 8px;margin:3px;border-radius:4px}
+#sc190ChroniclePanel ol{padding-left:22px}#sc190ChroniclePanel li{margin:7px 0;border-bottom:1px solid #ffffff19;padding-bottom:5px}
+#sc190ChroniclePanel small{color:#c3d0c2} @media(max-width:600px){#sc190ChronicleBtn{top:225px;right:145px}#sc190ChroniclePanel{top:264px}}
+</style>
+<script id="sc190Chronicle">
+(()=>{'use strict';
+ const btn=document.createElement('button');btn.id='sc190ChronicleBtn';btn.type='button';btn.textContent='📜 Chronicle';btn.setAttribute('aria-expanded','false');
+ const panel=document.createElement('section');panel.id='sc190ChroniclePanel';panel.hidden=true;panel.setAttribute('role','dialog');panel.setAttribute('aria-label','Settlement Chronicle');
+ panel.innerHTML='<button type="button" id="sc190Close" aria-label="Close chronicle">✕</button><h2>📜 Settlement Chronicle</h2><p>Live settlement overview and recent events in this play session.</p><div id="sc190Stats"></div><h3>Recent events</h3><ol id="sc190Events"></ol><small>Events are kept for this session only. No gameplay rules are changed.</small>';
+ document.body.append(btn,panel);
+ const log=[];const record=message=>{log.unshift({message,time:new Date().toLocaleTimeString()});if(log.length>30)log.pop();refresh()};
+ const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const count=(arr,type)=>arr.filter(x=>x&&x.team===0&&x.hp>0&&(!type||x.type===type)).length;
+ function refresh(){if(panel.hidden)return;const buildings=window.scHoverBuildings||[],units=window.scRTSUnits||[];
+ const vals=[['Houses',count(buildings,'house')],['Farms',count(buildings,'farm')],['Granaries',count(buildings,'granary')],['Markets',count(buildings,'market')],['Wells',count(buildings,'well')],['Workers',count(units,'worker')],['Soldiers',count(units,'soldier')],['Archers',count(units,'archer')]];
+ document.getElementById('sc190Stats').innerHTML=vals.map(([n,v])=>'<span class="sc190Stat">'+n+': <b>'+v+'</b></span>').join('');
+ document.getElementById('sc190Events').innerHTML=log.length?log.map(e=>'<li>'+esc(e.message)+' <small>('+esc(e.time)+')</small></li>').join(''):'<li>No events recorded yet. Build something or issue a unit order.</li>';
+ }
+ const open=v=>{panel.hidden=!v;btn.setAttribute('aria-expanded',String(v));if(v)refresh()};
+ btn.addEventListener('click',e=>{e.stopPropagation();open(panel.hidden)});panel.querySelector('#sc190Close').addEventListener('click',()=>open(false));panel.addEventListener('click',e=>e.stopPropagation());window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)open(false)});
+ window.addEventListener('sc:built',e=>record('Built '+String(e.detail?.type||'a building').replace(/_/g,' ')));
+ window.addEventListener('sc-order-issued',e=>record('Movement/order issued to '+Number(e.detail?.count||0)+' unit(s)'));
+ let previous=null;setInterval(()=>{const units=window.scRTSUnits||[];const n=count(units,'worker');if(previous!==null&&n>previous)record('Recruited '+(n-previous)+' worker(s)');previous=n;refresh()},1800);
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V12.90 · Settlement Chronicle';document.title='Shattered Crowns — V12.90';
+})();
+</script>
 </body></html>
