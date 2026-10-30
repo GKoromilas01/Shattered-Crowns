@@ -3771,4 +3771,28 @@ document.title='Shattered Crowns — V12.89';
  const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V12.95 · Building counts fixed';document.title='Shattered Crowns — V12.95';
 })();
 </script>
+
+<style id="sc196CostStripStyle">
+#sc196CostStrip{position:fixed;bottom:125px;left:50%;transform:translateX(-50%);z-index:2900;max-width:min(92vw,680px);padding:8px 15px;border:1px solid #d7b56c;border-radius:7px;background:rgba(21,45,42,.96);color:#ffe8b0;font:600 13px system-ui;box-shadow:0 3px 14px #0008;pointer-events:none;text-align:center}
+#sc196CostStrip[hidden]{display:none!important}
+</style>
+<script id="sc196CostStripLogic">
+(()=>{'use strict';
+ const costs={house:{wood:60,gold:25},farm:{wood:75,gold:30},road:{stone:12},market:{wood:90,gold:90,stone:20},well:{stone:35,wood:25},lumberyard:{wood:75,gold:45},fishery:{wood:90,gold:45},granary:{wood:85,stone:35},bakery:{wood:80,gold:45,stone:15},clinic:{wood:70,gold:65,stone:25},garden:{wood:35,gold:15},plaza:{stone:25,gold:35},tower:{wood:100,gold:100},fortress:{wood:150,gold:180,stone:120},wall:{stone:60,wood:30}};
+ const labels={clinic:'Healer',lumberyard:'Lumberyard'};
+ const strip=document.createElement('div');strip.id='sc196CostStrip';strip.hidden=true;strip.setAttribute('role','status');document.body.append(strip);
+ let selected=null;
+ function costText(type){const c=costs[type];return '🏗 '+(labels[type]||type.charAt(0).toUpperCase()+type.slice(1))+' requires '+[c.gold?'🪙 '+c.gold+' Gold':'',c.wood?'🌲 '+c.wood+' Wood':'',c.stone?'🪨 '+c.stone+' Stone':''].filter(Boolean).join(' · ')}
+ function display(type){if(!costs[type])return;strip.textContent=costText(type);strip.hidden=false}
+ const choices=[...document.querySelectorAll('button')].filter(b=>{const t=(b.dataset.action||'').toLowerCase();return costs[t]||(!b.dataset.action&&costs[(b.textContent||'').trim().toLowerCase()])});
+ for(const b of choices){const type=costs[(b.dataset.action||'').toLowerCase()]?(b.dataset.action||'').toLowerCase():(b.textContent||'').trim().toLowerCase();
+ b.addEventListener('pointerenter',()=>display(type));b.addEventListener('focus',()=>display(type));
+ b.addEventListener('pointerleave',()=>{if(selected)display(selected);else strip.hidden=true});
+ b.addEventListener('click',()=>{selected=type;display(type)});
+ }
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'){selected=null;strip.hidden=true}});
+ document.addEventListener('pointerdown',e=>{if(e.target.closest('canvas')){selected=null;strip.hidden=true}},true);
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V12.96 · Building costs';document.title='Shattered Crowns — V12.96';
+})();
+</script>
 </body></html>
