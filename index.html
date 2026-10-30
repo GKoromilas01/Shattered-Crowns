@@ -3618,4 +3618,42 @@ function refresh(){const b=(window.scHoverBuildings||[]).filter(x=>x&&x.team===0
 refresh();setInterval(refresh,2000);show(true);
 })();
 </script>
+
+<style id="sc184Cleanup">
+/* Legacy Advisor surface is retired; the standalone Advisor is the only one. */
+#advisorTop,#sc179Advisor,#sc178Advisor{display:none!important;visibility:hidden!important;pointer-events:none!important}
+#sc183Panel[hidden]{display:none!important;visibility:hidden!important;pointer-events:none!important}
+#sc183Toggle{top:200px!important}
+#sc183Panel:not([hidden]){top:242px!important;min-height:180px!important;max-height:min(400px,calc(100dvh - 280px))!important;display:block!important;visibility:visible!important}
+</style>
+<script id="sc184Cleanup">
+(()=>{'use strict';
+document.title='Shattered Crowns — V12.84.0';
+const label=document.getElementById('sc183Version');if(label)label.textContent='V12.84 · Advisor cleanup';
+const old=document.getElementById('sc179Version');if(old)old.remove();
+const panel=document.getElementById('sc183Panel');
+const toggle=document.getElementById('sc183Toggle');
+if(panel&&toggle){
+ const sync=()=>{const opened=!panel.hidden;toggle.setAttribute('aria-expanded',String(opened));toggle.textContent=opened?'📜 Hide Advisor':'📜 Advisor'};
+ toggle.addEventListener('click',()=>queueMicrotask(sync));
+ panel.querySelector('.sc183Close')?.addEventListener('click',()=>queueMicrotask(sync));
+ sync();
+}
+// Some historical versions leave a narrow, contentless overlay on the right.
+// Remove only such empty overlays, never the battlefield or working command panels.
+function clearEmptyOverlay(){
+ const width=innerWidth;
+ for(const el of document.querySelectorAll('body > div,body > aside,body > section')){
+  if(el.id==='sc183Panel'||el.id==='sc183Toggle'||el.id==='sc176Economy'||el.id==='sc183Version')continue;
+  if(el.textContent.trim()||el.querySelector('canvas,button,input,summary'))continue;
+  const s=getComputedStyle(el),r=el.getBoundingClientRect();
+  if((s.position==='fixed'||s.position==='absolute')&&r.left>width-410&&r.top>220&&r.top<540&&r.width>180&&r.height>6&&r.height<65){
+   el.style.setProperty('display','none','important');
+   el.style.setProperty('pointer-events','none','important');
+  }
+ }
+}
+setTimeout(clearEmptyOverlay,300);setInterval(clearEmptyOverlay,2000);
+})();
+</script>
 </body></html>
