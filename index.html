@@ -3449,7 +3449,7 @@ document.addEventListener('keydown',e=>{if(e.key==='F4'&&!e.ctrlKey&&!e.altKey){
  // Avoid stale advisor wording from the earlier manual Check Test flow.
  const obsolete=document.getElementById('sc157AdvisorNote');
  if(obsolete)obsolete.textContent=obsolete.textContent.replace(/Press Check Test after building\.?/gi,'Completed buildings are tracked automatically.');
- const tag=document.createElement('small');tag.id='sc174BuildLabel';tag.textContent='V12.75 · Advisor progress';tag.style.cssText='position:fixed;left:8px;bottom:110px;z-index:90;background:#173631d9;color:#f4e4b5;padding:4px 7px;border-radius:4px;font:10px system-ui;pointer-events:none';document.body.append(tag);
+ const tag=document.createElement('small');tag.id='sc174BuildLabel';tag.textContent='V12.76 · Settlement economy';tag.style.cssText='position:fixed;left:8px;bottom:110px;z-index:90;background:#173631d9;color:#f4e4b5;padding:4px 7px;border-radius:4px;font:10px system-ui;pointer-events:none';document.body.append(tag);
 })();
 </script>
 
@@ -3497,6 +3497,38 @@ document.addEventListener('keydown',e=>{if(e.key==='F4'&&!e.ctrlKey&&!e.altKey){
  const observer=new MutationObserver(check);observer.observe(progress,{childList:true,characterData:true,subtree:true});
  check();
  summary.textContent='Basic tutorial: complete once, then it will not repeat on future visits.';
+})();
+</script>
+
+<style id="sc176Styles">
+#sc176Economy{position:fixed;right:14px;bottom:112px;z-index:110;background:#17332eea;border:1px solid #a78d55;border-radius:8px;color:#e9e6d3;width:245px;max-width:calc(100vw - 28px);font:12px/1.4 system-ui;box-shadow:0 3px 12px #0006}
+#sc176Economy summary{padding:8px 10px;cursor:pointer;color:#f5d78e;font-weight:700}
+#sc176Economy .body{padding:0 10px 10px}
+#sc176Economy .numbers{display:grid;grid-template-columns:1fr 1fr;gap:5px 8px;margin:6px 0}
+#sc176Economy .numbers span{background:#28473e;padding:5px;border-radius:4px}
+#sc176Economy p{margin:6px 0;color:#d6dfcd}
+@media(max-width:850px){#sc176Economy{width:200px;bottom:105px}}
+</style>
+<details id="sc176Economy"><summary>⚒ Settlement Economy</summary><div class="body"><div class="numbers"><span id="sc176Homes">Homes: —</span><span id="sc176Farms">Farms: —</span><span id="sc176Work">Workers: —</span><span id="sc176Stores">Storage: —</span></div><p id="sc176Advice">Build homes and farms to develop your town.</p><p style="font-size:10px;opacity:.8">Planning indicators only. Production and trade still use the existing game rules.</p></div></details>
+<script id="sc176Economy">
+(()=>{'use strict';
+ const root=document.getElementById('sc176Economy');if(!root)return;
+ const q=id=>document.getElementById(id);
+ function update(){
+  const b=(window.scHoverBuildings||[]).filter(x=>x&&x.team===0&&x.hp>0);
+  const count=t=>b.filter(x=>x.type===t).length;
+  const houses=count('house'),farms=count('farm'),granaries=count('granary'),markets=count('market');
+  const units=(window.scRTSUnits||window.scHoverUnits||[]).filter(x=>x&&x.team===0&&x.hp>0);
+  const workers=units.filter(x=>x.type==='worker').length;
+  q('sc176Homes').textContent='🏠 Homes: '+houses;
+  q('sc176Farms').textContent='🌾 Farms: '+farms;
+  q('sc176Work').textContent='👷 Workers: '+workers;
+  q('sc176Stores').textContent='📦 Granaries: '+granaries;
+  const advice=houses===0?'Build houses to establish a residential neighborhood.':farms===0?'Add farms to support the growing settlement.':granaries===0?'A granary will strengthen food storage.':markets===0?'A market will connect your settlement to trade.':'Your basic town buildings are in place. Improve roads and staffing.';
+  q('sc176Advice').textContent=advice;
+ }
+ update();setInterval(update,2500);
+ // Keep the working map/camera/selection and tutorial untouched.
 })();
 </script>
 </body></html>
