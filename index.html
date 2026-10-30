@@ -3686,4 +3686,25 @@ document.title='Shattered Crowns — V12.89';
  const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V12.91 · Building Guide';document.title='Shattered Crowns — V12.91';
 })();
 </script>
+
+<script id="sc192PanelExclusivity">
+(()=>{'use strict';
+ const help=document.getElementById('sc189HelpPanel');
+ const chronicle=document.getElementById('sc190ChroniclePanel');
+ const helpBtn=document.getElementById('sc189HelpButton');
+ const chronicleBtn=document.getElementById('sc190ChronicleBtn');
+ function close(panel,button){if(!panel)return;panel.hidden=true;if(button)button.setAttribute('aria-expanded','false')}
+ // Opening a different optional panel closes the previously open one.
+ if(helpBtn)helpBtn.addEventListener('click',()=>{if(help&&!help.hidden)close(chronicle,chronicleBtn)});
+ if(chronicleBtn)chronicleBtn.addEventListener('click',()=>{if(chronicle&&!chronicle.hidden)close(help,helpBtn)});
+ // A gameplay choice (e.g. Road) dismisses optional reading panels.
+ document.addEventListener('click',e=>{
+  const target=e.target;if(!(target instanceof Element))return;
+  if(target.closest('#sc189HelpPanel,#sc190ChroniclePanel,#sc189HelpButton,#sc190ChronicleBtn'))return;
+  close(help,helpBtn);close(chronicle,chronicleBtn);
+ },true);
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V12.92 · Auto-close panels';
+ document.title='Shattered Crowns — V12.92';
+})();
+</script>
 </body></html>
