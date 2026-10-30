@@ -3652,4 +3652,38 @@ document.title='Shattered Crowns — V12.89';
  const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V12.90 · Settlement Chronicle';document.title='Shattered Crowns — V12.90';
 })();
 </script>
+
+<style id="sc191BuildingGuideStyle">
+#sc191BuildingGuide{border-top:1px solid #6e816c;margin-top:14px;padding-top:10px}
+#sc191BuildingGuide h3{margin:0 0 8px;color:#ffe0a1}
+#sc191BuildingGuide .sc191Grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+#sc191BuildingGuide .sc191Choice{background:#28483d;color:#f5ead0;border:1px solid #829475;border-radius:5px;padding:7px 3px;cursor:pointer;font:12px system-ui}
+#sc191BuildingGuide .sc191Choice[aria-pressed="true"]{border-color:#ffd28c;background:#4d5535}
+#sc191BuildingGuide .sc191Details{margin-top:10px;background:#203d34;border-radius:6px;padding:11px;min-height:78px;line-height:1.5}
+#sc191BuildingGuide .sc191Details strong{color:#ffe0a1}
+</style>
+<script id="sc191BuildingGuide">
+(()=>{'use strict';
+ const help=document.getElementById('sc189HelpPanel');if(!help)return;
+ const entries=[
+ ['House','Homes for your settlement. Choose House in Construction, then place it on clear ground.','Start with two houses to establish your village.'],
+ ['Farm','Agricultural building that supports your food economy. Place it on suitable clear terrain.','Watch the food resource at the top of the screen.'],
+ ['Road','Creates routes between areas of your settlement.','Plan routes before filling the map with buildings.'],
+ ['Market','Town marketplace for commerce and settlement services.','Place near the part of town you are developing.'],
+ ['Well','Water service for your settlement.','Reserve accessible space near houses.'],
+ ['Lumber','Wood-production building.','Wood is required by many construction options.'],
+ ['Fishery','Coastal food-production building.','Look for a valid location next to water.'],
+ ['Granary','Food storage building.','Useful when expanding farms and food production.'],
+ ['Bakery','Food-processing building.','Plan space for food-related production chains.'],
+ ['Healer','Health service for your population.','Add services as your settlement grows.'],
+ ['Garden','Decorative amenity for your city.','Use open space to improve the town layout.'],
+ ['Plaza','Public civic space.','Use it as a centerpiece of the settlement.']
+ ];
+ const root=document.createElement('section');root.id='sc191BuildingGuide';root.innerHTML='<h3>🏗️ Building reference</h3><p>Select a building below for optional guidance. This does not select or place anything in the game.</p><div class="sc191Grid"></div><div class="sc191Details" aria-live="polite">Choose a building to read its description.</div>';
+ help.append(root);
+ const grid=root.querySelector('.sc191Grid'),details=root.querySelector('.sc191Details');
+ for(const [name,description,tip] of entries){const b=document.createElement('button');b.type='button';b.className='sc191Choice';b.textContent=name;b.setAttribute('aria-pressed','false');b.addEventListener('click',()=>{for(const other of grid.children)other.setAttribute('aria-pressed','false');b.setAttribute('aria-pressed','true');details.replaceChildren();const strong=document.createElement('strong');strong.textContent=name;const p=document.createElement('p');p.textContent=description;const small=document.createElement('small');small.textContent='Tip: '+tip;details.append(strong,p,small)});grid.append(b)}
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V12.91 · Building Guide';document.title='Shattered Crowns — V12.91';
+})();
+</script>
 </body></html>
