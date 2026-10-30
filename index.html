@@ -3561,7 +3561,7 @@ for(const prior of ['shatteredCrowns.advisor.cityMilestones.v178','shatteredCrow
  try{const v=JSON.parse(localStorage.getItem(prior)||'{}');for(const [id,yes] of Object.entries(v||{})){if(yes)done[({food:'farming',trade:'market',town:'housing'})[id]||id]=true}}catch(_){ }
 }
 let open=true;
-function show(value){open=!!value;panel.hidden=!open;panel.classList.toggle('sc179Open',open);panel.classList.toggle('sc155Open',open);panel.classList.remove('sc146Collapsed');panel.style.setProperty('height','auto','important');panel.style.setProperty('min-height',open?'210px':'0px','important');panel.style.setProperty('max-height','calc(100dvh - 245px)','important');panel.style.setProperty('display',open?'block':'none','important');panel.style.setProperty('visibility',open?'visible':'hidden','important');btn.textContent='📜 Advisor';btn.setAttribute('aria-expanded',String(open))}
+function show(value){open=!!value;panel.hidden=!open;panel.classList.toggle('sc179Open',open);panel.classList.toggle('sc155Open',open);panel.style.setProperty('display',open?'block':'none','important');panel.style.setProperty('visibility',open?'visible':'hidden','important');btn.textContent='📜 Advisor';btn.setAttribute('aria-expanded',String(open))}
 // Capture at window, before legacy document listeners, so one click means one toggle.
 window.addEventListener('click',e=>{if(!e.target.closest?.('#sc154Advisor'))return;e.preventDefault();e.stopImmediatePropagation();show(!open)},true);
 window.addEventListener('keydown',e=>{if(e.key!=='F4'||e.ctrlKey||e.altKey)return;e.preventDefault();e.stopImmediatePropagation();show(!open)},true);
@@ -3580,15 +3580,42 @@ function refresh(){
 show(true);refresh();setInterval(refresh,2000);
 // Retire obsolete visible version badges, leaving one reliable build label.
 for(const id of ['sc171Recovery','sc174BuildLabel'])document.getElementById(id)?.remove();
-const badge=document.createElement('div');badge.id='sc179Version';badge.textContent='V12.82 · Advisor repair';badge.style.cssText='position:fixed;left:8px;bottom:112px;z-index:690;background:#183a35e8;color:#f5dba3;border:1px solid #7a8b65;border-radius:5px;padding:4px 8px;font:11px system-ui;pointer-events:none';document.body.append(badge);
+const badge=document.createElement('div');badge.id='sc179Version';badge.textContent='V12.81 · Stable recovery';badge.style.cssText='position:fixed;left:8px;bottom:112px;z-index:690;background:#183a35e8;color:#f5dba3;border:1px solid #7a8b65;border-radius:5px;padding:4px 8px;font:11px system-ui;pointer-events:none';document.body.append(badge);
 })();
 </script>
 
-<style id="sc182AdvisorFinalLayout">
-/* Explicitly override legacy collapsed/movable advisor styles without changing the game canvas. */
-#advisorTop.sc179Open,#advisorTop.sc179Open.sc146Collapsed{display:block!important;visibility:visible!important;opacity:1!important;height:auto!important;min-height:210px!important;max-height:calc(100dvh - 245px)!important;overflow-y:auto!important;top:194px!important;right:14px!important;bottom:auto!important;transform:none!important;}
-#advisorTop.sc179Open #advisorCard,#advisorTop.sc179Open #sc179Advisor{display:block!important;visibility:visible!important;height:auto!important;min-height:175px!important;max-height:none!important;overflow:visible!important;opacity:1!important;}
-#advisorTop:not(.sc179Open){display:none!important;visibility:hidden!important;}
-#advisorTop.sc179Open #advisorCard > #sc179Advisor{display:block!important;}
+<style id="sc183AdvisorUI">
+/* Standalone Advisor: not nested in any historical collapsible containers. */
+#advisorTop,#sc154Advisor,#sc149Advisor,#sc146AdvisorToggle,#sc153Advisor,#sc158Advisor,#advisorOpenButton{display:none!important}
+#sc183Toggle{position:fixed;right:12px;top:200px;z-index:200050;background:#584a2b;color:#fff1c8;border:1px solid #c8a76c;border-radius:5px;padding:7px 14px;cursor:pointer;font:600 12px system-ui}
+#sc183Panel{position:fixed;top:242px;right:12px;width:320px;max-width:calc(100vw - 24px);max-height:calc(100dvh - 330px);min-height:180px;overflow:auto;box-sizing:border-box;z-index:200049;background:#1d3837;color:#e7eddb;border:1px solid #c1a268;border-radius:8px;box-shadow:0 8px 20px #0008;padding:12px;font:12px/1.5 system-ui}
+#sc183Panel[hidden]{display:none!important}
+#sc183Panel h3{margin:0 0 9px;color:#f5d79b;font-size:15px}
+#sc183Panel p{margin:8px 0}
+#sc183Panel summary{cursor:pointer;color:#efd6a1}
+#sc183Panel .done{color:#a5e4b5}
+#sc183Panel .sc183Head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#sc183Panel .sc183Close{background:#51472e;color:#f5e4bd;border:1px solid #b69a66;border-radius:4px;padding:4px 8px;cursor:pointer}
+#sc179Version{display:none!important}
+#sc183Version{position:fixed;left:8px;bottom:112px;z-index:690;background:#183a35e8;color:#f5dba3;border:1px solid #7a8b65;border-radius:5px;padding:4px 8px;font:11px system-ui;pointer-events:none}
+@media(max-height:550px){#sc183Panel{top:195px;max-height:calc(100dvh - 270px)}#sc183Toggle{top:155px}}
 </style>
+<script id="sc183AdvisorController">
+(()=>{'use strict';
+// Build this Advisor outside the old DOM so historical collapse handlers cannot shrink it.
+const toggle=document.createElement('button');toggle.id='sc183Toggle';toggle.type='button';toggle.textContent='📜 Advisor';toggle.setAttribute('aria-controls','sc183Panel');
+const panel=document.createElement('aside');panel.id='sc183Panel';panel.setAttribute('aria-label','City Development Advisor');panel.innerHTML='<div class="sc183Head"><h3>🏘 City Development Advisor</h3><button type="button" class="sc183Close">✕</button></div><p id="sc183Progress"></p><p id="sc183Goal"></p><p id="sc183Info"></p><details><summary>Basic controls (optional)</summary><p>Construction: choose a building and place it on clear terrain. Units: recruit at the Royal Keep. Drag empty ground to pan.</p></details>';
+document.body.append(toggle,panel);
+const version=document.createElement('div');version.id='sc183Version';version.textContent='V12.83 · Stable foundation';document.body.append(version);
+let open=false;
+function show(v){open=!!v;panel.hidden=!open;toggle.setAttribute('aria-expanded',String(open));toggle.textContent=open?'📜 Hide Advisor':'📜 Advisor'}
+toggle.addEventListener('click',()=>show(!open));panel.querySelector('.sc183Close').addEventListener('click',()=>show(false));
+document.addEventListener('keydown',e=>{if(e.key==='F4'){e.preventDefault();show(!open)}else if(e.key==='Escape'&&open)show(false)});
+const goals=[['housing','Build two Houses.',b=>b.filter(x=>x.type==='house').length>=2],['farming','Build two Farms.',b=>b.filter(x=>x.type==='farm').length>=2],['water','Build a Well.',b=>b.some(x=>x.type==='well')],['market','Build a Market.',b=>b.some(x=>x.type==='market')],['storage','Build a Granary.',b=>b.some(x=>x.type==='granary')],['industry','Build a Lumberyard.',b=>b.some(x=>x.type==='lumberyard')]];
+const key='shatteredCrowns.advisor.cityMilestones.v179';let done={};try{done=JSON.parse(localStorage.getItem(key)||'{}')||{}}catch(_){ }
+for(const prior of ['shatteredCrowns.advisor.cityMilestones.v178','shatteredCrowns.advisor.cityMilestones.v177','shatteredCrowns.advisor.milestones.v167'])try{const v=JSON.parse(localStorage.getItem(prior)||'{}');for(const [id,yes] of Object.entries(v||{}))if(yes)done[({food:'farming',trade:'market',town:'housing'})[id]||id]=true}catch(_){ }
+function refresh(){const b=(window.scHoverBuildings||[]).filter(x=>x&&x.team===0&&(x.hp===undefined||x.hp>0));let changed=false;for(const [id,,test] of goals)if(!done[id]&&test(b)){done[id]=true;changed=true}if(changed)try{localStorage.setItem(key,JSON.stringify(done))}catch(_){}const n=goals.filter(([id])=>done[id]).length,next=goals.find(([id])=>!done[id]);panel.querySelector('#sc183Progress').textContent='Development milestones: '+n+'/'+goals.length;const g=panel.querySelector('#sc183Goal');g.textContent=next?'Next: '+next[1]:'✓ All current milestones complete.';g.className=next?'':'done';panel.querySelector('#sc183Info').textContent=next?'Objectives are saved automatically.':'New objectives will arrive with future city systems.'}
+refresh();setInterval(refresh,2000);show(true);
+})();
+</script>
 </body></html>
