@@ -2104,7 +2104,7 @@ function scRefreshBattleReadout(){
  if(enemyLoss+ourLoss>0&&window.scBattleAdvisor)window.scBattleAdvisor.casualty=true;
 }
 setInterval(scRefreshBattleReadout,800);
-window.scHoverBuildings=buildings;function frame(now){let dt=Math.min((now-last)/1000,.05);last=now;window.scRTSUnits=units;window.scRTSNodes=nodes;/* camera managed by v12.37 */if(!paused&&!ended&&!tutorialVisible){tick(dt);visualTime+=dt}draw();advisorAutoCheck(now);requestAnimationFrame(frame)}init();scRefreshBattleReadout();requestAnimationFrame(frame)})();
+window.scHoverBuildings=buildings;function frame(now){let dt=Math.min((now-last)/1000,.05);last=now;window.scRTSUnits=units;window.scRTSNodes=nodes;window.scHoverBuildings=buildings;/* camera managed by v12.37 */if(!paused&&!ended&&!tutorialVisible){tick(dt);visualTime+=dt}draw();advisorAutoCheck(now);requestAnimationFrame(frame)}init();scRefreshBattleReadout();requestAnimationFrame(frame)})();
 </script><style id="treasuryStyles">
 #treasuryPanel{display:none;position:fixed;z-index:115;top:7vh;left:50%;transform:translateX(-50%);width:min(780px,94vw);max-height:85vh;overflow:auto;box-sizing:border-box;background:#172a2d;color:#f4ecd9;border:2px solid #bba36d;border-radius:13px;padding:17px 20px;box-shadow:0 16px 65px #000b;font-size:15px}
 #treasuryPanel.treasuryOpen{display:block}#treasuryPanel h2{margin:4px 0 8px;color:#f4d796}#treasuryPanel p{line-height:1.5}#treasuryPanel button,#treasuryPanel select{padding:8px 11px;margin:3px;border:1px solid #a89769;border-radius:6px;background:#314a47;color:#fff;cursor:pointer}#treasuryPanel button:hover{background:#46645d}#treasuryPanel select{max-width:100%}.treasuryGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.treasuryStat{padding:11px;border:1px solid #65786e;border-radius:8px;background:#243c39}.treasuryStat b{display:block;font-size:21px;color:#f6d28a;margin-top:4px}.treasuryTable{width:100%;border-collapse:collapse;margin:12px 0}.treasuryTable td,.treasuryTable th{padding:8px;border-bottom:1px solid #48615d;text-align:left}.treasuryTable td:last-child,.treasuryTable th:last-child{text-align:right}.treasuryNote{color:#c6d3c8;font-size:13px}.treasuryLog{background:#203632;border:1px solid #4b6861;border-radius:7px;padding:9px;max-height:130px;overflow:auto;font-size:13px}.treasuryHead{display:flex;justify-content:space-between;align-items:center;gap:8px}.treasuryBar{display:flex;height:17px;overflow:hidden;border-radius:6px;margin:9px 0}.treasuryBar span:first-child{width:60%;background:#3f806e}.treasuryBar span:last-child{width:40%;background:#c69c53}@media(max-width:600px){.treasuryGrid{grid-template-columns:1fr}#treasuryPanel{top:3vh;max-height:94vh;padding:11px}}
@@ -3768,7 +3768,7 @@ document.title='Shattered Crowns — V12.89';
  }
  document.getElementById('sc190ChronicleBtn')?.addEventListener('click',()=>setTimeout(update,0));
  window.addEventListener('sc:built',update);setInterval(update,2500);
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V12.94 · Workforce planning';document.title='Shattered Crowns — V12.94';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V12.95 · Building counts fixed';document.title='Shattered Crowns — V12.95';
 })();
 </script>
 </body></html>
