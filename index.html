@@ -3711,7 +3711,13 @@ close();setTimeout(sweep,350);setInterval(sweep,2000);
  // Historical controllers force display:block!important inline on this obsolete node.
  // Remove the obsolete node itself, preserving the standalone Advisor.
  const legacy=document.getElementById('advisorTop');
- if(legacy)legacy.remove();
+ if(legacy){
+   // Preserve elements still referenced by the game loop, without displaying the obsolete overlay.
+   const safe=document.createElement('div');safe.id='sc187LegacyAdvisorData';safe.hidden=true;
+   safe.style.cssText='display:none!important';
+   while(legacy.firstChild)safe.appendChild(legacy.firstChild);
+   document.body.appendChild(safe);legacy.remove();
+ }
  const original=document.getElementById('sc183Toggle');
  const panel=document.getElementById('sc183Panel');
  if(original&&panel){
