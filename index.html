@@ -3583,4 +3583,41 @@ for(const id of ['sc171Recovery','sc174BuildLabel'])document.getElementById(id)?
 const badge=document.createElement('div');badge.id='sc179Version';badge.textContent='V12.88 · Advisor milestone verification';badge.style.cssText='position:fixed;left:8px;bottom:112px;z-index:690;background:#183a35e8;color:#f5dba3;border:1px solid #7a8b65;border-radius:5px;padding:4px 8px;font:11px system-ui;pointer-events:none';document.body.append(badge);
 })();
 </script>
+
+<style id="sc189HelpStyles">
+/* Preserve legacy Advisor nodes for game compatibility; only hide their presentation. */
+html body #advisorTop,html body #sc154Advisor,html body #sc149Advisor,html body #sc153Advisor,html body #sc158Advisor,html body #sc146AdvisorToggle,html body #advisorOpenButton{display:none!important;visibility:hidden!important;pointer-events:none!important}
+#sc189HelpButton{position:fixed;right:14px;top:276px;z-index:30000;background:#5b4527;color:#fff0c5;border:1px solid #d2a963;border-radius:5px;padding:9px 14px;cursor:pointer;font:600 13px system-ui}
+#sc189HelpPanel{position:fixed;right:14px;top:316px;bottom:96px;width:min(405px,calc(100vw - 28px));overflow:auto;z-index:30001;background:#142f2a;color:#e7ecdf;border:1px solid #b79b65;border-radius:8px;padding:17px;box-sizing:border-box;font:13px/1.5 system-ui;box-shadow:0 12px 30px #0008}
+#sc189HelpPanel[hidden]{display:none!important}
+#sc189HelpPanel h2{font-size:18px;color:#ffe0a1;margin:0 0 8px}
+#sc189HelpPanel h3{font-size:14px;color:#ffe0a1;margin:16px 0 4px}
+#sc189HelpPanel p{margin:5px 0 9px}
+#sc189HelpPanel button{float:right;cursor:pointer;background:#5b4527;border:1px solid #b79b65;color:#fff;padding:3px 9px;border-radius:4px}
+#sc189HelpPanel ul{padding-left:20px;margin:5px 0 10px}
+@media(max-width:600px){#sc189HelpButton{top:225px}#sc189HelpPanel{top:264px}}
+</style>
+<script id="sc189HelpGuide">
+(()=>{'use strict';
+const b=document.createElement('button');b.id='sc189HelpButton';b.type='button';b.textContent='📖 Help & Guide';b.setAttribute('aria-expanded','false');
+const p=document.createElement('section');p.id='sc189HelpPanel';p.hidden=true;p.setAttribute('role','dialog');p.setAttribute('aria-label','Shattered Crowns Help and Guide');
+p.innerHTML=`<button type="button" id="sc189Close" aria-label="Close help">✕</button><h2>📖 Help & Guide</h2><p>Build a prosperous settlement. You can consult this guide whenever you need it; there are no mandatory Advisor tasks.</p>
+<h3>🏠 Construction</h3><p>Open <b>Construction</b> at the bottom, choose a building, then click suitable terrain to place it. Buildings require available resources and valid space.</p>
+<h3>🌾 Food and services</h3><p>Houses support your growing town. Farms, fisheries, granaries, wells, markets and bakeries support food, storage and services as their game systems allow.</p>
+<h3>🪵 Resources</h3><p>Watch Gold, Wood, Stone, Food and Trade Goods at the top of the screen. Check the building controls for costs before construction.</p>
+<h3>⚔️ Units</h3><p>Use the Royal Keep or Units controls to recruit workers and military units. Select a unit, then right-click terrain to give movement orders.</p>
+<h3>🗺️ Camera and controls</h3><ul><li>Drag empty ground to pan the map.</li><li>Right-click with units selected to issue orders.</li><li>Use the mouse wheel to zoom when supported.</li><li>Use Pause to stop or resume simulation.</li></ul>
+<h3>🏛️ Getting started</h3><p>Try building two houses, a farm, a well and a granary. Recruit a worker and explore the surrounding terrain. These are suggestions, not required tutorial milestones.</p>`;
+document.body.append(b,p);
+const setOpen=v=>{p.hidden=!v;b.setAttribute('aria-expanded',String(v))};
+b.addEventListener('click',e=>{e.stopPropagation();setOpen(p.hidden)});
+p.querySelector('#sc189Close').addEventListener('click',()=>setOpen(false));
+p.addEventListener('click',e=>e.stopPropagation());
+window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!p.hidden)setOpen(false)});
+// Keep legacy Advisor in the DOM: game scripts may still reference its nodes.
+const legacy=document.getElementById('advisorTop');if(legacy){const conceal=()=>{if(legacy.style.getPropertyValue('display')!=='none')legacy.style.setProperty('display','none','important');if(legacy.style.getPropertyValue('visibility')!=='hidden')legacy.style.setProperty('visibility','hidden','important')};conceal();new MutationObserver(conceal).observe(legacy,{attributes:true,attributeFilter:['style','class','hidden']})}
+const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V12.89 · Help & Guide';
+document.title='Shattered Crowns — V12.89';
+})();
+</script>
 </body></html>
