@@ -3707,4 +3707,38 @@ document.title='Shattered Crowns — V12.89';
  document.title='Shattered Crowns — V12.92';
 })();
 </script>
+
+<style id="sc193PlanningStyle">
+#sc193Planner{margin-top:14px;padding-top:12px;border-top:1px solid #647d69}
+#sc193Planner h3{margin:0 0 8px;color:#ffe0a1;font-size:15px}
+#sc193Planner .sc193Metric{display:flex;justify-content:space-between;gap:8px;margin:6px 0;padding:7px;background:#28473e;border-radius:5px}
+#sc193Planner .sc193Metric span:last-child{font-weight:700;color:#ffe0a1;text-align:right}
+#sc193Planner .sc193Tip{margin-top:9px;color:#c8dfcc;font-size:12px}
+#sc193Planner .sc193Foot{font-size:11px;color:#aebfb5}
+</style>
+<script id="sc193SettlementPlanning">
+(()=>{'use strict';
+ const panel=document.getElementById('sc190ChroniclePanel');if(!panel)return;
+ const root=document.createElement('section');root.id='sc193Planner';
+ root.innerHTML='<h3>🏘️ Settlement planning</h3><div class="sc193Metric"><span>Homes</span><span id="sc193Homes">—</span></div><div class="sc193Metric"><span>Food buildings</span><span id="sc193Food">—</span></div><div class="sc193Metric"><span>Town services</span><span id="sc193Services">—</span></div><div class="sc193Metric"><span>Building variety</span><span id="sc193Variety">—</span></div><p class="sc193Tip" id="sc193Tip"></p><p class="sc193Foot">Planning indicators only; population and production rates are not simulated by this panel.</p>';
+ panel.append(root);
+ const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};
+ function refresh(){if(panel.hidden)return;
+  const buildings=Array.isArray(window.scHoverBuildings)?window.scHoverBuildings:[];
+  const player=buildings.filter(b=>b&&b.team===0&&(b.hp===undefined||b.hp>0));
+  const count=type=>player.filter(b=>b.type===type).length;
+  const homes=count('house');
+  const food=count('farm')+count('fishery')+count('granary')+count('bakery');
+  const services=count('well')+count('market')+count('healer')+count('garden')+count('plaza');
+  const variety=new Set(player.map(b=>b.type)).size;
+  set('sc193Homes',String(homes));set('sc193Food',String(food));set('sc193Services',String(services));set('sc193Variety',variety+' building types');
+  const tip=homes<2?'Start with two houses to establish a village.':food<1?'Add a farm or fishery to develop food supply.':count('well')<1?'A well is a useful next step for town services.':count('granary')<1?'Consider a granary to expand your food infrastructure.':count('market')<1?'Consider adding a market to support your town.':'Your settlement has the foundations of a diverse town. Continue expanding deliberately.';
+  set('sc193Tip','Next planning suggestion: '+tip);
+ }
+ document.getElementById('sc190ChronicleBtn')?.addEventListener('click',()=>setTimeout(refresh,0));
+ window.addEventListener('sc:built',refresh);setInterval(refresh,2000);
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V12.93 · Settlement planning';
+ document.title='Shattered Crowns — V12.93';
+})();
+</script>
 </body></html>
