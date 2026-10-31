@@ -650,7 +650,7 @@ for(const bakery of bakeries){
 const activeMarkets=owned.filter(m=>m.type==='market'&&marketHasTradeAccess(m)&&(employment.byId.get(m.id)?.efficiency||0)>=.5);
 for(const bakery of bakeries){
  const eff=employment.byId.get(bakery.id)?.efficiency||0;
- if(eff>=.5&&granaries.some(g=>dist(g,bakery)<190)&&activeMarkets.some(m=>dist(m,bakery)<220)&&food>=8){
+ if(window.scBreadExportEnabled!==false&&eff>=.5&&granaries.some(g=>dist(g,bakery)<190)&&activeMarkets.some(m=>dist(m,bakery)<220)&&food>=8){
    food-=2;tradeGoods=Math.min(80,tradeGoods+Math.max(1,Math.floor(2*eff)));
  }
 }
@@ -4009,6 +4009,34 @@ body input, body textarea, body [contenteditable="true"] {
  const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.06 · Emergency food policy';
  const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.06.0';
  document.title='Shattered Crowns — v13.06';
+})();
+</script>
+
+<style id="sc1307Style">
+#sc1307TradePolicy{margin:8px 0 2px;padding:8px;border-top:1px solid #667b66;font-size:12px}
+#sc1307TradePolicy label{display:flex;gap:8px;align-items:center;cursor:pointer;line-height:1.4}
+#sc1307TradePolicy input{width:17px;height:17px;flex:none;accent-color:#d3ad5c;pointer-events:auto}
+#sc1307TradePolicy small{display:block;margin:5px 0 0;color:#e4d5b0;line-height:1.4}
+</style>
+<script id="sc1307BreadPolicy">
+(()=>{'use strict';
+ const ration=document.getElementById('sc1303Rations');
+ if(!ration)return;
+ const section=document.createElement('div');section.id='sc1307TradePolicy';
+ section.innerHTML='<label><input type="checkbox" id="sc1307BreadExport" checked>Allow bakeries to make bread for export</label><small id="sc1307TradeStatus"></small>';
+ ration.append(section);
+ const input=section.querySelector('input'),status=section.querySelector('small');
+ function update(){
+   window.scBreadExportEnabled=input.checked;
+   status.textContent=input.checked?'Export enabled: staffed bakeries near granaries and supplied markets can use 2 food per cycle to make trade goods.':'Food priority: bakeries stop converting food into trade goods. Existing goods can still be sold.';
+ }
+ input.addEventListener('change',update);
+ input.addEventListener('pointerdown',e=>e.stopPropagation());
+ input.addEventListener('click',e=>e.stopPropagation());
+ update();
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.07 · Bakery export policy';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.07.0';
+ document.title='Shattered Crowns — v13.07';
 })();
 </script>
 </body></html>
