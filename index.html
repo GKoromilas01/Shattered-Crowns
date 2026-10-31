@@ -4331,4 +4331,53 @@ body input, body textarea, body [contenteditable="true"] {
  const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.16.0';
 })();
 </script>
+
+<style id="sc1317Style">
+#sc1317Homes{margin:10px 0;padding:10px;border:1px solid #77947a;border-radius:7px;background:#1a3933;color:#eaf0db;font:12px/1.5 system-ui}
+#sc1317Homes h3{margin:0 0 5px;color:#ffe0a1;font-size:14px}
+#sc1317Homes button{padding:7px 12px;border:1px solid #c6a665;border-radius:5px;background:#5d492a;color:#fff0c6;cursor:pointer;font:600 12px system-ui}
+#sc1317Homes button:disabled{opacity:.5;cursor:default}
+#sc1317Homes p{margin:6px 0}
+#sc1317HouseMarker{position:absolute;width:80px;height:80px;border:4px solid #ffe089;border-radius:50%;box-shadow:0 0 0 5px #152c2cbb,0 0 24px #ffe089aa;pointer-events:none;z-index:40;transform:translate(-50%,-50%);animation:sc1317Pulse 1.3s ease-in-out infinite alternate}
+#sc1317HouseMarker[hidden]{display:none!important}
+@keyframes sc1317Pulse{to{box-shadow:0 0 0 9px #152c2c99,0 0 34px #ffe089}}
+@media(prefers-reduced-motion:reduce){#sc1317HouseMarker{animation:none}}
+</style>
+<script id="sc1317HouseLocator">
+(()=>{'use strict';
+ const panel=document.getElementById('sc1310AdvisorPanel'),canvas=document.getElementById('field');
+ if(!panel||!canvas)return;
+ const vp=canvas.parentElement;
+ const section=document.createElement('section');section.id='sc1317Homes';
+ section.innerHTML='<h3>🏠 Find a house</h3><p>When buildings are crowded, locate each house without trying to click through overlapping roofs.</p><button type="button" id="sc1317Next">Locate next house</button><p id="sc1317Detail" aria-live="polite">No house selected.</p>';
+ const tests=document.getElementById('sc1312Tests');if(tests)panel.insertBefore(section,tests);else panel.append(section);
+ const button=section.querySelector('button'),detail=section.querySelector('#sc1317Detail');
+ const marker=document.createElement('div');marker.id='sc1317HouseMarker';marker.hidden=true;vp.append(marker);
+ let index=-1,selected=null;
+ const own=()=>Array.isArray(window.scHoverBuildings)?window.scHoverBuildings.filter(b=>b&&b.team===0&&b.type==='house'&&(b.hp===undefined||b.hp>0)):[];
+ function locate(){const homes=own();if(!homes.length){selected=null;marker.hidden=true;detail.textContent='Build a house first; there are no houses to locate.';return;}
+  index=(index+1)%homes.length;selected=homes[index];
+  const scaleX=canvas.clientWidth/canvas.width,scaleY=canvas.clientHeight/canvas.height;
+  const x=canvas.offsetLeft+selected.x*scaleX,y=canvas.offsetTop+selected.y*scaleY;
+  vp.scrollLeft=Math.max(0,x-vp.clientWidth/2);vp.scrollTop=Math.max(0,y-vp.clientHeight/2);
+  marker.style.left=x+'px';marker.style.top=y+'px';marker.hidden=false;
+  const nearby=t=>ownServices().some(b=>b.type===t&&Math.hypot(b.x-selected.x,b.y-selected.y)<175);
+  const service=[nearby('well')?'Water':null,nearby('clinic')?'Healer':null,(nearby('garden')||nearby('plaza'))?'Beauty':null,nearby('market')?'Market':null].filter(Boolean);
+  detail.textContent=`House ${index+1} of ${homes.length} · Nearby services: ${service.length}/4 (${service.join(', ')||'none'}). ${service.length>=3?'Qualifies for neighborhood coverage.':'Needs '+(3-service.length)+' more service '+(3-service.length===1?'category':'categories')+' for the neighborhood bonus.'}`;
+ }
+ const ownServices=()=>Array.isArray(window.scHoverBuildings)?window.scHoverBuildings.filter(b=>b&&b.team===0&&(b.hp===undefined||b.hp>0)):[];
+ button.addEventListener('click',locate);
+ // A locator is only shown on request; hide it when returning to normal play.
+ canvas.addEventListener('pointerdown',()=>{marker.hidden=true},{passive:true});
+ document.getElementById('sc1310AdvisorBtn')?.addEventListener('click',()=>{if(panel.hidden)marker.hidden=true});
+ const oldTests=document.getElementById('sc1312Tests');if(oldTests){
+  const heading=oldTests.querySelector('h3');if(heading)heading.textContent='🧪 New in V13.17';
+  const labels=[...oldTests.querySelectorAll('label')];labels.forEach((label,i)=>{label.hidden=i>0;if(i===0){const span=label.querySelector('span');if(span)span.textContent='Build two houses close together, then use Advisor → Locate next house to find each one and read its nearby services.';const check=label.querySelector('input');if(check)check.checked=false;}});
+  const progress=oldTests.querySelector('.sc1312Progress');if(progress)progress.textContent='One new feature to test';
+  try{sessionStorage.removeItem('sc1313TestsCompleted')}catch(e){}
+ }
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.17 · House locator';
+ document.title='Shattered Crowns — v13.17';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.17.0';
+})();
+</script>
 </body></html>
