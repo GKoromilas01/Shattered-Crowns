@@ -3874,7 +3874,7 @@ document.title='Shattered Crowns — V12.89';
 </style>
 <script id="sc1300EmploymentDiagnostics">
 (()=>{'use strict';
- const panel=document.getElementById('sc199Economy');if(!panel)return;
+ const panel=document.getElementById('sc199economy');if(!panel)return;
  const section=document.createElement('section');section.id='sc1300Employment';
  section.innerHTML='<h3>👷 Active employment & production</h3><div class="line"><span>Available residents for work</span><b id="sc1300Pool">—</b></div><div class="line"><span>Jobs staffed / total</span><b id="sc1300Jobs">—</b></div><div class="line"><span>Unassigned workforce</span><b id="sc1300Idle">—</b></div><div id="sc1300Sites"></div><p id="sc1300Advice">Calculating staffing…</p><p>Staffing is allocated automatically from your residents, not the controllable worker units. Farm and fishery output depend on these assignments.</p>';
  panel.prepend(section);
@@ -3935,7 +3935,7 @@ body input, body textarea, body [contenteditable="true"] {
 </style>
 <script id="sc1303RationPolicy">
 (()=>{'use strict';
- const economy=document.getElementById('sc199Economy');if(!economy)return;
+ const economy=document.getElementById('sc199economy');if(!economy)return;
  const root=document.createElement('section');root.id='sc1303Rations';
  root.innerHTML='<strong>🌾 Food ration policy</strong><label for="sc1303Mode">How much food should residents receive?</label><select id="sc1303Mode"><option value="normal">Normal meals — standard consumption</option><option value="conserve">Conserve supplies — 25% less food, lower happiness</option><option value="generous">Generous meals — 25% more food, higher happiness</option></select><p id="sc1303Effect">Normal meals: no change to food use or happiness.</p><p>Policies change actual food consumption and happiness each 5-second economy cycle. Production and building rules stay the same.</p>';
  economy.prepend(root); // Keep the ration control visible immediately upon opening Economy.
@@ -3944,6 +3944,33 @@ body input, body textarea, body [contenteditable="true"] {
  select.addEventListener('change',apply);apply();
  const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.04 · Ration control visible';
  document.title='Shattered Crowns — v13.04';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.04.0';
+})();
+</script>
+
+<style id="sc1305EconomyAccessibility">
+/* Keep the economy decision visible without scrolling through the monitor. */
+#sc190ChroniclePanel{top:210px!important;bottom:94px!important;max-height:calc(100vh - 225px)!important}
+#sc199Tabs{top:-16px;z-index:12}
+#sc1303Rations{position:sticky;top:39px;z-index:11;margin:0 0 10px;padding:9px;background:#203a33;border-color:#b69a65;box-shadow:0 4px 10px #0007}
+#sc1303Rations label{margin:3px 0}
+#sc1303Rations p{margin:3px 0;font-size:11px}
+#sc1303Rations p:last-child{display:none}
+#sc1303Mode{pointer-events:auto!important;cursor:pointer;user-select:auto!important}
+@media(max-height:650px){#sc190ChroniclePanel{top:135px!important;max-height:calc(100vh - 155px)!important}}
+</style>
+<script id="sc1305RationAccessibility">
+(()=>{'use strict';
+ const panel=document.getElementById('sc190ChroniclePanel');
+ const tabs=document.getElementById('sc199Tabs');
+ const select=document.getElementById('sc1303Mode');
+ if(!panel||!tabs||!select)return;
+ // The control is always accessible when opening Economy, including after scrolling.
+ tabs.addEventListener('click',e=>{if(e.target.closest('[data-tab="economy"]')){panel.scrollTop=0;} });
+ select.addEventListener('pointerdown',e=>e.stopPropagation());
+ select.addEventListener('click',e=>e.stopPropagation());
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.05 · Economy controls accessible';
+ document.title='Shattered Crowns — v13.05';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.05.0';
 })();
 </script>
 </body></html>
