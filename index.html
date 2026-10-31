@@ -4262,4 +4262,62 @@ body input, body textarea, body [contenteditable="true"] {
  const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.14.0';
 })();
 </script>
+
+<style id="sc1315Cleanup">
+/* Only one game-version badge, placed clear of selection and construction notices. */
+#sc179Version{left:8px!important;bottom:139px!important;z-index:705!important;max-width:210px!important;white-space:nowrap!important}
+#sc149Status #sc149Keep,#sc149Keep{display:none!important}
+@media(max-width:700px){#sc179Version{bottom:145px!important}}
+</style>
+<script id="sc1315CityServices">
+(()=>{'use strict';
+ const bar=document.getElementById('sc149Status');
+ function removeKeep(){document.getElementById('sc149Keep')?.remove();if(bar){[...bar.querySelectorAll('button')].filter(b=>/^\s*(?:🏰\s*)?Keep\s*$/i.test(b.textContent||'')).forEach(b=>b.remove())}}
+ removeKeep();
+ // The older interface layers sometimes recreate controls during initialization.
+ if(bar)new MutationObserver(removeKeep).observe(bar,{childList:true});
+ const advisor=document.getElementById('sc1310AdvisorPanel');
+ const existing=document.getElementById('sc1315Services');
+ if(advisor&&!existing){
+  const block=document.createElement('section');block.id='sc1315Services';block.style.cssText='border:1px solid #708e77;border-radius:7px;padding:10px;margin:10px 0;background:#193b33;color:#e9f0df;font:12px/1.55 system-ui';
+  block.innerHTML='<h3 style="margin:0 0 5px;color:#ffe0a0">🏘 City services & prosperity</h3><div id="sc1315ServicesText">Assessing your settlement…</div>';
+  const tests=document.getElementById('sc1312Tests');if(tests)advisor.insertBefore(block,tests);else advisor.append(block);
+  const out=block.querySelector('#sc1315ServicesText');
+  function refresh(){if(advisor.hidden)return;
+   const buildings=(window.scHoverBuildings||[]).filter(b=>b&&b.team===0&&(b.hp===undefined||b.hp>0));
+   const count=t=>buildings.filter(b=>b.type===t).length;
+   const num=id=>{const m=(document.getElementById(id)?.textContent||'').match(/-?\d+(?:\.\d+)?/);return m?Number(m[0]):0};
+   const pop=num('population'),food=num('resFood'),happy=num('happiness');
+   const houses=count('house'),wells=count('well'),healers=count('clinic')+count('healer'),gardens=count('garden'),plazas=count('plaza'),markets=count('market');
+   const needs=[];
+   if(!houses)needs.push('Build houses to support population growth');
+   if(!wells)needs.push('Add a well to improve residential services');
+   if(!healers)needs.push('Build a healer to improve neighborhood coverage');
+   if(!gardens&&!plazas)needs.push('Add a garden or plaza to improve neighborhood beauty');
+   if(!markets)needs.push('Build a market to develop trade and tax income');
+   if(food<Math.max(10,pop*2))needs.unshift('Food reserves are low: prioritize food production');
+   const score=[houses>0,wells>0,healers>0,gardens+plazas>0,markets>0].filter(Boolean).length;
+   out.textContent=`Civic services established: ${score}/5 · Population ${pop} · Happiness ${happy}% · Wells ${wells} · Healers ${healers} · Gardens/plazas ${gardens+plazas} · Markets ${markets}. ${needs.length?'Next priority: '+needs[0]+'.':'All five basic service categories are represented. Improve coverage and expand carefully.'}`;
+  }
+  document.getElementById('sc1310AdvisorBtn')?.addEventListener('click',()=>setTimeout(refresh,0));
+  document.addEventListener('sc:built',()=>setTimeout(refresh,0));setInterval(refresh,3000);
+ }
+ const tests=document.getElementById('sc1312Tests');if(tests){
+  const h=tests.querySelector('h3');if(h)h.textContent='🧪 What to test — V13.15';
+  const tasks=[
+   'Confirm the top toolbar has no Keep button; select the Royal Keep on the map.',
+   'Confirm the version badge no longer overlaps selection or construction messages.',
+   'Open Advisor: check City services & prosperity, then build a well or garden and confirm the count updates.',
+   'Open Chronicle → Economy; check food policies remain interactive.',
+   'Move a unit, pause, and resume; confirm the simulation stops and restarts.'
+  ];
+  const labels=[...tests.querySelectorAll('label')];labels.forEach((label,i)=>{const span=label.querySelector('span');if(span&&tasks[i])span.textContent=tasks[i];const box=label.querySelector('input');if(box)box.checked=false});
+  const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='0 of '+labels.length+' checks completed';
+  try{sessionStorage.removeItem('sc1313TestsCompleted')}catch(e){}
+ }
+ const badge=document.getElementById('sc179Version');if(badge){badge.textContent='V13.15 · City services';badge.style.bottom='139px'}
+ document.title='Shattered Crowns — v13.15';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.15.0';
+})();
+</script>
 </body></html>
