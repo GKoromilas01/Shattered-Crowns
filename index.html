@@ -3968,9 +3968,47 @@ body input, body textarea, body [contenteditable="true"] {
  tabs.addEventListener('click',e=>{if(e.target.closest('[data-tab="economy"]')){panel.scrollTop=0;} });
  select.addEventListener('pointerdown',e=>e.stopPropagation());
  select.addEventListener('click',e=>e.stopPropagation());
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.05 · Economy controls accessible';
- document.title='Shattered Crowns — v13.05';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.05.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.06 · Emergency food policy';
+ document.title='Shattered Crowns — v13.06';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.06.0';
+})();
+</script>
+
+<style id="sc1306Style">
+#sc1306Status{margin:5px 0 0;color:#f0dfab;font-size:11px;line-height:1.4}
+#sc1306Status[data-alert="true"]{color:#ffd18a;font-weight:bold}
+</style>
+<script id="sc1306EmergencyRations">
+(()=>{'use strict';
+ const mode=document.getElementById('sc1303Mode');
+ const panel=document.getElementById('sc1303Rations');
+ if(!mode||!panel)return;
+ const option=document.createElement('option');option.value='auto';option.textContent='Automatic emergency rationing — conserve only when reserves run low';mode.append(option);
+ const status=document.createElement('div');status.id='sc1306Status';status.setAttribute('role','status');panel.append(status);
+ let emergency=false;
+ function update(){
+   if(mode.value!=='auto'){emergency=false;status.textContent='';return;}
+   const food=Number(document.getElementById('resFood')?.textContent)||0;
+   const pop=Number(document.getElementById('population')?.textContent)||0;
+   const consumption=Math.ceil(pop*.45);
+   // Use hysteresis to prevent rapid switching between policies.
+   // If no food is needed, do not enter an artificial emergency.
+   if(consumption>0){if(!emergency&&food<consumption*3)emergency=true;
+     else if(emergency&&food>=consumption*8)emergency=false;}
+   else emergency=false;
+   window.scRationFactor=emergency?.75:1;
+   window.scRationMood=emergency?-2:0;
+   status.dataset.alert=String(emergency);
+   status.textContent=emergency?'⚠ Emergency conservation ACTIVE — 25% less food, happiness −2 per cycle. Returns to normal at 8 cycles of reserves.':'✓ Normal meals — automatic conservation begins below 3 cycles of food reserves.';
+   const effect=document.getElementById('sc1303Effect');if(effect)effect.textContent=emergency?'Automatic policy: conserving supplies until food reserves recover.':'Automatic policy: normal meals; reserve monitoring active.';
+ }
+ mode.addEventListener('change',update);
+ // Re-evaluate before each existing five-second economy cycle.
+ setInterval(update,500);
+ update();
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.06 · Emergency food policy';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.06.0';
+ document.title='Shattered Crowns — v13.06';
 })();
 </script>
 </body></html>
