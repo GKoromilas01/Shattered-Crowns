@@ -966,6 +966,22 @@ ctx.save();if(b.type!=='road'){ctx.translate(x,y);ctx.scale((window.sc1323Compac
  ctx.strokeStyle='#d6c7a7';ctx.lineWidth=2;ctx.setLineDash([5,10]);
  for(const r of neighbors){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(r.x,r.y);ctx.stroke()}
  ctx.setLineDash([]);
+ // V13.25: quiet cobblestone joints along connected streets; visual only.
+ if(window.sc1325Cobblestones!==false){
+  ctx.save();ctx.lineWidth=1;ctx.strokeStyle='rgba(56,53,47,.43)';
+  for(const r of neighbors){
+   if(r.id<b.id)continue; // draw each street segment once
+   const dx=r.x-x,dy=r.y-y,len=Math.hypot(dx,dy);if(len<12)continue;
+   const nx=-dy/len,ny=dx/len,steps=Math.floor(len/9);
+   for(let j=1;j<steps;j++){
+    const t=j/steps,cx=x+dx*t,cy=y+dy*t;
+    const offset=j%2?3:-3;
+    ctx.beginPath();ctx.moveTo(cx+nx*(-7+offset),cy+ny*(-7+offset));
+    ctx.lineTo(cx+nx*(7+offset),cy+ny*(7+offset));ctx.stroke();
+   }
+  }
+  ctx.restore();
+ }
  if(neighbors.length>=3){ctx.strokeStyle='#e0cba5';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(x,y,9,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#e7d6b0';ctx.fillRect(x-2,y-2,4,4)}
  ctx.restore()
 }else if(b.type==='garden'){
@@ -4599,6 +4615,27 @@ body input, body textarea, body [contenteditable="true"] {
  const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.24 · Streets & Keep proportions';
  document.title='Shattered Crowns — v13.24';
  const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.24.0';
+})();
+</script>
+
+<style id="sc1325Style">
+#sc1325VisualNote{margin:6px 0 0;color:#cdd8cb;font:12px/1.5 system-ui}
+</style>
+<script id="sc1325StreetFinish">
+(()=>{'use strict';
+ window.sc1325Cobblestones=true;
+ function install(){const panel=document.getElementById('sc1323Visual');
+ if(panel){
+  const label=document.createElement('label');
+  label.innerHTML='<input id="sc1325Cobble" type="checkbox" checked> Detailed cobblestone roads';
+  panel.append(label);
+  const note=document.createElement('p');note.id='sc1325VisualNote';note.textContent='Adds subtle paving joints to connected roads. Appearance only; road placement and movement are unchanged.';panel.append(note);
+  label.querySelector('input').addEventListener('change',e=>{window.sc1325Cobblestones=e.target.checked;});
+ }}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.25 · Cobblestone streets';
+ document.title='Shattered Crowns — v13.25';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.25.0';
 })();
 </script>
 </body></html>
