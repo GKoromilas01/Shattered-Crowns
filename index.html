@@ -650,7 +650,7 @@ for(const bakery of bakeries){
 const activeMarkets=owned.filter(m=>m.type==='market'&&marketHasTradeAccess(m)&&(employment.byId.get(m.id)?.efficiency||0)>=.5);
 for(const bakery of bakeries){
  const eff=employment.byId.get(bakery.id)?.efficiency||0;
- if(window.scBreadExportEnabled!==false&&eff>=.5&&granaries.some(g=>dist(g,bakery)<190)&&activeMarkets.some(m=>dist(m,bakery)<220)&&food>=8){
+ if(window.scBreadExportEnabled!==false&&eff>=.5&&granaries.some(g=>dist(g,bakery)<190)&&activeMarkets.some(m=>dist(m,bakery)<220)&&tradeGoods<80&&food-2>=Math.max(8,Math.ceil(population*.45*(window.scRationFactor||1))*(window.scBreadReserveCycles??2))){
    food-=2;tradeGoods=Math.min(80,tradeGoods+Math.max(1,Math.floor(2*eff)));
  }
 }
@@ -4037,6 +4037,27 @@ body input, body textarea, body [contenteditable="true"] {
  const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.07 · Bakery export policy';
  const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.07.0';
  document.title='Shattered Crowns — v13.07';
+})();
+</script>
+
+<style id="sc1308Style">
+#sc1308Reserve{margin:7px 0 0;padding:8px;border:1px solid #607a6a;border-radius:5px;background:#18352d;font-size:12px}
+#sc1308Reserve label{display:block;margin-bottom:5px}#sc1308Reserve select{width:100%;padding:6px;background:#102921;color:#f2dfb1;border:1px solid #b69a65;border-radius:4px;cursor:pointer;pointer-events:auto!important}
+#sc1308Reserve p{font-size:11px;line-height:1.4;margin:5px 0 0;color:#e7dfc4}
+</style>
+<script id="sc1308FoodReserve">
+(()=>{'use strict';
+ const trade=document.getElementById('sc1307TradePolicy');if(!trade)return;
+ const section=document.createElement('div');section.id='sc1308Reserve';
+ section.innerHTML='<label for="sc1308Cycles"><b>Food reserve before bakery exports</b></label><select id="sc1308Cycles"><option value="0">No extra reserve (risky)</option><option value="1">1 consumption cycle</option><option value="2" selected>2 consumption cycles (recommended)</option><option value="4">4 consumption cycles (cautious)</option></select><p id="sc1308Status"></p>';
+ trade.append(section);
+ const selector=section.querySelector('select'),status=section.querySelector('#sc1308Status');
+ function update(){window.scBreadReserveCycles=Number(selector.value);status.textContent=selector.value==='0'?'Bakeries may export whenever at least 8 food remain.':'Bakeries export only when food remaining after production covers '+selector.value+' full consumption cycle(s), with an 8-food minimum.';}
+ selector.addEventListener('change',update);
+ for(const event of ['pointerdown','click'])selector.addEventListener(event,e=>e.stopPropagation());
+ update();
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.08 · Food export reserves';
+ document.title='Shattered Crowns — v13.08';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.08.0';
 })();
 </script>
 </body></html>
