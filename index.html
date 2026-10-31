@@ -774,6 +774,7 @@ else{ctx.fillStyle='#4d3829';ctx.beginPath();ctx.ellipse(x,y+9,30,12,0,0,Math.PI
 if(showLabels)label(n.type==='tree'?'TIMBER':n.type==='stone'?'QUARRY':'GOLD ORE',x,y+n.radius+30,10,'#f6e9c5');ctx.restore()}
 // Layered keeps and watchtowers with dimensional roofs, arched gates, banners and masonry.
 for(let b of buildings){if(['house','farm','fishery','market','well','lumberyard','road','garden','plaza','clinic','granary'].includes(b.type))continue;const x=b.x,y=b.y,r=b.radius,blue=b.team===0,accent=blue?'#63b7e6':'#d77b6b';ctx.save();ctx.fillStyle='rgba(9,22,20,.46)';ctx.beginPath();ctx.ellipse(x+11,y+20,b.type==='wall'?51:r+21,17,0,0,Math.PI*2);ctx.fill();if(b.type==='wall'){ctx.fillStyle='#4b565a';ctx.fillRect(x-41,y-14,84,41);ctx.fillStyle='#a5a99f';ctx.fillRect(x-42,y-25,84,38);ctx.fillStyle='#78898c';ctx.beginPath();ctx.moveTo(x-42,y+13);ctx.lineTo(x+42,y+13);ctx.lineTo(x+42,y+23);ctx.lineTo(x-42,y+23);ctx.fill();for(let j=0;j<7;j++){ctx.fillStyle=j%2?'#bfc0b1':'#919f9f';ctx.fillRect(x-42+j*14,y-35,11,14)}ctx.strokeStyle='#5a6d6c';ctx.lineWidth=2;for(let j=-2;j<=2;j++)line(x+j*15,y-24,x+j*15,y+12,'#687a78',1);line(x-40,y-3,x+40,y-3,'#d0c9b2',2);label('STONE WALL',x,y+43,11);bar(x,y-47,b.hp,b.max,80);ctx.restore();continue}
+if(b.type==='keep' && window.sc1324RefinedStreets!==false){ctx.translate(x,y);ctx.scale(.79,.79);ctx.translate(-x,-y)}
 const big=b.type==='keep'||b.type==='fortress',ww=big?r*2.15:r*1.7,hh=big?r*1.5:r*1.75;
 ctx.fillStyle='#536264';ctx.beginPath();ctx.moveTo(x-ww/2,y-hh/2);ctx.lineTo(x+ww/2,y-hh/2);ctx.lineTo(x+ww/2+9,y+hh/2+6);ctx.lineTo(x-ww/2+9,y+hh/2+6);ctx.closePath();ctx.fill();
 ctx.fillStyle='#c4bda8';ctx.fillRect(x-ww/2,y-hh/2-5,ww,hh);ctx.fillStyle='#87989a';ctx.fillRect(x+ww/2-12,y-hh/2-5,12,hh);ctx.strokeStyle='#6b7977';ctx.lineWidth=1;for(let yy=y-hh/2+8;yy<y+hh/2-4;yy+=12){line(x-ww/2,yy,x+ww/2,yy,'#84918d',1);for(let xx=x-ww/2+((Math.floor(yy)%2)*6);xx<x+ww/2;xx+=19)line(xx,yy,xx,yy+10,'#84918d',1)}
@@ -957,11 +958,11 @@ if(['garden','plaza','clinic','granary','bakery'].includes(b.type)){
 ctx.save();if(b.type!=='road'){ctx.translate(x,y);ctx.scale((window.sc1323CompactBuildings===false?1:.82)*(b.type==='house'?.58:['garden','plaza','clinic'].includes(b.type)?.48:.78),(window.sc1323CompactBuildings===false?1:.82)*(b.type==='house'?.58:['garden','plaza','clinic'].includes(b.type)?.48:.78));ctx.translate(-x,-y)}ctx.fillStyle='rgba(12,23,19,.38)';ctx.beginPath();ctx.ellipse(x+7,y+15,38,13,0,0,Math.PI*2);ctx.fill();if(b.type==='granary'||b.type==='clinic'){ctx.fillStyle='#4c382d';ctx.beginPath();ctx.ellipse(x+4,y+16,35,15,0,0,Math.PI*2);ctx.fill();ctx.fillStyle=b.type==='granary'?'#b99760':'#b9c0b0';ctx.fillRect(x-24,y-18,48,39);ctx.strokeStyle='#463b31';ctx.lineWidth=3;ctx.strokeRect(x-24,y-18,48,39);ctx.fillStyle=b.type==='granary'?'#70483a':'#637b78';ctx.beginPath();ctx.moveTo(x-30,y-18);ctx.lineTo(x,y-48);ctx.lineTo(x+30,y-18);ctx.closePath();ctx.fill();ctx.strokeStyle='#dfc49a';ctx.stroke();ctx.fillStyle='#49382b';ctx.fillRect(x-6,y+2,12,19);if(b.type==='granary'){ctx.fillStyle='#e9ca79';for(let i=0;i<4;i++){ctx.beginPath();ctx.ellipse(x-15+i*10,y-2,4,8,0,0,Math.PI*2);ctx.fill()}}else{ctx.fillStyle='#e6e2d0';ctx.fillRect(x-4,y-15,8,22);ctx.fillRect(x-11,y-8,22,8)}}else if(b.type==='road'){
  ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
  const neighbors=buildings.filter(r=>r!==b&&r.team===b.team&&alive(r)&&r.type==='road'&&dist(r,b)<=49);
- ctx.strokeStyle='#504c43';ctx.lineWidth=29;
+ ctx.strokeStyle='#504c43';ctx.lineWidth=(window.sc1324RefinedStreets===false?29:23);
  for(const r of neighbors){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(r.x,r.y);ctx.stroke()}
- ctx.strokeStyle='#8b8470';ctx.lineWidth=24;
+ ctx.strokeStyle='#8b8470';ctx.lineWidth=(window.sc1324RefinedStreets===false?24:19);
  for(const r of neighbors){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(r.x,r.y);ctx.stroke()}
- ctx.fillStyle='#8b8470';ctx.beginPath();ctx.arc(x,y,14,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#8b8470';ctx.beginPath();ctx.arc(x,y,window.sc1324RefinedStreets===false?14:11,0,Math.PI*2);ctx.fill();
  ctx.strokeStyle='#d6c7a7';ctx.lineWidth=2;ctx.setLineDash([5,10]);
  for(const r of neighbors){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(r.x,r.y);ctx.stroke()}
  ctx.setLineDash([]);
@@ -4582,7 +4583,7 @@ body input, body textarea, body [contenteditable="true"] {
 </style>
 <script id="sc1323VisualOptions">
 (()=>{
- window.sc1323CompactBuildings=true;
+ window.sc1323CompactBuildings=true;window.sc1324RefinedStreets=true;
  function install(){
   const advisor=document.getElementById('sc1310AdvisorPanel');
   const anchor=document.getElementById('sc1322Locator');
@@ -4592,11 +4593,12 @@ body input, body textarea, body [contenteditable="true"] {
   section.innerHTML='<h3>🏘️ Building appearance</h3><label><input type="checkbox" id="sc1323Compact" checked> Compact buildings (less crowding)</label><p>Reduces the visible size of ordinary buildings without changing their construction costs, positions or service coverage. Turn off to compare the original size.</p>';
   if(anchor)anchor.after(section);else host.append(section);
   section.querySelector('input').addEventListener('change',e=>{window.sc1323CompactBuildings=e.target.checked;});
+  const extra=document.createElement('label');extra.innerHTML='<input type="checkbox" id="sc1324Refined" checked> Refined roads and Royal Keep';section.append(extra);extra.querySelector('input').addEventListener('change',e=>{window.sc1324RefinedStreets=e.target.checked;});
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.23 · Compact buildings';
- document.title='Shattered Crowns — v13.23';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.23.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.24 · Streets & Keep proportions';
+ document.title='Shattered Crowns — v13.24';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.24.0';
 })();
 </script>
 </body></html>
