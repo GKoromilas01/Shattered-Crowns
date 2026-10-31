@@ -209,6 +209,7 @@ function assignEmployment(){
   byId.set(b.id,{count,need:roles[type],efficiency:count/roles[type]});
  }
  employment={jobs:sites.reduce((n,b)=>n+roles[b.type],0),filled,available,byId};
+ window.scEmploymentSnapshot={jobs:employment.jobs,filled:employment.filled,available:employment.available,sites:sites.map(b=>({id:b.id,type:b.type,filled:byId.get(b.id)?.count||0,need:roles[b.type]}))};
 }
 function describeBuilding(b){
  if(!b||!alive(b))return '🏠 Building inspector: click a town building to see its role, staffing and nearby services.';
@@ -3862,6 +3863,35 @@ document.title='Shattered Crowns — V12.89';
  const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V12.99 · Chronicle tabs';
  document.title='Shattered Crowns — V12.99';
  const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v12.99.0';
+})();
+</script>
+
+<style id="sc1300Styles">
+#sc1300Employment{margin:12px 0;padding:12px;border:1px solid #637f69;border-radius:7px;background:#203c33;color:#e6f0dc}
+#sc1300Employment h3{margin:0 0 10px;font-size:15px;color:#f4dc9e}
+#sc1300Employment .line{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid #426254}
+#sc1300Employment .warn{color:#ffca8c}#sc1300Employment p{font-size:12px;line-height:1.5;margin:8px 0 0}
+</style>
+<script id="sc1300EmploymentDiagnostics">
+(()=>{'use strict';
+ const panel=document.getElementById('sc199Economy');if(!panel)return;
+ const section=document.createElement('section');section.id='sc1300Employment';
+ section.innerHTML='<h3>👷 Active employment & production</h3><div class="line"><span>Available residents for work</span><b id="sc1300Pool">—</b></div><div class="line"><span>Jobs staffed / total</span><b id="sc1300Jobs">—</b></div><div class="line"><span>Unassigned workforce</span><b id="sc1300Idle">—</b></div><div id="sc1300Sites"></div><p id="sc1300Advice">Calculating staffing…</p><p>Staffing is allocated automatically from your residents, not the controllable worker units. Farm and fishery output depend on these assignments.</p>';
+ panel.prepend(section);
+ const byId=id=>document.getElementById(id);
+ function refresh(){if(panel.hidden)return;const snap=window.scEmploymentSnapshot;if(!snap)return;
+ const pop=Number(byId('population')?.textContent)||0;
+ byId('sc1300Pool').textContent=Math.max(0,pop-2);
+ byId('sc1300Jobs').textContent=snap.filled+' / '+snap.jobs;
+ byId('sc1300Idle').textContent=snap.available;
+ const grouped={};for(const site of snap.sites){const g=grouped[site.type]||(grouped[site.type]={filled:0,need:0,count:0});g.filled+=site.filled;g.need+=site.need;g.count++}
+ const target=byId('sc1300Sites');target.replaceChildren();
+ for(const [type,g] of Object.entries(grouped)){const row=document.createElement('div');row.className='line';const name=document.createElement('span');name.textContent=type[0].toUpperCase()+type.slice(1)+' ×'+g.count;const value=document.createElement('b');value.textContent=g.filled+' / '+g.need;value.className=g.filled<g.need?'warn':'';row.append(name,value);target.append(row)}
+ byId('sc1300Advice').textContent=snap.filled<snap.jobs?'Some buildings are understaffed. Add housing and maintain food and happiness to grow the population.':snap.jobs===0?'Build a farm or other workplace to create jobs.':'All existing workplaces are staffed.';
+ }
+ refresh();setInterval(refresh,1200);
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.00 · Active employment';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.00.0';document.title='Shattered Crowns — V13.00';
 })();
 </script>
 </body></html>
