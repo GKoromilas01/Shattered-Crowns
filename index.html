@@ -4233,4 +4233,33 @@ body input, body textarea, body [contenteditable="true"] {
  advisorPanel.append(tests);update();
 })();
 </script>
+
+<style id="sc1314ToolbarPolish">
+/* The Keep can be selected directly on the map. No duplicate top action. */
+#sc149Keep{display:none!important}
+</style>
+<script id="sc1314Release">
+(()=>{'use strict';
+ const keep=document.getElementById('sc149Keep');
+ if(keep)keep.remove();
+ const bar=document.getElementById('sc149Status');
+ if(bar)bar.setAttribute('aria-label','City Life, Chronicle, Help and Advisor');
+ const tests=document.getElementById('sc1312Tests');
+ if(tests){
+  const heading=tests.querySelector('h3');if(heading)heading.textContent='🧪 What to test — V13.14';
+  const items=[...tests.querySelectorAll('label span')];
+  if(items[0])items[0].textContent='Confirm the top toolbar has no Keep or + Worker button. Click the Royal Keep on the map and check its controls still open.';
+  if(items[1])items[1].textContent='Open City Life, Chronicle and Advisor one at a time; confirm only the selected panel remains open.';
+  if(items[2])items[2].textContent='Move a soldier, pause, wait 10 seconds, then resume. Confirm movement really stops and only one PAUSED message appears.';
+  if(items[3])items[3].textContent='Build a house or farm and confirm the settlement counts update.';
+  if(items[4])items[4].textContent='Open Chronicle → Economy; change food rationing and reserve policies and confirm the controls work.';
+  const checks=[...tests.querySelectorAll('input[type="checkbox"]')];checks.forEach(c=>c.checked=false);
+  const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='0 of '+checks.length+' checks completed';
+  try{sessionStorage.removeItem('sc1313TestsCompleted')}catch(e){}
+ }
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.14 · Cleaner toolbar';
+ document.title='Shattered Crowns — v13.14';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.14.0';
+})();
+</script>
 </body></html>
