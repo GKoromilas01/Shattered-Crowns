@@ -4533,4 +4533,44 @@ body input, body textarea, body [contenteditable="true"] {
  const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.21.0';
 })();
 </script>
+
+<style id="sc1322Style">
+#sc1322Locator{margin:10px 0;padding:10px;border:1px solid #668c82;border-radius:7px;background:#18352e;color:#e7eddc;font:12px/1.5 system-ui}
+#sc1322Locator h3{font-size:14px;margin:0 0 7px;color:#f2d99b}
+#sc1322Locator .sc1322Controls{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+#sc1322Locator select,#sc1322Locator button{font:12px system-ui;padding:6px;border-radius:5px;border:1px solid #b49a64;background:#5b482d;color:#ffebc1}
+#sc1322Locator select{max-width:160px}
+#sc1322Locator p{margin:7px 0 0}
+#sc1322Marker{position:absolute;z-index:42;pointer-events:none;width:74px;height:74px;border:3px solid #ffe39a;border-radius:50%;background:#f4d77b22;box-shadow:0 0 0 5px #ffe39a35,0 0 24px #000a;transform:translate(-50%,-50%)}
+#sc1322Marker[hidden]{display:none!important}
+</style>
+<script id="sc1322ServiceLocator">
+(()=>{'use strict';
+ const panel=document.getElementById('sc1310AdvisorPanel'),canvas=document.getElementById('field');
+ if(!panel||!canvas)return;
+ const viewport=canvas.parentElement;
+ const section=document.createElement('section');section.id='sc1322Locator';
+ section.innerHTML='<h3>🔎 Find a city building</h3><div class="sc1322Controls"><select aria-label="Building type" id="sc1322Type"><option value="house">Houses</option><option value="farm">Farms</option><option value="well">Wells</option><option value="granary">Granaries</option><option value="market">Markets</option><option value="clinic">Healers</option><option value="garden">Gardens</option><option value="plaza">Plazas</option><option value="bakery">Bakeries</option><option value="fishery">Fisheries</option><option value="lumberyard">Lumberyards</option></select><button type="button" id="sc1322Next">Locate next</button></div><p id="sc1322Status" aria-live="polite">Choose a building type to locate it on the map.</p>';
+ const homes=document.getElementById('sc1317Homes');if(homes)homes.insertAdjacentElement('afterend',section);else panel.append(section);
+ const type=section.querySelector('select'),status=section.querySelector('#sc1322Status');
+ const marker=document.createElement('div');marker.id='sc1322Marker';marker.hidden=true;viewport.append(marker);
+ let index=-1;
+ function locate(){
+  const list=Array.isArray(window.scHoverBuildings)?window.scHoverBuildings.filter(b=>b&&b.team===0&&b.type===type.value&&(b.hp===undefined||b.hp>0)):[];
+  if(!list.length){marker.hidden=true;status.textContent='No '+type.selectedOptions[0].text.toLowerCase()+' constructed yet.';return;}
+  index=(index+1)%list.length;const b=list[index];
+  const x=canvas.offsetLeft+b.x*canvas.clientWidth/canvas.width;
+  const y=canvas.offsetTop+b.y*canvas.clientHeight/canvas.height;
+  viewport.scrollLeft=Math.max(0,x-viewport.clientWidth/2);viewport.scrollTop=Math.max(0,y-viewport.clientHeight/2);
+  marker.style.left=x+'px';marker.style.top=y+'px';marker.hidden=false;
+  status.textContent=type.selectedOptions[0].text+' '+(index+1)+' of '+list.length+' highlighted on the battlefield.';
+ }
+ section.querySelector('button').addEventListener('click',locate);
+ type.addEventListener('change',()=>{index=-1;marker.hidden=true;status.textContent='Choose Locate next to find '+type.selectedOptions[0].text.toLowerCase()+'.';});
+ canvas.addEventListener('pointerdown',()=>{marker.hidden=true},{passive:true});
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.22 · Building locator';
+ document.title='Shattered Crowns — v13.22';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.22.0';
+})();
+</script>
 </body></html>
