@@ -4089,4 +4089,59 @@ body input, body textarea, body [contenteditable="true"] {
  const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.09.0';
 })();
 </script>
+<style id="sc1310AdvisorStyles">
+#sc149Status #sc149Train{display:none!important}
+#sc1310AdvisorBtn{position:static!important;padding:5px 9px!important;background:#5b4527!important;color:#ffe7ac!important;border:1px solid #b79b65!important;border-radius:5px!important;cursor:pointer;font:600 11px system-ui!important;white-space:nowrap}
+#sc1310AdvisorPanel{position:fixed;right:14px;top:72px;bottom:96px;width:min(385px,calc(100vw - 28px));max-height:calc(100vh - 168px);overflow:auto;z-index:32000;background:#142f2a;color:#e7ecdf;border:1px solid #b79b65;border-radius:8px;padding:16px;box-sizing:border-box;font:13px/1.5 system-ui;box-shadow:0 12px 30px #0008}
+#sc1310AdvisorPanel[hidden],#sc1310Welcome[hidden]{display:none!important}
+#sc1310AdvisorPanel h2{font-size:18px;color:#ffe0a1;margin:0 0 10px}
+#sc1310AdvisorPanel p{margin:8px 0}
+#sc1310AdvisorPanel .sc1310Task{padding:8px 0;border-top:1px solid #ffffff24}
+#sc1310AdvisorPanel .sc1310Task strong{color:#ffe0a1}
+#sc1310AdvisorPanel button,#sc1310Welcome button{background:#5b4527;color:#fff0c5;border:1px solid #b79b65;border-radius:4px;cursor:pointer;padding:5px 9px}
+#sc1310AdvisorClose{float:right}
+#sc1310Welcome{position:fixed;top:77px;right:14px;width:min(335px,calc(100vw - 28px));z-index:32010;background:#183a35;color:#f3ebd7;border:1px solid #d2a963;border-radius:8px;padding:13px;box-shadow:0 8px 25px #0009;font:13px/1.5 system-ui;box-sizing:border-box}
+#sc1310Welcome button{margin:8px 6px 0 0}
+@media(max-width:650px){#sc1310AdvisorBtn{font-size:10px!important;padding:4px!important}}
+</style>
+<script id="sc1310OptionalAdvisor">
+(()=>{'use strict';
+ const bar=document.getElementById('sc149Status');if(!bar)return;
+ const worker=document.getElementById('sc149Train');if(worker)worker.remove();
+ const button=document.createElement('button');button.id='sc1310AdvisorBtn';button.type='button';button.textContent='🧭 Advisor';button.title='Optional settlement guidance';bar.append(button);
+ const panel=document.createElement('section');panel.id='sc1310AdvisorPanel';panel.hidden=true;panel.setAttribute('role','dialog');panel.setAttribute('aria-label','Settlement Advisor');
+ panel.innerHTML='<button id="sc1310AdvisorClose" type="button" aria-label="Close advisor">✕</button><h2>🧭 Settlement Advisor</h2><p>Your advisor offers optional suggestions. You are always free to play your own way.</p><div id="sc1310AdvisorAdvice"></div><p style="font-size:11px;opacity:.8">Suggestions are based on your current settlement. No mandatory tasks or popups.</p>';
+ document.body.append(panel);
+ const advice=panel.querySelector('#sc1310AdvisorAdvice');
+ const readNumber=id=>{const el=document.getElementById(id);if(!el)return null;const match=(el.textContent||'').replace(/,/g,'').match(/-?\d+(?:\.\d+)?/);return match?Number(match[0]):null};
+ function refresh(){
+  const buildings=(window.scHoverBuildings||[]).filter(b=>b&&b.team===0&&(b.hp===undefined||b.hp>0));
+  const count=t=>buildings.filter(b=>String(b.type||'').toLowerCase()===t).length;
+  const food=readNumber('resFood');
+  const items=[];
+  if(count('house')<2)items.push(['🏠 Homes','Build two houses to support a growing settlement.']);
+  if(count('farm')+count('fishery')===0)items.push(['🌾 Food production','Build a farm, or a fishery where the terrain allows.']);
+  if(count('granary')===0)items.push(['🏚️ Storage','Consider a granary to strengthen your food supply chain.']);
+  if(count('well')===0)items.push(['💧 Services','Build a well to support nearby homes.']);
+  if(food!==null&&food<30)items.push(['⚠️ Food reserves','Food supplies are low. Check farms and rationing in Chronicle → Economy.']);
+  if(count('market')===0&&count('house')>=2)items.push(['🏪 Market','A market can help develop your town economy.']);
+  if(!items.length)items.push(['🌟 A growing settlement','Your basic settlement is established. Expand carefully and check Chronicle → Economy for workforce and food reserves.']);
+  advice.replaceChildren();for(const [heading,desc] of items.slice(0,5)){const box=document.createElement('div');box.className='sc1310Task';const strong=document.createElement('strong');strong.textContent=heading;const para=document.createElement('p');para.textContent=desc;box.append(strong,para);advice.append(box)}
+ }
+ function show(v){panel.hidden=!v;button.setAttribute('aria-expanded',String(v));if(v){document.getElementById('sc190ChroniclePanel')?.setAttribute('hidden','');document.getElementById('sc189HelpPanel')?.setAttribute('hidden','');refresh();}}
+ button.addEventListener('click',e=>{e.stopPropagation();show(panel.hidden)});
+ panel.querySelector('#sc1310AdvisorClose').addEventListener('click',()=>show(false));panel.addEventListener('click',e=>e.stopPropagation());
+ document.getElementById('sc190ChronicleBtn')?.addEventListener('click',()=>show(false));document.getElementById('sc189HelpButton')?.addEventListener('click',()=>show(false));
+ window.addEventListener('keydown',e=>{if(e.key==='Escape')show(false)});
+ document.addEventListener('sc:built',()=>{if(!panel.hidden)refresh()});
+ const welcome=document.createElement('div');welcome.id='sc1310Welcome';welcome.hidden=true;welcome.innerHTML='<strong>New to Shattered Crowns?</strong><div>The optional Advisor can suggest your first steps. You can open it anytime from the top bar.</div><button id="sc1310Try" type="button">Open Advisor</button><button id="sc1310Skip" type="button">Not now</button>';document.body.append(welcome);
+ let seen=true;try{seen=localStorage.getItem('sc1310AdvisorIntroSeen')==='yes'}catch(e){}
+ if(!seen)welcome.hidden=false;
+ function dismiss(){welcome.hidden=true;try{localStorage.setItem('sc1310AdvisorIntroSeen','yes')}catch(e){}}
+ welcome.querySelector('#sc1310Try').addEventListener('click',()=>{dismiss();show(true)});
+ welcome.querySelector('#sc1310Skip').addEventListener('click',dismiss);
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.10 · Optional Advisor';
+ document.title='Shattered Crowns — v13.10';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.10.0';
+})();
+</script>
 </body></html>
