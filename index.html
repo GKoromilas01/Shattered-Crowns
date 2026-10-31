@@ -4140,8 +4140,46 @@ body input, body textarea, body [contenteditable="true"] {
  function dismiss(){welcome.hidden=true;try{localStorage.setItem('sc1310AdvisorIntroSeen','yes')}catch(e){}}
  welcome.querySelector('#sc1310Try').addEventListener('click',()=>{dismiss();show(true)});
  welcome.querySelector('#sc1310Skip').addEventListener('click',dismiss);
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.10 · Optional Advisor';
- document.title='Shattered Crowns — v13.10';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.10.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.11 · Advisor & Pause';
+ document.title='Shattered Crowns — v13.11';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.11.0';
+})();
+</script>
+
+<style id="sc1311Style">
+#sc1311PauseOverlay{position:fixed;inset:0;z-index:31000;display:grid;place-items:center;pointer-events:none;background:rgba(3,14,17,.34)}
+#sc1311PauseOverlay[hidden]{display:none!important}
+#sc1311PauseOverlay .sc1311PauseCard{background:#102b29ed;border:2px solid #d3b67b;border-radius:12px;box-shadow:0 12px 45px #0009;padding:22px 48px;color:#ffe5ae;font:bold clamp(30px,5vw,56px) system-ui;letter-spacing:.12em;text-align:center;text-shadow:0 3px 8px #000}
+#sc1311PauseOverlay small{display:block;font:13px system-ui;letter-spacing:0;margin-top:8px;color:#f0e4c7}
+#sc1311AdvisorSummary{margin:8px 0;padding:9px;border:1px solid #819b78;background:#1b4036;border-radius:6px;color:#f4e5b8;font-size:12px}
+</style>
+<script id="sc1311AdvisorAndPause">
+(()=>{'use strict';
+ const pauseTarget=document.querySelector('#quickDock [data-action="pause"]');
+ const overlay=document.createElement('div');overlay.id='sc1311PauseOverlay';overlay.hidden=true;overlay.setAttribute('role','status');overlay.setAttribute('aria-live','polite');overlay.innerHTML='<div class="sc1311PauseCard">PAUSED<small>Press Resume to continue</small></div>';document.body.append(overlay);
+ function sync(){const paused=/resume|unpause|continue/i.test(document.getElementById('pause')?.textContent||'');overlay.hidden=!paused;const floating=document.getElementById('sc154Pause');if(floating){floating.textContent=paused?'▶ Resume':'⏸ Pause';floating.setAttribute('aria-pressed',String(paused));}}
+ pauseTarget?.addEventListener('click',()=>setTimeout(sync,0));
+ const floatingPause=document.getElementById('sc154Pause');if(floatingPause)floatingPause.onclick=()=>{document.getElementById('pause')?.click();setTimeout(sync,0)};
+ setInterval(sync,400);sync();
+ const panel=document.getElementById('sc1310AdvisorPanel');const advice=document.getElementById('sc1310AdvisorAdvice');if(!panel||!advice)return;
+ const summary=document.createElement('div');summary.id='sc1311AdvisorSummary';panel.insertBefore(summary,advice);
+ const get=id=>{const n=Number((document.getElementById(id)?.textContent||'').replace(/,/g,'').match(/-?\d+(?:\.\d+)?/)?.[0]);return Number.isFinite(n)?n:0};
+ function refresh(){if(panel.hidden)return;
+  const buildings=(window.scHoverBuildings||[]).filter(b=>b&&b.team===0&&(b.hp===undefined||b.hp>0));
+  const count=t=>buildings.filter(b=>b.type===t).length;
+  const food=get('resFood'),pop=get('population'),happiness=get('happiness');
+  const perCycle=Math.max(1,Math.ceil(pop*.45));const cycles=Math.floor(food/perCycle);
+  const policy=document.getElementById('sc1303Mode')?.value||'normal';
+  const exportEnabled=document.getElementById('sc1307BreadExport')?.checked!==false;
+  let state='Stable';let tip='Expand housing and services while maintaining food production.';
+  if(food<perCycle*2){state='Critical food reserve';tip='Build or staff farms, select Conserve or Automatic rationing, and consider disabling bakery exports.';}
+  else if(food<perCycle*5){state='Food reserve running low';tip='Increase food production and monitor consumption in Chronicle → Economy.';}
+  else if(happiness<40){state='Low happiness';tip='Review food rationing, wells, markets, and neighborhood services.';}
+  else if(count('farm')+count('fishery')===0){state='No food production';tip='Build a farm or fishery before reserves run out.';}
+  summary.textContent=`City outlook: ${state} · Food ${food} (${cycles} cycles at baseline consumption) · Population ${pop} · Happiness ${happiness}% · Rations: ${policy} · Bakery exports: ${exportEnabled?'on':'off'}. ${tip}`;
+ }
+ document.getElementById('sc1310AdvisorBtn')?.addEventListener('click',()=>setTimeout(refresh,0));
+ document.addEventListener('sc:built',()=>setTimeout(refresh,0));
+ setInterval(refresh,2500);
 })();
 </script>
 </body></html>
