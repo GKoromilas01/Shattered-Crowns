@@ -750,6 +750,27 @@ ctx.fillStyle='#356574';ctx.fillRect(473,0,56,H);
 const water=ctx.createLinearGradient(473,0,529,0);water.addColorStop(0,'#376c76');water.addColorStop(.5,'#5c8d98');water.addColorStop(1,'#376875');ctx.fillStyle=water;ctx.fillRect(477,0,48,H);
 for(let y=0;y<H;y+=29){let drift=Math.sin(visualTime*1.8+y*.07)*5;line(482+drift,y+9,501+drift,y+13,'rgba(196,224,210,.46)',1.5);line(503-drift,y+22,521-drift,y+18,'rgba(196,224,210,.35)',1.5)}
 ctx.fillStyle='#816b48';ctx.fillRect(460,294,80,42);for(let x=466;x<535;x+=13){line(x,294,x,336,'#a89465',2)}line(460,294,540,294,'#ccb786',4);line(460,336,540,336,'#ccb786',4);
+// V13.31: riverbank reeds, stones and timber bridge fittings. Purely visual.
+ctx.save();
+for(let i=0;i<35;i++){
+ const y=(i*79+17)%H;if(y>284&&y<349)continue;
+ const left=i%2===0;const baseX=left?462:539;
+ const bend=Math.sin(i*2.4)*5;
+ ctx.strokeStyle=i%3===0?'#8da16b':'#6c8c57';ctx.lineWidth=1.4;
+ for(let j=0;j<3;j++){
+  const x=baseX+(left?-1:1)*(j*2.7+Math.sin(i+j)*2);
+  const h=8+(i+j*7)%11;
+  ctx.beginPath();ctx.moveTo(x,y+3);ctx.quadraticCurveTo(x+bend,y-h*.55,x+bend*.7,y-h);ctx.stroke();
+ }
+ if(i%3===0){ctx.fillStyle='#9c9880';ctx.beginPath();ctx.ellipse(baseX+(left?-6:6),y+5,4.3,2.8,.2,0,Math.PI*2);ctx.fill()}
+}
+// Plank grain and small wooden pegs give the bridge a crafted appearance.
+for(let x=469;x<535;x+=13){
+ ctx.strokeStyle='rgba(48,35,22,.43)';ctx.lineWidth=.9;
+ ctx.beginPath();ctx.moveTo(x+3,300);ctx.lineTo(x+3,330);ctx.stroke();
+ ctx.fillStyle='#d4bd86';ctx.beginPath();ctx.arc(x+1,299,1.5,0,Math.PI*2);ctx.arc(x+1,332,1.5,0,Math.PI*2);ctx.fill();
+}
+ctx.restore();
 // Tiny animated townspeople are a visual preview of the future road-and-services simulation.
 // Employment and resource production are still handled by the existing economic model.
 const homesForWalkers=buildings.filter(b=>b.team===0&&alive(b)&&b.type==='house');
@@ -3976,9 +3997,9 @@ document.title='Shattered Crowns — V12.89';
  tabs.addEventListener('click',e=>{const b=e.target.closest('button[data-tab]');if(b)choose(b.dataset.tab)});
  document.getElementById('sc190ChronicleBtn')?.addEventListener('click',()=>{if(!panel.hidden)choose('city')});
  choose('city');
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.30 · Meadow landscape details';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.31 · Riverbank and bridge details';
  document.title='Shattered Crowns — V13.02';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.30.0';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.31.0';
 })();
 </script>
 
@@ -4006,8 +4027,8 @@ document.title='Shattered Crowns — V12.89';
  byId('sc1300Advice').textContent=snap.filled<snap.jobs?'Some buildings are understaffed. Add housing and maintain food and happiness to grow the population.':snap.jobs===0?'Build a farm or other workplace to create jobs.':'All existing workplaces are staffed.';
  }
  refresh();setInterval(refresh,1200);
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.30 · Meadow landscape details';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.30.0';document.title='Shattered Crowns — V13.00';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.31 · Riverbank and bridge details';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.31.0';document.title='Shattered Crowns — V13.00';
 })();
 </script>
 
@@ -4058,8 +4079,8 @@ body input, body textarea, body [contenteditable="true"] {
  const select=root.querySelector('select'),effect=root.querySelector('#sc1303Effect');
  function apply(){const v=select.value;window.scRationFactor=v==='conserve'?.75:v==='generous'?1.25:1;window.scRationMood=v==='conserve'?-2:v==='generous'?1.5:0;effect.textContent=v==='conserve'?'Conservation: 25% less food used, happiness -2 per cycle.':v==='generous'?'Generous: 25% more food used, happiness +1.5 per cycle.':'Normal: standard food use, no happiness adjustment.';}
  select.addEventListener('change',apply);apply();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.30 · Meadow landscape details';
- document.title='Shattered Crowns — v13.30';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.30.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.31 · Riverbank and bridge details';
+ document.title='Shattered Crowns — v13.31';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.31.0';
 })();
 </script>
 
@@ -4084,9 +4105,9 @@ body input, body textarea, body [contenteditable="true"] {
  tabs.addEventListener('click',e=>{if(e.target.closest('[data-tab="economy"]')){panel.scrollTop=0;} });
  select.addEventListener('pointerdown',e=>e.stopPropagation());
  select.addEventListener('click',e=>e.stopPropagation());
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.30 · Meadow landscape details';
- document.title='Shattered Crowns — v13.30';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.30.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.31 · Riverbank and bridge details';
+ document.title='Shattered Crowns — v13.31';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.31.0';
 })();
 </script>
 
@@ -4122,9 +4143,9 @@ body input, body textarea, body [contenteditable="true"] {
  // Re-evaluate before each existing five-second economy cycle.
  setInterval(update,500);
  update();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.30 · Meadow landscape details';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.30.0';
- document.title='Shattered Crowns — v13.30';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.31 · Riverbank and bridge details';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.31.0';
+ document.title='Shattered Crowns — v13.31';
 })();
 </script>
 
@@ -4150,9 +4171,9 @@ body input, body textarea, body [contenteditable="true"] {
  input.addEventListener('pointerdown',e=>e.stopPropagation());
  input.addEventListener('click',e=>e.stopPropagation());
  update();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.30 · Meadow landscape details';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.30.0';
- document.title='Shattered Crowns — v13.30';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.31 · Riverbank and bridge details';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.31.0';
+ document.title='Shattered Crowns — v13.31';
 })();
 </script>
 
@@ -4172,8 +4193,8 @@ body input, body textarea, body [contenteditable="true"] {
  selector.addEventListener('change',update);
  for(const event of ['pointerdown','click'])selector.addEventListener(event,e=>e.stopPropagation());
  update();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.30 · Meadow landscape details';
- document.title='Shattered Crowns — v13.30';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.30.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.31 · Riverbank and bridge details';
+ document.title='Shattered Crowns — v13.31';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.31.0';
 })();
 </script>
 
@@ -4200,9 +4221,9 @@ body input, body textarea, body [contenteditable="true"] {
  const guide=document.getElementById('sc189HelpPanel');
  if(guide){const heading=[...guide.querySelectorAll('h3')].find(x=>x.textContent.includes('Camera and controls'));
  if(heading){const next=heading.nextElementSibling; if(next&&next.tagName==='UL')next.remove();heading.remove();}}
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.30 · Meadow landscape details';
- document.title='Shattered Crowns — v13.30';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.30.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.31 · Riverbank and bridge details';
+ document.title='Shattered Crowns — v13.31';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.31.0';
 })();
 </script>
 <style id="sc1310AdvisorStyles">
@@ -4256,8 +4277,8 @@ body input, body textarea, body [contenteditable="true"] {
  function dismiss(){welcome.hidden=true;try{localStorage.setItem('sc1310AdvisorIntroSeen','yes')}catch(e){}}
  welcome.querySelector('#sc1310Try').addEventListener('click',()=>{dismiss();show(true)});
  welcome.querySelector('#sc1310Skip').addEventListener('click',dismiss);
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.30 · Meadow landscape details';
- document.title='Shattered Crowns — v13.30';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.30.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.31 · Riverbank and bridge details';
+ document.title='Shattered Crowns — v13.31';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.31.0';
 })();
 </script>
 
@@ -4373,9 +4394,9 @@ body input, body textarea, body [contenteditable="true"] {
   const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='0 of '+checks.length+' checks completed';
   try{sessionStorage.removeItem('sc1313TestsCompleted')}catch(e){}
  }
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.30 · Meadow landscape details';
- document.title='Shattered Crowns — v13.30';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.30.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.31 · Riverbank and bridge details';
+ document.title='Shattered Crowns — v13.31';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.31.0';
 })();
 </script>
 
@@ -4430,9 +4451,9 @@ body input, body textarea, body [contenteditable="true"] {
   const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='0 of '+tasks.length+' new checks completed';
   try{sessionStorage.removeItem('sc1313TestsCompleted')}catch(e){}
  }
- const badge=document.getElementById('sc179Version');if(badge){badge.textContent='V13.30 · Meadow landscape details';badge.style.bottom='139px'}
- document.title='Shattered Crowns — v13.30';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.30.0';
+ const badge=document.getElementById('sc179Version');if(badge){badge.textContent='V13.31 · Riverbank and bridge details';badge.style.bottom='139px'}
+ document.title='Shattered Crowns — v13.31';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.31.0';
 })();
 </script>
 
@@ -4480,8 +4501,8 @@ body input, body textarea, body [contenteditable="true"] {
   const progress=oldTests.querySelector('.sc1312Progress');if(progress)progress.textContent='One new feature to test';
   try{sessionStorage.removeItem('sc1313TestsCompleted')}catch(e){}
  }
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.30 · Meadow landscape details';
- document.title='Shattered Crowns — v13.30';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.30.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.31 · Riverbank and bridge details';
+ document.title='Shattered Crowns — v13.31';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.31.0';
 })();
 </script>
 
@@ -4535,8 +4556,8 @@ body input, body textarea, body [contenteditable="true"] {
   const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='One new feature to test';
   try{sessionStorage.removeItem('sc1313TestsCompleted')}catch(e){}
  }
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.30 · Meadow landscape details';
- document.title='Shattered Crowns — v13.30';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.30.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.31 · Riverbank and bridge details';
+ document.title='Shattered Crowns — v13.31';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.31.0';
 })();
 </script>
 
@@ -4581,8 +4602,8 @@ body input, body textarea, body [contenteditable="true"] {
   const labels=[...tests.querySelectorAll('label')];labels.forEach((label,i)=>{label.hidden=i!==0;if(i===0){const span=label.querySelector('span');if(span)span.textContent='Select Road (or House), then right-click the battlefield without building. Confirm the tool cancels; ordinary right-click unit orders must still work when no building is selected.';const cb=label.querySelector('input');if(cb)cb.checked=false;}});
   const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='One new feature to test';
  }
- const badge=document.getElementById('sc179Version');if(badge){badge.textContent='V13.30 · Meadow landscape details';badge.style.removeProperty('bottom');badge.style.removeProperty('left');}
- document.title='Shattered Crowns — v13.30';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.30.0';
+ const badge=document.getElementById('sc179Version');if(badge){badge.textContent='V13.31 · Riverbank and bridge details';badge.style.removeProperty('bottom');badge.style.removeProperty('left');}
+ document.title='Shattered Crowns — v13.31';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.31.0';
 })();
 </script>
 
@@ -4624,9 +4645,9 @@ body input, body textarea, body [contenteditable="true"] {
  document.getElementById('sc1310AdvisorBtn')?.addEventListener('click',()=>setTimeout(update,0));
  document.addEventListener('sc:built',update);
  update();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.30 · Meadow landscape details';
- document.title='Shattered Crowns — v13.30';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.30.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.31 · Riverbank and bridge details';
+ document.title='Shattered Crowns — v13.31';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.31.0';
 })();
 </script>
 
@@ -4664,9 +4685,9 @@ body input, body textarea, body [contenteditable="true"] {
  section.querySelector('button').addEventListener('click',locate);
  type.addEventListener('change',()=>{index=-1;marker.hidden=true;status.textContent='Choose Locate next to find '+type.selectedOptions[0].text.toLowerCase()+'.';});
  canvas.addEventListener('pointerdown',()=>{marker.hidden=true},{passive:true});
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.30 · Meadow landscape details';
- document.title='Shattered Crowns — v13.30';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.30.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.31 · Riverbank and bridge details';
+ document.title='Shattered Crowns — v13.31';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.31.0';
 })();
 </script>
 
@@ -4691,9 +4712,9 @@ body input, body textarea, body [contenteditable="true"] {
   const extra=document.createElement('label');extra.innerHTML='<input type="checkbox" id="sc1324Refined" checked> Refined roads and Royal Keep';section.append(extra);extra.querySelector('input').addEventListener('change',e=>{window.sc1324RefinedStreets=e.target.checked;});
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.30 · Meadow landscape details';
- document.title='Shattered Crowns — v13.30';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.30.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.31 · Riverbank and bridge details';
+ document.title='Shattered Crowns — v13.31';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.31.0';
 })();
 </script>
 
@@ -4712,9 +4733,9 @@ body input, body textarea, body [contenteditable="true"] {
   label.querySelector('input').addEventListener('change',e=>{window.sc1325Cobblestones=e.target.checked;});
  }}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.30 · Meadow landscape details';
- document.title='Shattered Crowns — v13.30';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.30.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.31 · Riverbank and bridge details';
+ document.title='Shattered Crowns — v13.31';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.31.0';
 })();
 </script>
 <style id="sc1326Style">#sc1326ArchitectureRow{margin-top:7px}</style>
@@ -4725,9 +4746,9 @@ body input, body textarea, body [contenteditable="true"] {
  const row=document.createElement('label');row.id='sc1326ArchitectureRow';row.innerHTML='<input id="sc1326Architecture" type="checkbox" checked> Roof and facade details';
  host.append(row);row.querySelector('input').addEventListener('change',e=>{window.sc1326Architecture=e.target.checked;});}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.30 · Meadow landscape details';
- document.title='Shattered Crowns — v13.30';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.30.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.31 · Riverbank and bridge details';
+ document.title='Shattered Crowns — v13.31';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.31.0';
 })();
 </script>
 
@@ -4738,9 +4759,9 @@ body input, body textarea, body [contenteditable="true"] {
  const label=document.createElement('label');label.innerHTML='<input id="sc1327Civic" type="checkbox" checked> Village well and market details';
  host.append(label);label.querySelector('input').addEventListener('change',e=>{window.sc1327CivicDetails=e.target.checked;});}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.30 · Meadow landscape details';
- document.title='Shattered Crowns — v13.30';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.30.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.31 · Riverbank and bridge details';
+ document.title='Shattered Crowns — v13.31';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.31.0';
 })();
 </script>
 
@@ -4756,9 +4777,9 @@ body input, body textarea, body [contenteditable="true"] {
   label.querySelector('input').addEventListener('change',e=>{window.sc1329FarmDetails=e.target.checked});
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.30 · Meadow landscape details';
- document.title='Shattered Crowns — v13.30';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.30.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.31 · Riverbank and bridge details';
+ document.title='Shattered Crowns — v13.31';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.31.0';
 })();
 </script>
 </body></html>
