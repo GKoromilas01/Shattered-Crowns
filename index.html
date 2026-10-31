@@ -656,11 +656,23 @@ for(const bakery of bakeries){
 }
 const sales=Math.min(Math.floor(tradeGoods),activeMarkets.length);
 if(sales>0){tradeGoods-=sales;goodsSold+=sales;gold+=sales*4;}
-let consumption=Math.ceil(population*.45*(window.scRationFactor||1));if(food>=consumption){food-=consumption;happiness=Math.min(100,happiness+(window.scRationMood||0)+roadServiceBonus(owned)+neighborhoodBeautyBonus(owned)+(owned.filter(b=>b.type==='market'&&(employment.byId.get(b.id)?.count||0)>0).length?1:0.1)+wellCoverage*.8+workingBakeries*.4+clinics.reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0)*homes.filter(h=>dist(h,b)<190).length*.55,0)-(homes.length&&!wellCoverage?.45:0));if(population<cap&&happiness>=45)population+=Math.min(2,cap-population)}else{food=0;happiness=Math.max(0,happiness-8);if(population>4)population--;}let marketEfficiency=owned.filter(b=>b.type==='market').reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0),0);let connectedEfficiency=owned.filter(b=>b.type==='market'&&marketHasTradeAccess(b)).reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0),0);// V10.3: Nearby granaries supply staffed, road-connected markets.
+// V13.16: Neighborhood service synergy is earned only by houses with nearby civic services.
+// Existing well, healer, market and beauty bonuses remain untouched.
+const civicHomes=homes.filter(h=>alive(h));
+const civicCoverage=civicHomes.map(h=>{
+ const nearby=t=>owned.some(b=>b.type===t&&alive(b)&&dist(b,h)<175);
+ const water=nearby('well'),health=nearby('clinic'),beauty=nearby('garden')||nearby('plaza'),trade=nearby('market');
+ return {water,health,beauty,trade,complete:[water,health,beauty,trade].filter(Boolean).length};
+});
+const civicServed=civicCoverage.filter(c=>c.complete>=3).length;
+const civicServiceRate=civicHomes.length?civicServed/civicHomes.length:0;
+const civicMoodBonus=Math.min(1.5,civicServiceRate*1.5);
+window.sc1316CivicSnapshot={homes:civicHomes.length,served:civicServed,rate:civicServiceRate,moodBonus:civicMoodBonus};
+let consumption=Math.ceil(population*.45*(window.scRationFactor||1));if(food>=consumption){food-=consumption;happiness=Math.min(100,happiness+(window.scRationMood||0)+civicMoodBonus+roadServiceBonus(owned)+neighborhoodBeautyBonus(owned)+(owned.filter(b=>b.type==='market'&&(employment.byId.get(b.id)?.count||0)>0).length?1:0.1)+wellCoverage*.8+workingBakeries*.4+clinics.reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0)*homes.filter(h=>dist(h,b)<190).length*.55,0)-(homes.length&&!wellCoverage?.45:0));if(population<cap&&happiness>=45)population+=Math.min(2,cap-population)}else{food=0;happiness=Math.max(0,happiness-8);if(population>4)population--;}let marketEfficiency=owned.filter(b=>b.type==='market').reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0),0);let connectedEfficiency=owned.filter(b=>b.type==='market'&&marketHasTradeAccess(b)).reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0),0);// V10.3: Nearby granaries supply staffed, road-connected markets.
 // Each supplied market gives a modest trade bonus; no benefit from empty staffing.
 let suppliedMarkets=owned.filter(m=>m.type==='market'&&marketHasTradeAccess(m)&&(employment.byId.get(m.id)?.count||0)>0&&granaries.some(g=>alive(g)&&dist(g,m)<170));
 let supplyTradeBonus=suppliedMarkets.reduce((n,m)=>n+(employment.byId.get(m.id)?.efficiency||0)*.12,0);
-let taxMultiplier=1+marketEfficiency*.35+connectedEfficiency*.2+supplyTradeBonus;gold+=Math.floor(population*.7*(happiness/100)*taxMultiplier+owned.filter(b=>b.type==='house').reduce((n,h)=>n+(houseTier(h).level-1)*.65+homeBeauty(h).score*.025,0));cityProsperity+=population*(happiness/100)*taxMultiplier;assignEmployment();updateUI()}aiTimer+=dt;resourceTimer+=dt;aiDecision+=dt;aiAttackTimer+=dt;
+let taxMultiplier=1+marketEfficiency*.35+connectedEfficiency*.2+supplyTradeBonus;gold+=Math.floor(population*.7*(happiness/100)*taxMultiplier+owned.filter(b=>b.type==='house').reduce((n,h)=>n+(houseTier(h).level-1)*.65+homeBeauty(h).score*.025,0));cityProsperity+=population*(happiness/100)*taxMultiplier*(1+civicServiceRate*.08);assignEmployment();updateUI()}aiTimer+=dt;resourceTimer+=dt;aiDecision+=dt;aiAttackTimer+=dt;
 // Depleted sites recover slowly, preserving resource scarcity without permanent economic deadlock.
 for(const n of nodes){if(n.amount<=0){n.renew=(n.renew||0)+dt;if(n.renew>=45){n.amount=n.type==='tree'?240:n.type==='gold'?300:260;n.renew=0;}}}
 if(trainQueue.length){trainTimer-=dt;if(trainTimer<=0){let k=buildings.find(b=>b.team===0&&b.type==='keep');if(k)addUnit(0,trainQueue.shift(),k.x+60+Math.random()*25,k.y-40+Math.random()*80);else trainQueue=[];trainTimer=6;}}
@@ -4283,6 +4295,7 @@ body input, body textarea, body [contenteditable="true"] {
   block.innerHTML='<h3 style="margin:0 0 5px;color:#ffe0a0">🏘 City services & prosperity</h3><div id="sc1315ServicesText">Assessing your settlement…</div>';
   const tests=document.getElementById('sc1312Tests');if(tests)advisor.insertBefore(block,tests);else advisor.append(block);
   const out=block.querySelector('#sc1315ServicesText');
+  const civic=document.createElement('div');civic.id='sc1316Coverage';civic.style.cssText='margin-top:7px;color:#d4f4c5';block.append(civic);
   function refresh(){if(advisor.hidden)return;
    const buildings=(window.scHoverBuildings||[]).filter(b=>b&&b.team===0&&(b.hp===undefined||b.hp>0));
    const count=t=>buildings.filter(b=>b.type===t).length;
@@ -4297,27 +4310,25 @@ body input, body textarea, body [contenteditable="true"] {
    if(!markets)needs.push('Build a market to develop trade and tax income');
    if(food<Math.max(10,pop*2))needs.unshift('Food reserves are low: prioritize food production');
    const score=[houses>0,wells>0,healers>0,gardens+plazas>0,markets>0].filter(Boolean).length;
+   const c=window.sc1316CivicSnapshot; civic.textContent=c?`Neighborhood service coverage: ${c.served}/${c.homes} houses near at least 3 services · Happiness bonus +${c.moodBonus.toFixed(2)} per cycle · Prosperity bonus up to 8%.`:'Neighborhood coverage will update after the next economy cycle.';
    out.textContent=`Civic services established: ${score}/5 · Population ${pop} · Happiness ${happy}% · Wells ${wells} · Healers ${healers} · Gardens/plazas ${gardens+plazas} · Markets ${markets}. ${needs.length?'Next priority: '+needs[0]+'.':'All five basic service categories are represented. Improve coverage and expand carefully.'}`;
   }
   document.getElementById('sc1310AdvisorBtn')?.addEventListener('click',()=>setTimeout(refresh,0));
   document.addEventListener('sc:built',()=>setTimeout(refresh,0));setInterval(refresh,3000);
  }
  const tests=document.getElementById('sc1312Tests');if(tests){
-  const h=tests.querySelector('h3');if(h)h.textContent='🧪 What to test — V13.15';
+  const h=tests.querySelector('h3');if(h)h.textContent='🧪 What to test — V13.16';
   const tasks=[
-   'Confirm the top toolbar has no Keep button; select the Royal Keep on the map.',
-   'Confirm the version badge no longer overlaps selection or construction messages.',
-   'Open Advisor: check City services & prosperity, then build a well or garden and confirm the count updates.',
-   'Open Chronicle → Economy; check food policies remain interactive.',
-   'Move a unit, pause, and resume; confirm the simulation stops and restarts.'
+   'Build a house near at least three different services (well, healer, garden/plaza or market), then check Advisor → Neighborhood service coverage.',
+   'Build another house away from services and confirm coverage decreases.'
   ];
-  const labels=[...tests.querySelectorAll('label')];labels.forEach((label,i)=>{const span=label.querySelector('span');if(span&&tasks[i])span.textContent=tasks[i];const box=label.querySelector('input');if(box)box.checked=false});
-  const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='0 of '+labels.length+' checks completed';
+  const labels=[...tests.querySelectorAll('label')];labels.forEach((label,i)=>{label.hidden=i>=tasks.length;const span=label.querySelector('span');if(span&&tasks[i])span.textContent=tasks[i];const box=label.querySelector('input');if(box)box.checked=false});
+  const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='0 of '+tasks.length+' new checks completed';
   try{sessionStorage.removeItem('sc1313TestsCompleted')}catch(e){}
  }
- const badge=document.getElementById('sc179Version');if(badge){badge.textContent='V13.15 · City services';badge.style.bottom='139px'}
- document.title='Shattered Crowns — v13.15';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.15.0';
+ const badge=document.getElementById('sc179Version');if(badge){badge.textContent='V13.16 · Service coverage';badge.style.bottom='139px'}
+ document.title='Shattered Crowns — v13.16';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.16.0';
 })();
 </script>
 </body></html>
