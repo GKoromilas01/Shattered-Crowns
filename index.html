@@ -967,6 +967,13 @@ if(['garden','plaza','clinic','granary','bakery'].includes(b.type)){
   ctx.fillStyle='#c3b7a0';ctx.fillRect(x+10,y-21,7,13);
   ctx.fillStyle='#6a4a36';ctx.fillRect(x-20,y+11,17,6);
   for(let k=0;k<3;k++){ctx.fillStyle='#eac27a';ctx.beginPath();ctx.ellipse(x-17+k*6,y+9,3.3,2.2,0,0,Math.PI*2);ctx.fill()}
+  // V13.36: bread baskets, brick oven mouth and tiled awning.
+  if(window.sc1336CivicCraft!==false){ctx.save();
+   ctx.fillStyle='#a67a4e';ctx.fillRect(x+9,y+7,13,8);
+   ctx.strokeStyle='#ead4a0';ctx.lineWidth=1;ctx.strokeRect(x+9,y+7,13,8);
+   for(let k=0;k<3;k++){ctx.fillStyle='#e7bd74';ctx.beginPath();ctx.ellipse(x+11+k*4,y+7,2.8,3,0,0,Math.PI*2);ctx.fill()}
+   ctx.fillStyle='#4b3329';ctx.beginPath();ctx.arc(x+1,y+6,4.5,Math.PI,0);ctx.fill();
+   ctx.strokeStyle='#e5c397';ctx.beginPath();ctx.moveTo(x-19,y-7);ctx.lineTo(x+20,y-7);ctx.stroke();ctx.restore()}
   const active=(employment.byId.get(b.id)?.efficiency||0)>=.5&&buildings.some(g=>g.team===0&&alive(g)&&g.type==='granary'&&dist(g,b)<190)&&food>=3;
   if(active){for(let k=0;k<3;k++){let rise=(visualTime*10+k*13)%34;ctx.fillStyle='rgba(226,222,202,'+(0.35*(1-rise/34))+')';ctx.beginPath();ctx.arc(x+13+Math.sin(visualTime*2+k)*3,y-25-rise,3+rise*.11,0,Math.PI*2);ctx.fill()}}
  }else if(b.type==='granary'){
@@ -988,6 +995,12 @@ if(['garden','plaza','clinic','granary','bakery'].includes(b.type)){
   ctx.fillStyle='#e9d5a7';ctx.fillRect(x-10,y-2,7,8);ctx.fillRect(x+4,y-2,7,8);
   ctx.fillStyle='#754e43';ctx.fillRect(x-3,y+3,6,11);
   ctx.fillStyle='#e7e2d0';ctx.fillRect(x-2,y-14,4,10);ctx.fillRect(x-5,y-11,10,4);
+  // V13.36: herb planters and an awning identify the healer's cottage.
+  if(window.sc1336CivicCraft!==false){ctx.save();
+   ctx.fillStyle='#8d6345';ctx.fillRect(x-17,y+9,9,5);ctx.fillRect(x+9,y+9,9,5);
+   ctx.fillStyle='#6b9d69';for(let k=0;k<4;k++){ctx.beginPath();ctx.arc(x-15+k*2,y+7-(k%2)*3,2.5,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(x+11+k*2,y+7-(k%2)*3,2.5,0,Math.PI*2);ctx.fill()}
+   ctx.strokeStyle='#dfd5b4';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x-17,y-7);ctx.lineTo(x+17,y-7);ctx.stroke();ctx.restore()}
+
  }
  if(showLabels){ctx.font='bold 11px system-ui';ctx.textAlign='center';let name=b.type.toUpperCase();let w=ctx.measureText(name).width;ctx.fillStyle='rgba(15,29,32,.9)';ctx.fillRect(x-w/2-6,y+18,w+12,17);ctx.fillStyle='#fff0bb';ctx.fillText(name,x,y+30)}
  ctx.restore();
@@ -4036,9 +4049,9 @@ document.title='Shattered Crowns — V12.89';
  tabs.addEventListener('click',e=>{const b=e.target.closest('button[data-tab]');if(b)choose(b.dataset.tab)});
  document.getElementById('sc190ChronicleBtn')?.addEventListener('click',()=>{if(!panel.hidden)choose('city')});
  choose('city');
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
  document.title='Shattered Crowns — V13.02';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
 })();
 </script>
 
@@ -4066,8 +4079,8 @@ document.title='Shattered Crowns — V12.89';
  byId('sc1300Advice').textContent=snap.filled<snap.jobs?'Some buildings are understaffed. Add housing and maintain food and happiness to grow the population.':snap.jobs===0?'Build a farm or other workplace to create jobs.':'All existing workplaces are staffed.';
  }
  refresh();setInterval(refresh,1200);
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';document.title='Shattered Crowns — V13.00';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';document.title='Shattered Crowns — V13.00';
 })();
 </script>
 
@@ -4118,8 +4131,8 @@ body input, body textarea, body [contenteditable="true"] {
  const select=root.querySelector('select'),effect=root.querySelector('#sc1303Effect');
  function apply(){const v=select.value;window.scRationFactor=v==='conserve'?.75:v==='generous'?1.25:1;window.scRationMood=v==='conserve'?-2:v==='generous'?1.5:0;effect.textContent=v==='conserve'?'Conservation: 25% less food used, happiness -2 per cycle.':v==='generous'?'Generous: 25% more food used, happiness +1.5 per cycle.':'Normal: standard food use, no happiness adjustment.';}
  select.addEventListener('change',apply);apply();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
- document.title='Shattered Crowns — v13.35';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
+ document.title='Shattered Crowns — v13.36';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
 })();
 </script>
 
@@ -4144,9 +4157,9 @@ body input, body textarea, body [contenteditable="true"] {
  tabs.addEventListener('click',e=>{if(e.target.closest('[data-tab="economy"]')){panel.scrollTop=0;} });
  select.addEventListener('pointerdown',e=>e.stopPropagation());
  select.addEventListener('click',e=>e.stopPropagation());
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
- document.title='Shattered Crowns — v13.35';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
+ document.title='Shattered Crowns — v13.36';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
 })();
 </script>
 
@@ -4182,9 +4195,9 @@ body input, body textarea, body [contenteditable="true"] {
  // Re-evaluate before each existing five-second economy cycle.
  setInterval(update,500);
  update();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
- document.title='Shattered Crowns — v13.35';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
+ document.title='Shattered Crowns — v13.36';
 })();
 </script>
 
@@ -4210,9 +4223,9 @@ body input, body textarea, body [contenteditable="true"] {
  input.addEventListener('pointerdown',e=>e.stopPropagation());
  input.addEventListener('click',e=>e.stopPropagation());
  update();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
- document.title='Shattered Crowns — v13.35';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
+ document.title='Shattered Crowns — v13.36';
 })();
 </script>
 
@@ -4232,8 +4245,8 @@ body input, body textarea, body [contenteditable="true"] {
  selector.addEventListener('change',update);
  for(const event of ['pointerdown','click'])selector.addEventListener(event,e=>e.stopPropagation());
  update();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
- document.title='Shattered Crowns — v13.35';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
+ document.title='Shattered Crowns — v13.36';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
 })();
 </script>
 
@@ -4260,9 +4273,9 @@ body input, body textarea, body [contenteditable="true"] {
  const guide=document.getElementById('sc189HelpPanel');
  if(guide){const heading=[...guide.querySelectorAll('h3')].find(x=>x.textContent.includes('Camera and controls'));
  if(heading){const next=heading.nextElementSibling; if(next&&next.tagName==='UL')next.remove();heading.remove();}}
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
- document.title='Shattered Crowns — v13.35';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
+ document.title='Shattered Crowns — v13.36';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
 })();
 </script>
 <style id="sc1310AdvisorStyles">
@@ -4316,8 +4329,8 @@ body input, body textarea, body [contenteditable="true"] {
  function dismiss(){welcome.hidden=true;try{localStorage.setItem('sc1310AdvisorIntroSeen','yes')}catch(e){}}
  welcome.querySelector('#sc1310Try').addEventListener('click',()=>{dismiss();show(true)});
  welcome.querySelector('#sc1310Skip').addEventListener('click',dismiss);
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
- document.title='Shattered Crowns — v13.35';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
+ document.title='Shattered Crowns — v13.36';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
 })();
 </script>
 
@@ -4433,9 +4446,9 @@ body input, body textarea, body [contenteditable="true"] {
   const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='0 of '+checks.length+' checks completed';
   try{sessionStorage.removeItem('sc1313TestsCompleted')}catch(e){}
  }
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
- document.title='Shattered Crowns — v13.35';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
+ document.title='Shattered Crowns — v13.36';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
 })();
 </script>
 
@@ -4490,9 +4503,9 @@ body input, body textarea, body [contenteditable="true"] {
   const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='0 of '+tasks.length+' new checks completed';
   try{sessionStorage.removeItem('sc1313TestsCompleted')}catch(e){}
  }
- const badge=document.getElementById('sc179Version');if(badge){badge.textContent='V13.35 · Working village';badge.style.bottom='139px'}
- document.title='Shattered Crowns — v13.35';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
+ const badge=document.getElementById('sc179Version');if(badge){badge.textContent='V13.36 · Village crafts';badge.style.bottom='139px'}
+ document.title='Shattered Crowns — v13.36';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
 })();
 </script>
 
@@ -4540,8 +4553,8 @@ body input, body textarea, body [contenteditable="true"] {
   const progress=oldTests.querySelector('.sc1312Progress');if(progress)progress.textContent='One new feature to test';
   try{sessionStorage.removeItem('sc1313TestsCompleted')}catch(e){}
  }
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
- document.title='Shattered Crowns — v13.35';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
+ document.title='Shattered Crowns — v13.36';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
 })();
 </script>
 
@@ -4595,8 +4608,8 @@ body input, body textarea, body [contenteditable="true"] {
   const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='One new feature to test';
   try{sessionStorage.removeItem('sc1313TestsCompleted')}catch(e){}
  }
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
- document.title='Shattered Crowns — v13.35';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
+ document.title='Shattered Crowns — v13.36';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
 })();
 </script>
 
@@ -4641,8 +4654,8 @@ body input, body textarea, body [contenteditable="true"] {
   const labels=[...tests.querySelectorAll('label')];labels.forEach((label,i)=>{label.hidden=i!==0;if(i===0){const span=label.querySelector('span');if(span)span.textContent='Select Road (or House), then right-click the battlefield without building. Confirm the tool cancels; ordinary right-click unit orders must still work when no building is selected.';const cb=label.querySelector('input');if(cb)cb.checked=false;}});
   const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='One new feature to test';
  }
- const badge=document.getElementById('sc179Version');if(badge){badge.textContent='V13.35 · Working village';badge.style.removeProperty('bottom');badge.style.removeProperty('left');}
- document.title='Shattered Crowns — v13.35';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
+ const badge=document.getElementById('sc179Version');if(badge){badge.textContent='V13.36 · Village crafts';badge.style.removeProperty('bottom');badge.style.removeProperty('left');}
+ document.title='Shattered Crowns — v13.36';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
 })();
 </script>
 
@@ -4684,9 +4697,9 @@ body input, body textarea, body [contenteditable="true"] {
  document.getElementById('sc1310AdvisorBtn')?.addEventListener('click',()=>setTimeout(update,0));
  document.addEventListener('sc:built',update);
  update();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
- document.title='Shattered Crowns — v13.35';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
+ document.title='Shattered Crowns — v13.36';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
 })();
 </script>
 
@@ -4724,9 +4737,9 @@ body input, body textarea, body [contenteditable="true"] {
  section.querySelector('button').addEventListener('click',locate);
  type.addEventListener('change',()=>{index=-1;marker.hidden=true;status.textContent='Choose Locate next to find '+type.selectedOptions[0].text.toLowerCase()+'.';});
  canvas.addEventListener('pointerdown',()=>{marker.hidden=true},{passive:true});
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
- document.title='Shattered Crowns — v13.35';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
+ document.title='Shattered Crowns — v13.36';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
 })();
 </script>
 
@@ -4751,9 +4764,9 @@ body input, body textarea, body [contenteditable="true"] {
   const extra=document.createElement('label');extra.innerHTML='<input type="checkbox" id="sc1324Refined" checked> Refined roads and Royal Keep';section.append(extra);extra.querySelector('input').addEventListener('change',e=>{window.sc1324RefinedStreets=e.target.checked;});
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
- document.title='Shattered Crowns — v13.35';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
+ document.title='Shattered Crowns — v13.36';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
 })();
 </script>
 
@@ -4772,9 +4785,9 @@ body input, body textarea, body [contenteditable="true"] {
   label.querySelector('input').addEventListener('change',e=>{window.sc1325Cobblestones=e.target.checked;});
  }}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
- document.title='Shattered Crowns — v13.35';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
+ document.title='Shattered Crowns — v13.36';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
 })();
 </script>
 <style id="sc1326Style">#sc1326ArchitectureRow{margin-top:7px}</style>
@@ -4785,9 +4798,9 @@ body input, body textarea, body [contenteditable="true"] {
  const row=document.createElement('label');row.id='sc1326ArchitectureRow';row.innerHTML='<input id="sc1326Architecture" type="checkbox" checked> Roof and facade details';
  host.append(row);row.querySelector('input').addEventListener('change',e=>{window.sc1326Architecture=e.target.checked;});}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
- document.title='Shattered Crowns — v13.35';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
+ document.title='Shattered Crowns — v13.36';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
 })();
 </script>
 
@@ -4798,9 +4811,9 @@ body input, body textarea, body [contenteditable="true"] {
  const label=document.createElement('label');label.innerHTML='<input id="sc1327Civic" type="checkbox" checked> Village well and market details';
  host.append(label);label.querySelector('input').addEventListener('change',e=>{window.sc1327CivicDetails=e.target.checked;});}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
- document.title='Shattered Crowns — v13.35';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
+ document.title='Shattered Crowns — v13.36';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
 })();
 </script>
 
@@ -4816,9 +4829,9 @@ body input, body textarea, body [contenteditable="true"] {
   label.querySelector('input').addEventListener('change',e=>{window.sc1329FarmDetails=e.target.checked});
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
- document.title='Shattered Crowns — v13.35';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
+ document.title='Shattered Crowns — v13.36';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
 })();
 </script>
 
@@ -4849,9 +4862,9 @@ body input, body textarea, body [contenteditable="true"] {
  if(panel&&close){
    close.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();panel.hidden=true;document.getElementById('sc1310AdvisorBtn')?.setAttribute('aria-expanded','false');},true);
  }
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
- document.title='Shattered Crowns — v13.35';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
+ document.title='Shattered Crowns — v13.36';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
 })();
 </script>
 
@@ -4867,9 +4880,9 @@ body input, body textarea, body [contenteditable="true"] {
   label.querySelector('input').addEventListener('change',e=>{window.sc1334CivicLandscaping=e.target.checked;});
  };
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
- document.title='Shattered Crowns — v13.35';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
+ document.title='Shattered Crowns — v13.36';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
 })();
 </script>
 <script id="sc1335WorkingVillage">
@@ -4884,8 +4897,14 @@ body input, body textarea, body [contenteditable="true"] {
   row.querySelector('input').addEventListener('change',e=>{window.sc1335WorkshopDetails=e.target.checked});
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.35 · Working village';
- document.title='Shattered Crowns — v13.35';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.35.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';
+ document.title='Shattered Crowns — v13.36';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';
 })();
-</script></body></html>
+</script><script id="sc1336CivicCraft">(()=>{'use strict';window.sc1336CivicCraft=true;
+function install(){const host=document.getElementById('sc1323Visual');if(!host||document.getElementById('sc1336CivicCraftToggle'))return;
+const label=document.createElement('label');label.innerHTML='<input type="checkbox" id="sc1336CivicCraftToggle" checked> Bakery and healer details';host.append(label);
+label.querySelector('input').addEventListener('change',e=>{window.sc1336CivicCraft=e.target.checked});}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.36 · Village crafts';document.title='Shattered Crowns — v13.36';
+const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.36.0';})();</script></body></html>
