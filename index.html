@@ -954,7 +954,7 @@ if(['garden','plaza','clinic','granary','bakery'].includes(b.type)){
  ctx.restore();
  continue;
 }
-ctx.save();if(b.type!=='road'){ctx.translate(x,y);ctx.scale(b.type==='house'?.58:['garden','plaza','clinic'].includes(b.type)?.48:.78,b.type==='house'?.58:['garden','plaza','clinic'].includes(b.type)?.48:.78);ctx.translate(-x,-y)}ctx.fillStyle='rgba(12,23,19,.38)';ctx.beginPath();ctx.ellipse(x+7,y+15,38,13,0,0,Math.PI*2);ctx.fill();if(b.type==='granary'||b.type==='clinic'){ctx.fillStyle='#4c382d';ctx.beginPath();ctx.ellipse(x+4,y+16,35,15,0,0,Math.PI*2);ctx.fill();ctx.fillStyle=b.type==='granary'?'#b99760':'#b9c0b0';ctx.fillRect(x-24,y-18,48,39);ctx.strokeStyle='#463b31';ctx.lineWidth=3;ctx.strokeRect(x-24,y-18,48,39);ctx.fillStyle=b.type==='granary'?'#70483a':'#637b78';ctx.beginPath();ctx.moveTo(x-30,y-18);ctx.lineTo(x,y-48);ctx.lineTo(x+30,y-18);ctx.closePath();ctx.fill();ctx.strokeStyle='#dfc49a';ctx.stroke();ctx.fillStyle='#49382b';ctx.fillRect(x-6,y+2,12,19);if(b.type==='granary'){ctx.fillStyle='#e9ca79';for(let i=0;i<4;i++){ctx.beginPath();ctx.ellipse(x-15+i*10,y-2,4,8,0,0,Math.PI*2);ctx.fill()}}else{ctx.fillStyle='#e6e2d0';ctx.fillRect(x-4,y-15,8,22);ctx.fillRect(x-11,y-8,22,8)}}else if(b.type==='road'){
+ctx.save();if(b.type!=='road'){ctx.translate(x,y);ctx.scale((window.sc1323CompactBuildings===false?1:.82)*(b.type==='house'?.58:['garden','plaza','clinic'].includes(b.type)?.48:.78),(window.sc1323CompactBuildings===false?1:.82)*(b.type==='house'?.58:['garden','plaza','clinic'].includes(b.type)?.48:.78));ctx.translate(-x,-y)}ctx.fillStyle='rgba(12,23,19,.38)';ctx.beginPath();ctx.ellipse(x+7,y+15,38,13,0,0,Math.PI*2);ctx.fill();if(b.type==='granary'||b.type==='clinic'){ctx.fillStyle='#4c382d';ctx.beginPath();ctx.ellipse(x+4,y+16,35,15,0,0,Math.PI*2);ctx.fill();ctx.fillStyle=b.type==='granary'?'#b99760':'#b9c0b0';ctx.fillRect(x-24,y-18,48,39);ctx.strokeStyle='#463b31';ctx.lineWidth=3;ctx.strokeRect(x-24,y-18,48,39);ctx.fillStyle=b.type==='granary'?'#70483a':'#637b78';ctx.beginPath();ctx.moveTo(x-30,y-18);ctx.lineTo(x,y-48);ctx.lineTo(x+30,y-18);ctx.closePath();ctx.fill();ctx.strokeStyle='#dfc49a';ctx.stroke();ctx.fillStyle='#49382b';ctx.fillRect(x-6,y+2,12,19);if(b.type==='granary'){ctx.fillStyle='#e9ca79';for(let i=0;i<4;i++){ctx.beginPath();ctx.ellipse(x-15+i*10,y-2,4,8,0,0,Math.PI*2);ctx.fill()}}else{ctx.fillStyle='#e6e2d0';ctx.fillRect(x-4,y-15,8,22);ctx.fillRect(x-11,y-8,22,8)}}else if(b.type==='road'){
  ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
  const neighbors=buildings.filter(r=>r!==b&&r.team===b.team&&alive(r)&&r.type==='road'&&dist(r,b)<=49);
  ctx.strokeStyle='#504c43';ctx.lineWidth=29;
@@ -4571,6 +4571,32 @@ body input, body textarea, body [contenteditable="true"] {
  const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.22 · Building locator';
  document.title='Shattered Crowns — v13.22';
  const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.22.0';
+})();
+</script>
+
+<style id="sc1323Style">
+#sc1323Visual{margin:10px 0;padding:10px;border:1px solid #668c82;border-radius:7px;background:#18352e;color:#e7eddc;font:12px/1.5 system-ui}
+#sc1323Visual h3{font-size:14px;margin:0 0 6px;color:#f2d99b}
+#sc1323Visual label{display:flex;gap:8px;align-items:center;cursor:pointer}
+#sc1323Visual p{margin:6px 0 0;opacity:.9}
+</style>
+<script id="sc1323VisualOptions">
+(()=>{
+ window.sc1323CompactBuildings=true;
+ function install(){
+  const advisor=document.getElementById('sc1310AdvisorPanel');
+  const anchor=document.getElementById('sc1322Locator');
+  const host=anchor?.parentElement||advisor;
+  if(!host||document.getElementById('sc1323Visual'))return;
+  const section=document.createElement('section');section.id='sc1323Visual';
+  section.innerHTML='<h3>🏘️ Building appearance</h3><label><input type="checkbox" id="sc1323Compact" checked> Compact buildings (less crowding)</label><p>Reduces the visible size of ordinary buildings without changing their construction costs, positions or service coverage. Turn off to compare the original size.</p>';
+  if(anchor)anchor.after(section);else host.append(section);
+  section.querySelector('input').addEventListener('change',e=>{window.sc1323CompactBuildings=e.target.checked;});
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.23 · Compact buildings';
+ document.title='Shattered Crowns — v13.23';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.23.0';
 })();
 </script>
 </body></html>
