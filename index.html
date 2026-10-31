@@ -282,7 +282,7 @@ function houseTier(h){
  const level=1+Number(foodReady&&water)+Number(foodReady&&water&&health&&access&&beauty>=25)+Number(foodReady&&water&&health&&access&&trade&&beauty>=65);
  return {level,foodReady,water,health,access,trade,beauty,beautyForTownhouse:beauty>=25,beautyForManor:beauty>=65};
 }
-function updateUI(){assignEmployment();el('buildingInspector').textContent=describeBuilding(inspectedBuilding);let cityOwned=buildings.filter(b=>b.team===0&&alive(b));let farmRate=cityOwned.filter(b=>b.type==='farm').reduce((v,b)=>v+13*(employment.byId.get(b.id)?.efficiency||0),0)+cityOwned.filter(b=>b.type==='fishery').reduce((v,b)=>v+9*(employment.byId.get(b.id)?.efficiency||0),0);let useRate=Math.ceil(population*.45);let stored=90+cityOwned.filter(b=>b.type==='granary').length*160;el('foodBalance').textContent=`🌾 Food: +${farmRate.toFixed(1)} production / -${useRate} consumption every 5 seconds | Net ${farmRate-useRate>=0?'+':''}${(farmRate-useRate).toFixed(1)} | Storage ${Math.floor(food)}/${stored}`;const network=getRoadNetwork();
+function updateUI(){assignEmployment();el('buildingInspector').textContent=describeBuilding(inspectedBuilding);let cityOwned=buildings.filter(b=>b.team===0&&alive(b));let farmRate=cityOwned.filter(b=>b.type==='farm').reduce((v,b)=>v+13*(employment.byId.get(b.id)?.efficiency||0),0)+cityOwned.filter(b=>b.type==='fishery').reduce((v,b)=>v+9*(employment.byId.get(b.id)?.efficiency||0),0);let useRate=Math.ceil(population*.45*(window.scRationFactor||1));let stored=90+cityOwned.filter(b=>b.type==='granary').length*160;el('foodBalance').textContent=`🌾 Food: +${farmRate.toFixed(1)} production / -${useRate} consumption every 5 seconds | Net ${farmRate-useRate>=0?'+':''}${(farmRate-useRate).toFixed(1)} | Storage ${Math.floor(food)}/${stored}`;const network=getRoadNetwork();
 const connectedRoads=network.main.size;
 el('roadNetworkStatus').textContent=`🛣 Road network: ${network.roads.length} road sections · ${network.groups.length} separate groups · ${connectedRoads} in largest connected network. Adjacent road sections connect at 44px spacing.`;
 let civicMarkets=cityOwned.filter(b=>b.type==='market');let civicRoads=cityOwned.filter(b=>b.type==='road');let connected=civicMarkets.filter(m=>marketHasTradeAccess(m,network)).length;el('marketStatus').textContent=`🛒 Markets: ${civicMarkets.length} | Near a road: ${connected} | Staffed: ${civicMarkets.filter(m=>(employment.byId.get(m.id)?.count||0)>0).length}. Trade bonus requires a market within 135px of the largest road network (at least 3 connected sections). A staffed market within 170px of a granary earns an additional supply bonus.`;let homesForCoverage=cityOwned.filter(b=>b.type==='house');let beautyAvg=homesForCoverage.length?Math.round(homesForCoverage.reduce((v,h)=>v+homeBeauty(h).score,0)/homesForCoverage.length):0;el('beautyStatus').textContent=`🌷 Neighborhood beauty: ${beautyAvg}/100 average · Gardens +25, plazas +40 for nearby houses. Beauty now helps houses reach Townhouse (25+) and Manor (65+) and adds up to 2.5 gold per house every 5 seconds.`;let tiers=[0,0,0,0];for(const h of homesForCoverage)tiers[houseTier(h).level-1]++;el('homeLevelStatus').textContent=`🏠 House development: ${tiers[0]} cottages · ${tiers[1]} homesteads · ${tiers[2]} townhouses · ${tiers[3]} manors. Townhouses require Beauty 25+; Manors require Beauty 65+. Each upgrade adds 2 housing spaces. Inspect a house for requirements.`;
@@ -656,7 +656,7 @@ for(const bakery of bakeries){
 }
 const sales=Math.min(Math.floor(tradeGoods),activeMarkets.length);
 if(sales>0){tradeGoods-=sales;goodsSold+=sales;gold+=sales*4;}
-let consumption=Math.ceil(population*.45);if(food>=consumption){food-=consumption;happiness=Math.min(100,happiness+roadServiceBonus(owned)+neighborhoodBeautyBonus(owned)+(owned.filter(b=>b.type==='market'&&(employment.byId.get(b.id)?.count||0)>0).length?1:0.1)+wellCoverage*.8+workingBakeries*.4+clinics.reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0)*homes.filter(h=>dist(h,b)<190).length*.55,0)-(homes.length&&!wellCoverage?.45:0));if(population<cap&&happiness>=45)population+=Math.min(2,cap-population)}else{food=0;happiness=Math.max(0,happiness-8);if(population>4)population--;}let marketEfficiency=owned.filter(b=>b.type==='market').reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0),0);let connectedEfficiency=owned.filter(b=>b.type==='market'&&marketHasTradeAccess(b)).reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0),0);// V10.3: Nearby granaries supply staffed, road-connected markets.
+let consumption=Math.ceil(population*.45*(window.scRationFactor||1));if(food>=consumption){food-=consumption;happiness=Math.min(100,happiness+(window.scRationMood||0)+roadServiceBonus(owned)+neighborhoodBeautyBonus(owned)+(owned.filter(b=>b.type==='market'&&(employment.byId.get(b.id)?.count||0)>0).length?1:0.1)+wellCoverage*.8+workingBakeries*.4+clinics.reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0)*homes.filter(h=>dist(h,b)<190).length*.55,0)-(homes.length&&!wellCoverage?.45:0));if(population<cap&&happiness>=45)population+=Math.min(2,cap-population)}else{food=0;happiness=Math.max(0,happiness-8);if(population>4)population--;}let marketEfficiency=owned.filter(b=>b.type==='market').reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0),0);let connectedEfficiency=owned.filter(b=>b.type==='market'&&marketHasTradeAccess(b)).reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0),0);// V10.3: Nearby granaries supply staffed, road-connected markets.
 // Each supplied market gives a modest trade bonus; no benefit from empty staffing.
 let suppliedMarkets=owned.filter(m=>m.type==='market'&&marketHasTradeAccess(m)&&(employment.byId.get(m.id)?.count||0)>0&&granaries.some(g=>alive(g)&&dist(g,m)<170));
 let supplyTradeBonus=suppliedMarkets.reduce((n,m)=>n+(employment.byId.get(m.id)?.efficiency||0)*.12,0);
@@ -3860,9 +3860,9 @@ document.title='Shattered Crowns — V12.89';
  tabs.addEventListener('click',e=>{const b=e.target.closest('button[data-tab]');if(b)choose(b.dataset.tab)});
  document.getElementById('sc190ChronicleBtn')?.addEventListener('click',()=>{if(!panel.hidden)choose('city')});
  choose('city');
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.02 · Version display fix';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.03 · Food ration policy';
  document.title='Shattered Crowns — V13.02';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.02.0';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.03.0';
 })();
 </script>
 
@@ -3890,7 +3890,7 @@ document.title='Shattered Crowns — V12.89';
  byId('sc1300Advice').textContent=snap.filled<snap.jobs?'Some buildings are understaffed. Add housing and maintain food and happiness to grow the population.':snap.jobs===0?'Build a farm or other workplace to create jobs.':'All existing workplaces are staffed.';
  }
  refresh();setInterval(refresh,1200);
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.00 · Active employment';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.03 · Food ration policy';
  const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.00.0';document.title='Shattered Crowns — V13.00';
 })();
 </script>
@@ -3925,6 +3925,25 @@ body input, body textarea, body [contenteditable="true"] {
   for(const el of document.querySelectorAll('*')){
     if(el.children.length===0 && el.textContent && /V13\.00/.test(el.textContent) && el.textContent.length<90) el.textContent=el.textContent.replace(/V13\.00/g,'V13.01');
   }
+})();
+</script>
+
+<style id="sc1303Style">
+#sc1303Rations{margin:10px 0;padding:10px;border:1px solid #6b8068;border-radius:6px;background:#203a33;color:#e9edda;font-size:12px}
+#sc1303Rations label{display:block;margin:7px 0}#sc1303Rations select{width:100%;background:#142e29;color:#f5e5bd;border:1px solid #b69a65;border-radius:4px;padding:7px}
+#sc1303Rations p{line-height:1.5;margin:5px 0}
+</style>
+<script id="sc1303RationPolicy">
+(()=>{'use strict';
+ const economy=document.getElementById('sc199Economy');if(!economy)return;
+ const root=document.createElement('section');root.id='sc1303Rations';
+ root.innerHTML='<strong>🌾 Food ration policy</strong><label for="sc1303Mode">How much food should residents receive?</label><select id="sc1303Mode"><option value="normal">Normal meals — standard consumption</option><option value="conserve">Conserve supplies — 25% less food, lower happiness</option><option value="generous">Generous meals — 25% more food, higher happiness</option></select><p id="sc1303Effect">Normal meals: no change to food use or happiness.</p><p>Policies change actual food consumption and happiness each 5-second economy cycle. Production and building rules stay the same.</p>';
+ const food=economy.querySelector('#sc198FoodMonitor');if(food)food.insertAdjacentElement('afterend',root);else economy.prepend(root);
+ const select=root.querySelector('select'),effect=root.querySelector('#sc1303Effect');
+ function apply(){const v=select.value;window.scRationFactor=v==='conserve'?.75:v==='generous'?1.25:1;window.scRationMood=v==='conserve'?-2:v==='generous'?1.5:0;effect.textContent=v==='conserve'?'Conservation: 25% less food used, happiness -2 per cycle.':v==='generous'?'Generous: 25% more food used, happiness +1.5 per cycle.':'Normal: standard food use, no happiness adjustment.';}
+ select.addEventListener('change',apply);apply();
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.03 · Food ration policy';
+ document.title='Shattered Crowns — v13.03';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.03.0';
 })();
 </script>
 </body></html>
