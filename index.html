@@ -3860,9 +3860,9 @@ document.title='Shattered Crowns — V12.89';
  tabs.addEventListener('click',e=>{const b=e.target.closest('button[data-tab]');if(b)choose(b.dataset.tab)});
  document.getElementById('sc190ChronicleBtn')?.addEventListener('click',()=>{if(!panel.hidden)choose('city')});
  choose('city');
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.03 · Food ration policy';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.04 · Ration control visible';
  document.title='Shattered Crowns — V13.02';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.03.0';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.04.0';
 })();
 </script>
 
@@ -3890,7 +3890,7 @@ document.title='Shattered Crowns — V12.89';
  byId('sc1300Advice').textContent=snap.filled<snap.jobs?'Some buildings are understaffed. Add housing and maintain food and happiness to grow the population.':snap.jobs===0?'Build a farm or other workplace to create jobs.':'All existing workplaces are staffed.';
  }
  refresh();setInterval(refresh,1200);
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.03 · Food ration policy';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.04 · Ration control visible';
  const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.00.0';document.title='Shattered Crowns — V13.00';
 })();
 </script>
@@ -3938,12 +3938,12 @@ body input, body textarea, body [contenteditable="true"] {
  const economy=document.getElementById('sc199Economy');if(!economy)return;
  const root=document.createElement('section');root.id='sc1303Rations';
  root.innerHTML='<strong>🌾 Food ration policy</strong><label for="sc1303Mode">How much food should residents receive?</label><select id="sc1303Mode"><option value="normal">Normal meals — standard consumption</option><option value="conserve">Conserve supplies — 25% less food, lower happiness</option><option value="generous">Generous meals — 25% more food, higher happiness</option></select><p id="sc1303Effect">Normal meals: no change to food use or happiness.</p><p>Policies change actual food consumption and happiness each 5-second economy cycle. Production and building rules stay the same.</p>';
- const food=economy.querySelector('#sc198FoodMonitor');if(food)food.insertAdjacentElement('afterend',root);else economy.prepend(root);
+ economy.prepend(root); // Keep the ration control visible immediately upon opening Economy.
  const select=root.querySelector('select'),effect=root.querySelector('#sc1303Effect');
  function apply(){const v=select.value;window.scRationFactor=v==='conserve'?.75:v==='generous'?1.25:1;window.scRationMood=v==='conserve'?-2:v==='generous'?1.5:0;effect.textContent=v==='conserve'?'Conservation: 25% less food used, happiness -2 per cycle.':v==='generous'?'Generous: 25% more food used, happiness +1.5 per cycle.':'Normal: standard food use, no happiness adjustment.';}
  select.addEventListener('change',apply);apply();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.03 · Food ration policy';
- document.title='Shattered Crowns — v13.03';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.03.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.04 · Ration control visible';
+ document.title='Shattered Crowns — v13.04';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.04.0';
 })();
 </script>
 </body></html>
