@@ -4489,4 +4489,48 @@ body input, body textarea, body [contenteditable="true"] {
  document.title='Shattered Crowns — v13.20';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.20.0';
 })();
 </script>
+
+<style id="sc1321AdvisorClean">
+/* Retire old testing/tutorial widgets without affecting the optional Advisor. */
+#sc1312Tests,#advisorTest,#advisorProgress,#advisorNext,#advisorSkip,#advisorRestart,
+#sc175Replay,#sc175AdvisorStatus,#sc157AdvisorNote,#sc158Help{display:none!important}
+#sc1321Priorities{margin:10px 0;padding:10px;border:1px solid #638477;border-radius:7px;background:#18352e;color:#e7eddc;font:12px/1.5 system-ui}
+#sc1321Priorities h3{font-size:14px;margin:0 0 7px;color:#f2d99b}
+#sc1321Priorities p{margin:6px 0}
+#sc1321Priorities button{padding:6px 10px;background:#5b482d;border:1px solid #b49a64;color:#ffebc1;border-radius:5px;cursor:pointer}
+</style>
+<script id="sc1321AdvisorPriorities">
+(()=>{'use strict';
+ const panel=document.getElementById('sc1310AdvisorPanel');
+ if(!panel)return;
+ // The old checklist is obsolete. Remove it rather than merely hiding it.
+ document.getElementById('sc1312Tests')?.remove();
+ const block=document.createElement('section');block.id='sc1321Priorities';
+ block.innerHTML='<h3>🏛 Settlement priorities</h3><p id="sc1321Advice">Reviewing your settlement...</p><button type="button" id="sc1321Refresh">Refresh advice</button>';
+ panel.prepend(block);
+ const output=block.querySelector('#sc1321Advice');
+ function update(){
+  const own=Array.isArray(window.scHoverBuildings)?window.scHoverBuildings.filter(b=>b&&b.team===0&&(b.hp===undefined||b.hp>0)):[];
+  const count=t=>own.filter(b=>b.type===t).length;
+  const food=Number((document.getElementById('resFood')?.textContent||'').replace(/[^0-9.-]/g,''));
+  const homes=count('house'),farms=count('farm')+count('fishery');
+  let advice;
+  if(!homes)advice='Your settlement needs housing. Build a house to establish a residential neighborhood.';
+  else if(!farms)advice='Food production is the priority. Add a farm or fishery to support your residents.';
+  else if(Number.isFinite(food)&&food<25)advice='Food reserves are low ('+food+'). Check staffing, rationing and farm output in Chronicle → Economy.';
+  else if(!count('well'))advice='Add a well near your homes to improve neighborhood services.';
+  else if(!count('granary'))advice='A granary will expand food storage and support your growing settlement.';
+  else if(!count('market'))advice='Consider a market near your homes to develop trade and services.';
+  else advice='Your settlement has its essential foundations. Improve neighborhood coverage or expand housing and production as needed.';
+  output.textContent=advice;
+ }
+ block.querySelector('button').addEventListener('click',update);
+ document.getElementById('sc1310AdvisorBtn')?.addEventListener('click',()=>setTimeout(update,0));
+ document.addEventListener('sc:built',update);
+ update();
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.21 · Advisor priorities';
+ document.title='Shattered Crowns — v13.21';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.21.0';
+})();
+</script>
 </body></html>
