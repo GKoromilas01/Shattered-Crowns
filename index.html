@@ -3795,4 +3795,37 @@ document.title='Shattered Crowns — V12.89';
  const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V12.97 · Continuous roads';document.title='Shattered Crowns — V12.97';
 })();
 </script>
+
+<style id="sc198FoodMonitorStyle">
+#sc198FoodMonitor{border-top:1px solid #647d69;margin-top:14px;padding-top:12px}
+#sc198FoodMonitor h3{margin:0 0 9px;color:#ffe0a1;font-size:15px}
+#sc198FoodMonitor .sc198Line{display:flex;justify-content:space-between;gap:10px;margin:6px 0;padding:7px;background:#28473e;border-radius:5px}
+#sc198FoodMonitor strong{color:#ffe0a1}
+#sc198FoodMonitor .sc198Tip{font-size:12px;color:#d2dfd4;line-height:1.5}
+</style>
+<script id="sc198FoodMonitorController">
+(()=>{'use strict';
+ const panel=document.getElementById('sc190ChroniclePanel');if(!panel)return;
+ const section=document.createElement('section');section.id='sc198FoodMonitor';
+ section.innerHTML='<h3>🌾 Food & population monitor</h3><div class="sc198Line"><span>Food in storage</span><strong id="sc198Food">—</strong></div><div class="sc198Line"><span>Current population</span><strong id="sc198Pop">—</strong></div><div class="sc198Line"><span>Food reserve per resident</span><strong id="sc198Reserve">—</strong></div><div class="sc198Line"><span>Food change (last 15 seconds)</span><strong id="sc198Trend">Collecting data…</strong></div><p class="sc198Tip" id="sc198Tip">Production and consumption continue to follow the existing game rules.</p>';
+ panel.append(section);
+ const samples=[];const get=id=>Number((document.getElementById(id)?.textContent||'').replace(/,/g,'').trim());
+ const put=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+ function update(){
+  const food=get('resFood'),pop=get('population');if(!Number.isFinite(food)||!Number.isFinite(pop))return;
+  const now=Date.now();samples.push({now,food});while(samples.length>1&&samples[0].now<now-15000)samples.shift();
+  put('sc198Food',Math.floor(food).toLocaleString());put('sc198Pop',Math.floor(pop).toLocaleString());
+  put('sc198Reserve',pop>0?(food/pop).toFixed(1)+' per resident':'No residents yet');
+  if(samples.length>1&&now-samples[0].now>=5000){const delta=food-samples[0].food;put('sc198Trend',(delta>0?'+':'')+Math.round(delta).toLocaleString()+' food');}
+  const buildings=Array.isArray(window.scHoverBuildings)?window.scHoverBuildings:[];
+  const own=buildings.filter(b=>b&&b.team===0&&(b.hp===undefined||b.hp>0));
+  const farms=own.filter(b=>b.type==='farm'||b.type==='fishery').length;
+  put('sc198Tip',pop>0&&food<pop?'⚠ Low food reserves: consider more farms or fisheries and enough workers.':farms===0?'Build a farm or fishery to start local food production.':'Food is produced and consumed by the existing simulation. Monitor reserves as population grows.');
+ }
+ update();setInterval(update,3000);
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V12.98 · Food monitor';
+ document.title='Shattered Crowns — V12.98';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v12.98.0';
+})();
+</script>
 </body></html>
