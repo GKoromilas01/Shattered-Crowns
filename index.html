@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Shattered Crowns — v13.44</title><style>*{box-sizing:border-box}html,body{max-width:100%;overflow-x:hidden}body{margin:0;background:#101923;color:#eee;font:15px system-ui,Arial}header{padding:13px 18px;background:#192633;display:flex;gap:20px;align-items:center;flex-wrap:wrap}h1{font-size:20px;margin:0;color:#e5c27c}.stats{display:flex;gap:16px;flex-wrap:wrap}main{display:grid;grid-template-columns:minmax(0,1fr) 225px;min-width:0;gap:12px;padding:12px}canvas{display:block;width:100%;background:#31523b;border:2px solid #9c8658;cursor:crosshair;touch-action:none}aside{background:#1c2a35;padding:14px;border:1px solid #46535b;border-radius:7px}select{background:#263b47;color:#fff;border:1px solid #9c8658;padding:7px;border-radius:4px}button{background:#665033;color:white;border:1px solid #b99961;border-radius:5px;padding:10px;cursor:pointer;margin:4px 2px}button:hover{background:#82643d}button:focus-visible{outline:3px solid #e5c27c;outline-offset:2px}#liveOverview{background:#243b44;border-left:3px solid #e5c27c;padding:9px;border-radius:4px}button:disabled{opacity:.4;cursor:not-allowed}.help{font-size:13px;color:#b7c4c9;line-height:1.6}.status{color:#e5c27c;min-height:40px}footer{padding:0 14px 14px;color:#a9b9bd;font-size:12px}#quickDock{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:5px;flex-wrap:wrap;background:#172a32;border-bottom:2px solid #b99b62;padding:7px 12px;box-shadow:0 3px 12px #0008}#quickDock strong{color:#e5c27c;margin-right:5px;white-space:nowrap}#quickDock button{margin:1px;padding:6px 9px;font-size:12px;white-space:nowrap}#dockMessage{color:#c4d6d1;font-size:12px}main>div:first-child{position:sticky;top:92px;align-self:start}aside{min-width:0}#advisorCard{border:1px solid #ad945a;background:#243a38;border-radius:7px;padding:10px;margin-bottom:9px}#advisorCard button{font-size:12px;padding:6px 9px}#advisorTest{color:#d8e5d0;font-size:13px;line-height:1.45}#cityAdvisor{margin:4px 0 8px}@media(max-width:1050px){main{grid-template-columns:minmax(0,1fr) 245px}#quickDock{max-height:100px;overflow:auto}main>div:first-child{top:105px}}@media(max-width:800px){main{grid-template-columns:1fr}aside{order:2}main>div:first-child{position:static}#quickDock{max-height:140px;overflow:auto}}#advisorTop{position:sticky;top:58px;z-index:19;padding:5px 12px;background:#172a32;border-bottom:1px solid #ad945a}#advisorTop #advisorCard{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0;padding:6px 10px}#advisorTop #cityAdvisor{flex:1 1 280px;margin:0;font-size:12px}#advisorTop #advisorTest{flex:1 1 300px;font-size:12px}#advisorTop #advisorCard button{flex:none}#advisorTop #advisorProgress{white-space:nowrap}main>div:first-child{top:185px}@media(max-width:1050px){#advisorTop{top:100px}main>div:first-child{top:230px}}@media(max-width:800px){#advisorTop{position:static}}#tutorialShade{position:fixed;inset:0;background:rgba(5,13,18,.86);z-index:100;display:flex;align-items:center;justify-content:center;padding:18px}#tutorialShade[hidden]{display:none}#tutorialPanel{background:linear-gradient(145deg,#253b3d,#152630);border:2px solid #d5b77b;border-radius:14px;box-shadow:0 20px 90px #000b;max-width:590px;width:100%;padding:28px;color:#f5eee1}#tutorialPanel h2{color:#f4d38c;font-size:27px;margin:8px 0 12px}.tutorialEyebrow{font-size:13px;letter-spacing:1px;color:#d4bd91;font-weight:800}#tutorialIntro{line-height:1.65}#tutorialTask{background:#32483d;border-left:4px solid #d5b77b;padding:16px;line-height:1.7;border-radius:5px}.tutorialHint{font-size:13px;color:#c3d0ca;line-height:1.6}.tutorialActions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}#tutorialStart{background:#947039;font-weight:800}#mapDetail{border-color:#82a7a0}@media(max-width:800px){#tutorialPanel{padding:19px}#tutorialPanel h2{font-size:22px}}#armyDock{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding:6px 12px;background:#243038;border-bottom:1px solid #b99b62}#armyDock strong{color:#f0c77e;white-space:nowrap;margin-right:5px}#armyDock button{padding:6px 9px;font-size:12px;margin:1px;white-space:nowrap}#armyDock .armyHint{font-size:12px;color:#c4d6d1}#quickDock{position:relative;z-index:21}#advisorTop{top:0}main>div:first-child{top:120px}@media(max-width:1050px){#armyDock{max-height:96px;overflow:auto}#advisorTop{top:0}main>div:first-child{top:170px}}@media(max-width:800px){#armyDock{position:relative;max-height:none}#advisorTop{position:static}}#controlTabs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:7px 12px;background:#192c35;border-bottom:1px solid #b99b61}#controlTabs strong{color:#f0d08d;margin-right:8px}#controlTabs button{margin:0;padding:7px 12px;font-size:13px}#controlTabs button.active{background:#b28b4d;color:#111e24;font-weight:700}#compactHint{font-size:12px;color:#d6e1d9}#quickDock,#armyDock,#mapDock{position:relative;top:auto;z-index:10;display:flex;align-items:center;flex-wrap:wrap;gap:5px;padding:6px 12px;min-height:43px;max-height:none;overflow:visible}#quickDock[hidden],#armyDock[hidden],#mapDock[hidden]{display:none!important}#mapDock{background:#243038;border-bottom:1px solid #b99b62}#mapDock strong{color:#f0d08d}#mapDock button{padding:6px 9px;margin:1px;font-size:12px}#advisorTop{position:relative;top:auto;padding:5px 12px}main>div:first-child{position:sticky;top:8px}#dockMessage{display:none}@media(max-width:1050px){#quickDock,#armyDock,#mapDock{max-height:none;overflow:visible}main>div:first-child{top:8px}}@media(max-width:800px){main>div:first-child{position:static}}#buildCostHint{background:#33463b;border-bottom:2px solid #d5b77b;color:#fff0bd;padding:6px 14px;font-size:15px;font-weight:700}#resourceBar{position:sticky;top:0;z-index:35;background:#203b3b;border-bottom:2px solid #d5b77b;padding:6px 14px;font-size:16px;font-weight:650;color:#f7e6bd}#resourceBar b{color:white}#field{max-width:none;cursor:crosshair}#field.panning{cursor:grabbing}main>div:first-child{overflow:auto;max-width:100%;min-width:0;max-height:calc(100vh - 160px);border-radius:7px}#field{min-width:2450px;max-width:none;width:2450px}@media(max-width:800px){main>div:first-child{max-height:70vh}#field{min-width:2450px;max-width:none;width:2450px}}#hoverCosts{position:fixed;z-index:120;pointer-events:none;display:none;max-width:360px;min-width:220px;padding:12px 15px;border:2px solid #e5c27c;border-radius:9px;background:rgba(19,39,43,.98);color:#fff3d0;box-shadow:0 8px 25px #000b;font:700 16px system-ui;line-height:1.5}#hoverCosts .hoverTitle{color:#ffdc91;font-size:19px}#hoverCosts .hoverStatus{font-size:14px;margin-top:4px}#hoverCosts .enough{color:#9ff0ae}#hoverCosts .missing{color:#ff9d92}</style>
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Shattered Crowns — v13.45</title><style>*{box-sizing:border-box}html,body{max-width:100%;overflow-x:hidden}body{margin:0;background:#101923;color:#eee;font:15px system-ui,Arial}header{padding:13px 18px;background:#192633;display:flex;gap:20px;align-items:center;flex-wrap:wrap}h1{font-size:20px;margin:0;color:#e5c27c}.stats{display:flex;gap:16px;flex-wrap:wrap}main{display:grid;grid-template-columns:minmax(0,1fr) 225px;min-width:0;gap:12px;padding:12px}canvas{display:block;width:100%;background:#31523b;border:2px solid #9c8658;cursor:crosshair;touch-action:none}aside{background:#1c2a35;padding:14px;border:1px solid #46535b;border-radius:7px}select{background:#263b47;color:#fff;border:1px solid #9c8658;padding:7px;border-radius:4px}button{background:#665033;color:white;border:1px solid #b99961;border-radius:5px;padding:10px;cursor:pointer;margin:4px 2px}button:hover{background:#82643d}button:focus-visible{outline:3px solid #e5c27c;outline-offset:2px}#liveOverview{background:#243b44;border-left:3px solid #e5c27c;padding:9px;border-radius:4px}button:disabled{opacity:.4;cursor:not-allowed}.help{font-size:13px;color:#b7c4c9;line-height:1.6}.status{color:#e5c27c;min-height:40px}footer{padding:0 14px 14px;color:#a9b9bd;font-size:12px}#quickDock{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:5px;flex-wrap:wrap;background:#172a32;border-bottom:2px solid #b99b62;padding:7px 12px;box-shadow:0 3px 12px #0008}#quickDock strong{color:#e5c27c;margin-right:5px;white-space:nowrap}#quickDock button{margin:1px;padding:6px 9px;font-size:12px;white-space:nowrap}#dockMessage{color:#c4d6d1;font-size:12px}main>div:first-child{position:sticky;top:92px;align-self:start}aside{min-width:0}#advisorCard{border:1px solid #ad945a;background:#243a38;border-radius:7px;padding:10px;margin-bottom:9px}#advisorCard button{font-size:12px;padding:6px 9px}#advisorTest{color:#d8e5d0;font-size:13px;line-height:1.45}#cityAdvisor{margin:4px 0 8px}@media(max-width:1050px){main{grid-template-columns:minmax(0,1fr) 245px}#quickDock{max-height:100px;overflow:auto}main>div:first-child{top:105px}}@media(max-width:800px){main{grid-template-columns:1fr}aside{order:2}main>div:first-child{position:static}#quickDock{max-height:140px;overflow:auto}}#advisorTop{position:sticky;top:58px;z-index:19;padding:5px 12px;background:#172a32;border-bottom:1px solid #ad945a}#advisorTop #advisorCard{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0;padding:6px 10px}#advisorTop #cityAdvisor{flex:1 1 280px;margin:0;font-size:12px}#advisorTop #advisorTest{flex:1 1 300px;font-size:12px}#advisorTop #advisorCard button{flex:none}#advisorTop #advisorProgress{white-space:nowrap}main>div:first-child{top:185px}@media(max-width:1050px){#advisorTop{top:100px}main>div:first-child{top:230px}}@media(max-width:800px){#advisorTop{position:static}}#tutorialShade{position:fixed;inset:0;background:rgba(5,13,18,.86);z-index:100;display:flex;align-items:center;justify-content:center;padding:18px}#tutorialShade[hidden]{display:none}#tutorialPanel{background:linear-gradient(145deg,#253b3d,#152630);border:2px solid #d5b77b;border-radius:14px;box-shadow:0 20px 90px #000b;max-width:590px;width:100%;padding:28px;color:#f5eee1}#tutorialPanel h2{color:#f4d38c;font-size:27px;margin:8px 0 12px}.tutorialEyebrow{font-size:13px;letter-spacing:1px;color:#d4bd91;font-weight:800}#tutorialIntro{line-height:1.65}#tutorialTask{background:#32483d;border-left:4px solid #d5b77b;padding:16px;line-height:1.7;border-radius:5px}.tutorialHint{font-size:13px;color:#c3d0ca;line-height:1.6}.tutorialActions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}#tutorialStart{background:#947039;font-weight:800}#mapDetail{border-color:#82a7a0}@media(max-width:800px){#tutorialPanel{padding:19px}#tutorialPanel h2{font-size:22px}}#armyDock{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding:6px 12px;background:#243038;border-bottom:1px solid #b99b62}#armyDock strong{color:#f0c77e;white-space:nowrap;margin-right:5px}#armyDock button{padding:6px 9px;font-size:12px;margin:1px;white-space:nowrap}#armyDock .armyHint{font-size:12px;color:#c4d6d1}#quickDock{position:relative;z-index:21}#advisorTop{top:0}main>div:first-child{top:120px}@media(max-width:1050px){#armyDock{max-height:96px;overflow:auto}#advisorTop{top:0}main>div:first-child{top:170px}}@media(max-width:800px){#armyDock{position:relative;max-height:none}#advisorTop{position:static}}#controlTabs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:7px 12px;background:#192c35;border-bottom:1px solid #b99b61}#controlTabs strong{color:#f0d08d;margin-right:8px}#controlTabs button{margin:0;padding:7px 12px;font-size:13px}#controlTabs button.active{background:#b28b4d;color:#111e24;font-weight:700}#compactHint{font-size:12px;color:#d6e1d9}#quickDock,#armyDock,#mapDock{position:relative;top:auto;z-index:10;display:flex;align-items:center;flex-wrap:wrap;gap:5px;padding:6px 12px;min-height:43px;max-height:none;overflow:visible}#quickDock[hidden],#armyDock[hidden],#mapDock[hidden]{display:none!important}#mapDock{background:#243038;border-bottom:1px solid #b99b62}#mapDock strong{color:#f0d08d}#mapDock button{padding:6px 9px;margin:1px;font-size:12px}#advisorTop{position:relative;top:auto;padding:5px 12px}main>div:first-child{position:sticky;top:8px}#dockMessage{display:none}@media(max-width:1050px){#quickDock,#armyDock,#mapDock{max-height:none;overflow:visible}main>div:first-child{top:8px}}@media(max-width:800px){main>div:first-child{position:static}}#buildCostHint{background:#33463b;border-bottom:2px solid #d5b77b;color:#fff0bd;padding:6px 14px;font-size:15px;font-weight:700}#resourceBar{position:sticky;top:0;z-index:35;background:#203b3b;border-bottom:2px solid #d5b77b;padding:6px 14px;font-size:16px;font-weight:650;color:#f7e6bd}#resourceBar b{color:white}#field{max-width:none;cursor:crosshair}#field.panning{cursor:grabbing}main>div:first-child{overflow:auto;max-width:100%;min-width:0;max-height:calc(100vh - 160px);border-radius:7px}#field{min-width:2450px;max-width:none;width:2450px}@media(max-width:800px){main>div:first-child{max-height:70vh}#field{min-width:2450px;max-width:none;width:2450px}}#hoverCosts{position:fixed;z-index:120;pointer-events:none;display:none;max-width:360px;min-width:220px;padding:12px 15px;border:2px solid #e5c27c;border-radius:9px;background:rgba(19,39,43,.98);color:#fff3d0;box-shadow:0 8px 25px #000b;font:700 16px system-ui;line-height:1.5}#hoverCosts .hoverTitle{color:#ffdc91;font-size:19px}#hoverCosts .hoverStatus{font-size:14px;margin-top:4px}#hoverCosts .enough{color:#9ff0ae}#hoverCosts .missing{color:#ff9d92}</style>
 <style id="screenLayoutFix">
 html,body{width:100%;max-width:100%;overflow-x:hidden}
 header{padding:5px 12px;min-height:38px;gap:10px}
@@ -299,7 +299,7 @@ el('employmentStatus').textContent=`Employment: ${employment.filled}/${employmen
 el('columnFormation').onclick=()=>{formation='column';msg('Column formation selected. Right-click to move your army.');};
 el('wall').onclick=()=>{if(ended)return;if(!selected.some(u=>u.type==='worker'&&alive(u)))return msg('Select a worker to build a wall.');if(stone<60||wood<30)return msg('Wall requires 60 stone and 30 wood.');mode='wall';msg('WALL PLACEMENT: move over the map to see a preview. Click within 180 pixels of your selected worker. Cost: 60 stone + 30 wood.');};
 el('upgradeKeep').onclick=()=>{if(ended)return;let k=buildings.find(b=>b.team===0&&b.type==='keep');if(!k)return;if(k.max>=1500)return msg('Keep already reinforced.');if(stone<100||gold<80)return msg('Reinforcing costs 100 stone and 80 gold.');stone-=100;gold-=80;k.max+=600;k.hp+=600;msg('Keep reinforced! +600 maximum health.');updateUI();};
-const civicCosts={theater:{wood:80,gold:90,stone:25},fishery:{wood:90,gold:45},house:{wood:60,gold:25},farm:{wood:75,gold:30},market:{wood:90,gold:90,stone:20},well:{stone:35,wood:25},lumberyard:{wood:75,gold:45},road:{stone:12},granary:{wood:85,stone:35},bakery:{wood:80,gold:45,stone:15},theater:{wood:80,gold:90,stone:25},clinic:{wood:70,gold:65,stone:25},garden:{wood:35,gold:15},plaza:{stone:25,gold:35}};
+const civicCosts={fishery:{wood:90,gold:45},house:{wood:60,gold:25},farm:{wood:75,gold:30},market:{wood:90,gold:90,stone:20},well:{stone:35,wood:25},lumberyard:{wood:75,gold:45},road:{stone:12},granary:{wood:85,stone:35},bakery:{wood:80,gold:45,stone:15},theater:{wood:80,gold:90,stone:25},clinic:{wood:70,gold:65,stone:25},garden:{wood:35,gold:15},plaza:{stone:25,gold:35}};
 for(const type of Object.keys(civicCosts)){const button=document.querySelector('#quickDock [data-action="'+type+'"]');if(!button)continue;button.onclick=()=>{if(ended)return;let workers=selected.filter(u=>u.team===0&&u.type==='worker'&&alive(u));let cost=civicCosts[type];if(gold<(cost.gold||0)||wood<(cost.wood||0)||stone<(cost.stone||0)){msg('Not enough resources to build '+type+'.');return;}mode=type;el('buildCostHint').textContent='🏗 '+type.toUpperCase()+' COST: '+(cost.wood||0)+' 🌲 Wood · '+(cost.gold||0)+' 🪙 Gold · '+(cost.stone||0)+' 🪨 Stone  — Click the map to build';msg(type==='fishery'?'Select Fishery and move your pointer over the blue sea. A GREEN preview marks the exact shoreline location where the dock will be built. Click to confirm. Your fishery will automatically snap onto a free shoreline plot. It needs 2 citizens to catch fish.':'Town council: place '+type+' on an empty buildable area. No worker needed. Escape cancels.');}}
 function assignGather(type){if(ended)return;let workers=selected.filter(u=>u.team===0&&u.type==='worker'&&alive(u));if(!workers.length)return msg('Select one or more W workers first.');let available=nodes.filter(n=>n.type===type&&n.amount>0);if(!available.length)return msg('All '+(type==='tree'?'wood':type)+' sites are depleted. They recover after 45 seconds.');workers.forEach((u,i)=>{let target=[...available].sort((a,b)=>dist(a,u)-dist(b,u))[i%Math.min(2,available.length)];u.order={type:'gather',target};u.target=null});msg(workers.length+' worker(s) sent to gather '+(type==='tree'?'wood':type)+'.');updateUI()}el('gwood').onclick=()=>assignGather('tree');el('ggold').onclick=()=>assignGather('gold');el('gstone').onclick=()=>assignGather('stone');el('pause').onclick=()=>{paused=!paused;el('pause').textContent=paused?'Resume':'Pause'};el('restart').onclick=init;el('difficulty').onchange=()=>{init();msg('Difficulty set to '+difficulty+'. New battle started.');};el('selectArmy').onclick=()=>{selected=units.filter(u=>u.team===0&&u.type!=='worker'&&alive(u));mode=null;updateUI();msg('Selected '+selected.length+' combat units. Right-click to move or attack.');};
 el('selectWorkers').onclick=()=>{selected=units.filter(u=>u.team===0&&u.type==='worker'&&alive(u));mode=null;updateUI();msg('Selected '+selected.length+' workers. Use the gather buttons to assign resources.');};
@@ -4098,9 +4098,9 @@ function draw(){
 document.getElementById('sc190ChronicleBtn')?.addEventListener('click',()=>{if(!panel.hidden)draw()});
 setInterval(()=>{if(!panel.hidden)draw()},2500);
 sample();setInterval(sample,15000);
-const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- document.title='Shattered Crowns — v13.44';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
+const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ document.title='Shattered Crowns — v13.45';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
 })();
 </script>
 
@@ -4128,8 +4128,8 @@ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='
  byId('sc1300Advice').textContent=snap.filled<snap.jobs?'Some buildings are understaffed. Add housing and maintain food and happiness to grow the population.':snap.jobs===0?'Build a farm or other workplace to create jobs.':'All existing workplaces are staffed.';
  }
  refresh();setInterval(refresh,1200);
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';document.title='Shattered Crowns — V13.00';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';document.title='Shattered Crowns — V13.00';
 })();
 </script>
 
@@ -4180,8 +4180,8 @@ body input, body textarea, body [contenteditable="true"] {
  const select=root.querySelector('select'),effect=root.querySelector('#sc1303Effect');
  function apply(){const v=select.value;window.scRationFactor=v==='conserve'?.75:v==='generous'?1.25:1;window.scRationMood=v==='conserve'?-2:v==='generous'?1.5:0;effect.textContent=v==='conserve'?'Conservation: 25% less food used, happiness -2 per cycle.':v==='generous'?'Generous: 25% more food used, happiness +1.5 per cycle.':'Normal: standard food use, no happiness adjustment.';}
  select.addEventListener('change',apply);apply();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- document.title='Shattered Crowns — v13.44';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ document.title='Shattered Crowns — v13.45';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
 })();
 </script>
 
@@ -4206,9 +4206,9 @@ body input, body textarea, body [contenteditable="true"] {
  tabs.addEventListener('click',e=>{if(e.target.closest('[data-tab="economy"]')){panel.scrollTop=0;} });
  select.addEventListener('pointerdown',e=>e.stopPropagation());
  select.addEventListener('click',e=>e.stopPropagation());
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- document.title='Shattered Crowns — v13.44';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ document.title='Shattered Crowns — v13.45';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
 })();
 </script>
 
@@ -4244,9 +4244,9 @@ body input, body textarea, body [contenteditable="true"] {
  // Re-evaluate before each existing five-second economy cycle.
  setInterval(update,500);
  update();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
- document.title='Shattered Crowns — v13.44';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
+ document.title='Shattered Crowns — v13.45';
 })();
 </script>
 
@@ -4272,9 +4272,9 @@ body input, body textarea, body [contenteditable="true"] {
  input.addEventListener('pointerdown',e=>e.stopPropagation());
  input.addEventListener('click',e=>e.stopPropagation());
  update();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
- document.title='Shattered Crowns — v13.44';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
+ document.title='Shattered Crowns — v13.45';
 })();
 </script>
 
@@ -4294,8 +4294,8 @@ body input, body textarea, body [contenteditable="true"] {
  selector.addEventListener('change',update);
  for(const event of ['pointerdown','click'])selector.addEventListener(event,e=>e.stopPropagation());
  update();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- document.title='Shattered Crowns — v13.44';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ document.title='Shattered Crowns — v13.45';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
 })();
 </script>
 
@@ -4322,9 +4322,9 @@ body input, body textarea, body [contenteditable="true"] {
  const guide=document.getElementById('sc189HelpPanel');
  if(guide){const heading=[...guide.querySelectorAll('h3')].find(x=>x.textContent.includes('Camera and controls'));
  if(heading){const next=heading.nextElementSibling; if(next&&next.tagName==='UL')next.remove();heading.remove();}}
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- document.title='Shattered Crowns — v13.44';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ document.title='Shattered Crowns — v13.45';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
 })();
 </script>
 <style id="sc1310AdvisorStyles">
@@ -4378,8 +4378,8 @@ body input, body textarea, body [contenteditable="true"] {
  function dismiss(){welcome.hidden=true;try{localStorage.setItem('sc1310AdvisorIntroSeen','yes')}catch(e){}}
  welcome.querySelector('#sc1310Try').addEventListener('click',()=>{dismiss();show(true)});
  welcome.querySelector('#sc1310Skip').addEventListener('click',dismiss);
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- document.title='Shattered Crowns — v13.44';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ document.title='Shattered Crowns — v13.45';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
 })();
 </script>
 
@@ -4495,9 +4495,9 @@ body input, body textarea, body [contenteditable="true"] {
   const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='0 of '+checks.length+' checks completed';
   try{sessionStorage.removeItem('sc1313TestsCompleted')}catch(e){}
  }
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- document.title='Shattered Crowns — v13.44';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ document.title='Shattered Crowns — v13.45';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
 })();
 </script>
 
@@ -4552,9 +4552,9 @@ body input, body textarea, body [contenteditable="true"] {
   const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='0 of '+tasks.length+' new checks completed';
   try{sessionStorage.removeItem('sc1313TestsCompleted')}catch(e){}
  }
- const badge=document.getElementById('sc179Version');if(badge){badge.textContent='V13.44 · Theater end-to-end fix';badge.style.bottom='139px'}
- document.title='Shattered Crowns — v13.44';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
+ const badge=document.getElementById('sc179Version');if(badge){badge.textContent='V13.45 · Theater end-to-end fix';badge.style.bottom='139px'}
+ document.title='Shattered Crowns — v13.45';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
 })();
 </script>
 
@@ -4602,8 +4602,8 @@ body input, body textarea, body [contenteditable="true"] {
   const progress=oldTests.querySelector('.sc1312Progress');if(progress)progress.textContent='One new feature to test';
   try{sessionStorage.removeItem('sc1313TestsCompleted')}catch(e){}
  }
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- document.title='Shattered Crowns — v13.44';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ document.title='Shattered Crowns — v13.45';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
 })();
 </script>
 
@@ -4657,8 +4657,8 @@ body input, body textarea, body [contenteditable="true"] {
   const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='One new feature to test';
   try{sessionStorage.removeItem('sc1313TestsCompleted')}catch(e){}
  }
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- document.title='Shattered Crowns — v13.44';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ document.title='Shattered Crowns — v13.45';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
 })();
 </script>
 
@@ -4703,8 +4703,8 @@ body input, body textarea, body [contenteditable="true"] {
   const labels=[...tests.querySelectorAll('label')];labels.forEach((label,i)=>{label.hidden=i!==0;if(i===0){const span=label.querySelector('span');if(span)span.textContent='Select Road (or House), then right-click the battlefield without building. Confirm the tool cancels; ordinary right-click unit orders must still work when no building is selected.';const cb=label.querySelector('input');if(cb)cb.checked=false;}});
   const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='One new feature to test';
  }
- const badge=document.getElementById('sc179Version');if(badge){badge.textContent='V13.44 · Theater end-to-end fix';badge.style.removeProperty('bottom');badge.style.removeProperty('left');}
- document.title='Shattered Crowns — v13.44';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
+ const badge=document.getElementById('sc179Version');if(badge){badge.textContent='V13.45 · Theater end-to-end fix';badge.style.removeProperty('bottom');badge.style.removeProperty('left');}
+ document.title='Shattered Crowns — v13.45';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
 })();
 </script>
 
@@ -4746,9 +4746,9 @@ body input, body textarea, body [contenteditable="true"] {
  document.getElementById('sc1310AdvisorBtn')?.addEventListener('click',()=>setTimeout(update,0));
  document.addEventListener('sc:built',update);
  update();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- document.title='Shattered Crowns — v13.44';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ document.title='Shattered Crowns — v13.45';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
 })();
 </script>
 
@@ -4786,9 +4786,9 @@ body input, body textarea, body [contenteditable="true"] {
  section.querySelector('button').addEventListener('click',locate);
  type.addEventListener('change',()=>{index=-1;marker.hidden=true;status.textContent='Choose Locate next to find '+type.selectedOptions[0].text.toLowerCase()+'.';});
  canvas.addEventListener('pointerdown',()=>{marker.hidden=true},{passive:true});
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- document.title='Shattered Crowns — v13.44';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ document.title='Shattered Crowns — v13.45';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
 })();
 </script>
 
@@ -4813,9 +4813,9 @@ body input, body textarea, body [contenteditable="true"] {
   const extra=document.createElement('label');extra.innerHTML='<input type="checkbox" id="sc1324Refined" checked> Refined roads and Royal Keep';section.append(extra);extra.querySelector('input').addEventListener('change',e=>{window.sc1324RefinedStreets=e.target.checked;});
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- document.title='Shattered Crowns — v13.44';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ document.title='Shattered Crowns — v13.45';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
 })();
 </script>
 
@@ -4834,9 +4834,9 @@ body input, body textarea, body [contenteditable="true"] {
   label.querySelector('input').addEventListener('change',e=>{window.sc1325Cobblestones=e.target.checked;});
  }}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- document.title='Shattered Crowns — v13.44';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ document.title='Shattered Crowns — v13.45';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
 })();
 </script>
 <style id="sc1326Style">#sc1326ArchitectureRow{margin-top:7px}</style>
@@ -4847,9 +4847,9 @@ body input, body textarea, body [contenteditable="true"] {
  const row=document.createElement('label');row.id='sc1326ArchitectureRow';row.innerHTML='<input id="sc1326Architecture" type="checkbox" checked> Roof and facade details';
  host.append(row);row.querySelector('input').addEventListener('change',e=>{window.sc1326Architecture=e.target.checked;});}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- document.title='Shattered Crowns — v13.44';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ document.title='Shattered Crowns — v13.45';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
 })();
 </script>
 
@@ -4860,9 +4860,9 @@ body input, body textarea, body [contenteditable="true"] {
  const label=document.createElement('label');label.innerHTML='<input id="sc1327Civic" type="checkbox" checked> Village well and market details';
  host.append(label);label.querySelector('input').addEventListener('change',e=>{window.sc1327CivicDetails=e.target.checked;});}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- document.title='Shattered Crowns — v13.44';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ document.title='Shattered Crowns — v13.45';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
 })();
 </script>
 
@@ -4878,9 +4878,9 @@ body input, body textarea, body [contenteditable="true"] {
   label.querySelector('input').addEventListener('change',e=>{window.sc1329FarmDetails=e.target.checked});
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- document.title='Shattered Crowns — v13.44';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ document.title='Shattered Crowns — v13.45';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
 })();
 </script>
 
@@ -4911,9 +4911,9 @@ body input, body textarea, body [contenteditable="true"] {
  if(panel&&close){
    close.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();panel.hidden=true;document.getElementById('sc1310AdvisorBtn')?.setAttribute('aria-expanded','false');},true);
  }
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- document.title='Shattered Crowns — v13.44';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ document.title='Shattered Crowns — v13.45';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
 })();
 </script>
 
@@ -4929,9 +4929,9 @@ body input, body textarea, body [contenteditable="true"] {
   label.querySelector('input').addEventListener('change',e=>{window.sc1334CivicLandscaping=e.target.checked;});
  };
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- document.title='Shattered Crowns — v13.44';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ document.title='Shattered Crowns — v13.45';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
 })();
 </script>
 <script id="sc1335WorkingVillage">
@@ -4946,17 +4946,17 @@ body input, body textarea, body [contenteditable="true"] {
   row.querySelector('input').addEventListener('change',e=>{window.sc1335WorkshopDetails=e.target.checked});
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';
- document.title='Shattered Crowns — v13.44';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';
+ document.title='Shattered Crowns — v13.45';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';
 })();
 </script><script id="sc1336CivicCraft">(()=>{'use strict';window.sc1336CivicCraft=true;
 function install(){const host=document.getElementById('sc1323Visual');if(!host||document.getElementById('sc1336CivicCraftToggle'))return;
 const label=document.createElement('label');label.innerHTML='<input type="checkbox" id="sc1336CivicCraftToggle" checked> Bakery and healer details';host.append(label);
 label.querySelector('input').addEventListener('change',e=>{window.sc1336CivicCraft=e.target.checked});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
-const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';document.title='Shattered Crowns — v13.44';
-const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';})();</script><script id="sc1338RenderGuard">(()=>{'use strict';const update=()=>{const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';document.title='Shattered Crowns — v13.44';};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',update);else update();})();</script><style id="sc1339Style">
+const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';document.title='Shattered Crowns — v13.45';
+const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';})();</script><script id="sc1338RenderGuard">(()=>{'use strict';const update=()=>{const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';document.title='Shattered Crowns — v13.45';};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',update);else update();})();</script><style id="sc1339Style">
 #sc1339Milestones{position:fixed;z-index:30000;top:12%;left:50%;transform:translateX(-50%);width:min(530px,calc(100vw - 30px));max-height:75vh;overflow:auto;padding:18px;background:#172c2b;color:#f0ead6;border:2px solid #bda36a;border-radius:12px;box-shadow:0 15px 55px #000b;font:14px/1.5 system-ui}
 #sc1339Milestones[hidden]{display:none!important}#sc1339Milestones h2{margin:0 0 8px;color:#f4db9a}#sc1339Milestones .goal{margin:8px 0;padding:9px;background:#253e38;border-radius:7px;border-left:4px solid #a98b56}#sc1339Milestones .goal.done{border-color:#80bf83}#sc1339Milestones .goal small{display:block;color:#c6d2c8}#sc1339Milestones button{background:#3a5145;color:white;border:1px solid #a7ad90;border-radius:5px;padding:6px 12px;cursor:pointer}
 </style>
@@ -4969,6 +4969,51 @@ const goals=[['Growing village','Reach 24 residents','population',24,'Build hous
 function refresh(){if(panel.hidden)return;const host=document.getElementById('sc1339Goals');host.replaceChildren();let done=0;for(const [name,description,id,target,hint] of goals){const val=read(id),passed=val>=target;if(passed)done++;const row=document.createElement('div');row.className='goal'+(passed?' done':'');const head=document.createElement('strong');head.textContent=(passed?'✓ ':'○ ')+name;const detail=document.createElement('div');detail.textContent=description+' — '+Math.min(Math.floor(val),target)+' / '+target;const note=document.createElement('small');note.textContent=passed?'Completed in your current settlement':hint;row.append(head,detail,note);host.append(row)}const count=document.createElement('p');count.textContent=done+' of '+goals.length+' settlement goals reached';host.prepend(count)}
 function show(v){panel.hidden=!v;btn.setAttribute('aria-expanded',String(v));if(v)refresh()}
 btn.addEventListener('click',()=>show(panel.hidden));panel.querySelector('#sc1339Close').addEventListener('click',()=>show(false));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)show(false)});setInterval(refresh,2500);
-const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.44 · Theater end-to-end fix';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.44.0';document.title='Shattered Crowns — v13.44';}
+const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.45 · Theater end-to-end fix';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.45.0';document.title='Shattered Crowns — v13.45';}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
-})();</script><script id="sc1342TheaterInfo">(()=>{const set=()=>{const b=document.querySelector('[data-action="theater"]');if(b)b.title='Theater — 80 wood, 90 gold, 25 stone. Cultural venue: +0.4 happiness per food cycle (up to +1.2 from theaters).';};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',set);else set();})();</script></body></html>
+})();</script><script id="sc1342TheaterInfo">(()=>{const set=()=>{const b=document.querySelector('[data-action="theater"]');if(b)b.title='Theater — 80 wood, 90 gold, 25 stone. Cultural venue: +0.4 happiness per food cycle (up to +1.2 from theaters).';};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',set);else set();})();</script><style id="sc1345TheaterStyle">
+#sc1345TheaterCard{position:fixed;bottom:89px;left:50%;transform:translateX(-50%);z-index:14000;max-width:min(560px,94vw);padding:10px 15px;background:#152f29;border:2px solid #d3ae64;border-radius:8px;color:#fff2d0;font:13px system-ui;box-shadow:0 4px 20px #0009;display:none;pointer-events:none;text-align:center}
+#sc1345TheaterCard.visible{display:block}
+#sc140Commands button[data-sc1345-theater]{border:2px solid #d3ae64!important}
+</style>
+<div id="sc1345TheaterCard" role="status" aria-live="polite"></div>
+<script id="sc1345TheaterReliableUI">
+(()=>{'use strict';
+const card=document.getElementById('sc1345TheaterCard');
+const cost='🎭 THEATER — 80 wood · 90 gold · 25 stone';
+let armed=false;
+function set(text){card.textContent=text;card.classList.add('visible')}
+function money(){return {wood:Number(document.getElementById('resWood')?.textContent||0),gold:Number(document.getElementById('resGold')?.textContent||0),stone:Number(document.getElementById('resStone')?.textContent||0)}}
+function arm(){
+ const m=money(),missing=[];
+ if(m.wood<80)missing.push((80-m.wood)+' wood');
+ if(m.gold<90)missing.push((90-m.gold)+' gold');
+ if(m.stone<25)missing.push((25-m.stone)+' stone');
+ armed=!missing.length;
+ set(cost+(missing.length?' · NEED '+missing.join(', '):' · READY: click an empty green plot on the map'));
+}
+document.addEventListener('pointerover',e=>{
+ const b=e.target.closest?.('#sc140Commands button,#quickDock button');
+ if(b?.textContent?.includes('Theater')){b.title=cost+' — Click then place on clear ground';}
+},true);
+document.addEventListener('click',e=>{
+ const b=e.target.closest?.('button');
+ if(b?.textContent?.includes('Theater')&&(b.closest('#sc140Commands')||b.closest('#quickDock'))){
+  arm();
+  setTimeout(arm,0);
+ }else if(b?.id==='sc140Build'){card.classList.remove('visible');armed=false;}
+},true);
+const canvas=document.getElementById('field');
+canvas?.addEventListener('pointerup',e=>{
+ if(e.button!==0||!armed)return;
+ setTimeout(()=>{
+  const status=document.getElementById('status')?.textContent||'';
+  if(status.includes('THEATER constructed')){set('✓ Theater constructed successfully. '+cost);armed=false;setTimeout(()=>card.classList.remove('visible'),3500)}
+  else if(status.includes('Invalid location'))set(cost+' · BLOCKED LOCATION — choose clear ground away from buildings, trees and river');
+  else if(status.includes('Not enough resources')){armed=false;arm()}
+  else set(cost+' · Select a clear plot away from existing structures');
+ },100);
+},true);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){armed=false;card.classList.remove('visible')}});
+})();
+</script></body></html>
