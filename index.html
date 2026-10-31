@@ -3828,4 +3828,40 @@ document.title='Shattered Crowns — V12.89';
  const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v12.98.0';
 })();
 </script>
+
+<style id="sc199TabsStyle">
+#sc199Tabs{display:flex;gap:6px;position:sticky;top:-16px;background:#142f2a;padding:9px 0 10px;z-index:2;border-bottom:1px solid #617b65;margin-bottom:12px;clear:both}
+#sc190ChroniclePanel #sc199Tabs button{float:none;flex:1;padding:8px 3px;background:#24443a;font-size:12px;font-weight:700}
+#sc190ChroniclePanel #sc199Tabs button[aria-selected="true"]{background:#846632;color:#fff6df;border-color:#e5bc72}
+#sc190ChroniclePanel .sc199Page[hidden]{display:none!important}
+#sc190ChroniclePanel .sc199Page{min-height:120px}
+#sc190ChroniclePanel{width:min(440px,calc(100vw - 28px))}
+#sc199History>h3{margin-top:4px}
+</style>
+<script id="sc199ChronicleTabs">
+(()=>{'use strict';
+ const panel=document.getElementById('sc190ChroniclePanel');if(!panel)return;
+ const stats=document.getElementById('sc190Stats'),events=document.getElementById('sc190Events');
+ const planner=document.getElementById('sc193Planner'),capacity=document.getElementById('sc194Capacity'),food=document.getElementById('sc198FoodMonitor');
+ if(!stats||!events||!planner||!capacity||!food)return;
+ const tabs=document.createElement('nav');tabs.id='sc199Tabs';tabs.setAttribute('aria-label','Chronicle sections');
+ const names=[['city','🏘 City'],['economy','🌾 Economy'],['history','📜 History']];
+ for(const [id,label] of names){const b=document.createElement('button');b.type='button';b.dataset.tab=id;b.textContent=label;b.setAttribute('aria-selected','false');tabs.append(b)}
+ const pages={};for(const [id] of names){const p=document.createElement('section');p.id='sc199'+id;p.className='sc199Page';p.hidden=id!=='city';pages[id]=p}
+ const heading=panel.querySelector('h2');const intro=heading?.nextElementSibling;
+ (intro||heading).after(tabs,pages.city,pages.economy,pages.history);
+ const cityTitle=document.createElement('h3');cityTitle.textContent='Settlement overview';pages.city.append(cityTitle,stats,planner);
+ pages.economy.append(food,capacity);
+ const historyTitle=document.createElement('h3');historyTitle.textContent='Recent events';pages.history.append(historyTitle,events);
+ const foot=Array.from(panel.querySelectorAll('small')).find(e=>e.textContent.includes('Events are kept'));if(foot)pages.history.append(foot);
+ const oldHeading=Array.from(panel.querySelectorAll('h3')).find(e=>e.textContent==='Recent events'&&e!==historyTitle);if(oldHeading)oldHeading.remove();
+ let active='city';function choose(id){if(!pages[id])return;active=id;for(const [key,page] of Object.entries(pages))page.hidden=key!==id;for(const b of tabs.querySelectorAll('button'))b.setAttribute('aria-selected',String(b.dataset.tab===id));panel.scrollTop=0}
+ tabs.addEventListener('click',e=>{const b=e.target.closest('button[data-tab]');if(b)choose(b.dataset.tab)});
+ document.getElementById('sc190ChronicleBtn')?.addEventListener('click',()=>{if(!panel.hidden)choose('city')});
+ choose('city');
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V12.99 · Chronicle tabs';
+ document.title='Shattered Crowns — V12.99';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v12.99.0';
+})();
+</script>
 </body></html>
