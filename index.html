@@ -4140,8 +4140,8 @@ body input, body textarea, body [contenteditable="true"] {
  function dismiss(){welcome.hidden=true;try{localStorage.setItem('sc1310AdvisorIntroSeen','yes')}catch(e){}}
  welcome.querySelector('#sc1310Try').addEventListener('click',()=>{dismiss();show(true)});
  welcome.querySelector('#sc1310Skip').addEventListener('click',dismiss);
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.11 · Advisor & Pause';
- document.title='Shattered Crowns — v13.11';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.11.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.12 · City Life & Test Guide';
+ document.title='Shattered Crowns — v13.12';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.12.0';
 })();
 </script>
 
@@ -4180,6 +4180,57 @@ body input, body textarea, body [contenteditable="true"] {
  document.getElementById('sc1310AdvisorBtn')?.addEventListener('click',()=>setTimeout(refresh,0));
  document.addEventListener('sc:built',()=>setTimeout(refresh,0));
  setInterval(refresh,2500);
+})();
+</script>
+
+<style id="sc1312Styles">
+/* City Life is a top-bar action, not another permanent battlefield widget. */
+#sc1312CityLifeBtn{position:static!important;padding:5px 9px!important;background:#5b4527!important;color:#ffe7ac!important;border:1px solid #b79b65!important;border-radius:5px!important;cursor:pointer;font:600 11px system-ui!important;white-space:nowrap}
+#sc159Pulse{position:fixed!important;left:auto!important;right:14px!important;top:76px!important;max-width:min(315px,calc(100vw - 28px))!important;width:285px!important;z-index:31999!important}
+#sc159Pulse[hidden]{display:none!important}
+#sc159Pulse.collapsed{max-width:min(315px,calc(100vw - 28px))!important}
+#sc1312Tests{margin-top:14px;padding:10px;border:1px solid #819b78;border-radius:7px;background:#18382f}
+#sc1312Tests h3{font-size:14px;margin:0 0 7px;color:#ffe0a1}
+#sc1312Tests label{display:flex;gap:8px;align-items:flex-start;margin:8px 0;cursor:pointer;font-size:12px}
+#sc1312Tests input{margin-top:3px;accent-color:#bca56a;flex-shrink:0}
+#sc1312Tests .sc1312Progress{font-size:11px;color:#c8dfc4;margin:6px 0}
+#sc1312Tests button{font-size:11px;margin-top:5px}
+@media(max-width:650px){#sc1312CityLifeBtn{padding:4px!important;font-size:10px!important}}
+</style>
+<script id="sc1312CityLifeAndReleaseTests">
+(()=>{'use strict';
+ const bar=document.getElementById('sc149Status');const pulse=document.getElementById('sc159Pulse');
+ if(bar&&pulse){
+  const btn=document.createElement('button');btn.type='button';btn.id='sc1312CityLifeBtn';btn.textContent='🏘 City Life';btn.setAttribute('aria-expanded','false');btn.setAttribute('aria-controls','sc159Pulse');
+  const advisor=document.getElementById('sc1310AdvisorBtn');if(advisor)bar.insertBefore(btn,advisor);else bar.append(btn);
+  pulse.hidden=true;
+  function show(open){pulse.hidden=!open;btn.setAttribute('aria-expanded',String(open));if(open){pulse.classList.remove('collapsed');const arrow=document.getElementById('sc159Arrow');if(arrow)arrow.textContent='▾';document.getElementById('sc1310AdvisorPanel')?.setAttribute('hidden','');document.getElementById('sc190ChroniclePanel')?.setAttribute('hidden','');document.getElementById('sc189HelpPanel')?.setAttribute('hidden','')}}
+  btn.addEventListener('click',e=>{e.stopPropagation();show(pulse.hidden)});
+  document.getElementById('sc159Toggle')?.addEventListener('click',()=>{if(pulse.classList.contains('collapsed'))show(false)});
+  document.getElementById('sc1310AdvisorBtn')?.addEventListener('click',()=>show(false));
+  document.getElementById('sc190ChronicleBtn')?.addEventListener('click',()=>show(false));
+  document.getElementById('sc189HelpButton')?.addEventListener('click',()=>show(false));
+  window.addEventListener('keydown',e=>{if(e.key==='Escape')show(false)});
+ }
+ const advisorPanel=document.getElementById('sc1310AdvisorPanel');const advice=document.getElementById('sc1310AdvisorAdvice');
+ if(!advisorPanel||!advice)return;
+ const tests=document.createElement('section');tests.id='sc1312Tests';
+ const heading=document.createElement('h3');heading.textContent='🧪 What to test — V13.12';tests.append(heading);
+ const intro=document.createElement('p');intro.textContent='Optional release checks. Tick each one after trying it in the game.';intro.style.fontSize='12px';tests.append(intro);
+ const tasks=[
+  'Open City Life from the top bar; confirm its figures appear and the panel closes.',
+  'Open Advisor and Chronicle; check that panels do not overlap.',
+  'Pause and resume; confirm PAUSED appears and disappears in the center.',
+  'Build a house or farm, then check that City Life counts update.',
+  'Open Chronicle → Economy and change a food policy; confirm controls respond.'
+ ];
+ const key='sc1312TestsCompleted';let completed=[];try{const v=JSON.parse(sessionStorage.getItem(key)||'[]');if(Array.isArray(v))completed=v}catch(e){}
+ const progress=document.createElement('div');progress.className='sc1312Progress';
+ const checkboxes=[];
+ tasks.forEach((task,i)=>{const label=document.createElement('label');const input=document.createElement('input');input.type='checkbox';input.checked=completed.includes(i);const span=document.createElement('span');span.textContent=task;label.append(input,span);tests.append(label);checkboxes.push(input);input.addEventListener('change',update)});
+ function update(){const done=checkboxes.flatMap((c,i)=>c.checked?[i]:[]);progress.textContent=done.length+' of '+tasks.length+' checks completed'+(done.length===tasks.length?' — thank you!':'');try{sessionStorage.setItem(key,JSON.stringify(done))}catch(e){}}
+ tests.append(progress);const reset=document.createElement('button');reset.type='button';reset.textContent='Reset checks';reset.addEventListener('click',()=>{checkboxes.forEach(c=>c.checked=false);update()});tests.append(reset);
+ advisorPanel.append(tests);update();
 })();
 </script>
 </body></html>
