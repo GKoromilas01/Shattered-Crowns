@@ -4060,4 +4060,33 @@ body input, body textarea, body [contenteditable="true"] {
  document.title='Shattered Crowns — v13.08';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.08.0';
 })();
 </script>
+
+<style id="sc1309UnifiedToolbar">
+/* One predictable home for secondary actions, aligned to the existing top bar. */
+#sc149Status{top:29px!important;right:9px!important;display:flex!important;align-items:center!important;gap:6px!important;flex-wrap:nowrap!important;z-index:31010!important;padding:3px 5px!important;max-width:calc(100vw - 18px)!important}
+#sc149Status .sc149secondary{display:none!important}
+#sc149Status #sc190ChronicleBtn,#sc149Status #sc189HelpButton{position:static!important;top:auto!important;right:auto!important;float:none!important;margin:0!important;padding:5px 9px!important;font:600 11px system-ui!important;white-space:nowrap!important;z-index:auto!important}
+#sc149Status #sc149Keep,#sc149Status #sc149Train{white-space:nowrap!important;padding:5px 8px!important}
+/* The Chronicle already has a dedicated Economy tab; remove the redundant floating summary. */
+#sc176Economy{display:none!important}
+/* Keep game panels close to their top toolbar, with room for the bottom action dock. */
+#sc190ChroniclePanel,#sc189HelpPanel{top:72px!important;bottom:96px!important;max-height:calc(100vh - 168px)!important}
+@media(max-width:650px){#sc149Status{gap:3px!important}#sc149Status #sc190ChronicleBtn,#sc149Status #sc189HelpButton,#sc149Status #sc149Keep,#sc149Status #sc149Train{font-size:10px!important;padding:4px!important}}
+</style>
+<script id="sc1309UnifiedToolbarScript">
+(()=>{'use strict';
+ const bar=document.getElementById('sc149Status');
+ const chronicle=document.getElementById('sc190ChronicleBtn');
+ const help=document.getElementById('sc189HelpButton');
+ if(bar&&chronicle&&help){bar.append(chronicle,help);}
+ // No always-on navigation instruction; the optional guide still documents controls.
+ const hint=document.querySelector('#sc149Status .sc149secondary');if(hint)hint.remove();
+ const guide=document.getElementById('sc189HelpPanel');
+ if(guide){const heading=[...guide.querySelectorAll('h3')].find(x=>x.textContent.includes('Camera and controls'));
+ if(heading){const next=heading.nextElementSibling; if(next&&next.tagName==='UL')next.remove();heading.remove();}}
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.09 · Unified toolbar';
+ document.title='Shattered Crowns — v13.09';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.09.0';
+})();
+</script>
 </body></html>
