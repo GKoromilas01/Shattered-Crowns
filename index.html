@@ -1498,7 +1498,7 @@ if(false && showMinimap){
  ctx.font='bold 11px system-ui';ctx.textAlign='center';ctx.fillStyle='#f1ddb2';ctx.fillText('BATTLEFIELD OVERVIEW',mx+mw/2,my+mh+15);ctx.restore();
 }
 if(drag&&!drag.pan){ctx.strokeStyle='#fff1a4';ctx.fillStyle='#f4e4a51a';let x=Math.min(drag.x,drag.xx),y=Math.min(drag.y,drag.yy),w=Math.abs(drag.xx-drag.x),h=Math.abs(drag.yy-drag.y);ctx.fillRect(x,y,w,h);ctx.strokeRect(x,y,w,h)}
-if(paused||ended){ctx.fillStyle='#08131ac9';ctx.fillRect(0,0,W,H);ctx.fillStyle='#f2d69a';ctx.font='bold 44px system-ui';ctx.textAlign='center';ctx.fillText(ended?(buildings.some(b=>b.team===0&&b.type==='keep')?'VICTORY':'DEFEAT'):'PAUSED',W/2,H/2)}
+if(ended){ctx.fillStyle='#08131ac9';ctx.fillRect(0,0,W,H);ctx.fillStyle='#f2d69a';ctx.font='bold 44px system-ui';ctx.textAlign='center';ctx.fillText(buildings.some(b=>b.team===0&&b.type==='keep')?'VICTORY':'DEFEAT',W/2,H/2)}
 }
 // Universal cost hover for every build, recruitment and army action.
 // Resource values are read live, so shortages update as the city changes.
@@ -4140,8 +4140,8 @@ body input, body textarea, body [contenteditable="true"] {
  function dismiss(){welcome.hidden=true;try{localStorage.setItem('sc1310AdvisorIntroSeen','yes')}catch(e){}}
  welcome.querySelector('#sc1310Try').addEventListener('click',()=>{dismiss();show(true)});
  welcome.querySelector('#sc1310Skip').addEventListener('click',dismiss);
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.12 · City Life & Test Guide';
- document.title='Shattered Crowns — v13.12';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.12.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.13 · Pause simulation fix';
+ document.title='Shattered Crowns — v13.13';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.13.0';
 })();
 </script>
 
@@ -4215,16 +4215,16 @@ body input, body textarea, body [contenteditable="true"] {
  const advisorPanel=document.getElementById('sc1310AdvisorPanel');const advice=document.getElementById('sc1310AdvisorAdvice');
  if(!advisorPanel||!advice)return;
  const tests=document.createElement('section');tests.id='sc1312Tests';
- const heading=document.createElement('h3');heading.textContent='🧪 What to test — V13.12';tests.append(heading);
+ const heading=document.createElement('h3');heading.textContent='🧪 What to test — V13.13';tests.append(heading);
  const intro=document.createElement('p');intro.textContent='Optional release checks. Tick each one after trying it in the game.';intro.style.fontSize='12px';tests.append(intro);
  const tasks=[
   'Open City Life from the top bar; confirm its figures appear and the panel closes.',
   'Open Advisor and Chronicle; check that panels do not overlap.',
-  'Pause and resume; confirm PAUSED appears and disappears in the center.',
+  'Pause for 10 seconds; verify food, units and enemies do not change. Resume and confirm movement continues and only one PAUSED message appears.',
   'Build a house or farm, then check that City Life counts update.',
   'Open Chronicle → Economy and change a food policy; confirm controls respond.'
  ];
- const key='sc1312TestsCompleted';let completed=[];try{const v=JSON.parse(sessionStorage.getItem(key)||'[]');if(Array.isArray(v))completed=v}catch(e){}
+ const key='sc1313TestsCompleted';let completed=[];try{const v=JSON.parse(sessionStorage.getItem(key)||'[]');if(Array.isArray(v))completed=v}catch(e){}
  const progress=document.createElement('div');progress.className='sc1312Progress';
  const checkboxes=[];
  tasks.forEach((task,i)=>{const label=document.createElement('label');const input=document.createElement('input');input.type='checkbox';input.checked=completed.includes(i);const span=document.createElement('span');span.textContent=task;label.append(input,span);tests.append(label);checkboxes.push(input);input.addEventListener('change',update)});
