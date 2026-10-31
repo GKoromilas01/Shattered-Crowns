@@ -569,7 +569,15 @@ function canPlace(type,p,worker){
 }
 
 let scLastUnitClick=null;
-function mouse(e){let r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}};c.addEventListener('contextmenu',e=>e.preventDefault());c.addEventListener('pointerleave',()=>wallPointer=null);c.addEventListener('pointerdown',e=>{if(e.button!==0||ended||drag)return;let p=mouse(e);const startUnit=units.some(u=>u.team===0&&alive(u)&&dist(u,p)<Math.max(43,u.radius+32));
+function mouse(e){let r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}};// V13.20: right-click cancels an armed construction tool before unit orders.
+// Capture phase prevents later right-click order handlers from processing this click.
+c.addEventListener('pointerup',e=>{
+ if(e.button!==2||!mode)return;
+ mode=null;wallPointer=null;drag=null;
+ msg('Construction cancelled. Select another tool or continue playing.');
+ e.preventDefault();e.stopImmediatePropagation();
+},true);
+c.addEventListener('contextmenu',e=>e.preventDefault());c.addEventListener('pointerleave',()=>wallPointer=null);c.addEventListener('pointerdown',e=>{if(e.button!==0||ended||drag)return;let p=mouse(e);const startUnit=units.some(u=>u.team===0&&alive(u)&&dist(u,p)<Math.max(43,u.radius+32));
 const panTerrain=false; // AoE II: left-drag selects, never pans. // Drag from empty terrain pans; drag starting on friendly unit selects a group.
 drag={x:p.x,y:p.y,xx:p.x,yy:p.y,id:e.pointerId,pan:panTerrain,clientX:e.clientX,clientY:e.clientY,scrollX:mapViewport.scrollLeft,scrollY:mapViewport.scrollTop,moved:false};c.setPointerCapture(e.pointerId)});c.addEventListener('pointermove',e=>{wallPointer=mouse(e);if(drag){if(drag.pan){if(Math.hypot(e.clientX-drag.clientX,e.clientY-drag.clientY)>6)drag.moved=true;if(drag.moved){mapViewport.scrollLeft=drag.scrollX-(e.clientX-drag.clientX);mapViewport.scrollTop=drag.scrollY-(e.clientY-drag.clientY);c.classList.add('panning')}}else{let p=mouse(e);drag.xx=p.x;drag.yy=p.y}}});c.addEventListener('pointerup',e=>{if(e.button!==0||!drag||ended||e.pointerId!==drag.id)return;if(drag.pan&&drag.moved){drag=null;c.classList.remove('panning');panTested=true;updateUI();return}let p=mouse(e);if(['tower','fortress','wall','house','farm','fishery','market','well','lumberyard','road','granary','clinic','garden','plaza','bakery'].includes(mode)){let buildingType=mode;let worker=selected.find(u=>u.type==='worker'&&alive(u));if(buildingType==='road'){buildRoadLine({x:drag.x,y:drag.y},p);drag=null;wallPointer=null;updateUI();return}if(buildingType==='fishery')p=fisheryPoint(p);if(compactAmenity(buildingType))p=civicGridPoint(buildingType,p);if(canPlace(buildingType,p,worker)){if(civicCosts[buildingType]){let cost=civicCosts[buildingType];if(gold<(cost.gold||0)||wood<(cost.wood||0)||stone<(cost.stone||0)){msg('Not enough resources: construction cancelled.');mode=null;drag=null;wallPointer=null;updateUI();return}gold-=cost.gold||0;wood-=cost.wood||0;stone-=cost.stone||0}else if(buildingType==='tower'){gold-=100;wood-=100}else if(buildingType==='wall'){stone-=60;wood-=30}else{gold-=180;wood-=150;stone-=120}addBuilding(0,buildingType,p.x,p.y);msg(civicCosts[buildingType]?buildingType.toUpperCase()+' constructed! Your town is growing.':buildingType==='tower'?'Defense tower constructed.':buildingType==='wall'?'Stone wall constructed!':'Fortress constructed! Stronger defense with longer range.')}else msg(buildingType==='fishery'?'Fishery needs an open shoreline plot. Click the blue sea; the game will find an available shore location.':(buildingType==='garden'||buildingType==='plaza')?'Choose a clear grass plot inside your settlement. Red preview means the location is blocked.':'Invalid location: use empty ground away from resources, buildings, river and edges. Only defenses require a nearby selected worker.');mode=null;drag=null;wallPointer=null;updateUI();return}let x1=Math.min(drag.x,p.x),x2=Math.max(drag.x,p.x),y1=Math.min(drag.y,p.y),y2=Math.max(drag.y,p.y);if(Math.hypot(drag.x-p.x,drag.y-p.y)<18){let u=units.filter(u=>u.team===0&&alive(u)&&dist(u,p)<Math.max(43,u.radius+32)).sort((a,b)=>dist(a,p)-dist(b,p)||((a.type==='soldier'||a.type==='archer')?-1:1))[0];selected=u?[u]:[];
 // V12.16.1: detect consecutive pointer clicks (pointerup.detail is unreliable).
@@ -4433,6 +4441,52 @@ body input, body textarea, body [contenteditable="true"] {
  }
  const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.18 · Neighborhood map';
  document.title='Shattered Crowns — v13.18';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.18.0';
+})();
+</script>
+
+<style id="sc1319Style">
+/* Version belongs above the toolbar, never on the playfield. */
+#sc179Version{position:fixed!important;top:3px!important;right:8px!important;left:auto!important;bottom:auto!important;z-index:31011!important;max-width:none!important;font-size:10px!important;padding:2px 7px!important;line-height:15px!important;pointer-events:none!important}
+#sc1319ServicePlan{margin:10px 0;padding:10px;border:1px solid #77947a;border-radius:7px;background:#1a3933;color:#eaf0db;font:12px/1.5 system-ui}
+#sc1319ServicePlan h3{margin:0 0 5px;color:#ffe0a1;font-size:14px}
+#sc1319ServicePlan button{padding:7px 11px;border:1px solid #c6a665;border-radius:5px;background:#5d492a;color:#fff0c6;cursor:pointer;font:600 12px system-ui}
+#sc1319ServicePlan p{margin:6px 0}
+</style>
+<script id="sc1319ServicePriorities">
+(()=>{'use strict';
+ const panel=document.getElementById('sc1310AdvisorPanel');
+ const coverage=document.getElementById('sc1318Coverage');
+ if(!panel||!coverage)return;
+ const section=document.createElement('section');section.id='sc1319ServicePlan';
+ section.innerHTML='<h3>🏘 Next neighborhood improvement</h3><p id="sc1319Result">Analyze your houses to find the service that would help the most residents.</p><button type="button" id="sc1319Analyze">Analyze service gaps</button>';
+ coverage.insertAdjacentElement('afterend',section);
+ const result=section.querySelector('#sc1319Result');
+ function analyze(){
+  const buildings=Array.isArray(window.scHoverBuildings)?window.scHoverBuildings.filter(b=>b&&b.team===0&&(b.hp===undefined||b.hp>0)):[];
+  const houses=buildings.filter(b=>b.type==='house');
+  if(!houses.length){result.textContent='No houses yet. Build your first house before planning services.';return;}
+  const services=[['Well',['well']],['Healer',['clinic','healer']],['Garden or plaza',['garden','plaza']],['Market',['market']]];
+  const gaps=services.map(()=>0);let underserved=0,almost=0;
+  for(const h of houses){
+   const present=services.map(([,types])=>buildings.some(b=>types.includes(b.type)&&Math.hypot(b.x-h.x,b.y-h.y)<175));
+   const count=present.filter(Boolean).length;
+   if(count>=3)continue;
+   underserved++;if(count===2)almost++;
+   present.forEach((yes,i)=>{if(!yes)gaps[i]++});
+  }
+  if(!underserved){result.textContent=`All ${houses.length} houses have at least three nearby services. Your neighborhoods meet the current coverage requirement.`;return;}
+  const ranked=services.map(([name],i)=>({name,missing:gaps[i]})).sort((a,b)=>b.missing-a.missing);
+  result.textContent=`${underserved} of ${houses.length} houses need better coverage; ${almost} already have 2 of 4 services. Most common gap: ${ranked[0].name} (${ranked[0].missing} underserved houses lack it). Build near underserved homes, then analyze again. Nearby means within 175 map units.`;
+ }
+ section.querySelector('button').addEventListener('click',analyze);
+ document.getElementById('sc1310AdvisorBtn')?.addEventListener('click',()=>setTimeout(()=>{if(!panel.hidden)analyze()},0));
+ const tests=document.getElementById('sc1312Tests');if(tests){
+  const h=tests.querySelector('h3');if(h)h.textContent='🧪 New in V13.20';
+  const labels=[...tests.querySelectorAll('label')];labels.forEach((label,i)=>{label.hidden=i!==0;if(i===0){const span=label.querySelector('span');if(span)span.textContent='Select Road (or House), then right-click the battlefield without building. Confirm the tool cancels; ordinary right-click unit orders must still work when no building is selected.';const cb=label.querySelector('input');if(cb)cb.checked=false;}});
+  const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='One new feature to test';
+ }
+ const badge=document.getElementById('sc179Version');if(badge){badge.textContent='V13.20 · Right-click cancel';badge.style.removeProperty('bottom');badge.style.removeProperty('left');}
+ document.title='Shattered Crowns — v13.20';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.20.0';
 })();
 </script>
 </body></html>
