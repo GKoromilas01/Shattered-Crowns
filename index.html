@@ -4380,4 +4380,59 @@ body input, body textarea, body [contenteditable="true"] {
  document.title='Shattered Crowns — v13.17';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.17.0';
 })();
 </script>
+
+<style id="sc1318Styles">
+#sc1318Coverage{margin:10px 0;padding:10px;border:1px solid #688e88;border-radius:7px;background:#183b3a;color:#edf4df;font:12px/1.5 system-ui}
+#sc1318Coverage h3{margin:0 0 6px;color:#ffe1a0;font-size:14px}
+#sc1318Coverage button{padding:7px 11px;border:1px solid #c6a665;border-radius:5px;background:#5d492a;color:#fff0c6;cursor:pointer;font:600 12px system-ui}
+#sc1318Coverage p{margin:6px 0}
+.sc1318Ring{position:absolute;box-sizing:border-box;border:3px solid #efb05a;background:#efb05a28;border-radius:50%;width:65px;height:65px;transform:translate(-50%,-50%);pointer-events:none;z-index:39;box-shadow:0 0 12px #0009}
+.sc1318Ring[data-served="yes"]{border-color:#91e3a1;background:#91e3a122}
+</style>
+<script id="sc1318NeighborhoodOverlay">
+(()=>{'use strict';
+ const panel=document.getElementById('sc1310AdvisorPanel');
+ const canvas=document.getElementById('field');
+ const homesSection=document.getElementById('sc1317Homes');
+ if(!panel||!canvas||!homesSection)return;
+ const viewport=canvas.parentElement;
+ const section=document.createElement('section');section.id='sc1318Coverage';
+ section.innerHTML='<h3>🏘 Neighborhood coverage map</h3><p>Show service coverage directly over houses. Green = 3 or more nearby services; amber = needs improvement.</p><button type="button" id="sc1318Toggle" aria-pressed="false">Show coverage on map</button><p id="sc1318Summary" aria-live="polite">Coverage map is off.</p>';
+ homesSection.insertAdjacentElement('afterend',section);
+ const button=section.querySelector('button'),summary=section.querySelector('#sc1318Summary');
+ let enabled=false;
+ const own=()=>Array.isArray(window.scHoverBuildings)?window.scHoverBuildings.filter(b=>b&&b.team===0&&(b.hp===undefined||b.hp>0)):[];
+ function render(){viewport.querySelectorAll('.sc1318Ring').forEach(e=>e.remove());
+  if(!enabled)return;
+  const buildings=own(),houses=buildings.filter(b=>b.type==='house');
+  const scaleX=canvas.clientWidth/canvas.width,scaleY=canvas.clientHeight/canvas.height;
+  let served=0;
+  houses.forEach(h=>{
+   const near=(types)=>buildings.some(b=>types.includes(b.type)&&Math.hypot(b.x-h.x,b.y-h.y)<175);
+   const count=[near(['well']),near(['clinic','healer']),near(['garden','plaza']),near(['market'])].filter(Boolean).length;
+   if(count>=3)served++;
+   const ring=document.createElement('div');ring.className='sc1318Ring';ring.dataset.served=count>=3?'yes':'no';
+   ring.style.left=(canvas.offsetLeft+h.x*scaleX)+'px';ring.style.top=(canvas.offsetTop+h.y*scaleY)+'px';
+   ring.title=`House: ${count} of 4 service categories nearby`;
+   viewport.append(ring);
+  });
+  summary.textContent=houses.length?`${served} of ${houses.length} houses have 3+ nearby services. Green = covered, amber = needs more services.`:'No houses yet. Build a house to see its service coverage.';
+ }
+ function toggle(next){enabled=next;button.setAttribute('aria-pressed',String(enabled));button.textContent=enabled?'Hide coverage on map':'Show coverage on map';if(!enabled)summary.textContent='Coverage map is off.';render();}
+ button.addEventListener('click',()=>toggle(!enabled));
+ document.addEventListener('sc:built',()=>{if(enabled)render()});
+ window.addEventListener('resize',()=>{if(enabled)render()});
+ document.getElementById('sc1310AdvisorBtn')?.addEventListener('click',()=>setTimeout(()=>{if(panel.hidden&&enabled)toggle(false)},0));
+ // Keep this optional overlay out of normal play when the player clicks the battlefield.
+ canvas.addEventListener('pointerdown',()=>{if(enabled)toggle(false)},{passive:true});
+ const tests=document.getElementById('sc1312Tests');if(tests){
+  const h=tests.querySelector('h3');if(h)h.textContent='🧪 New in V13.18';
+  const labels=[...tests.querySelectorAll('label')];labels.forEach((label,i)=>{label.hidden=i!==0;if(i===0){const span=label.querySelector('span');if(span)span.textContent='With two houses built, open Advisor → Show coverage on map. Check green/amber rings and hide the overlay.';const cb=label.querySelector('input');if(cb)cb.checked=false;}});
+  const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='One new feature to test';
+  try{sessionStorage.removeItem('sc1313TestsCompleted')}catch(e){}
+ }
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.18 · Neighborhood map';
+ document.title='Shattered Crowns — v13.18';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.18.0';
+})();
+</script>
 </body></html>
