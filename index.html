@@ -3385,11 +3385,11 @@ function updateMode(){mode.classList.toggle('active',buildingMode);}
 function construction(){buildingMode=true;internal=true;original.construction();internal=false;updateMode();}
 ui.showConstruction=construction;
 // Construction is a deliberate mode: ordinary selection updates must not switch to recruitment.
-ui.showKeep=function(){if(buildingMode&&!internal)return;original.keep();};
+ui.showKeep=function(force=false){if(buildingMode&&!internal&&!force)return;original.keep(force);};
 ui.showWorker=function(){if(buildingMode&&!internal)return;original.worker();};
 ui.showMilitary=function(){if(buildingMode&&!internal)return;original.military();};
 bar.querySelector('#sc140Build')?.addEventListener('click',()=>{buildingChoice=null;construction()},true);
-bar.querySelector('#sc140Keep')?.addEventListener('click',()=>{buildingMode=false;updateMode()},true);
+bar.querySelector('#sc140Keep')?.addEventListener('click',()=>{buildingMode=false;buildingChoice=null;updateMode();ui.showKeep(true)},true);
 const cards=document.getElementById('sc140Commands');
 cards?.addEventListener('click',e=>{const btn=e.target.closest('button');if(!btn)return;
  const name=(btn.getAttribute('title')||btn.textContent||'').trim();
@@ -6226,6 +6226,16 @@ units.addEventListener('click',()=>{
  window.sc153UI?.exitConstruction?.();
  window.sc140UI?.showKeep?.(true);
  requestAnimationFrame(()=>window.sc140UI?.showKeep?.(true));
+});
+})();
+</script><script id="sc1414UnitsRegressionGuard">
+(()=>{'use strict';
+// One explicit Units click must leave Construction and display keep recruitment commands.
+const units=document.getElementById('sc140Keep');
+if(!units)return;
+units.addEventListener('click',()=>{
+ window.sc153UI?.exitConstruction?.();
+ window.sc140UI?.showKeep?.(true);
 });
 })();
 </script></body></html>
