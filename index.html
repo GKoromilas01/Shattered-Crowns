@@ -5782,7 +5782,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
-<!-- V14.05: compact in-button construction costs, without overlapping overlays. -->
+<!-- V14.06: compact in-button construction costs, without overlapping overlays. -->
 <style id="sc1402InlineCostsStyle">
 #sc1399Planner,#sc1350Budget,#sc196CostStrip{display:none!important}
 #sc140Commands button[data-sc1402-cost]::after{content:attr(data-sc1402-cost);display:block;font:600 10px/1.25 system-ui,sans-serif;color:#e8d4a0;white-space:nowrap;letter-spacing:-.15px;margin-top:3px;pointer-events:none}
@@ -5803,8 +5803,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh);else refresh();
  const host=document.getElementById('sc140Commands');if(host){new MutationObserver(refresh).observe(host,{childList:true,subtree:false});}
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V14.05';
- document.title='Shattered Crowns — v14.05';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V14.06';
+ document.title='Shattered Crowns — v14.06';
 })();
 </script>
 
@@ -5840,7 +5840,7 @@ else {refresh();setInterval(refresh,1000)}
 })();
 </script>
 
-<!-- v14.05: show the exact shortage on unaffordable building buttons. -->
+<!-- v14.06: show the exact shortage on unaffordable building buttons. -->
 <style id="sc1404ShortfallStyle">
 #sc140Commands button[data-sc1404-shortfall]:not([data-sc1404-shortfall=""])::before{
  content:attr(data-sc1404-shortfall);display:block;position:absolute;bottom:2px;left:3px;right:3px;
@@ -5872,7 +5872,7 @@ else{update();setInterval(update,1000)}
 })();
 </script>
 
-<!-- v14.05: unobtrusive live construction readiness progress. -->
+<!-- v14.06: unobtrusive live construction readiness progress. -->
 <style id="sc1405ProgressStyle">
 #sc140Commands button[data-sc1405-progress]{
  background-image:linear-gradient(90deg,rgba(133,210,151,.82) var(--sc1405-progress),rgba(0,0,0,.32) var(--sc1405-progress));
@@ -5900,6 +5900,38 @@ function update(){const host=document.getElementById('sc140Commands');if(!host)r
  }
 }
 function start(){update();setInterval(update,1000)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
+
+<!-- v14.06: readable resource reserves, integrated into existing top resource bar. -->
+<style id="sc1406ResourceStatusStyle">
+#resourceBar b.sc1406Low{color:#ffcf92;text-decoration:underline dotted;text-underline-offset:3px}
+#resourceBar b.sc1406Empty{color:#ff958b}
+#resourceBar b.sc1406Healthy{color:#b7e6ba}
+#resourceBar b.sc1406Low,#resourceBar b.sc1406Empty{transition:color .15s ease}
+</style>
+<script id="sc1406ResourceStatus">
+(()=>{'use strict';
+const watched=[
+ {id:'resGold',name:'Gold',threshold:25},
+ {id:'resWood',name:'Wood',threshold:25},
+ {id:'resStone',name:'Stone',threshold:12},
+ {id:'resFood',name:'Food',threshold:25}
+];
+function update(){
+ for(const item of watched){
+  const node=document.getElementById(item.id);if(!node)continue;
+  const match=(node.textContent||'').replace(/,/g,'').match(/-?\d+/);
+  if(!match)continue;
+  const amount=Number(match[0]);
+  node.classList.toggle('sc1406Empty',amount<=0);
+  node.classList.toggle('sc1406Low',amount>0&&amount<item.threshold);
+  node.classList.toggle('sc1406Healthy',amount>=item.threshold);
+  node.title=item.name+': '+amount+(amount<=0?' — depleted':amount<item.threshold?' — low reserves':' — reserves available');
+ }
+}
+function start(){update();setInterval(update,1200)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
