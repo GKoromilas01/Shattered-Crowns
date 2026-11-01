@@ -1,6 +1,6 @@
 const { test, before, after } = require('node:test');
 const assert = require('node:assert/strict');
-const { chromium } = require('playwright');
+const {launchBrowser,browserPage}=require('./support/browser.cjs');
 const fs = require('node:fs');
 const http = require('node:http');
 let browser, server, url;
@@ -8,7 +8,7 @@ before(async () => {
   server = http.createServer((req, res) => { res.setHeader('Content-Type', 'text/html'); res.end(fs.readFileSync('index.html')); });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   url = `http://127.0.0.1:${server.address().port}`;
-  browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || (fs.existsSync('/usr/bin/chromium') ? '/usr/bin/chromium' : undefined), args: ['--no-sandbox'] });
+  browser = await launchBrowser();
 });
 after(async () => { await browser?.close(); server?.close(); });
 const adapter = `
@@ -23,10 +23,9 @@ window.__cityTest = {
 };
 `;
 async function game(t, width = 1440, height = 900) {
-  const context = await browser.newContext({ viewport: { width, height } });
-  const page = await context.newPage(); const errors = [];
+  const {context,page} = await browserPage(t,browser,{ viewport: { width, height } }); const errors = [];
   page.on('pageerror', e => errors.push(e.message)); page.setDefaultTimeout(6000);
-  t.after(async () => { await context.close(); assert.deepEqual(errors, []); });
+  t.after(() => assert.deepEqual(errors, []));
   await page.route('**/*', route => route.fulfill({ contentType: 'text/html', body: fs.readFileSync('index.html', 'utf8').replace('gold=240;wood=100;stone=30;', 'gold=2400;wood=2000;stone=2000;').replace('window.scHoverBuildings=buildings;function frame', adapter + '\nwindow.scHoverBuildings=buildings;function frame') }));
   await page.goto(url); await page.locator('#sc1310Skip').click(); await page.locator('#sc154Pause').click();
   assert.equal(await page.evaluate(() => typeof window.scCityEconomy?.snapshot), 'function', 'Engine must publish one read-only city snapshot');
@@ -79,7 +78,7 @@ for(const width of [1440,1024,768])test(`City Life and Advisor show real figures
   const bounds=await p.locator('#sc159Pulse').boundingBox();assert.ok(bounds.x>=0&&bounds.x+bounds.width<=width);assert.ok(bounds.y+bounds.height<=800-88);const camera=await p.evaluate(()=>window.sc148Camera.state());await p.mouse.move(bounds.x+bounds.width-2,bounds.y+100);await p.waitForTimeout(350);assert.deepEqual(await p.evaluate(()=>window.sc148Camera.state()),camera,'Reading City Life at the viewport edge must not scroll the world');
   await p.locator('#scCityLifeClose').click();assert.equal(await p.locator('#sc159Pulse').isVisible(),false);await p.locator('#sc1310AdvisorBtn').click();assert.equal(await p.locator('#sc159Pulse').isVisible(),false);assert.ok((await p.locator('#sc1310AdvisorAdvice').innerText()).length>20);
   await p.locator('#sc1310AdvisorClose').click();const mini=p.locator('#scFloatingMinimap');await mini.click({position:{x:100,y:40}});assert.ok((await p.evaluate(()=>window.sc148Camera.state())).x>0);
-  fs.mkdirSync('docs/screenshots',{recursive:true});await p.locator('#sc1312CityLifeBtn').click();await p.locator('#sc154Pause').click();await p.waitForTimeout(250);await p.screenshot({path:`docs/screenshots/city-life-${width}.png`});if(width===1440){await p.locator('#scCityEconomyPanel h3').filter({hasText:/Prosperity/}).scrollIntoViewIfNeeded();await p.screenshot({path:'docs/screenshots/prosperity-1440.png'})}
+  fs.mkdirSync('test-results/gallery',{recursive:true});await p.locator('#sc1312CityLifeBtn').click();await p.locator('#sc154Pause').click();await p.waitForTimeout(250);await p.screenshot({path:`test-results/gallery/city-life-${width}.png`});if(width===1440){await p.locator('#scCityEconomyPanel h3').filter({hasText:/Prosperity/}).scrollIntoViewIfNeeded();await p.screenshot({path:'test-results/gallery/prosperity-1440.png'})}
 });
 test('pause freezes housing and food and Chronicle uses the same workforce totals', async t => {
   const p=await game(t);await seed(p,neighborhood);await advance(p,15);const a=await snapshot(p);await p.waitForTimeout(5500);const b=await snapshot(p);assert.equal(a.cycles,b.cycles);assert.equal(a.population,b.population);assert.equal(a.food.stock,b.food.stock);

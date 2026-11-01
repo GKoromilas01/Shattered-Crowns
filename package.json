@@ -3,6 +3,18 @@
   "version": "1.0.0",
   "private": true,
   "description": "Shattered Crowns browser game",
-  "scripts": {"test": "node --test --test-concurrency=1 tests/*.test.cjs"},
-  "devDependencies": {"playwright": "1.57.0"}
+  "scripts": {
+    "test": "node scripts/run-tests.cjs",
+    "test:smoke": "node scripts/run-tests.cjs smoke",
+    "test:unit": "node --test tests/pipeline.test.cjs",
+    "build:site": "node scripts/release.cjs build",
+    "verify:site": "node scripts/release.cjs verify"
+  },
+  "devDependencies": {
+    "playwright": "1.57.0",
+    "yaml": "2.8.1"
+  },
+  "engines": {
+    "node": ">=24 <25"
+  }
 }

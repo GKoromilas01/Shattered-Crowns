@@ -1,18 +1,18 @@
 const {test,before,after}=require('node:test');
 const assert=require('node:assert/strict');
-const {chromium}=require('playwright');
+const {launchBrowser,browserPage}=require('./support/browser.cjs');
 const http=require('node:http');
 const fs=require('node:fs');
 let browser,server,url;
 before(async()=>{
  server=http.createServer((req,res)=>{res.setHeader('Content-Type','text/html');res.end(fs.readFileSync('index.html'));});
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));url=`http://127.0.0.1:${server.address().port}`;
- browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(fs.existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),args:['--no-sandbox']});
+ browser=await launchBrowser();
 });
 after(async()=>{await browser?.close();server?.close()});
 async function game(t,{wealth=false,width=1440,height=900}={}){
- const context=await browser.newContext({viewport:{width,height}});const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
- t.after(async()=>{if(t.signal.aborted||t.error){fs.mkdirSync('test-results',{recursive:true});await page.screenshot({path:`test-results/${t.name.replace(/\W/g,'_')}.png`}).catch(()=>{})}await context.close();assert.deepEqual(errors,[],'Game must not raise uncaught JavaScript errors')});
+ const {context,page}=await browserPage(t,browser,{viewport:{width,height}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ t.after(()=>assert.deepEqual(errors,[],'Game must not raise uncaught JavaScript errors'));
  // Test-only starting stores: use the real engine, costs, pointer events and placement validation.
  if(wealth)await page.route('**/*',route=>route.fulfill({contentType:'text/html',body:fs.readFileSync('index.html','utf8').replace('gold=240;wood=100;stone=30;','gold=2400;wood=2000;stone=2000;')}));
  page.setDefaultTimeout(5000);await page.goto(url);await page.waitForFunction(()=>window.sc140UI&&window.scHoverBuildings?.length);

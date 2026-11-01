@@ -1,0 +1,130 @@
+name: Approved verified Pages release
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_run_id:
+        description: Verification run ID; for rollback, successful approved release run ID
+        required: true
+        type: string
+      expected_sha:
+        description: Exact 40-character verified source SHA
+        required: true
+        type: string
+      rollback:
+        description: Explicitly restore an older verified main candidate
+        type: boolean
+        default: false
+      confirm:
+        description: Type deploy to authorize publishing (or rollback)
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: pages-production
+  cancel-in-progress: false
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: https://gkoromilas01.github.io/Shattered-Crowns/
+    permissions:
+      contents: write
+      actions: read
+      deployments: read
+      pages: write
+      id-token: write
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      CANDIDATE_RUN_ID: ${{ inputs.candidate_run_id }}
+      EXPECTED_RELEASE_SHA: ${{ inputs.expected_sha }}
+      ROLLBACK: ${{ inputs.rollback }}
+      CONFIRM_RELEASE: ${{ inputs.confirm }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - id: preflight
+        name: Validate approval protection successful main run and fallback record
+        run: node scripts/github-release.cjs preflight
+      - if: steps.preflight.outputs.rollback != 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: verified-site
+          path: candidate
+          run-id: ${{ inputs.candidate_run_id }}
+          github-token: ${{ github.token }}
+      - name: Retrieve durable stable assets for fallback or rollback
+        run: node scripts/github-release.cjs download
+      - id: payloads
+        name: Verify candidate fallback digests and current production bytes
+        run: node scripts/github-release.cjs payloads
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: candidate
+      - id: publish
+        name: Publish approved verified candidate
+        uses: actions/deploy-pages@v5
+      - name: Verify exact deployed release and game behavior
+        env:
+          SMOKE_BASE_URL: https://gkoromilas01.github.io/Shattered-Crowns/
+          TEST_ARTIFACT_DIR: test-results/deployed
+        run: npm run test:smoke
+      - id: archive
+        name: Stage verified bytes in a provisional draft release
+        if: success()
+        run: node scripts/github-release.cjs archive
+      - id: stable
+        name: Record stable payload only after successful live smoke
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stable-site
+          path: candidate/
+          retention-days: 90
+          if-no-files-found: error
+      - id: finalize
+        name: Publish complete stable archive after receipt succeeds
+        run: node scripts/github-release.cjs finalize
+      - name: Prepare last stable artifact for restoration
+        if: always() && (failure() || cancelled()) && (steps.publish.outcome == 'success' || steps.publish.outcome == 'failure' || steps.publish.outcome == 'cancelled')
+        uses: actions/upload-pages-artifact@v3
+        with:
+          name: rollback-pages
+          path: fallback
+      - id: restore
+        name: Restore last verified stable site after publish or live-smoke failure
+        if: always() && (failure() || cancelled()) && (steps.publish.outcome == 'success' || steps.publish.outcome == 'failure' || steps.publish.outcome == 'cancelled')
+        uses: actions/deploy-pages@v5
+        with:
+          artifact_name: rollback-pages
+      - name: Smoke-test restored stable site
+        if: always() && (failure() || cancelled()) && steps.restore.outcome == 'success'
+        env:
+          SMOKE_BASE_URL: https://gkoromilas01.github.io/Shattered-Crowns/
+          EXPECTED_RELEASE_SHA: ${{ steps.payloads.outputs.fallback_sha }}
+          TEST_ARTIFACT_DIR: test-results/restored
+        run: npm run test:smoke
+      - id: quarantine
+        name: Reconcile provisional or restored-away release archive after failure
+        if: always() && (failure() || cancelled()) && (steps.archive.outcome == 'success' || steps.archive.outcome == 'failure' || steps.archive.outcome == 'cancelled')
+        run: node scripts/github-release.cjs quarantine
+      - if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-evidence
+          path: |
+            test-results/
+            release-approval.json
+          retention-days: 90
