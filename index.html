@@ -190,10 +190,11 @@ if(team===0&&window.sc158TrackingEnabled){
 }
 return b};// V13.51: Festivals are real city actions, not advisory estimates.
 let scFestivalCooldown=0;let scEventFoodReserve=30;
+let cityCycleNumber=0,cityLedger=null,cityGrowth={progress:0,departure:0,reason:"Build serviced housing to welcome residents."};
 window.scFestival={reserve:()=>scEventFoodReserve,setReserve:v=>{scEventFoodReserve=Math.max(0,Math.min(150,Math.round(Number(v)||0)));return scEventFoodReserve},
  status:()=>({bakeries:buildings.filter(b=>b.team===0&&b.type==='bakery'&&b.hp>0).length,theaters:buildings.filter(b=>b.team===0&&b.type==='theater'&&b.hp>0).length,gold:Math.floor(gold),food:Math.floor(food),reserve:scEventFoodReserve,happiness:Math.round(happiness),cooldown:Math.ceil(scFestivalCooldown),paused}),
- feast:()=>{if(ended)return {ok:false,message:'The battle has ended.'};if(paused)return {ok:false,message:'Resume the game before hosting a feast.'};if(!buildings.some(b=>b.team===0&&b.type==='bakery'&&b.hp>0))return {ok:false,message:'Build a Bakery first.'};if(scFestivalCooldown>0)return {ok:false,message:'Next community event in '+Math.ceil(scFestivalCooldown)+' game seconds.'};if(gold<20||food<20)return {ok:false,message:'Community Feast requires 20 gold and 20 food.'};if(food-20<scEventFoodReserve)return {ok:false,message:'Food reserve protected: '+scEventFoodReserve+' food must remain after the feast.'};gold-=20;food-=20;happiness=Math.min(100,happiness+5);population+=2;scFestivalCooldown=90;updateUI();msg('🥖 Community Feast! −20 gold, −20 food, +5 happiness, +2 residents.');window.dispatchEvent(new CustomEvent('sc-festival-held'));return {ok:true,message:'Community Feast held! +5 happiness and +2 residents.'}},
- hold:()=>{if(ended)return {ok:false,message:'The battle has ended.'};if(paused)return {ok:false,message:'Resume the game before holding a festival.'};if(!buildings.some(b=>b.team===0&&b.type==='theater'&&b.hp>0))return {ok:false,message:'Build a Theater first.'};if(scFestivalCooldown>0)return {ok:false,message:'Next festival in '+Math.ceil(scFestivalCooldown)+' game seconds.'};if(gold<35||food<12)return {ok:false,message:'Festival requires 35 gold and 12 food.'};if(food-12<scEventFoodReserve)return {ok:false,message:'Food reserve protected: '+scEventFoodReserve+' food must remain after the festival.'};gold-=35;food-=12;happiness=Math.min(100,happiness+8);cityProsperity+=4;scFestivalCooldown=90;updateUI();msg('🎭 Festival held! −35 gold, −12 food, +8 happiness, +4 prosperity.');window.dispatchEvent(new CustomEvent('sc-festival-held'));return {ok:true,message:'Festival held! +8 happiness and +4 prosperity.'}}
+ feast:()=>{if(ended)return {ok:false,message:'The battle has ended.'};if(paused)return {ok:false,message:'Resume the game before hosting a feast.'};if(!buildings.some(b=>b.team===0&&b.type==='bakery'&&b.hp>0))return {ok:false,message:'Build a Bakery first.'};if(scFestivalCooldown>0)return {ok:false,message:'Next community event in '+Math.ceil(scFestivalCooldown)+' game seconds.'};if(gold<20||food<20)return {ok:false,message:'Community Feast requires 20 gold and 20 food.'};if(food-20<scEventFoodReserve)return {ok:false,message:'Food reserve protected: '+scEventFoodReserve+' food must remain after the feast.'};gold-=20;food-=20;happiness=Math.min(100,happiness+5);scFestivalCooldown=90;updateUI();msg('🥖 Community Feast! −20 gold, −20 food, +5 happiness, services support gradual migration.');window.dispatchEvent(new CustomEvent('sc-festival-held'));return {ok:true,message:'Community Feast held! +5 happiness and services support gradual migration.'}},
+ hold:()=>{if(ended)return {ok:false,message:'The battle has ended.'};if(paused)return {ok:false,message:'Resume the game before holding a festival.'};if(!buildings.some(b=>b.team===0&&b.type==='theater'&&b.hp>0))return {ok:false,message:'Build a Theater first.'};if(scFestivalCooldown>0)return {ok:false,message:'Next festival in '+Math.ceil(scFestivalCooldown)+' game seconds.'};if(gold<35||food<12)return {ok:false,message:'Festival requires 35 gold and 12 food.'};if(food-12<scEventFoodReserve)return {ok:false,message:'Food reserve protected: '+scEventFoodReserve+' food must remain after the festival.'};gold-=35;food-=12;happiness=Math.min(100,happiness+8);cityProsperity=Math.min(100,cityProsperity+4);scFestivalCooldown=90;updateUI();msg('🎭 Festival held! −35 gold, −12 food, +8 happiness, +4 prosperity.');window.dispatchEvent(new CustomEvent('sc-festival-held'));return {ok:true,message:'Festival held! +8 happiness and +4 prosperity.'}}
 };
 const scUndoStack=[];
 function scRecordUndo(entry){scUndoStack.push(entry);if(scUndoStack.length>30)scUndoStack.shift();window.dispatchEvent(new Event('sc-undo-changed'))}
@@ -216,7 +217,7 @@ function scUndo(){
  updateUI();window.dispatchEvent(new Event('sc-undo-changed'));
 }
 window.scUndo={undo:scUndo,canUndo:()=>scUndoStack.length>0,peek:()=>scUndoStack[scUndoStack.length-1]?.label||''};
-const alive=o=>o&&o.hp>0;function init(){stats={spawned:[0,0],lost:[0,0],kills:[0,0],damage:[0,0],gathered:[0,0],raids:0};aiRally=null;units=[];buildings=[];nodes=[];effects=[];projectiles=[];combatTexts=[];gold=240;wood=100;stone=30;food=90;population=8;happiness=70;cityTimer=0;scFestivalCooldown=0;scEventFoodReserve=30;cityProsperity=0;wellCoverage=0;roadMarkets=0;healerCoverage=0;granaryCount=0;employment={jobs:0,filled:0,available:0,byId:new Map()};aiGold=240;aiWood=100;trainQueue=[];aiQueue=[];trainTimer=0;aiTrainTimer=0;aiDecision=0;aiAttackTimer=0;difficulty=el("difficulty").value;selected=[];inspectedBuilding=null;drag=null;mode=null;paused=false;ended=false;elapsed=0;aiTimer=0;resourceTimer=0;nextId=1;uiRefresh=0;scUndoStack.length=0;addBuilding(0,'keep',120,310);addBuilding(1,'keep',1170,440);for(let i=0;i<3;i++)addUnit(0,'worker',170,255+i*40);for(let i=0;i<3;i++)addUnit(0,'soldier',205,290+i*30);for(let i=0;i<3;i++)addUnit(1,'soldier',1090,400+i*40);for(let i=0;i<3;i++)addUnit(1,'worker',1125,340+i*42);for(let i=0;i<7;i++)nodes.push({x:280+(i%3)*50,y:110+Math.floor(i/3)*65,type:'tree',amount:600,radius:18,renew:0});for(let i=0;i<5;i++)nodes.push({x:430+(i%2)*70,y:430+Math.floor(i/2)*55,type:'gold',amount:800,radius:19,renew:0});for(let i=0;i<5;i++)nodes.push({x:330+(i%2)*75,y:280+Math.floor(i/2)*43,type:'stone',amount:700,radius:19,renew:0});// Additional deposits support a larger settlement without replacing the original start.
+const alive=o=>o&&o.hp>0;function init(){stats={spawned:[0,0],lost:[0,0],kills:[0,0],damage:[0,0],gathered:[0,0],raids:0};aiRally=null;units=[];buildings=[];nodes=[];effects=[];projectiles=[];combatTexts=[];gold=240;wood=100;stone=30;food=90;population=8;happiness=70;cityTimer=0;cityCycleNumber=0;cityLedger=null;cityGrowth={progress:0,departure:0,reason:"Build serviced housing to welcome residents."};tradeGoods=0;goodsSold=0;window.sc1411LogisticsSnapshot=null;window.sc1412MarketDistributionSnapshot=null;scFestivalCooldown=0;scEventFoodReserve=30;cityProsperity=0;wellCoverage=0;roadMarkets=0;healerCoverage=0;granaryCount=0;employment={jobs:0,filled:0,available:0,byId:new Map()};aiGold=240;aiWood=100;trainQueue=[];aiQueue=[];trainTimer=0;aiTrainTimer=0;aiDecision=0;aiAttackTimer=0;difficulty=el("difficulty").value;selected=[];inspectedBuilding=null;drag=null;mode=null;paused=false;ended=false;elapsed=0;aiTimer=0;resourceTimer=0;nextId=1;uiRefresh=0;scUndoStack.length=0;addBuilding(0,'keep',120,310);addBuilding(1,'keep',1170,440);for(let i=0;i<3;i++)addUnit(0,'worker',170,255+i*40);for(let i=0;i<3;i++)addUnit(0,'soldier',205,290+i*30);for(let i=0;i<3;i++)addUnit(1,'soldier',1090,400+i*40);for(let i=0;i<3;i++)addUnit(1,'worker',1125,340+i*42);for(let i=0;i<7;i++)nodes.push({x:280+(i%3)*50,y:110+Math.floor(i/3)*65,type:'tree',amount:600,radius:18,renew:0});for(let i=0;i<5;i++)nodes.push({x:430+(i%2)*70,y:430+Math.floor(i/2)*55,type:'gold',amount:800,radius:19,renew:0});for(let i=0;i<5;i++)nodes.push({x:330+(i%2)*75,y:280+Math.floor(i/2)*43,type:'stone',amount:700,radius:19,renew:0});// Additional deposits support a larger settlement without replacing the original start.
 for(let i=0;i<10;i++)nodes.push({x:1390+(i%5)*70,y:120+Math.floor(i/5)*120,type:i%3===0?'stone':'tree',amount:650,radius:18,renew:0});
 
 for(let i=0;i<5;i++)nodes.push({x:130+i*118,y:680+(i%2)*95,type:'tree',amount:600,radius:18,renew:0});
@@ -249,7 +250,7 @@ function describeBuilding(b){
  if(b.type==='bakery')detail+=' | Trade goods: '+Math.floor(tradeGoods)+' baskets stored; '+goodsSold+' sold. Pair a staffed bakery with a nearby granary and a staffed, road-connected market (within 220px) to pack bread baskets.';if(b.type==='house'){
   const t=houseTier(b),names=['','Cottage','Homestead','Townhouse','Manor'];
   const status=(ok)=>ok?'✓':'✗';
-  detail+=' | '+names[t.level]+' (Level '+t.level+'/4; capacity '+(8+(t.level-1)*2)+')';
+  const hs=citySnapshot().housing.houses.find(x=>x.id===b.id);detail+=' | Occupancy '+hs.occupancy+'/'+hs.capacity+'; upgrade '+hs.upgradeSeconds+'/10 sec; decline '+hs.downgradeSeconds+'/30 sec';detail+=' | '+names[t.level]+' (Level '+t.level+'/4; capacity '+(8+(t.level-1)*2)+')';
   detail+=' | SERVICES: Road '+status(t.access)+' · Water '+status(t.water)+' · Food '+status(t.foodReady)+' · Health '+status(t.health)+' · Market '+status(t.trade)+' · Beauty '+t.beauty+'/100';
   const requirements=t.level===1?[['Food supply',t.foodReady],['Well within 190px',t.water]]:
     t.level===2?[['Food supply',t.foodReady],['Well within 190px',t.water],['Healer within 190px',t.health],['Connected road nearby',t.access],['Beauty 25+',t.beauty>=25]]:
@@ -313,18 +314,94 @@ function neighborhoodBeautyBonus(owned){
  const homes=owned.filter(b=>b.type==='house');
  return Math.min(2,homes.reduce((sum,h)=>sum+homeBeauty(h).score,0)/Math.max(1,homes.length)/100*.6);
 }
+// Milestone 2: city simulation state is advanced only by the existing economy cycle.
+const cityTierNames=['','Cottage','Homestead','Townhouse','Manor'];
+function cityOwned(){return buildings.filter(b=>b.team===0&&alive(b));}
+function cityHouseCapacity(h){return 8+((h.cityTier||1)-1)*2;}
 function houseTier(h){
- const owned=buildings.filter(b=>b.team===0&&alive(b));
- const near=(type,r)=>owned.some(b=>b.type===type&&dist(b,h)<r);
- const foodReady=food>=Math.max(10,population*.65);
- const water=near('well',190),health=near('clinic',190);
- const road=getRoadNetwork();
- const access=road.serviced.size>=3&&road.roads.some(r=>road.serviced.has(r.id)&&dist(r,h)<115);
- const trade=owned.some(m=>m.type==='market'&&dist(m,h)<220&&marketHasTradeAccess(m,road));
+ const owned=cityOwned(),network=getRoadNetwork();
+ const near=(type,range,staffed=false)=>owned.some(b=>b.type===type&&dist(b,h)<range&&(!staffed||(employment.byId.get(b.id)?.efficiency||0)>=.5));
+ const foodReady=food>=Math.max(10,Math.ceil(population*.45*(window.scRationFactor||1))*2)&&!(cityLedger?.shortfall>0);
+ const water=near('well',190),health=near('clinic',190,true);
+ const access=network.roads.some(r=>network.serviced.has(r.id)&&dist(r,h)<115);
+ const trade=owned.some(m=>m.type==='market'&&dist(m,h)<190&&marketHasTradeAccess(m,network)&&(employment.byId.get(m.id)?.efficiency||0)>=.5&&food>0);
  const beauty=homeBeauty(h).score;
- const level=1+Number(foodReady&&water)+Number(foodReady&&water&&health&&access&&beauty>=25)+Number(foodReady&&water&&health&&access&&trade&&beauty>=65);
- return {level,foodReady,water,health,access,trade,beauty,beautyForTownhouse:beauty>=25,beautyForManor:beauty>=65};
+ const eligible=1+Number(foodReady&&water)+Number(foodReady&&water&&health&&access&&beauty>=25)+Number(foodReady&&water&&health&&access&&trade&&beauty>=65);
+ return {level:h.cityTier||1,eligible,foodReady,water,health,access,trade,beauty,beautyForTownhouse:beauty>=25,beautyForManor:beauty>=65};
 }
+function cityRequirements(h,level){
+ const t=houseTier(h),req=[];
+ if(level>=2)req.push(['Food reserve for two cycles',t.foodReady],['Well within 190 map units',t.water]);
+ if(level>=3)req.push(['Staffed healer within 190 map units',t.health],['Connected road nearby',t.access],['Beauty 25+',t.beauty>=25]);
+ if(level>=4)req.push(['Staffed road-connected market within 190 map units',t.trade],['Beauty 65+',t.beauty>=65]);
+ return req;
+}
+function cityEvolveHomes(homes){
+ for(const h of homes){
+  h.cityTier??=1;const t=houseTier(h);
+  if(t.eligible>h.cityTier){h.cityUpgrade=(h.cityUpgrade||0)+5;h.cityDecline=0;if(h.cityUpgrade>=10){h.cityTier++;h.cityUpgrade=0;}}
+  else if(t.eligible<h.cityTier){h.cityDecline=(h.cityDecline||0)+5;h.cityUpgrade=0;if(h.cityDecline>=30){h.cityTier--;h.cityDecline=0;}}
+  else{h.cityUpgrade=0;h.cityDecline=0;}
+ }
+}
+// Occupants stay in their homes when services lapse. New residents and displaced
+// households may use only vacant, serviced housing; lost capacity is visible.
+function cityCanMigrate(h){const t=houseTier(h);return t.foodReady&&t.water&&t.access;}
+function cityReconcileOccupancy(){
+ const homes=cityOwned().filter(b=>b.type==='house');let remaining=Math.max(0,population-8);
+ for(const h of homes){h.cityResidents=Math.min(remaining,cityHouseCapacity(h),h.cityResidents||0);remaining-=h.cityResidents;}
+ for(const h of homes){if(remaining<=0)break;if(!cityCanMigrate(h))continue;const assigned=Math.min(remaining,cityHouseCapacity(h)-h.cityResidents);h.cityResidents+=assigned;remaining-=assigned;}
+ return {keepResidents:Math.min(8,population),displaced:remaining};
+}
+function cityGrow(homes){
+ const cap=8+homes.reduce((n,h)=>n+cityHouseCapacity(h),0);
+ const occupancy=cityReconcileOccupancy();
+ const eligible=homes.some(h=>cityCanMigrate(h)&&(h.cityResidents||0)<cityHouseCapacity(h));
+ cityGrowth.reason=cityLedger.shortfall>0?'Food shortage: restore farm or fishery production.':occupancy.displaced>0?'Residents are displaced: rebuild serviced housing.':population>=cap?'Housing is full: build another house.':!eligible?'Migration needs vacant housing with a food reserve, nearby water and connected roads.':happiness<45?'Improve food and services until happiness reaches 45.':'A new resident can arrive after 15 seconds of stable services.';
+ if(cityLedger.shortfall>0||occupancy.displaced>0){cityGrowth.progress=0;cityGrowth.departure+=5;if(cityGrowth.departure>=15&&population>4){population--;cityGrowth.departure=0;}return;}
+ cityGrowth.departure=0;
+ if(eligible&&population<cap&&happiness>=45){cityGrowth.progress+=5;if(cityGrowth.progress>=15){population++;cityGrowth.progress=0;}}
+ else cityGrowth.progress=0;
+}
+function cityProsperityDetails(){
+ const homes=cityOwned().filter(b=>b.type==='house'),demand=Math.max(1,Math.ceil(population*.45*(window.scRationFactor||1)));
+ const avg=fn=>homes.length?homes.reduce((n,h)=>n+fn(h),0)/homes.length:0;
+ const factors=[
+  {label:'Housing quality',max:25,points:avg(h=>((h.cityTier||1)-1)/3)*25},
+  {label:'Food reserves (60 seconds)',max:25,points:Math.min(1,food/(demand*12))*25},
+  {label:'Jobs staffed',max:20,points:employment.jobs?employment.filled/employment.jobs*20:0},
+  {label:'Accessible services',max:20,points:avg(h=>{const t=houseTier(h);return [t.water,t.access,t.health,t.trade].filter(Boolean).length/4;})*20},
+  {label:'Happiness',max:10,points:happiness/100*10}
+ ];
+ // Round each displayed factor first so the displayed sum is exactly the target.
+ for(const f of factors)f.points=Math.round(f.points*10)/10;
+ return {score:Math.round(cityProsperity*10)/10,target:Math.round(factors.reduce((n,f)=>n+f.points,0)),factors};
+}
+function cityAdvice(s){
+ const advice=[];
+ if(s.food.last?.shortfall>0)advice.push('Food shortage: add a farm or fishery and enough residents to staff it.');
+ else if(s.food.production<s.food.demand)advice.push('Food deficit: production is below household demand; improve staffing or add food producers.');
+ if(s.housing.displaced)advice.push('Rebuild housing for '+s.housing.displaced+' displaced residents.');
+ if(!s.housing.houses.length)advice.push('Build a house, a nearby well and a connected road block to welcome residents.');
+ if(s.housing.houses.some(h=>!h.water||!h.access))advice.push('Provide nearby wells and connected roads to homes so migration can resume.');
+ if(s.workforce.filled<s.workforce.jobs)advice.push('Workplaces lack '+(s.workforce.jobs-s.workforce.filled)+' residents; grow serviced housing. Food producers receive staff first.');
+ if(s.food.markets.served<s.housing.houses.length)advice.push('Connect and staff a market within 190 map units of homes to reduce food waste.');
+ if(s.food.granaries.length===0)advice.push('Add a granary for 160 more shared food storage and staff it near connected producers.');
+ if(s.housing.houses.some(h=>h.tier<4))advice.push('Inspect house requirements in City Life: services must remain available for 10 seconds before each upgrade.');
+ if(!advice.length)advice.push('Your city is supplied and staffed. Expand housing and food together; monitor the reserve and prosperity factors.');
+ return advice;
+}
+function citySnapshot(){
+ assignEmployment();const owned=cityOwned(),homes=owned.filter(b=>b.type==='house'),occupancyState=cityReconcileOccupancy();
+ const houses=homes.map(h=>{const t=houseTier(h),capacity=cityHouseCapacity(h),occupancy=h.cityResidents||0;return {id:h.id,tier:t.level,name:cityTierNames[t.level],capacity,occupancy,water:t.water,access:t.access,health:t.health,market:t.trade,beauty:t.beauty,upgradeSeconds:h.cityUpgrade||0,downgradeSeconds:h.cityDecline||0,nextRequirements:cityRequirements(h,Math.min(4,t.level+1)).map(([label,met])=>({label,met})),currentMissing:cityRequirements(h,t.level).filter(([,ok])=>!ok).map(([label])=>label)};});
+ const depots=owned.filter(b=>b.type==='granary');let stored=Math.max(0,food-90);
+ const granaries=depots.map(g=>{const stock=Math.min(160,stored);stored-=stock;return {id:g.id,stock,capacity:160,staff:employment.byId.get(g.id)?.count||0,connected:civicHasRoadAccess(g)};});
+ const sites=owned.filter(b=>employment.byId.has(b.id)).map(b=>{const a=employment.byId.get(b.id);return {id:b.id,type:b.type,filled:a.count,need:a.need,efficiency:a.efficiency,output:(b.type==='farm'?13:b.type==='fishery'?9:b.type==='lumberyard'?5:0)*a.efficiency};});
+ const demand=Math.ceil(population*.45*(window.scRationFactor||1)),production=sites.filter(b=>['farm','fishery'].includes(b.type)).reduce((n,b)=>n+b.output,0);
+ const s={cycles:cityCycleNumber,population,happiness:Math.round(happiness),housing:{capacity:8+houses.reduce((n,h)=>n+h.capacity,0),keepResidents:occupancyState.keepResidents,displaced:occupancyState.displaced,houses},growth:{...cityGrowth},workforce:{pool:Math.max(0,population-2),reserved:Math.min(2,population),filled:employment.filled,idle:employment.available,jobs:employment.jobs,sites},food:{stock:food,capacity:90+depots.length*160,baseStock:Math.min(90,food),granaries,demand,production,reserveSeconds:demand?Math.floor(food/demand*5):0,last:cityLedger?{...cityLedger}:null,markets:{served:window.sc1412MarketDistributionSnapshot?.served||0,total:homes.length,savings:window.sc1412MarketDistributionSnapshot?.savings||0}},prosperity:cityProsperityDetails()};
+ s.advice=cityAdvice(s);return s;
+}
+
 function updateUI(){assignEmployment();el('buildingInspector').textContent=describeBuilding(inspectedBuilding);let cityOwned=buildings.filter(b=>b.team===0&&alive(b));let farmRate=cityOwned.filter(b=>b.type==='farm').reduce((v,b)=>v+13*(employment.byId.get(b.id)?.efficiency||0),0)+cityOwned.filter(b=>b.type==='fishery').reduce((v,b)=>v+9*(employment.byId.get(b.id)?.efficiency||0),0);let useRate=Math.ceil(population*.45*(window.scRationFactor||1));let stored=90+cityOwned.filter(b=>b.type==='granary').length*160;el('foodBalance').textContent=`🌾 Food: +${farmRate.toFixed(1)} production / -${useRate} consumption every 5 seconds | Net ${farmRate-useRate>=0?'+':''}${(farmRate-useRate).toFixed(1)} | Storage ${Math.floor(food)}/${stored}`;const network=getRoadNetwork();
 const connectedRoads=network.main.size;const activeGroups=network.groups.filter(g=>g.length>=3).length;
 el('roadNetworkStatus').textContent=`🛣 Road network: ${network.roads.length} road sections · ${network.groups.length} separate groups · ${connectedRoads} in largest group · ${activeGroups} functioning neighborhood networks (3+ sections each).`;
@@ -722,22 +799,22 @@ function scEdgeScroll(dt){
 }
 c.addEventListener('pointerup',e=>{if(e.button!==2||ended||window.scRightDragDistance>7)return;
 
-let p=mouse(e);let enemy=[...units,...buildings].find(o=>o.team===1&&alive(o)&&dist(o,p)<o.radius+12);let node=nodes.find(n=>n.amount>0&&dist(n,p)<n.radius+12);selected.forEach((u,i)=>{if(!alive(u))return;u.scHoldPosition=false;if(enemy){u.order={type:'attack',target:enemy};u.target=enemy}else if(node&&u.type==='worker'){u.order={type:'gather',target:node};u.target=null}else{let fighters=selected.filter(v=>v.type!=='worker'&&alive(v));let same=fighters.filter(v=>v.type===u.type);let rank=same.indexOf(u);let cols=Math.max(1,Math.ceil(Math.sqrt(same.length)));let row=Math.floor(rank/cols),col=rank%cols;let x,y;if(u.type==='worker'){let angle=i*2.4,r=Math.sqrt(i)*15;x=p.x+Math.cos(angle)*r;y=p.y+Math.sin(angle)*r}else if(formation==='line'){let lane=u.type==='soldier'?0:1;x=p.x+(lane===0?18:-65)-row*19;y=p.y+(col-(cols-1)/2)*34}else{x=p.x-row*32-(u.type==='archer'?40:0);y=p.y+(col-(cols-1)/2)*28}u.order={type:'move',x:clamp(x,15,W-15),y:clamp(y,15,H-15)};u.target=null}});if(selected.length){msg('Order issued to '+selected.length+' unit(s).');window.dispatchEvent(new CustomEvent('sc-order-issued',{detail:{count:selected.length,x:p.x,y:p.y}}));}});function move(u,p,dt,stop=0){let d=dist(u,p);if(d<=stop+1)return true;let step=Math.min(u.speed*(u.scShieldWall?0.8:1)*(u.scCharge?1.25:1)*dt,d-stop);u.x=clamp(u.x+(p.x-u.x)/d*step,12,W-12);u.y=clamp(u.y+(p.y-u.y)/d*step,12,H-12);return false};function attack(u,t,dt){if(!alive(t)){u.target=null;return}let range=u.range+(t.radius||0);if(dist(u,t)>range){move(u,t,dt,range-2);return}if(u.type==='archer'&&t.type==='soldier'&&dist(u,t)<58&&u.cool>0){let away={x:clamp(u.x+(u.x-t.x)*1.4,12,W-12),y:clamp(u.y+(u.y-t.y)*1.4,12,H-12)};move(u,away,dt);return}if(u.cool<=0){let hit=u.damage*(t.scShieldWall&&t.type==='soldier'?0.75:1)*(t.scCharge&&t.type==='soldier'?1.2:1)*(u.type==='archer'&&t.type==='worker'?1.5:1)*(u.type==='soldier'&&t.type==='archer'?1.2:1);t.hp-=hit;stats.damage[u.team]+=hit;if(t.hp<=0&&t.team!==undefined)stats.kills[u.team]++;u.cool=u.type==='archer'?1.25:0.75;effects.push({x:t.x,y:t.y,life:.35,maxLife:.35,kind:u.type==='archer'?'arrow':'slash',team:u.team});if(u.type==='archer')projectiles.push({x:u.x,y:u.y-17,tx:t.x,ty:t.y-9,life:.23,maxLife:.23,team:u.team});combatTexts.push({x:t.x,y:t.y-24,text:'-'+Math.round(hit),life:.72,maxLife:.72,team:t.team});if(t.hp<=0){u.target=null;if(u.order?.type==='attack')u.order=null}}};function tick(dt){uiRefresh+=dt;if(uiRefresh>=1){uiRefresh=0;let friendly=units.filter(u=>u.team===0),enemy=units.filter(u=>u.team===1);let f=friendly.filter(u=>u.type!=='worker').length,e=enemy.filter(u=>u.type!=='worker').length;el('liveOverview').textContent='Time: '+Math.floor(elapsed/60)+':'+String(Math.floor(elapsed%60)).padStart(2,'0')+' | Your army: '+f+' | Enemy army: '+e+' | Your workers: '+friendly.filter(u=>u.type==='worker').length+' | Enemy workers: '+enemy.filter(u=>u.type==='worker').length+' | Formation: '+formation+'.';}elapsed+=dt;cityTimer+=dt;if(cityTimer>=5){cityTimer-=5;let houses=buildings.filter(b=>b.team===0&&b.type==='house').length,farms=buildings.filter(b=>b.team===0&&b.type==='farm').length,markets=buildings.filter(b=>b.team===0&&b.type==='market').length;let owned=buildings.filter(b=>b.team===0);let homes=owned.filter(b=>b.type==='house'),wells=owned.filter(b=>b.type==='well'),roads=owned.filter(b=>b.type==='road'),yards=owned.filter(b=>b.type==='lumberyard');wellCoverage=homes.filter(h=>wells.some(w=>dist(h,w)<190)).length;roadMarkets=owned.filter(b=>b.type==='market'&&marketHasTradeAccess(b)).length;let clinics=owned.filter(b=>b.type==='clinic'),granaries=owned.filter(b=>b.type==='granary');granaryCount=granaries.length;healerCoverage=homes.filter(h=>clinics.some(c=>dist(h,c)<190)).length;assignEmployment();let cap=8+owned.filter(b=>b.type==='house').reduce((n,h)=>n+8+(houseTier(h).level-1)*2,0);let farmOutput=owned.filter(b=>b.type==='farm').reduce((v,b)=>v+13*(employment.byId.get(b.id)?.efficiency||0),0)+owned.filter(b=>b.type==='fishery').reduce((v,b)=>v+9*(employment.byId.get(b.id)?.efficiency||0),0);// V14.11: supply logistics — farms/fisheries with a nearby granary and road deliver 25% more food.
+let p=mouse(e);let enemy=[...units,...buildings].find(o=>o.team===1&&alive(o)&&dist(o,p)<o.radius+12);let node=nodes.find(n=>n.amount>0&&dist(n,p)<n.radius+12);selected.forEach((u,i)=>{if(!alive(u))return;u.scHoldPosition=false;if(enemy){u.order={type:'attack',target:enemy};u.target=enemy}else if(node&&u.type==='worker'){u.order={type:'gather',target:node};u.target=null}else{let fighters=selected.filter(v=>v.type!=='worker'&&alive(v));let same=fighters.filter(v=>v.type===u.type);let rank=same.indexOf(u);let cols=Math.max(1,Math.ceil(Math.sqrt(same.length)));let row=Math.floor(rank/cols),col=rank%cols;let x,y;if(u.type==='worker'){let angle=i*2.4,r=Math.sqrt(i)*15;x=p.x+Math.cos(angle)*r;y=p.y+Math.sin(angle)*r}else if(formation==='line'){let lane=u.type==='soldier'?0:1;x=p.x+(lane===0?18:-65)-row*19;y=p.y+(col-(cols-1)/2)*34}else{x=p.x-row*32-(u.type==='archer'?40:0);y=p.y+(col-(cols-1)/2)*28}u.order={type:'move',x:clamp(x,15,W-15),y:clamp(y,15,H-15)};u.target=null}});if(selected.length){msg('Order issued to '+selected.length+' unit(s).');window.dispatchEvent(new CustomEvent('sc-order-issued',{detail:{count:selected.length,x:p.x,y:p.y}}));}});function move(u,p,dt,stop=0){let d=dist(u,p);if(d<=stop+1)return true;let step=Math.min(u.speed*(u.scShieldWall?0.8:1)*(u.scCharge?1.25:1)*dt,d-stop);u.x=clamp(u.x+(p.x-u.x)/d*step,12,W-12);u.y=clamp(u.y+(p.y-u.y)/d*step,12,H-12);return false};function attack(u,t,dt){if(!alive(t)){u.target=null;return}let range=u.range+(t.radius||0);if(dist(u,t)>range){move(u,t,dt,range-2);return}if(u.type==='archer'&&t.type==='soldier'&&dist(u,t)<58&&u.cool>0){let away={x:clamp(u.x+(u.x-t.x)*1.4,12,W-12),y:clamp(u.y+(u.y-t.y)*1.4,12,H-12)};move(u,away,dt);return}if(u.cool<=0){let hit=u.damage*(t.scShieldWall&&t.type==='soldier'?0.75:1)*(t.scCharge&&t.type==='soldier'?1.2:1)*(u.type==='archer'&&t.type==='worker'?1.5:1)*(u.type==='soldier'&&t.type==='archer'?1.2:1);t.hp-=hit;stats.damage[u.team]+=hit;if(t.hp<=0&&t.team!==undefined)stats.kills[u.team]++;u.cool=u.type==='archer'?1.25:0.75;effects.push({x:t.x,y:t.y,life:.35,maxLife:.35,kind:u.type==='archer'?'arrow':'slash',team:u.team});if(u.type==='archer')projectiles.push({x:u.x,y:u.y-17,tx:t.x,ty:t.y-9,life:.23,maxLife:.23,team:u.team});combatTexts.push({x:t.x,y:t.y-24,text:'-'+Math.round(hit),life:.72,maxLife:.72,team:t.team});if(t.hp<=0){u.target=null;if(u.order?.type==='attack')u.order=null}}};function tick(dt){uiRefresh+=dt;if(uiRefresh>=1){uiRefresh=0;let friendly=units.filter(u=>u.team===0),enemy=units.filter(u=>u.team===1);let f=friendly.filter(u=>u.type!=='worker').length,e=enemy.filter(u=>u.type!=='worker').length;el('liveOverview').textContent='Time: '+Math.floor(elapsed/60)+':'+String(Math.floor(elapsed%60)).padStart(2,'0')+' | Your army: '+f+' | Enemy army: '+e+' | Your workers: '+friendly.filter(u=>u.type==='worker').length+' | Enemy workers: '+enemy.filter(u=>u.type==='worker').length+' | Formation: '+formation+'.';}elapsed+=dt;cityTimer+=dt;if(cityTimer>=5){cityTimer-=5;cityCycleNumber++;const cityOpening=food;let houses=buildings.filter(b=>b.team===0&&b.type==='house').length,farms=buildings.filter(b=>b.team===0&&b.type==='farm').length,markets=buildings.filter(b=>b.team===0&&b.type==='market').length;let owned=buildings.filter(b=>b.team===0);let homes=owned.filter(b=>b.type==='house'),wells=owned.filter(b=>b.type==='well'),roads=owned.filter(b=>b.type==='road'),yards=owned.filter(b=>b.type==='lumberyard');wellCoverage=homes.filter(h=>wells.some(w=>dist(h,w)<190)).length;roadMarkets=owned.filter(b=>b.type==='market'&&marketHasTradeAccess(b)).length;let clinics=owned.filter(b=>b.type==='clinic'),granaries=owned.filter(b=>b.type==='granary');granaryCount=granaries.length;healerCoverage=homes.filter(h=>clinics.some(c=>dist(h,c)<190)).length;assignEmployment();let cap=8+owned.filter(b=>b.type==='house').reduce((n,h)=>n+8+(houseTier(h).level-1)*2,0);let farmOutput=owned.filter(b=>b.type==='farm').reduce((v,b)=>v+13*(employment.byId.get(b.id)?.efficiency||0),0)+owned.filter(b=>b.type==='fishery').reduce((v,b)=>v+9*(employment.byId.get(b.id)?.efficiency||0),0);// V14.11: supply logistics — farms/fisheries with a nearby granary and road deliver 25% more food.
 let logisticsBonus=0,connectedProducers=0;
 for(const producer of owned.filter(b=>b.type==='farm'||b.type==='fishery')){
  const efficiency=employment.byId.get(producer.id)?.efficiency||0;
  if(efficiency<=0)continue;
- const hasDepot=granaries.some(g=>alive(g)&&dist(g,producer)<200);
- const hasRoad=roads.some(road=>alive(road)&&dist(road,producer)<125);
+ const hasDepot=granaries.some(g=>alive(g)&&dist(g,producer)<200&&(employment.byId.get(g.id)?.count||0)>0&&civicHasRoadAccess(g));
+ const hasRoad=roads.some(road=>alive(road)&&dist(road,producer)<125&&getRoadNetwork().serviced.has(road.id));
  if(hasDepot&&hasRoad){logisticsBonus+=(producer.type==='farm'?13:9)*efficiency*.25;connectedProducers++;}
 }
 window.sc1411LogisticsSnapshot={connected:connectedProducers,bonus:Math.round(logisticsBonus*10)/10,total:owned.filter(b=>b.type==='farm'||b.type==='fishery').length};
-food=Math.min(90+granaryCount*160,food+farmOutput+logisticsBonus);wood+=yards.reduce((v,b)=>v+5*(employment.byId.get(b.id)?.efficiency||0),0);// Bakeries convert stored grain into bread; no free food without inputs, workers and a granary.
+const cityCapacity=90+granaryCount*160;let cityOverflow=Math.max(0,food+farmOutput+logisticsBonus-cityCapacity),cityBakeryNet=0,cityExports=0;food=Math.min(cityCapacity,food+farmOutput+logisticsBonus);wood+=yards.reduce((v,b)=>v+5*(employment.byId.get(b.id)?.efficiency||0),0);// Bakeries convert stored grain into bread; no free food without inputs, workers and a granary.
 let bakeries=owned.filter(b=>b.type==='bakery');
 let workingBakeries=0;
 for(const bakery of bakeries){
  const staffed=(employment.byId.get(bakery.id)?.efficiency||0);
- if(staffed>=.5&&granaries.some(g=>dist(g,bakery)<190)&&food>=3){food-=3;food+=5*staffed;workingBakeries+=staffed;}
+ if(staffed>=.5&&granaries.some(g=>dist(g,bakery)<190)&&food>=3*staffed){food-=3*staffed;food+=5*staffed;cityBakeryNet+=2*staffed;workingBakeries+=staffed;}
 }
 // V10.3: first genuinely crafted commodity. Existing food production is preserved.
 // Operating bakeries pack surplus bread into trade baskets when a staffed market
@@ -746,7 +823,7 @@ const activeMarkets=owned.filter(m=>m.type==='market'&&marketHasTradeAccess(m)&&
 for(const bakery of bakeries){
  const eff=employment.byId.get(bakery.id)?.efficiency||0;
  if(window.scBreadExportEnabled!==false&&eff>=.5&&granaries.some(g=>dist(g,bakery)<190)&&activeMarkets.some(m=>dist(m,bakery)<220)&&tradeGoods<80&&food-2>=Math.max(8,Math.ceil(population*.45*(window.scRationFactor||1))*(window.scBreadReserveCycles??2))){
-   food-=2;tradeGoods=Math.min(80,tradeGoods+Math.max(1,Math.floor(2*eff)));
+   food-=2;cityExports+=2;tradeGoods=Math.min(80,tradeGoods+Math.max(1,Math.floor(2*eff)));
  }
 }
 const sales=Math.min(Math.floor(tradeGoods),activeMarkets.length);
@@ -770,11 +847,16 @@ const marketSavings=Math.min(.15,marketCoverage*.15);
 const baselineConsumption=Math.ceil(population*.45*(window.scRationFactor||1));
 let consumption=Math.max(0,Math.ceil(baselineConsumption*(1-marketSavings)));
 window.sc1412MarketDistributionSnapshot={served:marketServedHomes,homes:homes.length,coverage:marketCoverage,savings:baselineConsumption-consumption,base:baselineConsumption,actual:consumption,percent:Math.round(marketSavings*100)};
-if(food>=consumption){food-=consumption;happiness=Math.min(100,happiness+(window.scRationMood||0)+civicMoodBonus+roadServiceBonus(owned)+neighborhoodBeautyBonus(owned)+(owned.filter(b=>b.type==='market'&&(employment.byId.get(b.id)?.count||0)>0).length?1:0.1)+wellCoverage*.8+workingBakeries*.4+Math.min(1.2,owned.filter(b=>b.type==='theater').length*.4)+clinics.reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0)*homes.filter(h=>dist(h,b)<190).length*.55,0)-(homes.length&&!wellCoverage?.45:0));if(population<cap&&happiness>=45)population+=Math.min(2,cap-population)}else{food=0;happiness=Math.max(0,happiness-8);if(population>4)population--;}let marketEfficiency=owned.filter(b=>b.type==='market').reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0),0);let connectedEfficiency=owned.filter(b=>b.type==='market'&&marketHasTradeAccess(b)).reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0),0);// V10.3: Nearby granaries supply staffed, road-connected markets.
+cityOverflow+=Math.max(0,food-cityCapacity);food=Math.min(cityCapacity,food);
+const cityDelivered=Math.min(food,consumption),cityShortfall=consumption-cityDelivered;food-=cityDelivered;
+cityLedger={opening:cityOpening,harvest:farmOutput,logistics:logisticsBonus,bakeryNet:cityBakeryNet,exports:cityExports,delivered:cityDelivered,shortfall:cityShortfall,overflow:cityOverflow,closing:food,demand:consumption};
+if(!cityShortfall){happiness=Math.min(100,happiness+(window.scRationMood||0)+civicMoodBonus+roadServiceBonus(owned)+neighborhoodBeautyBonus(owned)+(owned.filter(b=>b.type==='market'&&(employment.byId.get(b.id)?.count||0)>0).length?1:0.1)+wellCoverage*.8+workingBakeries*.4+Math.min(1.2,owned.filter(b=>b.type==='theater').length*.4)+clinics.reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0)*homes.filter(h=>dist(h,b)<190).length*.55,0)-(homes.length&&!wellCoverage?.45:0));}else happiness=Math.max(0,happiness-8);
+cityEvolveHomes(homes);cityGrow(homes);assignEmployment();
+let marketEfficiency=owned.filter(b=>b.type==='market').reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0),0);let connectedEfficiency=owned.filter(b=>b.type==='market'&&marketHasTradeAccess(b)).reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0),0);// V10.3: Nearby granaries supply staffed, road-connected markets.
 // Each supplied market gives a modest trade bonus; no benefit from empty staffing.
 let suppliedMarkets=owned.filter(m=>m.type==='market'&&marketHasTradeAccess(m)&&(employment.byId.get(m.id)?.count||0)>0&&granaries.some(g=>alive(g)&&dist(g,m)<170));
 let supplyTradeBonus=suppliedMarkets.reduce((n,m)=>n+(employment.byId.get(m.id)?.efficiency||0)*.12,0);
-let taxMultiplier=1+marketEfficiency*.35+connectedEfficiency*.2+supplyTradeBonus;gold+=Math.floor(population*.7*(happiness/100)*taxMultiplier+owned.filter(b=>b.type==='house').reduce((n,h)=>n+(houseTier(h).level-1)*.65+homeBeauty(h).score*.025,0));cityProsperity+=population*(happiness/100)*taxMultiplier*(1+civicServiceRate*.08);
+let taxMultiplier=1+marketEfficiency*.35+connectedEfficiency*.2+supplyTradeBonus;gold+=Math.floor(population*.7*(happiness/100)*taxMultiplier+owned.filter(b=>b.type==='house').reduce((n,h)=>n+(houseTier(h).level-1)*.65+homeBeauty(h).score*.025,0));const cityTarget=cityProsperityDetails().target;cityProsperity=clamp(cityProsperity+clamp(cityTarget-cityProsperity,-2,2),0,100);
 // V14.01: Announce actual residential development when service conditions improve.
 // Baseline each new home silently; only announce subsequent level increases.
 const homeNames=['','Cottage','Homestead','Townhouse','Manor'];
@@ -2563,6 +2645,7 @@ const updatePolitics=()=>{const select=document.getElementById('politicsRealm');
 })();
 
 window.scCancelConstruction=()=>{mode=null;drag=null;wallPointer=null;updateUI()};
+window.scCityEconomy={snapshot:citySnapshot};
 window.scHoverBuildings=buildings;function frame(now){let dt=Math.min((now-last)/1000,.05);last=now;window.scRTSUnits=units;window.scRTSNodes=nodes;window.scHoverBuildings=buildings;/* camera managed by v12.37 */if(!paused&&!ended&&!tutorialVisible){tick(dt);scFestivalCooldown=Math.max(0,scFestivalCooldown-dt);visualTime+=dt}draw();advisorAutoCheck(now);requestAnimationFrame(frame)}init();scRefreshBattleReadout();requestAnimationFrame(frame)})();
 </script><style id="treasuryStyles">
 #treasuryPanel{display:none;position:fixed;z-index:115;top:7vh;left:50%;transform:translateX(-50%);width:min(780px,94vw);max-height:85vh;overflow:auto;box-sizing:border-box;background:#172a2d;color:#f4ecd9;border:2px solid #bba36d;border-radius:13px;padding:17px 20px;box-shadow:0 16px 65px #000b;font-size:15px}
@@ -3268,7 +3351,7 @@ window.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.id)return
 for(const ev of ['pointerup','pointercancel'])window.addEventListener(ev,e=>{if(drag?.id===e.pointerId)drag=null},true);
 document.addEventListener('keydown',e=>{if(/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement?.tagName||''))return;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){keys.add(e.key);e.preventDefault();}},true);
 document.addEventListener('keyup',e=>keys.delete(e.key),true);
-const blockers='#advisorTop,#sc140Bar,#scFloatingMinimap,#sc143Status,#sc145Recruit,#sc146Menu,#sc146MenuButton,#sc146AdvisorToggle,#sc141Tools,#sc148CameraPrefs,#tutorialShade,#scContextPanel';
+const blockers='#sc159Pulse,#sc1310AdvisorPanel,#sc190ChroniclePanel,#sc189HelpPanel,#advisorTop,#sc140Bar,#scFloatingMinimap,#sc143Status,#sc145Recruit,#sc146Menu,#sc146MenuButton,#sc146AdvisorToggle,#sc141Tools,#sc148CameraPrefs,#tutorialShade,#scContextPanel';
 function frame(now){const dt=Math.max(0,Math.min(.04,(now-last)/1000));last=now;const r=vp.getBoundingClientRect();let dx=0,dy=0;
  const inside=pointer.valid&&pointer.x>=r.left&&pointer.x<=r.right&&pointer.y>=r.top&&pointer.y<=r.bottom;
  const under=pointer.valid?document.elementFromPoint(pointer.x,pointer.y):null;
@@ -4145,18 +4228,15 @@ document.title='Shattered Crowns — V12.89';
 (()=>{'use strict';
  const panel=document.getElementById('sc190ChroniclePanel');if(!panel)return;
  const section=document.createElement('section');section.id='sc194Capacity';
- section.innerHTML='<h3>👥 Population & work capacity</h3><div class="sc194Line"><span>Housing capacity</span><strong id="sc194Homes">—</strong></div><div class="sc194Line"><span>Visible workers</span><strong id="sc194Workers">—</strong></div><div class="sc194Line"><span>Production buildings</span><strong id="sc194Jobs">—</strong></div><div class="sc194Line"><span>Workforce balance</span><strong id="sc194Balance">—</strong></div><p class="sc194Foot">Planning estimates: each house represents space for 4 residents; each farm, fishery, lumberyard, bakery or market represents 2 potential jobs. Worker count comes from visible player units. These figures do not change resources, production or population.</p>';
+ section.innerHTML='<h3>👥 Population & work capacity</h3><div class="sc194Line"><span>Housing capacity</span><strong id="sc194Homes">—</strong></div><div class="sc194Line"><span>Visible workers</span><strong id="sc194Workers">—</strong></div><div class="sc194Line"><span>Production buildings</span><strong id="sc194Jobs">—</strong></div><div class="sc194Line"><span>Workforce balance</span><strong id="sc194Balance">—</strong></div><p class="sc194Foot">Actual civilian population and workplace assignments. Recruited map units are a separate cohort; they do not staff city workplaces. Two residents are reserved for essential duties.</p>';
  panel.append(section);
  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
  function update(){if(panel.hidden)return;
-  const buildings=Array.isArray(window.scHoverBuildings)?window.scHoverBuildings:[];
-  const units=Array.isArray(window.scRTSUnits)?window.scRTSUnits:[];
-  const own=buildings.filter(b=>b&&b.team===0&&(b.hp===undefined||b.hp>0));
-  const homes=own.filter(b=>b.type==='house').length;
-  const jobs=own.filter(b=>['farm','fishery','lumberyard','bakery','market'].includes(b.type)).length*2;
-  const workers=units.filter(u=>u&&u.team===0&&(u.hp===undefined||u.hp>0)&&String(u.type||u.kind||'').toLowerCase().includes('worker')).length;
-  set('sc194Homes',String(homes*4)+' estimated spaces');set('sc194Workers',String(workers));set('sc194Jobs',String(jobs)+' potential jobs');
-  set('sc194Balance',jobs>workers?String(jobs-workers)+' unfilled potential jobs':workers>jobs?String(workers-jobs)+' workers beyond planned jobs':'Balanced');
+  const s=window.scCityEconomy.snapshot();
+  set('sc194Homes',s.population+' / '+s.housing.capacity+' residents');
+  set('sc194Workers',s.workforce.pool+' civilian workers; '+(window.scRTSUnits||[]).filter(u=>u.team===0&&u.type==='worker'&&u.hp>0).length+' separate map workers');
+  set('sc194Jobs',s.workforce.jobs+' jobs');
+  set('sc194Balance',s.workforce.filled+' staffed + '+s.workforce.idle+' idle + '+s.workforce.reserved+' reserved = '+s.population+' residents');
  }
  document.getElementById('sc190ChronicleBtn')?.addEventListener('click',()=>setTimeout(update,0));
  window.addEventListener('sc:built',update);setInterval(update,2500);
@@ -4537,20 +4617,15 @@ body input, body textarea, body [contenteditable="true"] {
  panel.innerHTML='<button id="sc1310AdvisorClose" type="button" aria-label="Close advisor">✕</button><h2>🧭 Settlement Advisor</h2><p>Your advisor offers optional suggestions. You are always free to play your own way.</p><div id="sc1310AdvisorAdvice"></div><p style="font-size:11px;opacity:.8">Suggestions are based on your current settlement. No mandatory tasks or popups.</p>';
  document.body.append(panel);
  const advice=panel.querySelector('#sc1310AdvisorAdvice');
- const readNumber=id=>{const el=document.getElementById(id);if(!el)return null;const match=(el.textContent||'').replace(/,/g,'').match(/-?\d+(?:\.\d+)?/);return match?Number(match[0]):null};
  function refresh(){
-  const buildings=(window.scHoverBuildings||[]).filter(b=>b&&b.team===0&&(b.hp===undefined||b.hp>0));
-  const count=t=>buildings.filter(b=>String(b.type||'').toLowerCase()===t).length;
-  const food=readNumber('resFood');
-  const items=[];
-  if(count('house')<2)items.push(['🏠 Homes','Build two houses to support a growing settlement.']);
-  if(count('farm')+count('fishery')===0)items.push(['🌾 Food production','Build a farm, or a fishery where the terrain allows.']);
-  if(count('granary')===0)items.push(['🏚️ Storage','Consider a granary to strengthen your food supply chain.']);
-  if(count('well')===0)items.push(['💧 Services','Build a well to support nearby homes.']);
-  if(food!==null&&food<30)items.push(['⚠️ Food reserves','Food supplies are low. Check farms and rationing in Chronicle → Economy.']);
-  if(count('market')===0&&count('house')>=2)items.push(['🏪 Market','A market can help develop your town economy.']);
-  if(!items.length)items.push(['🌟 A growing settlement','Your basic settlement is established. Expand carefully and check Chronicle → Economy for workforce and food reserves.']);
-  advice.replaceChildren();for(const [heading,desc] of items.slice(0,5)){const box=document.createElement('div');box.className='sc1310Task';const strong=document.createElement('strong');strong.textContent=heading;const para=document.createElement('p');para.textContent=desc;box.append(strong,para);advice.append(box)}
+  const items=window.scCityEconomy.snapshot().advice;
+  advice.replaceChildren();
+  for(const text of items.slice(0,5)){
+   const box=document.createElement('div');box.className='sc1310Task';
+   const strong=document.createElement('strong');strong.textContent='City economy';
+   const para=document.createElement('p');para.textContent=text;
+   box.append(strong,para);advice.append(box);
+  }
  }
  function show(v){panel.hidden=!v;button.setAttribute('aria-expanded',String(v));if(v){document.getElementById('sc190ChroniclePanel')?.setAttribute('hidden','');document.getElementById('sc189HelpPanel')?.setAttribute('hidden','');refresh();}}
  button.addEventListener('click',e=>{e.stopPropagation();show(panel.hidden)});
@@ -5211,7 +5286,7 @@ function install(){
  section.id='sc1347Culture';
  section.innerHTML='<h3 style="margin:15px 0 7px;color:#f4db9a">🎭 Cultural Life</h3><div id="sc1347CultureInfo" style="background:#253e38;padding:12px;border-radius:7px;line-height:1.6">Checking city buildings…</div><p style="font-size:12px;opacity:.8">Theater benefit: +0.4 happiness per food cycle, up to +1.2. Neighborhood reach is a planning indicator, not an additional bonus.</p>';
  const festival=document.createElement('div');festival.id='sc1351Festival';festival.style.cssText='margin:12px 0;padding:10px;background:#203a31;border:1px solid #987b49;border-radius:6px';festival.innerHTML='<strong>🎭 Town Festival</strong><p style="margin:6px 0;font-size:12px">Spend 35 gold and 12 food for +8 happiness and +4 prosperity. Requires a Theater. 90 game-second cooldown.</p><button type="button" id="sc1351FestivalBtn" style="padding:7px 13px;background:#94743e;color:white;border:1px solid #cbb478;border-radius:4px;cursor:pointer">Hold Festival</button><div id="sc1351FestivalStatus" role="status" style="margin-top:6px;font-size:12px"></div>';
- festival.insertAdjacentHTML('beforeend','<div style="border-top:1px solid #796848;margin-top:10px;padding-top:10px"><strong>🥖 Community Feast</strong><p style="font-size:12px;margin:6px 0">Requires a Bakery. Spend 20 gold and 20 food for +5 happiness and +2 residents. Shares the 90-second event cooldown.</p><button id="sc1352FeastBtn" type="button" style="padding:7px 13px;background:#94743e;color:white;border:1px solid #cbb478;border-radius:4px;cursor:pointer">Host Feast</button><div id="sc1352FeastStatus" role="status" style="font-size:12px;margin-top:6px"></div></div>');
+ festival.insertAdjacentHTML('beforeend','<div style="border-top:1px solid #796848;margin-top:10px;padding-top:10px"><strong>🥖 Community Feast</strong><p style="font-size:12px;margin:6px 0">Requires a Bakery. Spend 20 gold and 20 food for +5 happiness and services support gradual migration. Shares the 90-second event cooldown.</p><button id="sc1352FeastBtn" type="button" style="padding:7px 13px;background:#94743e;color:white;border:1px solid #cbb478;border-radius:4px;cursor:pointer">Host Feast</button><div id="sc1352FeastStatus" role="status" style="font-size:12px;margin-top:6px"></div></div>');
  festival.insertAdjacentHTML('beforeend','<div id="sc1353Reserve" style="border-top:1px solid #796848;margin-top:10px;padding-top:9px"><strong>🌾 Protect Food Stores</strong><p style="font-size:12px;margin:5px 0">Prevent festivals and feasts from using food your town needs. The reserve applies to events only, not everyday consumption.</p><label style="font-size:12px">Minimum food to keep <input id="sc1353ReserveInput" type="number" min="0" max="150" step="10" value="30" style="width:65px;background:#10251e;color:#fff;border:1px solid #ab966b;padding:4px"></label><div id="sc1353ReserveStatus" role="status" style="font-size:12px;margin-top:5px"></div></div>');
  section.append(festival);
  const festivalBtn=festival.querySelector('#sc1351FestivalBtn'),festivalStatus=festival.querySelector('#sc1351FestivalStatus');
@@ -6182,6 +6257,52 @@ function refresh(){
 }
 function start(){refresh();setInterval(refresh,1000)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
+<style id="cityEconomyStyles">
+#sc159Pulse{top:80px!important;right:12px!important;left:auto!important;width:min(430px,calc(100vw - 24px))!important;max-width:430px!important;max-height:calc(100dvh - 184px)!important;overflow:auto!important;box-sizing:border-box!important}
+#sc159PulseData{display:none!important}
+/* Keep the existing minimap reachable above the battlefield, outside the command bar. */
+#scFloatingMinimap{top:115px!important;left:12px!important;right:auto!important;bottom:auto!important;width:150px!important;height:83px!important}
+#scCityEconomyPanel{padding:4px 12px 12px;font:12px/1.5 system-ui;color:#e6edda}
+#scCityEconomyPanel h3{font-size:14px;color:#ffe1a0;margin:12px 0 5px}
+#scCityEconomyPanel p{margin:5px 0}
+#scCityEconomyPanel table{width:100%;border-collapse:collapse;font-size:11px}
+#scCityEconomyPanel th,#scCityEconomyPanel td{text-align:left;border-bottom:1px solid #49634f;padding:4px;white-space:normal}
+#scCityEconomyPanel details{padding:6px 0;border-bottom:1px solid #49634f}
+#scCityEconomyPanel summary{cursor:pointer;color:#ffe1a0}
+#scCityEconomyPanel progress{width:100%;height:10px;accent-color:#95c783}
+#scCityLifeClose{margin-left:auto!important;font-size:13px!important;border:1px solid #a58e60!important;border-radius:5px;margin-right:6px!important}
+#sc159PulseHeader{position:sticky;top:0;background:#193a31;z-index:1}
+#scCityEconomyPanel .cityWarn{color:#ffd094}
+</style>
+<script id="cityEconomyPresentation">
+(()=>{'use strict';
+ const root=document.getElementById('sc159Pulse'),button=document.getElementById('sc1312CityLifeBtn');
+ root.setAttribute('role','dialog');root.setAttribute('aria-label','City Life and Economy');
+ const close=document.createElement('button');close.id='scCityLifeClose';close.type='button';close.textContent='✕ Close';close.setAttribute('aria-label','Close City Life');
+ document.getElementById('sc159PulseHeader').append(close);
+ close.addEventListener('click',()=>{root.hidden=true;button.setAttribute('aria-expanded','false');button.focus()});
+ const panel=document.createElement('section');panel.id='scCityEconomyPanel';root.append(panel);
+ const number=x=>Number(x||0).toFixed(1).replace(/\.0$/,'');
+ const row=(label,value)=>'<tr><th>'+label+'</th><td>'+value+'</td></tr>';
+ let renderedSignature='';
+ function refresh(){
+  if(root.hidden)return;
+  const s=window.scCityEconomy.snapshot(),last=s.food.last;
+  const signature=JSON.stringify(s);if(signature===renderedSignature)return;renderedSignature=signature;
+  const open=new Set([...panel.querySelectorAll('details[open]')].map(d=>d.dataset.house));
+  const focusHouse=panel.contains(document.activeElement)?document.activeElement?.closest('details')?.dataset.house:null;
+  const houses=s.housing.houses.map(h=>'<details data-house="'+h.id+'"'+(open.has(String(h.id))?' open':'')+'><summary>House #'+h.id+' · '+h.name+' · '+h.occupancy+'/'+h.capacity+' residents</summary><p>Upgrade: '+h.upgradeSeconds+'/10 seconds of sustained requirements. Decline: '+h.downgradeSeconds+'/30 seconds.</p>'+(h.tier<4?'<p>Next: '+h.nextRequirements.map(r=>(r.met?'✓ ':'✗ ')+r.label).join(' · ')+'</p>':'<p>Maximum tier reached.</p>')+(h.currentMissing.length?'<p class="cityWarn">Current tier at risk: '+h.currentMissing.join(', ')+'</p>':'')+'</details>').join('');
+  panel.innerHTML='<h3>Residents & housing</h3><p>'+s.population+' / '+s.housing.capacity+' civilian residents · '+s.housing.keepResidents+' in the Keep · '+s.housing.displaced+' displaced</p><p>'+s.growth.reason+' Progress: '+s.growth.progress+'/15 seconds.</p>'+houses+
+   '<h3>Food reserve & distribution</h3><p>'+number(s.food.stock)+' / '+s.food.capacity+' food stored · '+s.food.reserveSeconds+' seconds of household reserve (before new production).</p><p>Harvest at current staffing: '+number(s.food.production)+' · Household demand before distribution: '+s.food.demand+' / 5 seconds.</p><p>Markets serve '+s.food.markets.served+'/'+s.food.markets.total+' homes; '+s.food.markets.savings+' food saved last cycle.</p>'+
+   (last?'<table aria-label="Last five-second food cycle">'+row('Opening reserve',number(last.opening))+row('Farm/fishery harvest','+'+number(last.harvest))+row('Supply logistics','+'+number(last.logistics))+row('Bakery conversion (net)','+'+number(last.bakeryNet))+row('Bread exports','−'+number(last.exports))+row('Household delivery','−'+number(last.delivered))+row('Storage overflow','−'+number(last.overflow))+row('Closing reserve',number(last.closing))+row('Unmet household demand',number(last.shortfall))+'</table>':'<p>Waiting for the first five-second economy cycle.</p>')+
+   '<p>Shared reserve: '+number(s.food.baseStock)+'/90 base storage'+s.food.granaries.map(g=>' · Granary #'+g.id+' '+number(g.stock)+'/160 ('+g.staff+'/1 staff, '+(g.connected?'road connected':'needs connected roads')+')').join('')+'. Granaries share this reserve; these are not extra food stocks.</p>'+
+   '<h3>Employment & production</h3><p>'+s.workforce.filled+' staffed + '+s.workforce.idle+' idle + '+s.workforce.reserved+' essential duties = '+s.population+' civilian residents. '+s.workforce.jobs+' jobs available.</p><p>Map workers and soldiers are separately recruited units; they do not also staff workplaces. Food producers receive civilian staff first.</p><table aria-label="Workplace staffing"><tr><th>Workplace</th><th>Staff</th><th>Base output / 5 sec</th></tr>'+s.workforce.sites.map(b=>'<tr><td>'+b.type+' #'+b.id+'</td><td>'+b.filled+'/'+b.need+'</td><td>'+number(b.output)+(b.type==='farm'||b.type==='fishery'?' food':b.type==='lumberyard'?' wood':' service/conversion')+'</td></tr>').join('')+'</table>'+
+   '<h3>Prosperity '+number(s.prosperity.score)+' / 100</h3><progress max="100" value="'+s.prosperity.score+'" aria-label="City prosperity"></progress><p>Target '+s.prosperity.target+'/100 · changes by at most 2 points per five-second cycle.</p><table aria-label="Prosperity contributions">'+s.prosperity.factors.map(f=>row(f.label,number(f.points)+' / '+f.max)).join('')+'</table><h3>Next steps</h3>'+s.advice.map(a=>'<p>• '+a+'</p>').join('');
+  if(focusHouse)panel.querySelector('details[data-house="'+focusHouse+'"] summary')?.focus({preventScroll:true});
+ }
+ button.addEventListener('click',()=>setTimeout(refresh,0));window.addEventListener('sc:built',refresh);setInterval(refresh,500);
 })();
 </script>
 </body></html>
