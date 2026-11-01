@@ -13,7 +13,7 @@ npm test
 
 The runner installs and uses the Chromium revision pinned by Playwright 1.57.0. A bare Linux host needs Chromium OS libraries (`npx playwright install-deps chromium`); CI installs these before the same test command. An explicit `CHROMIUM_PATH` override is available on restricted machines, and its actual browser version is recorded.
 
-The suite preserves all 28 Milestone 2 regressions and adds release-safety checks plus five production-compatible smoke journeys. Traces for failures, screenshots, browser errors, environment versions, JUnit, JSON-line results and logs are written to `test-results/`. Successful traces are pruned; historical committed screenshots are not overwritten.
+The suite preserves all 28 Milestone 2 regressions and adds Living City scenarios, release-safety checks and five production-compatible smoke journeys. See [Milestone 4](docs/MILESTONE4.md) for production, housing and balance changes. Traces for failures, screenshots, browser errors, environment versions, JUnit, JSON-line results and logs are written to `test-results/`. Successful traces are pruned; historical committed screenshots are not overwritten.
 
 ```sh
 npm run test:unit
