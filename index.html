@@ -5752,7 +5752,7 @@ function init(){
  Object.keys(costs).forEach(name=>{const option=document.createElement('option');option.value=name;option.textContent=name;select.append(option)});
  select.value='House';label.append(select);panel.append(label);
  const status=document.createElement('div');status.className='sc1399Status';status.setAttribute('aria-live','polite');panel.append(status);
- function read(id){const raw=document.getElementById(id)?.textContent||'';const m=raw.replace(/,/g,'').match(/-?\\d+/);return m?Number(m[0]):0}
+ function read(id){const raw=document.getElementById(id)?.textContent||'';const m=raw.replace(/,/g,'').match(/-?\d+/);return m?Number(m[0]):0}
  function refresh(){
   const available=[...host.querySelectorAll('button')].some(b=>b.textContent.includes('House'));
   panel.hidden=!available;
