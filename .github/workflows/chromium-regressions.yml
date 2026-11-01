@@ -1,33 +1,87 @@
-name: Chromium regression gate
+name: Required game and release verification
 on:
   pull_request:
     branches: [main]
   push:
-    branches: [feat/city-life-economy]
+    branches: [main]
+  workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: verify-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
-  chromium:
+  verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+          cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      - name: Run all game regressions
-        shell: bash
-        run: |
-          mkdir -p test-results
-          set -o pipefail
-          npm test 2>&1 | tee test-results/chromium.log
-      - name: Keep test output and screenshots
+      - run: npx playwright install-deps chromium
+      - name: Full regression and pipeline suite
+        run: npm test
+      - name: Package exact verified source
+        run: npm run build:site
+      - name: Validate packaged artifact
+        run: npm run verify:site
+      - name: Smoke-test packaged site
+        env:
+          SMOKE_DIR: dist
+          EXPECTED_RELEASE_SHA: ${{ github.sha }}
+          TEST_ARTIFACT_DIR: test-results/candidate
+        run: npm run test:smoke
+      - name: Publish verified candidate only after every test passes
+        uses: actions/upload-artifact@v4
+        with:
+          name: verified-site
+          path: dist/
+          retention-days: 90
+          if-no-files-found: error
+      - name: Keep diagnostics even on failure
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: chromium-milestone-2
-          path: |
-            test-results/
-            docs/screenshots/
+          name: verification-evidence
+          path: test-results/
+          retention-days: 7
+  live-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Read-only smoke against current deployed stable game
+        env:
+          SMOKE_BASE_URL: https://gkoromilas01.github.io/Shattered-Crowns/
+          TEST_ARTIFACT_DIR: test-results/live
+        run: npm run test:smoke
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-smoke-evidence
+          path: test-results/
+          retention-days: 7
+  required-ci:
+    name: required-ci
+    if: always()
+    needs: [verify, live-smoke]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail closed when any required test job fails or is skipped
+        env:
+          VERIFY: ${{ needs.verify.result }}
+          LIVE: ${{ needs.live-smoke.result }}
+        run: test "$VERIFY" = success && test "$LIVE" = success

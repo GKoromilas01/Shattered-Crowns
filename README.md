@@ -1,29 +1,34 @@
 # Shattered Crowns
 
-Browser RTS prototype. Serve this directory with `python3 -m http.server 8000` and open http://localhost:8000.
+Browser-first medieval city-building RTS. Serve this directory with `python3 -m http.server 8000` and open http://localhost:8000.
 
-## Chromium regression tests
+## Automated testing
 
-Requires Node.js 20+ and Playwright 1.57.0:
+From a clean checkout with Node.js 24:
 
 ```sh
 npm ci
-npx playwright install chromium
 npm test
 ```
 
-The suite uses system Chromium at `/usr/bin/chromium` when available, otherwise Playwright's bundled Chromium. Set `CHROMIUM_PATH` to override it. A local HTTP server starts and stops automatically; no external game service or deployment is needed.
+The runner installs and uses the Chromium revision pinned by Playwright 1.57.0. A bare Linux host needs Chromium OS libraries (`npx playwright install-deps chromium`); CI installs these before the same test command. An explicit `CHROMIUM_PATH` override is available on restricted machines, and its actual browser version is recorded.
 
-Tests exercise the actual game with browser clicks, pointer drags, keyboard input, wheel scrolling, and the Fullscreen API. Coverage includes repeated and rapid Construction/Units switching, cancellation, house placement and undo, road dimensions/costs/refunds, road extension, affordability, advisor checklist persistence, camera controls, atlas selection, supply updates, and UI hit targets at 1440, 1024, and 768 pixels. Every scenario rejects uncaught JavaScript errors.
+The suite preserves all 28 Milestone 2 regressions and adds release-safety checks plus five production-compatible smoke journeys. Traces for failures, screenshots, browser errors, environment versions, JUnit, JSON-line results and logs are written to `test-results/`. Successful traces are pruned; historical committed screenshots are not overwritten.
 
-Road tests that need larger budgets replace only the starting resource amounts in the HTML response within Playwright. Production starting resources, road planner, placement validation, and costs remain unchanged. Horizontal palette scrolling is intentional; tests scroll every enabled command into view and verify that it can receive a click.
+```sh
+npm run test:unit
+npm run test:smoke
+SMOKE_BASE_URL=https://gkoromilas01.github.io/Shattered-Crowns/ npm run test:smoke
+```
 
-Changes are local until explicitly approved for release. See `STABILIZATION.md` for findings and validation.
+Live smoke gathers actual resources for road tests and never replaces the served game or modifies server data. Read the [testing/release runbook](docs/RELEASE_PIPELINE.md) for artifact smoke, clean setup, required checks, protection activation and rollback.
 
-## Milestone 2 — City Life & Economy
+## Releases and owner approval
 
-Open **City Life** for actual resident occupancy, housing development requirements, the five-second food ledger, civilian staffing and prosperity contributions. Advisor uses the same engine state. Houses evolve after sustained services; immigration needs vacant serviced housing. Map units remain a separate recruited cohort.
+PR/main CI verifies game behavior, release integrity and staged/deployed smoke. `required-ci` is the required status check to configure in main's ruleset. It does not enable protection automatically.
 
-`npm test` runs both the original 14 stability regressions and 14 milestone scenarios in Chromium. The multi-minute test advances the real engine tick with test-response-only starting fixtures; it does not add production debug controls. PR checks run the full suite and retain test output/screenshots.
+The proposed release pipeline publishes only explicitly selected, verified main candidates through a protected manual workflow. It validates immutable source bytes, pre-fetches the current stable fallback, verifies production after publishing and restores the fallback on failure. Stable payloads are archived durably as GitHub Release assets. Owner approval is required before merge, activation or deployment.
 
-See [milestone rules, validation and release limits](docs/MILESTONE2.md) and [screenshots](docs/screenshots/).
+**Current hosting is not silently changed:** switching Pages from branch publishing to Actions and configuring branch/environment protection are explicit administrator activation steps. Until that switch, legacy branch publishing bypasses these new release gates. No workflow file alone can promise otherwise.
+
+See [release notes](RELEASE_NOTES.md), [Milestone 2 gameplay rules](docs/MILESTONE2.md) and the [release/autonomy runbook](docs/RELEASE_PIPELINE.md). Codex tasks and hourly reminders are not a continuously running agent.
