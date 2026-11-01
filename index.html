@@ -6238,4 +6238,21 @@ units.addEventListener('click',()=>{
  window.sc140UI?.showKeep?.(true);
 });
 })();
+</script><script id="sc1414UnitsCaptureFix">
+(()=>{'use strict';
+// Run before the older bar-level capture listener, which calls stopImmediatePropagation.
+// That listener prevented every previous Units button handler from firing.
+document.addEventListener('click',e=>{
+ const target=e.target;
+ const button=target?.closest?.('#sc140Keep');
+ if(!button)return;
+ e.preventDefault();
+ e.stopImmediatePropagation();
+ window.sc153UI?.exitConstruction?.();
+ const ui=window.sc140UI;
+ ui?.showKeep?.(true);
+ // Explicitly keep the recruitment palette even if a queued selection event rerenders it.
+ requestAnimationFrame(()=>ui?.showKeep?.(true));
+},true);
+})();
 </script></body></html>
