@@ -6000,4 +6000,41 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
+
+<!-- v14.07 hotfix: make recent resource changes visible on hover and keyboard focus. -->
+<style id="sc1407HistoryFixStyle">
+#resourceBar b[data-sc1407-history]{cursor:help;position:relative;outline-offset:2px}
+#resourceBar b[data-sc1407-history]:hover::after,
+#resourceBar b[data-sc1407-history]:focus-visible::after{
+ content:attr(data-sc1407-history);position:absolute;left:0;top:calc(100% + 7px);z-index:9999;
+ min-width:145px;max-width:230px;white-space:normal;padding:7px 9px;border-radius:5px;
+ background:#102d2b;color:#fff0cb;border:1px solid #b49b68;box-shadow:0 4px 12px #0009;
+ font:12px/1.45 system-ui,sans-serif;pointer-events:none
+}
+#resourceBar{overflow:visible!important}
+</style>
+<script id="sc1407HistoryFix">
+(()=>{'use strict';
+ const items=[['resGold','Gold'],['resWood','Wood'],['resStone','Stone'],['resFood','Food'],['resGoods','Trade goods']];
+ const previous=new Map(),history=new Map();
+ function read(el){const m=(el.textContent||'').replace(/,/g,'').match(/-?\d+/);return m?Number(m[0]):null}
+ function refresh(){
+  for(const [id,name] of items){
+   const el=document.getElementById(id);if(!el)continue;
+   if(!el.hasAttribute('tabindex'))el.tabIndex=0;
+   const now=read(el);if(now===null)continue;
+   if(previous.has(id)&&now!==previous.get(id)){
+    const changes=history.get(id)||[];
+    const diff=now-previous.get(id);changes.unshift((diff>0?'+':'')+diff);
+    history.set(id,changes.slice(0,3));
+   }
+   previous.set(id,now);
+   const changes=history.get(id)||[];
+   el.setAttribute('data-sc1407-history',name+' · Recent changes: '+(changes.length?changes.join(', '):'none yet'));
+  }
+ }
+ function start(){refresh();setInterval(refresh,250)}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
 </body></html>
