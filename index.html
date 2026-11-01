@@ -731,7 +731,7 @@ for(const producer of owned.filter(b=>b.type==='farm'||b.type==='fishery')){
  const hasRoad=roads.some(road=>alive(road)&&dist(road,producer)<125);
  if(hasDepot&&hasRoad){logisticsBonus+=(producer.type==='farm'?13:9)*efficiency*.25;connectedProducers++;}
 }
-window.sc1411Logistics={connected:connectedProducers,bonus:Math.round(logisticsBonus*10)/10,total:owned.filter(b=>b.type==='farm'||b.type==='fishery').length};
+window.sc1411LogisticsSnapshot={connected:connectedProducers,bonus:Math.round(logisticsBonus*10)/10,total:owned.filter(b=>b.type==='farm'||b.type==='fishery').length};
 food=Math.min(90+granaryCount*160,food+farmOutput+logisticsBonus);wood+=yards.reduce((v,b)=>v+5*(employment.byId.get(b.id)?.efficiency||0),0);// Bakeries convert stored grain into bread; no free food without inputs, workers and a granary.
 let bakeries=owned.filter(b=>b.type==='bakery');
 let workingBakeries=0;
@@ -769,7 +769,7 @@ const marketCoverage=homes.length?marketServedHomes/homes.length:0;
 const marketSavings=Math.min(.15,marketCoverage*.15);
 const baselineConsumption=Math.ceil(population*.45*(window.scRationFactor||1));
 let consumption=Math.max(0,Math.ceil(baselineConsumption*(1-marketSavings)));
-window.sc1412MarketDistribution={served:marketServedHomes,homes:homes.length,coverage:marketCoverage,savings:baselineConsumption-consumption,base:baselineConsumption,actual:consumption,percent:Math.round(marketSavings*100)};
+window.sc1412MarketDistributionSnapshot={served:marketServedHomes,homes:homes.length,coverage:marketCoverage,savings:baselineConsumption-consumption,base:baselineConsumption,actual:consumption,percent:Math.round(marketSavings*100)};
 if(food>=consumption){food-=consumption;happiness=Math.min(100,happiness+(window.scRationMood||0)+civicMoodBonus+roadServiceBonus(owned)+neighborhoodBeautyBonus(owned)+(owned.filter(b=>b.type==='market'&&(employment.byId.get(b.id)?.count||0)>0).length?1:0.1)+wellCoverage*.8+workingBakeries*.4+Math.min(1.2,owned.filter(b=>b.type==='theater').length*.4)+clinics.reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0)*homes.filter(h=>dist(h,b)<190).length*.55,0)-(homes.length&&!wellCoverage?.45:0));if(population<cap&&happiness>=45)population+=Math.min(2,cap-population)}else{food=0;happiness=Math.max(0,happiness-8);if(population>4)population--;}let marketEfficiency=owned.filter(b=>b.type==='market').reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0),0);let connectedEfficiency=owned.filter(b=>b.type==='market'&&marketHasTradeAccess(b)).reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0),0);// V10.3: Nearby granaries supply staffed, road-connected markets.
 // Each supplied market gives a modest trade bonus; no benefit from empty staffing.
 let suppliedMarkets=owned.filter(m=>m.type==='market'&&marketHasTradeAccess(m)&&(employment.byId.get(m.id)?.count||0)>0&&granaries.some(g=>alive(g)&&dist(g,m)<170));
@@ -2542,6 +2542,27 @@ function scRefreshBattleReadout(){
  if(enemyLoss+ourLoss>0&&window.scBattleAdvisor)window.scBattleAdvisor.casualty=true;
 }
 setInterval(scRefreshBattleReadout,800);
+
+// V11.3: heraldry integrated into live UI; no external images required.
+(()=>{
+const arms={
+veyrn:['🐺','#2d4953','#d5e2e9'],tharwen:['⛰','#495c70','#f1d7a3'],duskmoor:['🦉','#304f43','#d9d2ab'],aurelian:['☀','#234e8a','#f4c65b'],cinder:['⚒','#6a302b','#f5b768'],lyran:['⚓','#245e74','#f1dcad'],briar:['🌿','#315e39','#e5ce87'],solen:['🦁','#9b5130','#f5d46d'],ember:['🔥','#642b38','#f6b54f'],caldris:['♜','#343f69','#d6c9ad'],saffron:['☪','#78502d','#f6d58d'],greenwater:['⚖','#2e6860','#f1d9a4'],vaskor:['♞','#4e663f','#e8d6ba'],stormhaven:['🔱','#24506e','#c5e7ed'],mistmere:['🌙','#46536c','#e7dfb2'],sable:['🐚','#3b5966','#f2d5b6']};
+const shield=(id,size=78)=>{const [symbol,bg,fg]=arms[id]||arms.veyrn;return `<svg width="${size}" height="${Math.round(size*1.16)}" viewBox="0 0 90 104" role="img" aria-label="Coat of arms" xmlns="http://www.w3.org/2000/svg"><path d="M45 4 L84 16 V58 Q80 82 45 100 Q10 82 6 58 V16 Z" fill="${bg}" stroke="#dfc38a" stroke-width="5"/><path d="M45 9 V92" stroke="${fg}" opacity=".16" stroke-width="3"/><text x="45" y="64" text-anchor="middle" font-size="43" fill="${fg}" font-family="Segoe UI Emoji,Arial,sans-serif">${symbol}</text></svg>`};
+const css=document.createElement('style');css.textContent=`.scArms{display:flex;align-items:center;gap:14px;padding:12px;background:#22383d;border:1px solid #aa925d;border-radius:10px;margin:12px 0;color:#f5e9c8}.scArms strong{display:block;font-size:1.06em}.scArms em{display:block;color:#d7bf84;margin-top:4px}.scArmsGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:10px;margin-top:12px}.scArmsTile{background:#22383d;border:1px solid #8d805d;border-radius:9px;padding:10px;text-align:center;cursor:pointer;color:#eee5d4}.scArmsTile:hover,.scArmsTile:focus{outline:2px solid #e1c57d}.scArmsTile strong{display:block;margin:5px 0}.scArmsTile small{display:block;color:#d5c08c}`;document.head.appendChild(css);
+const rootId=id=>{const r=regions1200[id];return r&&r.parent?r.parent:id};
+const badge=(id)=>{const root=rootId(id),r=regions1200[root],h=kingdomHeraldry[root];if(!r||!h)return '';return `<div class="scArms">${shield(root,80)}<div><strong>${r.name}</strong><span>${h[0]}</span><em>“${h[1]}”</em></div></div>`};
+const atlas=document.getElementById('history1200Details');
+const atlasBadge=document.createElement('div');atlasBadge.id='scAtlasArms';atlasBadge.setAttribute('aria-live','polite');atlas.parentNode.insertBefore(atlasBadge,atlas);
+const oldAtlas=showHistoricalRegion;showHistoricalRegion=function(){oldAtlas();const id=document.getElementById('history1200Region').value;atlasBadge.innerHTML='<h3 style="margin:0 0 8px;color:#f3d694">🛡 Coat of Arms — Selected Kingdom</h3>'+badge(id);const motto=document.getElementById('atlasKingdomMotto');if(motto)motto.textContent='Kingdom motto: “'+kingdomHeraldry[rootId(id)][1]+'”';};atlasSelector.addEventListener('change',()=>showHistoricalRegion());showHistoricalRegion();
+const loreDetails=document.getElementById('realmLoreDetails');const loreBadge=document.createElement('div');loreBadge.id='scLoreArms';loreDetails.parentNode.insertBefore(loreBadge,loreDetails);
+const oldLore=renderRealmLore;renderRealmLore=function(){oldLore();const id=document.getElementById('realmLoreSelect').value;const r=regions1200[id];loreBadge.innerHTML=badge(id);if(r&&r.settlement){const cards=[...loreDetails.querySelectorAll('.loreCard')];for(const card of cards){const h=card.querySelector('h3');if(h&&['Heraldic title','Motto'].includes(h.textContent))card.remove();}const info=document.createElement('p');info.textContent='This settlement uses its kingdom’s coat of arms and motto; towns and villages have no separate official motto.';loreBadge.appendChild(info);}};
+const loreSelect=document.getElementById('realmLoreSelect');loreSelect.addEventListener('change',()=>renderRealmLore());
+const politics=document.getElementById('politicsGovernment');const politicsBadge=document.createElement('div');politicsBadge.id='scPoliticsArms';politics.parentNode.insertBefore(politicsBadge,politics);
+const updatePolitics=()=>{const select=document.getElementById('politicsRealm');if(!select)return;const id=select.value;politicsBadge.innerHTML=arms[id]?'<h3 style="margin:0 0 8px;color:#f3d694">🛡 Ruling Kingdom’s Coat of Arms</h3>'+badge(id):'';};document.getElementById('politicsRealm').addEventListener('change',updatePolitics);updatePolitics();
+
+})();
+
+window.scCancelConstruction=()=>{mode=null;drag=null;wallPointer=null;updateUI()};
 window.scHoverBuildings=buildings;function frame(now){let dt=Math.min((now-last)/1000,.05);last=now;window.scRTSUnits=units;window.scRTSNodes=nodes;window.scHoverBuildings=buildings;/* camera managed by v12.37 */if(!paused&&!ended&&!tutorialVisible){tick(dt);scFestivalCooldown=Math.max(0,scFestivalCooldown-dt);visualTime+=dt}draw();advisorAutoCheck(now);requestAnimationFrame(frame)}init();scRefreshBattleReadout();requestAnimationFrame(frame)})();
 </script><style id="treasuryStyles">
 #treasuryPanel{display:none;position:fixed;z-index:115;top:7vh;left:50%;transform:translateX(-50%);width:min(780px,94vw);max-height:85vh;overflow:auto;box-sizing:border-box;background:#172a2d;color:#f4ecd9;border:2px solid #bba36d;border-radius:13px;padding:17px 20px;box-shadow:0 16px 65px #000b;font-size:15px}
@@ -2758,26 +2779,7 @@ for(const id of ids){const btn=document.getElementById(id);if(btn)politics.appen
 const tab=document.querySelector('#controlTabs [data-tab="politics"]');
 if(tab)tab.title='Elections, political careers, governing and the Royal Treasury';
 })();</script>
-<script>
-// V11.3: heraldry integrated into live UI; no external images required.
-(()=>{
-const arms={
-veyrn:['🐺','#2d4953','#d5e2e9'],tharwen:['⛰','#495c70','#f1d7a3'],duskmoor:['🦉','#304f43','#d9d2ab'],aurelian:['☀','#234e8a','#f4c65b'],cinder:['⚒','#6a302b','#f5b768'],lyran:['⚓','#245e74','#f1dcad'],briar:['🌿','#315e39','#e5ce87'],solen:['🦁','#9b5130','#f5d46d'],ember:['🔥','#642b38','#f6b54f'],caldris:['♜','#343f69','#d6c9ad'],saffron:['☪','#78502d','#f6d58d'],greenwater:['⚖','#2e6860','#f1d9a4'],vaskor:['♞','#4e663f','#e8d6ba'],stormhaven:['🔱','#24506e','#c5e7ed'],mistmere:['🌙','#46536c','#e7dfb2'],sable:['🐚','#3b5966','#f2d5b6']};
-const shield=(id,size=78)=>{const [symbol,bg,fg]=arms[id]||arms.veyrn;return `<svg width="${size}" height="${Math.round(size*1.16)}" viewBox="0 0 90 104" role="img" aria-label="Coat of arms" xmlns="http://www.w3.org/2000/svg"><path d="M45 4 L84 16 V58 Q80 82 45 100 Q10 82 6 58 V16 Z" fill="${bg}" stroke="#dfc38a" stroke-width="5"/><path d="M45 9 V92" stroke="${fg}" opacity=".16" stroke-width="3"/><text x="45" y="64" text-anchor="middle" font-size="43" fill="${fg}" font-family="Segoe UI Emoji,Arial,sans-serif">${symbol}</text></svg>`};
-const css=document.createElement('style');css.textContent=`.scArms{display:flex;align-items:center;gap:14px;padding:12px;background:#22383d;border:1px solid #aa925d;border-radius:10px;margin:12px 0;color:#f5e9c8}.scArms strong{display:block;font-size:1.06em}.scArms em{display:block;color:#d7bf84;margin-top:4px}.scArmsGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:10px;margin-top:12px}.scArmsTile{background:#22383d;border:1px solid #8d805d;border-radius:9px;padding:10px;text-align:center;cursor:pointer;color:#eee5d4}.scArmsTile:hover,.scArmsTile:focus{outline:2px solid #e1c57d}.scArmsTile strong{display:block;margin:5px 0}.scArmsTile small{display:block;color:#d5c08c}`;document.head.appendChild(css);
-const rootId=id=>{const r=regions1200[id];return r&&r.parent?r.parent:id};
-const badge=(id)=>{const root=rootId(id),r=regions1200[root],h=kingdomHeraldry[root];if(!r||!h)return '';return `<div class="scArms">${shield(root,80)}<div><strong>${r.name}</strong><span>${h[0]}</span><em>“${h[1]}”</em></div></div>`};
-const atlas=document.getElementById('history1200Details');
-const atlasBadge=document.createElement('div');atlasBadge.id='scAtlasArms';atlasBadge.setAttribute('aria-live','polite');atlas.parentNode.insertBefore(atlasBadge,atlas);
-const oldAtlas=showHistoricalRegion;showHistoricalRegion=function(){oldAtlas();const id=document.getElementById('history1200Region').value;atlasBadge.innerHTML='<h3 style="margin:0 0 8px;color:#f3d694">🛡 Coat of Arms — Selected Kingdom</h3>'+badge(id);const motto=document.getElementById('atlasKingdomMotto');if(motto)motto.textContent='Kingdom motto: “'+kingdomHeraldry[rootId(id)][1]+'”';};showHistoricalRegion();
-const loreDetails=document.getElementById('realmLoreDetails');const loreBadge=document.createElement('div');loreBadge.id='scLoreArms';loreDetails.parentNode.insertBefore(loreBadge,loreDetails);
-const oldLore=renderRealmLore;renderRealmLore=function(){oldLore();const id=document.getElementById('realmLoreSelect').value;const r=regions1200[id];loreBadge.innerHTML=badge(id);if(r&&r.settlement){const cards=[...loreDetails.querySelectorAll('.loreCard')];for(const card of cards){const h=card.querySelector('h3');if(h&&['Heraldic title','Motto'].includes(h.textContent))card.remove();}const info=document.createElement('p');info.textContent='This settlement uses its kingdom’s coat of arms and motto; towns and villages have no separate official motto.';loreBadge.appendChild(info);}};
-const loreSelect=document.getElementById('realmLoreSelect');loreSelect.addEventListener('change',()=>renderRealmLore());
-const politics=document.getElementById('politicsGovernment');const politicsBadge=document.createElement('div');politicsBadge.id='scPoliticsArms';politics.parentNode.insertBefore(politicsBadge,politics);
-const updatePolitics=()=>{const select=document.getElementById('politicsRealm');if(!select)return;const id=select.value;politicsBadge.innerHTML=arms[id]?'<h3 style="margin:0 0 8px;color:#f3d694">🛡 Ruling Kingdom’s Coat of Arms</h3>'+badge(id):'';};document.getElementById('politicsRealm').addEventListener('change',updatePolitics);updatePolitics();
 
-})();
-</script>
 <script>const ids=["veyrn", "tharwen", "duskmoor", "aurelian", "cinder", "lyran", "briar", "solen", "ember", "caldris", "saffron", "greenwater", "vaskor", "stormhaven", "mistmere", "sable"];const names=["Veyrn Reach", "Tharwen Crownlands", "Duskmoor", "Aurelian Basin", "Cindervault Mountains", "Lyran League", "Briarwatch", "Solenmar Coast", "Emberfall March", "Caldris Imperium", "Saffron Expanse", "Greenwater Duchies", "Vaskor Steppe", "Stormhaven Archipelago", "Mistmere Isle", "Sable Key"];const mottos=["Through Winter, We Endure", "The Peaks Remember", "In Shadow, We Watch", "What We Sow, We Guard", "From Stone, Resolve", "Trade Binds the Shores", "Roots Hold the Line", "Bravery Builds Tomorrow", "We Rise From Ruin", "Order Is Our Shield", "The Wells Shall Never Fail", "Many Streams, One Course", "Ride Beyond the Horizon", "Our Keels Outlast the Storm", "In Mist, We Find Our Way", "Small Shores, Far Horizons"];const colors=["#2d4953", "#495c70", "#304f43", "#234e8a", "#6a302b", "#245e74", "#315e39", "#9b5130", "#642b38", "#343f69", "#78502d", "#2e6860", "#4e663f", "#24506e", "#46536c", "#3b5966"];const glyph=["🐺", "⛰", "🦉", "☀", "⚒", "⚓", "🌿", "🦁", "🔥", "♜", "☪", "⚖", "♞", "🔱", "🌙", "🐚"];
 function coat(id){let i=ids.indexOf(id);if(i<0)i=0;return '<svg viewBox="0 0 90 104" width="86" height="100" role="img" aria-label="'+names[i]+' coat of arms"><path d="M45 4L84 16V58Q80 82 45 100Q10 82 6 58V16Z" fill="'+colors[i]+'" stroke="#dfc38a" stroke-width="5"/><text x="45" y="66" text-anchor="middle" font-size="42">'+glyph[i]+'</text></svg>';}
 function update(id,politics){const i=ids.indexOf(id);if(i<0)return;const node=document.getElementById(politics?'scGuaranteedPoliticsArms':'scGuaranteedArms');if(!node)return;node.querySelector('svg').outerHTML=coat(id);document.getElementById(politics?'scGuaranteedPoliticsName':'scGuaranteedName').textContent=names[i];if(!politics)document.getElementById('scGuaranteedMotto').textContent='“'+mottos[i]+'”';}
@@ -3004,24 +3006,27 @@ const keep=[['👷','Worker','worker'],['⚔️','Soldier','soldier'],['🏹','A
 const building=[['🏠','House','house'],['🌾','Farm','farm'],['🛣️','Road','road'],['🛒','Market','market'],['💧','Well','well'],['🌲','Lumber','lumberyard'],['🐟','Fishery','fishery'],['🏚️','Granary','granary'],['🥖','Bakery','bakery'],['🎭','Theater','theater'],['🏥','Healer','clinic'],['🌷','Garden','garden'],['⛲','Plaza','plaza'],['🏰','Fortress','fortress'],['🗼','Tower','tower'],['🧱','Wall','wall']];
 const army=[['🛑','Stop','stopUnits'],['🛡️','Defend','scDefendKeep'],['↩️','Retreat','scRetreat'],['⚔️','Line','lineFormation'],['↕️','Column','columnFormation']];
 let selected=null,menu='keep',lastPointer={x:-1,y:-1};
-function render(name,description,opts){label.textContent=name;details.textContent=description;commands.replaceChildren();for(const [icon,title,key] of opts){const b=document.createElement('button');b.type='button';b.title=key==='theater'?'Theater · 80 wood, 90 gold, 25 stone · Happiness +0.4 per food cycle':title;b.innerHTML='<span class="sc140Icon">'+icon+'</span>'+title;b.onclick=()=>{if(key==='theater'){
+const modeIndicator=document.createElement('div');modeIndicator.id='sc153Mode';modeIndicator.textContent='🏗 Construction active · Esc to exit';document.body.append(modeIndicator);
+function updateMode(){const building=menu==='build';modeIndicator.classList.toggle('active',building);bar.querySelector('#sc140Build').setAttribute('aria-pressed',String(building));bar.querySelector('#sc140Keep').setAttribute('aria-pressed',String(!building));}
+window.sc153UI={construction:()=>showConstruction(),exitConstruction:()=>showKeep(true),isConstructing:()=>menu==='build'};
+function render(name,description,opts){const hint=document.getElementById('sc149SelectionHint');if(hint)hint.textContent=description;label.textContent=name;details.textContent=description;commands.replaceChildren();for(const [icon,title,key] of opts){const b=document.createElement('button');b.type='button';b.title=key==='theater'?'Theater · 80 wood, 90 gold, 25 stone · Happiness +0.4 per food cycle':title;b.innerHTML='<span class="sc140Icon">'+icon+'</span>'+title;b.onclick=()=>{if(key==='theater'){
  const wood=Number(document.getElementById('resWood')?.textContent||0),gold=Number(document.getElementById('resGold')?.textContent||0),stone=Number(document.getElementById('resStone')?.textContent||0);
  const enough=wood>=80&&gold>=90&&stone>=25;
  details.textContent='🎭 Theater · Cost: 🌲 80 wood · 🪙 90 gold · 🪨 25 stone · '+(enough?'Select an empty plot on the map to build.':'Need more resources before placement.');
  }
  if(action(key)){if(key==='worker')window.sc134TrainedWorker=true;if(key==='road')window.sc134RoadChosen=true;}};commands.append(b);}}
-function showKeep(force=false){if(menu==='build'&&!force)return;menu='keep';render('🏰 Royal Keep','Train units and improve your keep',keep)}
+function showKeep(force=false){if(menu==='build'&&!force)return;if(force)window.scCancelConstruction?.();menu='keep';updateMode();render('🏰 Royal Keep','Train units and improve your keep',keep)}
 function showBuilding(b){if(menu==='build')return;selected=b;menu='building';if(b.type==='keep'||b.type==='fortress'){window.sc134KeepSelected=true;showKeep();return;}render('🏘 '+b.type.toUpperCase(),Math.ceil(b.hp)+' / '+b.max+' HP · Building selected',[['🏗️','Build','__build'],['🔎','Inspect','__inspect']]);commands.children[0].onclick=showConstruction;commands.children[1].onclick=()=>{details.textContent=b.type.toUpperCase()+' · Condition '+Math.ceil(b.hp)+' / '+b.max;};}
-function showConstruction(){menu='build';render('👷 Construction','Choose a building, then place it on the map',building)}
-function showMilitary(){menu='army';render('⚔️ Military','Select a command or right-click to move',army)}
+function showConstruction(){menu='build';updateMode();render('👷 Construction','Choose a building, then place it on the map',building)}
+function showMilitary(){if(menu==='build')return;menu='army';updateMode();render('⚔️ Military','Select a command or right-click to move',army)}
 function showWorker(){if(menu==='build')return;menu='worker';showConstruction();label.textContent='👷 Worker · Construction'}
 function locate(e){const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*canvas.width/r.width,y=(e.clientY-r.top)*canvas.height/r.height;const bs=window.scHoverBuildings||[];const b=bs.filter(b=>b.team===0&&b.hp>0).map(b=>({b,d:Math.hypot(x-b.x,y-b.y)})).filter(o=>o.d<Math.max(45,o.b.radius+15)).sort((a,b)=>a.d-b.d)[0]?.b;if(b)return {kind:'building',item:b};const us=window.scRTSUnits||window.scHoverUnits||[];const u=us.filter(u=>u.team===0&&u.hp!==0).find(u=>Math.hypot(x-u.x,y-u.y)<22);return u?{kind:'unit',item:u}:null;}
 let down=null;canvas.addEventListener('pointerdown',e=>{if(e.button===0)down={x:e.clientX,y:e.clientY}},{capture:true});canvas.addEventListener('pointerup',e=>{if(e.button!==0||!down)return;const delta=Math.hypot(e.clientX-down.x,e.clientY-down.y);down=null;if(delta>9)return;const hit=locate(e);if(hit?.kind==='building')showBuilding(hit.item);else if(hit?.kind==='unit'){selected=hit.item;hit.item.type==='worker'?showWorker():showMilitary();}},{capture:true});
 bar.querySelector('#sc140Build').onclick=showConstruction;
-function focusKeep(){const b=(window.scHoverBuildings||[]).find(b=>b.team===0&&b.type==='keep');if(b){const r=canvas.getBoundingClientRect();vp.scrollLeft=b.x*r.width/canvas.width-vp.clientWidth/2;vp.scrollTop=b.y*r.height/canvas.height-vp.clientHeight/2;}showKeep();}
-bar.querySelector('#sc140Keep').onclick=focusKeep;
+function focusKeep(){const b=(window.scHoverBuildings||[]).find(b=>b.team===0&&b.type==='keep');if(b){const r=canvas.getBoundingClientRect();vp.scrollLeft=b.x*r.width/canvas.width-vp.clientWidth/2;vp.scrollTop=b.y*r.height/canvas.height-vp.clientHeight/2;}showKeep(true);}
+bar.querySelector('#sc140Keep').onclick=()=>showKeep(true);
 bar.querySelector('#sc140Fullscreen').onclick=()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.().catch(()=>{});else document.exitFullscreen?.()};
-document.addEventListener('keydown',e=>{if(e.ctrlKey||e.altKey||e.metaKey||/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||''))return;const k=e.key.toLowerCase();if(k==='h'){e.preventDefault();focusKeep()}else if(k==='.'){e.preventDefault();showWorker()}else if(k===','){e.preventDefault();showMilitary()}else if(k==='f2'){e.preventDefault();document.getElementById('scHelpOpen')?.click()}else if(k==='f3'||k==='pause'){e.preventDefault();action('pause')}else if(k==='escape'&&menu==='build'){details.textContent='Construction selected. Choose a building or click Units to switch.';}});
+document.addEventListener('keydown',e=>{if(e.ctrlKey||e.altKey||e.metaKey||/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||''))return;const k=e.key.toLowerCase();if(k==='h'){e.preventDefault();focusKeep()}else if(k==='.'){e.preventDefault();showWorker()}else if(k===','){e.preventDefault();showMilitary()}else if(k==='f2'){e.preventDefault();document.getElementById('scHelpOpen')?.click()}else if(k==='f3'||k==='pause'){e.preventDefault();action('pause')}else if(k==='escape'&&menu==='build'){showKeep(true);}});
 // Single camera: use viewport boundaries; top 80px scroll band remains reachable beneath the controls.
 let last=performance.now(),mx=-1,my=-1;
 document.addEventListener('pointermove',e=>{mx=e.clientX;my=e.clientY},{passive:true});window.addEventListener('blur',()=>{mx=-1;my=-1});
@@ -3092,7 +3097,7 @@ main{height:calc(100dvh - 148px)!important;max-height:calc(100dvh - 148px)!impor
 #sc140Commands button:hover{background:#486b55!important;outline:2px solid #f0c56c!important}
 #sc140Utility button{font-size:11px!important;min-height:28px!important}
 #scFloatingMinimap{height:83px!important;width:150px!important}
-#scFullscreen{display:none!important}
+#scFullscreen{display:none!important}#sc146Menu #scFullscreen{display:block!important}
 #sc143Status{position:fixed;top:2px;right:8px;z-index:9000;background:#152b2d;color:#e9d29a;font:11px system-ui;padding:4px 9px;border:1px solid #8c7546;border-radius:4px}
 #sc143Status button{font:11px system-ui;color:#f7e6c4;background:#3a503f;border:1px solid #a98b56;border-radius:3px;padding:2px 6px;cursor:pointer}
 #sc143Status select{font:11px system-ui;background:#263e38;color:#fff3d7}
@@ -3145,11 +3150,7 @@ const ui=window.sc140UI,canvas=document.getElementById('field'),bar=document.get
 const dock=document.createElement('div');dock.id='sc145Recruit';dock.setAttribute('aria-label','Royal Keep recruitment shortcuts');
 dock.innerHTML='<span class="sc145label">🏰 Keep</span><button data-train="worker" title="Train another Worker"><span>👷</span>Worker</button><button data-train="soldier" title="Train another Soldier"><span>⚔️</span>Soldier</button><button data-train="archer" title="Train another Archer"><span>🏹</span>Archer</button><button id="sc145SelectKeep" title="Select Royal Keep (H)"><span>🏰</span>Select</button>';
 document.body.append(dock);
-let keepSelected=true;
-const originalKeep=ui.showKeep;
-ui.showKeep=()=>{keepSelected=true;originalKeep();window.sc134KeepSelected=true;};
-const originalWorker=ui.showWorker,originalMilitary=ui.showMilitary,originalConstruction=ui.showConstruction;
-ui.showWorker=()=>{keepSelected=false;originalWorker()};ui.showMilitary=()=>{keepSelected=false;originalMilitary()};ui.showConstruction=()=>{keepSelected=false;originalConstruction()};
+
 const train=(kind)=>{
  const source=document.querySelector('#quickDock button[data-action="'+kind+'"]');
  if(!source)return;
@@ -3160,7 +3161,7 @@ const train=(kind)=>{
 };
 dock.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.train)train(b.dataset.train);else ui.focusKeep()});
 // Rebuild the card after each recruitment command; retain worker build commands when selected.
-bar.addEventListener('click',e=>{const b=e.target.closest('#sc140Commands button');if(!b||!['Worker','Soldier','Archer'].includes(b.title))return;keepSelected=true;requestAnimationFrame(()=>ui.showKeep())});
+bar.addEventListener('click',e=>{const b=e.target.closest('#sc140Commands button');if(!b||!['Worker','Soldier','Archer'].includes(b.title))return;requestAnimationFrame(()=>ui.showKeep())});
 // Castle's tall sprite should be selectable at its visible location, even with nearby soldiers.
 let down;
 canvas.addEventListener('pointerdown',e=>{if(e.button===0)down={x:e.clientX,y:e.clientY}},true);
@@ -3174,16 +3175,16 @@ canvas.addEventListener('pointerup',e=>{
  }
 },true);
 // Keep button in the utility area and H hotkey always remain available.
-bar.querySelector('#sc140Keep')?.addEventListener('click',()=>requestAnimationFrame(()=>ui.showKeep(true)));
-document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='h'&&!e.ctrlKey&&!e.altKey&&!e.metaKey&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||''))requestAnimationFrame(()=>ui.showKeep())},true);
+
+
 ui.showKeep();
 })();
 </script>
 <style id="sc146CleanHUD">
 /* Remove the redundant toolbar, retain its handlers and place navigation in one menu. */
 #controlTabs{display:none!important}
-#sc146MenuButton{position:fixed;top:30px;left:8px;z-index:9900;background:#28453f;color:#ffe8ad;border:1px solid #b89a60;border-radius:5px;padding:5px 10px;font:12px system-ui;cursor:pointer}
-#sc146Menu{position:fixed;top:60px;left:8px;z-index:9901;background:#162e2d;border:1px solid #b89a60;border-radius:8px;padding:8px;box-shadow:0 8px 28px #000b;display:none;max-width:250px;max-height:65vh;overflow-y:auto}
+#sc146MenuButton{position:fixed;top:70px;left:8px;z-index:9900;background:#28453f;color:#ffe8ad;border:1px solid #b89a60;border-radius:5px;padding:5px 10px;font:12px system-ui;cursor:pointer}
+#sc146Menu{position:fixed;top:104px;left:8px;z-index:9901;background:#162e2d;border:1px solid #b89a60;border-radius:8px;padding:8px;box-shadow:0 8px 28px #000b;display:none;max-width:250px;max-height:65vh;overflow-y:auto}
 #sc146Menu.open{display:grid;grid-template-columns:1fr 1fr;gap:5px}
 #sc146Menu button{font:12px system-ui;background:#35554a;color:#fff2d4;border:1px solid #8c825b;border-radius:5px;padding:9px 5px;cursor:pointer}
 #sc146Menu button:hover{background:#55745b}
@@ -3204,9 +3205,10 @@ const tabs=document.getElementById('controlTabs'),advisor=document.getElementByI
 if(!tabs||!advisor||!vp)return;
 const menuButton=document.createElement('button');menuButton.id='sc146MenuButton';menuButton.textContent='☰ Menu';menuButton.title='Maps, politics, tutorial, city status and settings';
 const menu=document.createElement('div');menu.id='sc146Menu';menu.setAttribute('aria-label','Game navigation');
-const items=[['🗺 Maps','[data-tab="maps"]'],['🏛 Politics','[data-tab="politics"]'],['📖 Tutorial','#tutorialShortcut'],['❔ Help','#scHelpOpen'],['📊 City Status','#scCityStatusOpen'],['⚙ Settings','#scGameOptionsOpen']];
-for(const [name,sel] of items){const b=document.createElement('button');b.textContent=name;b.onclick=()=>{menu.classList.remove('open');tabs.querySelector(sel)?.click()};menu.append(b)}
+const items=[['🗺 Maps','#history1200MapButton'],['🏛 Politics','[data-tab="politics"]'],['📖 Tutorial','#tutorialShortcut'],['❔ Help','#scHelpOpen'],['📊 City Status','#scCityStatusOpen'],['⚙ Settings','#scGameOptionsOpen']];
+for(const [name,sel] of items){const b=document.createElement('button');b.textContent=name;b.onclick=()=>{menu.classList.remove('open');document.querySelector(sel)?.click()};menu.append(b)}
 menuButton.onclick=()=>menu.classList.toggle('open');document.body.append(menuButton,menu);
+const fullscreen=document.getElementById('scFullscreen');if(fullscreen){menu.append(fullscreen);fullscreen.addEventListener('click',()=>menu.classList.remove('open'));}
 const advisorButton=document.createElement('button');advisorButton.id='sc146AdvisorToggle';advisorButton.textContent='📜 Advisor';advisorButton.title='Show or hide the city advisor';document.body.append(advisorButton);
 let advisorOpen=false;
 function setAdvisor(open){advisorOpen=open;advisor.classList.toggle('sc146Collapsed',!open);advisorButton.textContent=open?'📜 Hide Advisor':'📜 Advisor'}
@@ -3315,11 +3317,6 @@ status.querySelector('#sc149Keep').addEventListener('click',()=>ui.focusKeep());
 status.querySelector('#sc149Train').addEventListener('click',()=>{const b=document.querySelector('#quickDock button[data-action="worker"]');if(b){b.click();ui.showKeep();requestAnimationFrame(()=>ui.showKeep())}});
 status.querySelector('#sc149Advisor').addEventListener('click',()=>document.getElementById('sc146AdvisorToggle')?.click());
 const hint=document.createElement('div');hint.id='sc149SelectionHint';selection.append(hint);
-const originals={showKeep:ui.showKeep,showWorker:ui.showWorker,showMilitary:ui.showMilitary,showConstruction:ui.showConstruction};
-const descriptions={showKeep:'Recruit repeatedly · H to find Keep',showWorker:'Worker selected · choose a building',showMilitary:'Military selected · right-click to order',showConstruction:'Select a building to place'};
-for(const [name,original] of Object.entries(originals)){
- ui[name]=function(...args){const result=original.apply(ui,args);hint.textContent=descriptions[name];return result};
-}
 // The original renderer creates buttons on selection only. Add descriptive, keyboard-readable tooltips.
 const help={Worker:'Train a Worker at the Royal Keep',Soldier:'Train a Soldier at the Royal Keep',Archer:'Train an Archer at the Royal Keep',Upgrade:'Upgrade the Royal Keep',Road:'Place a road to connect buildings',Market:'Build a market for your city',House:'Build housing for citizens',Farm:'Grow food for the settlement',Well:'Supply nearby homes with water'};
 const update=()=>{for(const b of commands.querySelectorAll('button')){const title=b.title||b.textContent.trim();if(!b.dataset.sc149Tooltip){b.setAttribute('aria-label',help[title]||title);b.title=help[title]||title;b.dataset.sc149Tooltip='1';}}};
@@ -3378,35 +3375,11 @@ canvas.addEventListener('pointerup',e=>{
 <script id="sc153ConstructionAndAdvisor">
 (()=>{'use strict';
 const ui=window.sc140UI,canvas=document.getElementById('field'),bar=document.getElementById('sc140Bar');if(!ui||!canvas||!bar)return;
-let buildingMode=false,buildingChoice=null,internal=false;
-const original={keep:ui.showKeep,worker:ui.showWorker,military:ui.showMilitary,construction:ui.showConstruction};
-const mode=document.createElement('div');mode.id='sc153Mode';mode.textContent='🏗 Construction active · Esc to exit';document.body.append(mode);
-function updateMode(){mode.classList.toggle('active',buildingMode);}
-function construction(){buildingMode=true;internal=true;original.construction();internal=false;updateMode();}
-ui.showConstruction=construction;
-// Construction is a deliberate mode: ordinary selection updates must not switch to recruitment.
-ui.showKeep=function(force=false){if(buildingMode&&!internal&&!force)return;original.keep(force);};
-ui.showWorker=function(){if(buildingMode&&!internal)return;original.worker();};
-ui.showMilitary=function(){if(buildingMode&&!internal)return;original.military();};
-bar.querySelector('#sc140Build')?.addEventListener('click',()=>{buildingChoice=null;construction()},true);
-bar.querySelector('#sc140Keep')?.addEventListener('click',()=>{buildingMode=false;buildingChoice=null;updateMode();ui.showKeep(true)},true);
-const cards=document.getElementById('sc140Commands');
-cards?.addEventListener('click',e=>{const btn=e.target.closest('button');if(!btn)return;
- const name=(btn.getAttribute('title')||btn.textContent||'').trim();
- if(buildingMode){buildingChoice=name;updateMode();}
-},true);
-// Building placement can trigger selection events; restore the construction card after them.
-canvas.addEventListener('pointerup',e=>{if(e.button!==0||!buildingMode)return;
- // Placement is a single action. Leaving construction active blocked map dragging
- // after the first building because sc154 checks isConstructing().
- setTimeout(()=>{buildingMode=false;buildingChoice=null;updateMode();internal=true;original.keep();internal=false;},80);
-},false);
-document.addEventListener('keydown',e=>{if(e.key!=='Escape'||!buildingMode)return;buildingMode=false;buildingChoice=null;updateMode();internal=true;original.keep();internal=false;},true);
 // The advisor has a dedicated, always accessible control even when navigation menus are hidden.
 const button=document.createElement('button');button.id='sc153Advisor';button.textContent='📜 Advisor';button.title='Show or hide advisor';document.body.append(button);
 button.onclick=()=>{const advisor=document.getElementById('advisorTop');if(!advisor)return;const closed=advisor.classList.contains('sc146Collapsed')||getComputedStyle(advisor).display==='none';
  window.sc146UI?.setAdvisor(closed);advisor.classList.toggle('sc146Collapsed',!closed);button.textContent=closed?'📜 Close Advisor':'📜 Advisor';};
-window.sc153UI={construction,exitConstruction:()=>{buildingMode=false;updateMode()},isConstructing:()=>buildingMode};
+
 })();
 </script>
 <script id="sc153CameraEdgeGuard">
@@ -3494,14 +3467,6 @@ build.innerHTML='🏗️ <span>Construction</span>';
 units.innerHTML='⚔️ <span>Units</span>';
 units.title='Royal Keep recruitment: Worker, Soldier, Archer and Upgrade';
 build.title='Build roads, houses, farms, markets and other structures';
-// Intercept the old Find Keep action, which also repositions the camera.
-// Units now changes only the command card, without moving the map.
-bar.addEventListener('click',e=>{
- const b=e.target.closest?.('#sc140Keep');if(!b)return;
- e.preventDefault();e.stopImmediatePropagation();
- window.sc153UI?.exitConstruction?.();
- window.sc140UI?.showKeep?.(true);
-},true);
 // Advisor can also be opened with F4 if the button is hidden behind browser chrome.
 document.addEventListener('keydown',e=>{if(e.key==='F4'&&!e.ctrlKey&&!e.altKey){e.preventDefault();window.sc155Advisor?.isOpen()?window.sc155Advisor.close():window.sc155Advisor?.open();}},true);
 })();
@@ -6190,7 +6155,7 @@ function update(){
  const bar=document.getElementById('resourceBar');if(!bar)return;
  let el=document.getElementById('sc1411Logistics');
  if(!el){el=document.createElement('span');el.id='sc1411Logistics';const date=document.getElementById('scCalendarBadge');bar.insertBefore(el,date||null);}
- const data=window.sc1411Logistics;
+ const data=window.sc1411LogisticsSnapshot;
  el.textContent=data?'🚚 Supply '+data.connected+'/'+data.total+' · +'+data.bonus.toFixed(1)+' food/cycle':'🚚 Supply: waiting for economy tick';
  el.title='Build a granary within 200 map units and a road within 125 map units of each staffed farm or fishery to earn 25% extra food per 5-second production cycle. Both connections are required.';
 }
@@ -6209,7 +6174,7 @@ function refresh(){
  const bar=document.getElementById('resourceBar');if(!bar)return;
  let el=document.getElementById('sc1412MarketDistribution');
  if(!el){el=document.createElement('span');el.id='sc1412MarketDistribution';bar.insertBefore(el,document.getElementById('scCalendarBadge')||null);}
- const data=window.sc1412MarketDistribution;
+ const data=window.sc1412MarketDistributionSnapshot;
  el.textContent=data?'🏪 Markets '+data.served+'/'+data.homes+' homes · save '+data.savings+' food/cycle':'🏪 Markets: awaiting city tick';
  el.title='Staffed, road-connected markets serve homes within 190 map units. Coverage reduces household food consumption by up to 15% each 5-second economy cycle. This is actual saved food, not extra production.';
  const balance=document.getElementById('foodBalance');
@@ -6219,40 +6184,4 @@ function start(){refresh();setInterval(refresh,1000)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
-<script id="sc1414UnitsPriority">
-(()=>{'use strict';
-const units=document.getElementById('sc140Keep');if(!units)return;
-units.addEventListener('click',()=>{
- window.sc153UI?.exitConstruction?.();
- window.sc140UI?.showKeep?.(true);
- requestAnimationFrame(()=>window.sc140UI?.showKeep?.(true));
-});
-})();
-</script><script id="sc1414UnitsRegressionGuard">
-(()=>{'use strict';
-// One explicit Units click must leave Construction and display keep recruitment commands.
-const units=document.getElementById('sc140Keep');
-if(!units)return;
-units.addEventListener('click',()=>{
- window.sc153UI?.exitConstruction?.();
- window.sc140UI?.showKeep?.(true);
-});
-})();
-</script><script id="sc1414UnitsCaptureFix">
-(()=>{'use strict';
-// Run before the older bar-level capture listener, which calls stopImmediatePropagation.
-// That listener prevented every previous Units button handler from firing.
-document.addEventListener('click',e=>{
- const target=e.target;
- const button=target?.closest?.('#sc140Keep');
- if(!button)return;
- e.preventDefault();
- e.stopImmediatePropagation();
- window.sc153UI?.exitConstruction?.();
- const ui=window.sc140UI;
- ui?.showKeep?.(true);
- // Explicitly keep the recruitment palette even if a queued selection event rerenders it.
- requestAnimationFrame(()=>ui?.showKeep?.(true));
-},true);
-})();
-</script></body></html>
+</body></html>
