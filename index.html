@@ -5694,36 +5694,28 @@ const advisor=document.getElementById('sc1379AdvisorTests');if(advisor){const no
 <script id="sc1392AdvisorTests">
 (()=>{'use strict';
 const advisor=document.getElementById('sc1310AdvisorPanel');if(!advisor)return;
-const version='14.14';
-const tests=[
- 'Choose Construction, place a house, and verify Construction remains selected.',
- 'Build a farm and then a market; verify Construction stays open after each placement.',
- 'Click a unit or keep on the map while Construction is selected; verify the building palette stays visible.',
- 'Click Units explicitly and verify recruitment buttons appear without moving the camera.',
- 'Draw a short diagonal road rectangle: minimum 3×3; larger rectangles grow in multiples of three.',
- 'Verify road costs, stone deductions, blocked placement handling and Undo still work.',
- 'Place an affordable building and verify its resources are deducted.',
- 'Confirm the Advisor and map controls still work without covering construction buttons.'
+const checks=[
+ {id:'units-switch-v1414',text:'Switch from Construction to Units and back; verify both palettes work without moving the camera.'},
+ {id:'roads-grid-v1414',text:'Draw a short road rectangle (3×3), then a larger one (6×6); confirm neither creates unusable tiny plots.'}
 ];
+const key='shattered-crowns-advisor-checks-stable-v1';
+let saved={};try{const raw=localStorage.getItem(key);if(raw&&typeof JSON.parse(raw)==='object')saved=JSON.parse(raw)||{}}catch(_){}
 const root=document.createElement('section');root.id='sc1392Tests';
-const heading=document.createElement('h3');heading.textContent='🧪 V'+version+' · Current gameplay checks';root.append(heading);
+const heading=document.createElement('h3');heading.textContent='🧪 V14.14 · Fix verification';root.append(heading);
 const status=document.createElement('div');status.className='sc1392Status';root.append(status);
-const key='shattered-crowns-advisor-tests-'+version;
-let saved=[];try{const raw=localStorage.getItem(key);if(raw)saved=JSON.parse(raw)}catch(_){}
 const inputs=[];
 function refresh(){
- const values=inputs.map(x=>x.checked);
- const count=values.filter(Boolean).length;
- status.textContent=count+' / '+inputs.length+' checked by you'+(count===inputs.length?' · All current checks complete.':' · Progress saved for this version.');
- try{localStorage.setItem(key,JSON.stringify(values))}catch(_){}
+ const done=inputs.filter(({input})=>input.checked).length;
+ status.textContent=done+' / '+inputs.length+' checks confirmed'+(done===inputs.length?' · Both fixes verified by you.':' · Only outstanding fixes are listed.');
+ for(const {id,input} of inputs)saved[id]=input.checked;
+ try{localStorage.setItem(key,JSON.stringify(saved))}catch(_){}
 }
-for(let i=0;i<tests.length;i++){
- const label=document.createElement('label');const input=document.createElement('input');input.type='checkbox';input.checked=Boolean(saved[i]);
- const span=document.createElement('span');span.textContent=(i+1)+'. '+tests[i];label.append(input,span);root.append(label);inputs.push(input);
+for(const check of checks){
+ const label=document.createElement('label'),input=document.createElement('input'),span=document.createElement('span');
+ input.type='checkbox';input.checked=saved[check.id]===true;span.textContent=check.text;
+ label.append(input,span);root.append(label);inputs.push({id:check.id,input});
  input.addEventListener('change',refresh);
 }
-const reset=document.createElement('button');reset.type='button';reset.textContent='Restart current tests';
-reset.addEventListener('click',()=>{inputs.forEach(x=>x.checked=false);refresh()});root.append(reset);
 refresh();advisor.append(root);
 const old=document.getElementById('sc1379AdvisorTests');if(old)old.hidden=true;
 })();
