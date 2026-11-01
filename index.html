@@ -5677,31 +5677,38 @@ const advisor=document.getElementById('sc1379AdvisorTests');if(advisor){const no
 <script id="sc1392AdvisorTests">
 (()=>{'use strict';
 const advisor=document.getElementById('sc1310AdvisorPanel');if(!advisor)return;
+const version='14.07';
 const tests=[
- 'Use W to select all workers; verify they receive selection rings.',
- 'Use + and − in the upper-right corner to zoom the city; reset with 1:1.',
- 'Build a rectangular road block and check its preview and stone cost.',
- 'Turn House Plots ON, move the pointer away, and confirm green plots stay visible.',
- 'Build two houses inside one road block; confirm unused green plots remain.',
- 'Inspect a house: read Road, Water, Food, Health and Market status.',
- 'Build a well near a house and check its Water status changes.',
- 'Undo a new construction with Ctrl+Z or the Undo button.'
+ 'Gather or spend a resource and verify its number updates in the top resource bar.',
+ 'Confirm the changed resource briefly flashes green for a gain or red for a cost.',
+ 'Hover over the changed resource and check the recent-change history.',
+ 'Open Construction and verify building buttons display wood, gold and stone costs.',
+ 'Check that an unaffordable building shows the exact missing resources.',
+ 'Gather enough resources and verify the building readiness bar reaches full.',
+ 'Place an affordable building and verify its resources are deducted.',
+ 'Confirm the Advisor and map controls still work without covering construction buttons.'
 ];
 const root=document.createElement('section');root.id='sc1392Tests';
-const heading=document.createElement('h3');heading.textContent='🧪 V14.01 · Gameplay tests';root.append(heading);
+const heading=document.createElement('h3');heading.textContent='🧪 V'+version+' · Current gameplay checks';root.append(heading);
 const status=document.createElement('div');status.className='sc1392Status';root.append(status);
+const key='shattered-crowns-advisor-tests-'+version;
+let saved=[];try{const raw=localStorage.getItem(key);if(raw)saved=JSON.parse(raw)}catch(_){}
 const inputs=[];
+function refresh(){
+ const values=inputs.map(x=>x.checked);
+ const count=values.filter(Boolean).length;
+ status.textContent=count+' / '+inputs.length+' checked by you'+(count===inputs.length?' · All current checks complete.':' · Progress saved for this version.');
+ try{localStorage.setItem(key,JSON.stringify(values))}catch(_){}
+}
 for(let i=0;i<tests.length;i++){
- const label=document.createElement('label');const input=document.createElement('input');input.type='checkbox';
+ const label=document.createElement('label');const input=document.createElement('input');input.type='checkbox';input.checked=Boolean(saved[i]);
  const span=document.createElement('span');span.textContent=(i+1)+'. '+tests[i];label.append(input,span);root.append(label);inputs.push(input);
  input.addEventListener('change',refresh);
 }
-const reset=document.createElement('button');reset.type='button';reset.textContent='Restart V14.01 tests';reset.addEventListener('click',()=>{inputs.forEach(x=>x.checked=false);refresh()});root.append(reset);
-function refresh(){const count=inputs.filter(x=>x.checked).length;status.textContent=count+' / '+inputs.length+' confirmed by you · These tests are manual checks, not automatic verification.'}
+const reset=document.createElement('button');reset.type='button';reset.textContent='Restart current tests';
+reset.addEventListener('click',()=>{inputs.forEach(x=>x.checked=false);refresh()});root.append(reset);
 refresh();advisor.append(root);
-// Old checklist was attached to a hidden legacy advisor. Keep one visible test checklist.
 const old=document.getElementById('sc1379AdvisorTests');if(old)old.hidden=true;
-const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V14.01 · Advisor gameplay tests';
 })();
 </script><style id="sc1395ZoomDockStyle">
 /* One anchored control stack; no independent fixed zoom coordinates. */
