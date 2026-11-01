@@ -1,0 +1,33 @@
+name: Chromium regression gate
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [feat/city-life-economy]
+permissions:
+  contents: read
+jobs:
+  chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run all game regressions
+        shell: bash
+        run: |
+          mkdir -p test-results
+          set -o pipefail
+          npm test 2>&1 | tee test-results/chromium.log
+      - name: Keep test output and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chromium-milestone-2
+          path: |
+            test-results/
+            docs/screenshots/

@@ -1,0 +1,40 @@
+
+> shattered-crowns@1.0.0 test
+> node --test --test-concurrency=1 tests/*.test.cjs
+
+✔ housing develops gradually, shows occupancy and requires food, water and roads for migration (2423.525003ms)
+✔ workforce arithmetic and farm/fishery production follow actual staffing (1854.744802ms)
+✔ granaries, distribution, bakery conversion, overflow and shortage reconcile one reserve (2249.309041ms)
+✔ prosperity explains its factors, is bounded and responds to lost services (2445.316854ms)
+✔ five simulated minutes sustain a growing city, preserve recruitment and handle displacement/reset (10677.505242ms)
+✔ City Life and Advisor show real figures with reachable controls at 1440px (7944.222373ms)
+✔ City Life and Advisor show real figures with reachable controls at 1024px (6092.643271ms)
+✔ City Life and Advisor show real figures with reachable controls at 768px (6108.105527ms)
+✔ pause freezes housing and food and Chronicle uses the same workforce totals (8450.846317ms)
+✔ migration cannot fill a remote unserviced house after serviced housing is full (2042.605836ms)
+✔ house requirements retain keyboard focus across live City Life refreshes (4102.512627ms)
+✔ Advisor guidance comes exclusively from the engine city snapshot (2273.598147ms)
+✔ half-staffed bakeries scale both inputs and outputs and lost granaries reconcile storage (2101.855092ms)
+✔ a city constructed through the working palette grows with food, water and roads (9794.225425ms)
+✔ Construction → Units → Construction repeatedly preserves camera and recruitment (5876.216475ms)
+✔ atlas renders kingdoms and settlements; supply has no JavaScript errors before and after tick (8692.570228ms)
+✔ House placement spends resources, rejects occupied ground, and undo refunds (5887.982798ms)
+✔ Road drag preserves 3×3 perimeter, costs, and undo (4725.759101ms)
+✔ Road drag preserves 6×6 perimeter, costs, and undo (4990.530701ms)
+✔ Road drag preserves 9×9 perimeter, costs, and undo (5020.245989ms)
+✔ Road rectangle with insufficient stone is atomic (3702.848607ms)
+✔ Advisor checklist persists checks across close and reload (4453.833692ms)
+✔ camera arrows, wheel, right drag and real fullscreen work (4394.47065ms)
+✔ UI controls do not overlap at 1440px (14390.815027ms)
+✔ UI controls do not overlap at 1024px (13015.475529ms)
+✔ UI controls do not overlap at 768px (12960.150726ms)
+✔ switching cancels armed placement and rapid switching has no delayed override (4466.78737ms)
+✔ straight road extension joins at 44 units and undo refunds only the extension (5149.683929ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 166956.347272
