@@ -6089,4 +6089,20 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 #resourceBar #scCalendarBadge{margin-left:8px!important;max-width:100%!important}
 @media(max-width:760px){#resourceBar{padding-right:155px!important}#resourceBar #scCalendarBadge{margin-left:0!important}}
 </style>
+
+<!-- Calendar root fix: left-align the date next to resources; zoom owns the right edge. -->
+<style id="sc1408CalendarRootFix">
+#resourceBar #scCalendarBadge{
+ margin-left:0!important;
+ margin-right:auto!important;
+ flex:0 0 auto!important;
+ position:static!important;
+ inset:auto!important;
+ transform:none!important;
+ order:1!important;
+}
+#resourceBar .sc1408Resource{order:0!important}
+#resourceBar{justify-content:flex-start!important}
+@media(max-width:600px){#resourceBar #scCalendarBadge{margin-right:0!important}}
+</style>
 </body></html>
