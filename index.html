@@ -5782,7 +5782,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
-<!-- V14.04: compact in-button construction costs, without overlapping overlays. -->
+<!-- V14.05: compact in-button construction costs, without overlapping overlays. -->
 <style id="sc1402InlineCostsStyle">
 #sc1399Planner,#sc1350Budget,#sc196CostStrip{display:none!important}
 #sc140Commands button[data-sc1402-cost]::after{content:attr(data-sc1402-cost);display:block;font:600 10px/1.25 system-ui,sans-serif;color:#e8d4a0;white-space:nowrap;letter-spacing:-.15px;margin-top:3px;pointer-events:none}
@@ -5803,8 +5803,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh);else refresh();
  const host=document.getElementById('sc140Commands');if(host){new MutationObserver(refresh).observe(host,{childList:true,subtree:false});}
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V14.04';
- document.title='Shattered Crowns — v14.04';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V14.05';
+ document.title='Shattered Crowns — v14.05';
 })();
 </script>
 
@@ -5840,7 +5840,7 @@ else {refresh();setInterval(refresh,1000)}
 })();
 </script>
 
-<!-- v14.04: show the exact shortage on unaffordable building buttons. -->
+<!-- v14.05: show the exact shortage on unaffordable building buttons. -->
 <style id="sc1404ShortfallStyle">
 #sc140Commands button[data-sc1404-shortfall]:not([data-sc1404-shortfall=""])::before{
  content:attr(data-sc1404-shortfall);display:block;position:absolute;bottom:2px;left:3px;right:3px;
@@ -5869,6 +5869,38 @@ function update(){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{update();setInterval(update,1000)});
 else{update();setInterval(update,1000)}
+})();
+</script>
+
+<!-- v14.05: unobtrusive live construction readiness progress. -->
+<style id="sc1405ProgressStyle">
+#sc140Commands button[data-sc1405-progress]{
+ background-image:linear-gradient(90deg,rgba(133,210,151,.82) var(--sc1405-progress),rgba(0,0,0,.32) var(--sc1405-progress));
+ background-position:left bottom;background-size:100% 3px;background-repeat:no-repeat;
+}
+#sc140Commands button[data-sc1405-progress="100"]{background-image:linear-gradient(90deg,#8bd99a,#8bd99a)}
+#sc140Commands button[data-sc1405-progress]:focus-visible{outline-offset:2px}
+@media(prefers-reduced-motion:no-preference){#sc140Commands button[data-sc1405-progress]{transition:background-color .2s,border-color .2s}}
+</style>
+<script id="sc1405Progress">
+(()=>{'use strict';
+const costs={House:[60,25,0],Farm:[75,30,0],Road:[0,0,12],Market:[90,90,20],Well:[25,0,35],Lumber:[75,45,0],Fishery:[90,45,0],Granary:[85,0,35],Bakery:[80,45,15],Theater:[80,90,25],Healer:[70,65,25],Garden:[35,15,0],Plaza:[0,35,25],Tower:[100,100,0],Fortress:[150,180,120],Wall:[30,0,60]};
+function read(id){const e=document.getElementById(id);if(!e)return null;const m=(e.textContent||'').replace(/,/g,'').match(/-?\d+/);return m?Number(m[0]):null}
+function update(){const host=document.getElementById('sc140Commands');if(!host)return;
+ const resources=[read('resWood'),read('resGold'),read('resStone')];
+ for(const b of host.querySelectorAll('button[data-sc1402-cost]')){
+  const name=Object.keys(costs).find(n=>b.textContent.trim().endsWith(n));
+  if(!name||resources.some(x=>x===null)){b.removeAttribute('data-sc1405-progress');b.style.removeProperty('--sc1405-progress');continue}
+  const required=costs[name];
+  const ratios=required.map((need,i)=>need>0?Math.max(0,resources[i])/need:1);
+  const progress=Math.max(0,Math.min(100,Math.floor(Math.min(...ratios)*100)));
+  b.dataset.sc1405Progress=String(progress);
+  b.style.setProperty('--sc1405-progress',progress+'%');
+  b.title=name+' — '+required[0]+' wood, '+required[1]+' gold, '+required[2]+' stone. '+(progress===100?'Ready to build.':progress+'% ready; '+(b.getAttribute('data-sc1404-shortfall')||'resources needed')+'.');
+ }
+}
+function start(){update();setInterval(update,1000)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
 </body></html>
