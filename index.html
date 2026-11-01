@@ -6082,4 +6082,11 @@ function setup(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup);else setup();
 })();
 </script>
+
+<!-- v14.08 calendar clearance: reserve room for fixed top-right zoom controls. -->
+<style id="sc1408CalendarClearance">
+#resourceBar{padding-right:164px!important;box-sizing:border-box!important;position:sticky!important}
+#resourceBar #scCalendarBadge{margin-left:8px!important;max-width:100%!important}
+@media(max-width:760px){#resourceBar{padding-right:155px!important}#resourceBar #scCalendarBadge{margin-left:0!important}}
+</style>
 </body></html>
