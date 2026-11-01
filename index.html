@@ -5781,4 +5781,30 @@ function init(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
+
+<!-- V14.02: compact in-button construction costs, without overlapping overlays. -->
+<style id="sc1402InlineCostsStyle">
+#sc1399Planner,#sc1350Budget,#sc196CostStrip{display:none!important}
+#sc140Commands button[data-sc1402-cost]::after{content:attr(data-sc1402-cost);display:block;font:600 10px/1.25 system-ui,sans-serif;color:#e8d4a0;white-space:nowrap;letter-spacing:-.15px;margin-top:3px;pointer-events:none}
+#sc140Commands button[data-sc1402-cost]{min-height:65px!important;box-sizing:border-box}
+#sc140Commands button.sc1350Unavailable[data-sc1402-cost]::after{color:#f0b6a0}
+@media(max-width:650px){#sc140Commands button[data-sc1402-cost]::after{font-size:9px}}
+</style>
+<script id="sc1402InlineCostsLogic">
+(()=>{'use strict';
+ const costs={House:[60,25,0],Farm:[75,30,0],Road:[0,0,12],Market:[90,90,20],Well:[25,0,35],Lumber:[75,45,0],Fishery:[90,45,0],Granary:[85,0,35],Bakery:[80,45,15],Theater:[80,90,25],Healer:[70,65,25],Garden:[35,15,0],Plaza:[0,35,25],Tower:[100,100,0],Fortress:[150,180,120],Wall:[30,0,60]};
+ function refresh(){const host=document.getElementById('sc140Commands');if(!host)return;
+  for(const button of host.querySelectorAll('button')){
+   const name=Object.keys(costs).find(n=>button.textContent.trim().endsWith(n));
+   if(!name){button.removeAttribute('data-sc1402-cost');continue;}
+   const [wood,gold,stone]=costs[name];
+   button.setAttribute('data-sc1402-cost',[gold?'🪙'+gold:'',wood?'🌲'+wood:'',stone?'🪨'+stone:''].filter(Boolean).join('  '));
+  }
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh);else refresh();
+ const host=document.getElementById('sc140Commands');if(host){new MutationObserver(refresh).observe(host,{childList:true,subtree:false});}
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V14.02';
+ document.title='Shattered Crowns — v14.02';
+})();
+</script>
 </body></html>
