@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Shattered Crowns — v13.83</title><style>*{box-sizing:border-box}html,body{max-width:100%;overflow-x:hidden}body{margin:0;background:#101923;color:#eee;font:15px system-ui,Arial}header{padding:13px 18px;background:#192633;display:flex;gap:20px;align-items:center;flex-wrap:wrap}h1{font-size:20px;margin:0;color:#e5c27c}.stats{display:flex;gap:16px;flex-wrap:wrap}main{display:grid;grid-template-columns:minmax(0,1fr) 225px;min-width:0;gap:12px;padding:12px}canvas{display:block;width:100%;background:#31523b;border:2px solid #9c8658;cursor:crosshair;touch-action:none}aside{background:#1c2a35;padding:14px;border:1px solid #46535b;border-radius:7px}select{background:#263b47;color:#fff;border:1px solid #9c8658;padding:7px;border-radius:4px}button{background:#665033;color:white;border:1px solid #b99961;border-radius:5px;padding:10px;cursor:pointer;margin:4px 2px}button:hover{background:#82643d}button:focus-visible{outline:3px solid #e5c27c;outline-offset:2px}#liveOverview{background:#243b44;border-left:3px solid #e5c27c;padding:9px;border-radius:4px}button:disabled{opacity:.4;cursor:not-allowed}.help{font-size:13px;color:#b7c4c9;line-height:1.6}.status{color:#e5c27c;min-height:40px}footer{padding:0 14px 14px;color:#a9b9bd;font-size:12px}#quickDock{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:5px;flex-wrap:wrap;background:#172a32;border-bottom:2px solid #b99b62;padding:7px 12px;box-shadow:0 3px 12px #0008}#quickDock strong{color:#e5c27c;margin-right:5px;white-space:nowrap}#quickDock button{margin:1px;padding:6px 9px;font-size:12px;white-space:nowrap}#dockMessage{color:#c4d6d1;font-size:12px}main>div:first-child{position:sticky;top:92px;align-self:start}aside{min-width:0}#advisorCard{border:1px solid #ad945a;background:#243a38;border-radius:7px;padding:10px;margin-bottom:9px}#advisorCard button{font-size:12px;padding:6px 9px}#advisorTest{color:#d8e5d0;font-size:13px;line-height:1.45}#cityAdvisor{margin:4px 0 8px}@media(max-width:1050px){main{grid-template-columns:minmax(0,1fr) 245px}#quickDock{max-height:100px;overflow:auto}main>div:first-child{top:105px}}@media(max-width:800px){main{grid-template-columns:1fr}aside{order:2}main>div:first-child{position:static}#quickDock{max-height:140px;overflow:auto}}#advisorTop{position:sticky;top:58px;z-index:19;padding:5px 12px;background:#172a32;border-bottom:1px solid #ad945a}#advisorTop #advisorCard{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0;padding:6px 10px}#advisorTop #cityAdvisor{flex:1 1 280px;margin:0;font-size:12px}#advisorTop #advisorTest{flex:1 1 300px;font-size:12px}#advisorTop #advisorCard button{flex:none}#advisorTop #advisorProgress{white-space:nowrap}main>div:first-child{top:185px}@media(max-width:1050px){#advisorTop{top:100px}main>div:first-child{top:230px}}@media(max-width:800px){#advisorTop{position:static}}#tutorialShade{position:fixed;inset:0;background:rgba(5,13,18,.86);z-index:100;display:flex;align-items:center;justify-content:center;padding:18px}#tutorialShade[hidden]{display:none}#tutorialPanel{background:linear-gradient(145deg,#253b3d,#152630);border:2px solid #d5b77b;border-radius:14px;box-shadow:0 20px 90px #000b;max-width:590px;width:100%;padding:28px;color:#f5eee1}#tutorialPanel h2{color:#f4d38c;font-size:27px;margin:8px 0 12px}.tutorialEyebrow{font-size:13px;letter-spacing:1px;color:#d4bd91;font-weight:800}#tutorialIntro{line-height:1.65}#tutorialTask{background:#32483d;border-left:4px solid #d5b77b;padding:16px;line-height:1.7;border-radius:5px}.tutorialHint{font-size:13px;color:#c3d0ca;line-height:1.6}.tutorialActions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}#tutorialStart{background:#947039;font-weight:800}#mapDetail{border-color:#82a7a0}@media(max-width:800px){#tutorialPanel{padding:19px}#tutorialPanel h2{font-size:22px}}#armyDock{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding:6px 12px;background:#243038;border-bottom:1px solid #b99b62}#armyDock strong{color:#f0c77e;white-space:nowrap;margin-right:5px}#armyDock button{padding:6px 9px;font-size:12px;margin:1px;white-space:nowrap}#armyDock .armyHint{font-size:12px;color:#c4d6d1}#quickDock{position:relative;z-index:21}#advisorTop{top:0}main>div:first-child{top:120px}@media(max-width:1050px){#armyDock{max-height:96px;overflow:auto}#advisorTop{top:0}main>div:first-child{top:170px}}@media(max-width:800px){#armyDock{position:relative;max-height:none}#advisorTop{position:static}}#controlTabs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:7px 12px;background:#192c35;border-bottom:1px solid #b99b61}#controlTabs strong{color:#f0d08d;margin-right:8px}#controlTabs button{margin:0;padding:7px 12px;font-size:13px}#controlTabs button.active{background:#b28b4d;color:#111e24;font-weight:700}#compactHint{font-size:12px;color:#d6e1d9}#quickDock,#armyDock,#mapDock{position:relative;top:auto;z-index:10;display:flex;align-items:center;flex-wrap:wrap;gap:5px;padding:6px 12px;min-height:43px;max-height:none;overflow:visible}#quickDock[hidden],#armyDock[hidden],#mapDock[hidden]{display:none!important}#mapDock{background:#243038;border-bottom:1px solid #b99b62}#mapDock strong{color:#f0d08d}#mapDock button{padding:6px 9px;margin:1px;font-size:12px}#advisorTop{position:relative;top:auto;padding:5px 12px}main>div:first-child{position:sticky;top:8px}#dockMessage{display:none}@media(max-width:1050px){#quickDock,#armyDock,#mapDock{max-height:none;overflow:visible}main>div:first-child{top:8px}}@media(max-width:800px){main>div:first-child{position:static}}#buildCostHint{background:#33463b;border-bottom:2px solid #d5b77b;color:#fff0bd;padding:6px 14px;font-size:15px;font-weight:700}#resourceBar{position:sticky;top:0;z-index:35;background:#203b3b;border-bottom:2px solid #d5b77b;padding:6px 14px;font-size:16px;font-weight:650;color:#f7e6bd}#resourceBar b{color:white}#field{max-width:none;cursor:crosshair}#field.panning{cursor:grabbing}main>div:first-child{overflow:auto;max-width:100%;min-width:0;max-height:calc(100vh - 160px);border-radius:7px}#field{min-width:2450px;max-width:none;width:2450px}@media(max-width:800px){main>div:first-child{max-height:70vh}#field{min-width:2450px;max-width:none;width:2450px}}#hoverCosts{position:fixed;z-index:120;pointer-events:none;display:none;max-width:360px;min-width:220px;padding:12px 15px;border:2px solid #e5c27c;border-radius:9px;background:rgba(19,39,43,.98);color:#fff3d0;box-shadow:0 8px 25px #000b;font:700 16px system-ui;line-height:1.5}#hoverCosts .hoverTitle{color:#ffdc91;font-size:19px}#hoverCosts .hoverStatus{font-size:14px;margin-top:4px}#hoverCosts .enough{color:#9ff0ae}#hoverCosts .missing{color:#ff9d92}</style>
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Shattered Crowns — v13.84</title><style>*{box-sizing:border-box}html,body{max-width:100%;overflow-x:hidden}body{margin:0;background:#101923;color:#eee;font:15px system-ui,Arial}header{padding:13px 18px;background:#192633;display:flex;gap:20px;align-items:center;flex-wrap:wrap}h1{font-size:20px;margin:0;color:#e5c27c}.stats{display:flex;gap:16px;flex-wrap:wrap}main{display:grid;grid-template-columns:minmax(0,1fr) 225px;min-width:0;gap:12px;padding:12px}canvas{display:block;width:100%;background:#31523b;border:2px solid #9c8658;cursor:crosshair;touch-action:none}aside{background:#1c2a35;padding:14px;border:1px solid #46535b;border-radius:7px}select{background:#263b47;color:#fff;border:1px solid #9c8658;padding:7px;border-radius:4px}button{background:#665033;color:white;border:1px solid #b99961;border-radius:5px;padding:10px;cursor:pointer;margin:4px 2px}button:hover{background:#82643d}button:focus-visible{outline:3px solid #e5c27c;outline-offset:2px}#liveOverview{background:#243b44;border-left:3px solid #e5c27c;padding:9px;border-radius:4px}button:disabled{opacity:.4;cursor:not-allowed}.help{font-size:13px;color:#b7c4c9;line-height:1.6}.status{color:#e5c27c;min-height:40px}footer{padding:0 14px 14px;color:#a9b9bd;font-size:12px}#quickDock{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:5px;flex-wrap:wrap;background:#172a32;border-bottom:2px solid #b99b62;padding:7px 12px;box-shadow:0 3px 12px #0008}#quickDock strong{color:#e5c27c;margin-right:5px;white-space:nowrap}#quickDock button{margin:1px;padding:6px 9px;font-size:12px;white-space:nowrap}#dockMessage{color:#c4d6d1;font-size:12px}main>div:first-child{position:sticky;top:92px;align-self:start}aside{min-width:0}#advisorCard{border:1px solid #ad945a;background:#243a38;border-radius:7px;padding:10px;margin-bottom:9px}#advisorCard button{font-size:12px;padding:6px 9px}#advisorTest{color:#d8e5d0;font-size:13px;line-height:1.45}#cityAdvisor{margin:4px 0 8px}@media(max-width:1050px){main{grid-template-columns:minmax(0,1fr) 245px}#quickDock{max-height:100px;overflow:auto}main>div:first-child{top:105px}}@media(max-width:800px){main{grid-template-columns:1fr}aside{order:2}main>div:first-child{position:static}#quickDock{max-height:140px;overflow:auto}}#advisorTop{position:sticky;top:58px;z-index:19;padding:5px 12px;background:#172a32;border-bottom:1px solid #ad945a}#advisorTop #advisorCard{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0;padding:6px 10px}#advisorTop #cityAdvisor{flex:1 1 280px;margin:0;font-size:12px}#advisorTop #advisorTest{flex:1 1 300px;font-size:12px}#advisorTop #advisorCard button{flex:none}#advisorTop #advisorProgress{white-space:nowrap}main>div:first-child{top:185px}@media(max-width:1050px){#advisorTop{top:100px}main>div:first-child{top:230px}}@media(max-width:800px){#advisorTop{position:static}}#tutorialShade{position:fixed;inset:0;background:rgba(5,13,18,.86);z-index:100;display:flex;align-items:center;justify-content:center;padding:18px}#tutorialShade[hidden]{display:none}#tutorialPanel{background:linear-gradient(145deg,#253b3d,#152630);border:2px solid #d5b77b;border-radius:14px;box-shadow:0 20px 90px #000b;max-width:590px;width:100%;padding:28px;color:#f5eee1}#tutorialPanel h2{color:#f4d38c;font-size:27px;margin:8px 0 12px}.tutorialEyebrow{font-size:13px;letter-spacing:1px;color:#d4bd91;font-weight:800}#tutorialIntro{line-height:1.65}#tutorialTask{background:#32483d;border-left:4px solid #d5b77b;padding:16px;line-height:1.7;border-radius:5px}.tutorialHint{font-size:13px;color:#c3d0ca;line-height:1.6}.tutorialActions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}#tutorialStart{background:#947039;font-weight:800}#mapDetail{border-color:#82a7a0}@media(max-width:800px){#tutorialPanel{padding:19px}#tutorialPanel h2{font-size:22px}}#armyDock{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding:6px 12px;background:#243038;border-bottom:1px solid #b99b62}#armyDock strong{color:#f0c77e;white-space:nowrap;margin-right:5px}#armyDock button{padding:6px 9px;font-size:12px;margin:1px;white-space:nowrap}#armyDock .armyHint{font-size:12px;color:#c4d6d1}#quickDock{position:relative;z-index:21}#advisorTop{top:0}main>div:first-child{top:120px}@media(max-width:1050px){#armyDock{max-height:96px;overflow:auto}#advisorTop{top:0}main>div:first-child{top:170px}}@media(max-width:800px){#armyDock{position:relative;max-height:none}#advisorTop{position:static}}#controlTabs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:7px 12px;background:#192c35;border-bottom:1px solid #b99b61}#controlTabs strong{color:#f0d08d;margin-right:8px}#controlTabs button{margin:0;padding:7px 12px;font-size:13px}#controlTabs button.active{background:#b28b4d;color:#111e24;font-weight:700}#compactHint{font-size:12px;color:#d6e1d9}#quickDock,#armyDock,#mapDock{position:relative;top:auto;z-index:10;display:flex;align-items:center;flex-wrap:wrap;gap:5px;padding:6px 12px;min-height:43px;max-height:none;overflow:visible}#quickDock[hidden],#armyDock[hidden],#mapDock[hidden]{display:none!important}#mapDock{background:#243038;border-bottom:1px solid #b99b62}#mapDock strong{color:#f0d08d}#mapDock button{padding:6px 9px;margin:1px;font-size:12px}#advisorTop{position:relative;top:auto;padding:5px 12px}main>div:first-child{position:sticky;top:8px}#dockMessage{display:none}@media(max-width:1050px){#quickDock,#armyDock,#mapDock{max-height:none;overflow:visible}main>div:first-child{top:8px}}@media(max-width:800px){main>div:first-child{position:static}}#buildCostHint{background:#33463b;border-bottom:2px solid #d5b77b;color:#fff0bd;padding:6px 14px;font-size:15px;font-weight:700}#resourceBar{position:sticky;top:0;z-index:35;background:#203b3b;border-bottom:2px solid #d5b77b;padding:6px 14px;font-size:16px;font-weight:650;color:#f7e6bd}#resourceBar b{color:white}#field{max-width:none;cursor:crosshair}#field.panning{cursor:grabbing}main>div:first-child{overflow:auto;max-width:100%;min-width:0;max-height:calc(100vh - 160px);border-radius:7px}#field{min-width:2450px;max-width:none;width:2450px}@media(max-width:800px){main>div:first-child{max-height:70vh}#field{min-width:2450px;max-width:none;width:2450px}}#hoverCosts{position:fixed;z-index:120;pointer-events:none;display:none;max-width:360px;min-width:220px;padding:12px 15px;border:2px solid #e5c27c;border-radius:9px;background:rgba(19,39,43,.98);color:#fff3d0;box-shadow:0 8px 25px #000b;font:700 16px system-ui;line-height:1.5}#hoverCosts .hoverTitle{color:#ffdc91;font-size:19px}#hoverCosts .hoverStatus{font-size:14px;margin-top:4px}#hoverCosts .enough{color:#9ff0ae}#hoverCosts .missing{color:#ff9d92}</style>
 <style id="screenLayoutFix">
 html,body{width:100%;max-width:100%;overflow-x:hidden}
 header{padding:5px 12px;min-height:38px;gap:10px}
@@ -552,11 +552,12 @@ function roadLine(a,b){
 function roadRectangle(a,b){
  const start=roadPoint(a);
  const dx=Math.round((b.x-start.x)/44),dy=Math.round((b.y-start.y)/44);
- const width=Math.min(14,Math.max(4,Math.abs(dx))),height=Math.min(14,Math.max(4,Math.abs(dy)));
+ const width=Math.min(14,Math.max(3,Math.abs(dx))),height=Math.min(14,Math.max(3,Math.abs(dy)));
  const sx=Math.sign(dx)||1,sy=Math.sign(dy)||1;
  if(!dx||!dy)return roadLine(a,b);
  // SimCity-inspired neighborhood block: a diagonal gesture creates at least
- // a 4x4 grid perimeter (176px wide), leaving usable interior for buildings.
+ // a 3x3 grid perimeter (132px wide), leaving usable interior for a house.
+ // Larger blocks support more houses and shared civic services.
  // Horizontal/vertical gestures still create straight roads.
  const pts=[],seen=new Set();
  const add=(x,y)=>{const key=x+','+y;if(!seen.has(key)){seen.add(key);pts.push({x:start.x+x*44,y:start.y+y*44})}};
@@ -1089,11 +1090,11 @@ ctx.save();if(b.type!=='road'){ctx.translate(x,y);ctx.scale((window.sc1323Compac
  }ctx.fillStyle='#49382b';ctx.fillRect(x-6,y+2,12,19);if(b.type==='granary'){ctx.fillStyle='#e9ca79';for(let i=0;i<4;i++){ctx.beginPath();ctx.ellipse(x-15+i*10,y-2,4,8,0,0,Math.PI*2);ctx.fill()}}else{ctx.fillStyle='#e6e2d0';ctx.fillRect(x-4,y-15,8,22);ctx.fillRect(x-11,y-8,22,8)}}else if(b.type==='road'){
  ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
  const neighbors=buildings.filter(r=>r!==b&&r.team===b.team&&alive(r)&&r.type==='road'&&dist(r,b)<=49);
- ctx.strokeStyle='#504c43';ctx.lineWidth=(window.sc1324RefinedStreets===false?29:23);
+ ctx.strokeStyle='#504c43';ctx.lineWidth=(window.sc1324RefinedStreets===false?29:19);
  for(const r of neighbors){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(r.x,r.y);ctx.stroke()}
- ctx.strokeStyle='#8b8470';ctx.lineWidth=(window.sc1324RefinedStreets===false?24:19);
+ ctx.strokeStyle='#8b8470';ctx.lineWidth=(window.sc1324RefinedStreets===false?24:15);
  for(const r of neighbors){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(r.x,r.y);ctx.stroke()}
- ctx.fillStyle='#8b8470';ctx.beginPath();ctx.arc(x,y,window.sc1324RefinedStreets===false?14:11,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#8b8470';ctx.beginPath();ctx.arc(x,y,window.sc1324RefinedStreets===false?14:9,0,Math.PI*2);ctx.fill();
  ctx.strokeStyle='#d6c7a7';ctx.lineWidth=2;ctx.setLineDash([5,10]);
  for(const r of neighbors){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(r.x,r.y);ctx.stroke()}
  ctx.setLineDash([]);
@@ -1757,34 +1758,38 @@ if(mode==='road'&&drag){
  // Show the actual usable land inside the proposed block, not just its roads.
  const minX=Math.min(...pts.map(q=>q.x)),maxX=Math.max(...pts.map(q=>q.x));
  const minY=Math.min(...pts.map(q=>q.y)),maxY=Math.max(...pts.map(q=>q.y));
- if(maxX-minX>=176&&maxY-minY>=176){
+ if(maxX-minX>=132&&maxY-minY>=132){
   ctx.fillStyle=blocked.length?'rgba(155,64,52,.09)':'rgba(96,176,114,.11)';
   ctx.fillRect(minX+25,minY+25,maxX-minX-50,maxY-minY-50);
   ctx.strokeStyle=blocked.length?'rgba(228,120,104,.4)':'rgba(175,225,153,.5)';
   ctx.lineWidth=1.5;ctx.setLineDash([5,7]);
   ctx.strokeRect(minX+25,minY+25,maxX-minX-50,maxY-minY-50);
   ctx.setLineDash([]);
-  // Conservative planning guides: show only house-sized positions that are
-  // clear of current obstacles AND the proposed road perimeter. Guides do
-  // not reserve plots or place houses; they are purely a planning aid.
-  let availablePlots=0;
-  for(let py=minY+64;py<=maxY-64;py+=58){
-   for(let px=minX+64;px<=maxX-64;px+=58){
-    const site={x:px,y:py};
-    if(!canPlace('house',site,null)||pts.some(q=>dist(q,site)<43))continue;
-    availablePlots++;
-    ctx.fillStyle='rgba(171,226,156,.20)';
-    ctx.strokeStyle='rgba(197,244,174,.68)';
-    ctx.lineWidth=1.5;
-    ctx.fillRect(px-17,py-17,34,34);
-    ctx.strokeRect(px-17,py-17,34,34);
-   }
+  // Plot preview follows the actual building placement rules. A 3x3 road
+  // perimeter can contain one central house; larger blocks may contain more.
+  // Mark obstructed sites too so an empty preview is never unexplained.
+  let availablePlots=0,blockedPlots=0;
+  const plotXs=[],plotYs=[];
+  for(let px=minX+66;px<=maxX-66+0.01;px+=58)plotXs.push(px);
+  for(let py=minY+66;py<=maxY-66+0.01;py+=58)plotYs.push(py);
+  if(!plotXs.length)plotXs.push((minX+maxX)/2);
+  if(!plotYs.length)plotYs.push((minY+maxY)/2);
+  for(const py of plotYs)for(const px of plotXs){
+   const site={x:px,y:py};
+   const safeFromRoad=pts.every(q=>dist(q,site)>=32);
+   const valid=safeFromRoad&&canPlace('house',site,null);
+   if(valid)availablePlots++;else blockedPlots++;
+   ctx.fillStyle=valid?'rgba(119,221,122,.28)':'rgba(223,101,88,.18)';
+   ctx.strokeStyle=valid?'#b7ff9b':'#ffa69d';
+   ctx.lineWidth=2.5;
+   ctx.fillRect(px-15,py-15,30,30);ctx.strokeRect(px-15,py-15,30,30);
+   ctx.fillStyle=valid?'#e5ffce':'#ffe3d9';
+   ctx.font='bold 15px system-ui';ctx.textAlign='center';
+   ctx.fillText(valid?'✓':'×',px,py+5);
   }
-  if(availablePlots){
-   ctx.font='bold 12px system-ui';ctx.textAlign='center';
-   ctx.fillStyle='#e1f5d5';
-   ctx.fillText(availablePlots+' potential house plots', (minX+maxX)/2,(minY+maxY)/2);
-  }
+  ctx.font='bold 12px system-ui';ctx.textAlign='center';
+  ctx.fillStyle=availablePlots?'#e1f5d5':'#ffb8a7';
+  ctx.fillText(availablePlots+' house plots'+(blockedPlots?' · '+blockedPlots+' blocked':''), (minX+maxX)/2,(minY+maxY)/2-20);
  }
  // Join neighboring road tiles, regardless of their perimeter ordering.
  // The old preview joined array neighbors and left gaps on rectangular blocks.
@@ -1794,9 +1799,9 @@ if(mode==='road'&&drag){
    const b={x:a.x+dx,y:a.y+dy};
    if(!roadKeys.has(`${Math.round(b.x)}:${Math.round(b.y)}`))continue;
    const ok=(scRoadExists(a)||canPlace('road',a,null))&&(scRoadExists(b)||canPlace('road',b,null));
-   ctx.strokeStyle=ok?'rgba(23,66,43,.82)':'rgba(112,38,38,.82)';ctx.lineWidth=27;
+   ctx.strokeStyle=ok?'rgba(23,66,43,.82)':'rgba(112,38,38,.82)';ctx.lineWidth=21;
    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
-   ctx.strokeStyle=ok?'rgba(125,219,137,.72)':'rgba(239,112,105,.75)';ctx.lineWidth=20;
+   ctx.strokeStyle=ok?'rgba(125,219,137,.72)':'rgba(239,112,105,.75)';ctx.lineWidth=16;
    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
   }
  }
@@ -3330,7 +3335,7 @@ function syncPause(){const txt=document.getElementById('pause')?.textContent?.tr
 pause.onclick=()=>document.getElementById('pause')?.click();
 function toggleAdvisor(){const el=document.getElementById('advisorTop');if(!el)return;const hidden=el.classList.contains('sc146Collapsed')||getComputedStyle(el).display==='none';window.sc146UI?.setAdvisor(hidden);el.classList.toggle('sc146Collapsed',!hidden);advisor.textContent=hidden?'📜 Hide Advisor':'📜 Advisor';}
 advisor.onclick=toggleAdvisor;
-// V13.83: the old capture-phase left-drag camera handler was overriding
+// V13.84: the old capture-phase left-drag camera handler was overriding
 // the native RTS box-selection and road construction. Keep the game's
 // original left-drag handlers; right-drag camera is handled by scRightDragDistance.
 const hintText=document.getElementById('sc154Hint');
@@ -4210,9 +4215,9 @@ function draw(){
 document.getElementById('sc190ChronicleBtn')?.addEventListener('click',()=>{if(!panel.hidden)draw()});
 setInterval(()=>{if(!panel.hidden)draw()},2500);
 sample();setInterval(sample,15000);
-const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- document.title='Shattered Crowns — v13.83';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
+const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ document.title='Shattered Crowns — v13.84';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
 })();
 </script>
 
@@ -4240,8 +4245,8 @@ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='
  byId('sc1300Advice').textContent=snap.filled<snap.jobs?'Some buildings are understaffed. Add housing and maintain food and happiness to grow the population.':snap.jobs===0?'Build a farm or other workplace to create jobs.':'All existing workplaces are staffed.';
  }
  refresh();setInterval(refresh,1200);
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';document.title='Shattered Crowns — V13.00';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';document.title='Shattered Crowns — V13.00';
 })();
 </script>
 
@@ -4292,8 +4297,8 @@ body input, body textarea, body [contenteditable="true"] {
  const select=root.querySelector('select'),effect=root.querySelector('#sc1303Effect');
  function apply(){const v=select.value;window.scRationFactor=v==='conserve'?.75:v==='generous'?1.25:1;window.scRationMood=v==='conserve'?-2:v==='generous'?1.5:0;effect.textContent=v==='conserve'?'Conservation: 25% less food used, happiness -2 per cycle.':v==='generous'?'Generous: 25% more food used, happiness +1.5 per cycle.':'Normal: standard food use, no happiness adjustment.';}
  select.addEventListener('change',apply);apply();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- document.title='Shattered Crowns — v13.83';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ document.title='Shattered Crowns — v13.84';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
 })();
 </script>
 
@@ -4318,9 +4323,9 @@ body input, body textarea, body [contenteditable="true"] {
  tabs.addEventListener('click',e=>{if(e.target.closest('[data-tab="economy"]')){panel.scrollTop=0;} });
  select.addEventListener('pointerdown',e=>e.stopPropagation());
  select.addEventListener('click',e=>e.stopPropagation());
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- document.title='Shattered Crowns — v13.83';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ document.title='Shattered Crowns — v13.84';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
 })();
 </script>
 
@@ -4356,9 +4361,9 @@ body input, body textarea, body [contenteditable="true"] {
  // Re-evaluate before each existing five-second economy cycle.
  setInterval(update,500);
  update();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
- document.title='Shattered Crowns — v13.83';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
+ document.title='Shattered Crowns — v13.84';
 })();
 </script>
 
@@ -4384,9 +4389,9 @@ body input, body textarea, body [contenteditable="true"] {
  input.addEventListener('pointerdown',e=>e.stopPropagation());
  input.addEventListener('click',e=>e.stopPropagation());
  update();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
- document.title='Shattered Crowns — v13.83';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
+ document.title='Shattered Crowns — v13.84';
 })();
 </script>
 
@@ -4406,8 +4411,8 @@ body input, body textarea, body [contenteditable="true"] {
  selector.addEventListener('change',update);
  for(const event of ['pointerdown','click'])selector.addEventListener(event,e=>e.stopPropagation());
  update();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- document.title='Shattered Crowns — v13.83';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ document.title='Shattered Crowns — v13.84';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
 })();
 </script>
 
@@ -4434,9 +4439,9 @@ body input, body textarea, body [contenteditable="true"] {
  const guide=document.getElementById('sc189HelpPanel');
  if(guide){const heading=[...guide.querySelectorAll('h3')].find(x=>x.textContent.includes('Camera and controls'));
  if(heading){const next=heading.nextElementSibling; if(next&&next.tagName==='UL')next.remove();heading.remove();}}
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- document.title='Shattered Crowns — v13.83';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ document.title='Shattered Crowns — v13.84';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
 })();
 </script>
 <style id="sc1310AdvisorStyles">
@@ -4490,8 +4495,8 @@ body input, body textarea, body [contenteditable="true"] {
  function dismiss(){welcome.hidden=true;try{localStorage.setItem('sc1310AdvisorIntroSeen','yes')}catch(e){}}
  welcome.querySelector('#sc1310Try').addEventListener('click',()=>{dismiss();show(true)});
  welcome.querySelector('#sc1310Skip').addEventListener('click',dismiss);
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- document.title='Shattered Crowns — v13.83';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ document.title='Shattered Crowns — v13.84';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
 })();
 </script>
 
@@ -4607,9 +4612,9 @@ body input, body textarea, body [contenteditable="true"] {
   const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='0 of '+checks.length+' checks completed';
   try{sessionStorage.removeItem('sc1313TestsCompleted')}catch(e){}
  }
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- document.title='Shattered Crowns — v13.83';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ document.title='Shattered Crowns — v13.84';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
 })();
 </script>
 
@@ -4664,9 +4669,9 @@ body input, body textarea, body [contenteditable="true"] {
   const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='0 of '+tasks.length+' new checks completed';
   try{sessionStorage.removeItem('sc1313TestsCompleted')}catch(e){}
  }
- const badge=document.getElementById('sc179Version');if(badge){badge.textContent='V13.83 · Neighborhood services';badge.style.bottom='139px'}
- document.title='Shattered Crowns — v13.83';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
+ const badge=document.getElementById('sc179Version');if(badge){badge.textContent='V13.84 · Neighborhood services';badge.style.bottom='139px'}
+ document.title='Shattered Crowns — v13.84';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
 })();
 </script>
 
@@ -4714,8 +4719,8 @@ body input, body textarea, body [contenteditable="true"] {
   const progress=oldTests.querySelector('.sc1312Progress');if(progress)progress.textContent='One new feature to test';
   try{sessionStorage.removeItem('sc1313TestsCompleted')}catch(e){}
  }
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- document.title='Shattered Crowns — v13.83';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ document.title='Shattered Crowns — v13.84';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
 })();
 </script>
 
@@ -4769,8 +4774,8 @@ body input, body textarea, body [contenteditable="true"] {
   const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='One new feature to test';
   try{sessionStorage.removeItem('sc1313TestsCompleted')}catch(e){}
  }
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- document.title='Shattered Crowns — v13.83';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ document.title='Shattered Crowns — v13.84';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
 })();
 </script>
 
@@ -4815,8 +4820,8 @@ body input, body textarea, body [contenteditable="true"] {
   const labels=[...tests.querySelectorAll('label')];labels.forEach((label,i)=>{label.hidden=i!==0;if(i===0){const span=label.querySelector('span');if(span)span.textContent='Select Road (or House), then right-click the battlefield without building. Confirm the tool cancels; ordinary right-click unit orders must still work when no building is selected.';const cb=label.querySelector('input');if(cb)cb.checked=false;}});
   const progress=tests.querySelector('.sc1312Progress');if(progress)progress.textContent='One new feature to test';
  }
- const badge=document.getElementById('sc179Version');if(badge){badge.textContent='V13.83 · Neighborhood services';badge.style.removeProperty('bottom');badge.style.removeProperty('left');}
- document.title='Shattered Crowns — v13.83';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
+ const badge=document.getElementById('sc179Version');if(badge){badge.textContent='V13.84 · Neighborhood services';badge.style.removeProperty('bottom');badge.style.removeProperty('left');}
+ document.title='Shattered Crowns — v13.84';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
 })();
 </script>
 
@@ -4858,9 +4863,9 @@ body input, body textarea, body [contenteditable="true"] {
  document.getElementById('sc1310AdvisorBtn')?.addEventListener('click',()=>setTimeout(update,0));
  document.addEventListener('sc:built',update);
  update();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- document.title='Shattered Crowns — v13.83';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ document.title='Shattered Crowns — v13.84';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
 })();
 </script>
 
@@ -4898,9 +4903,9 @@ body input, body textarea, body [contenteditable="true"] {
  section.querySelector('button').addEventListener('click',locate);
  type.addEventListener('change',()=>{index=-1;marker.hidden=true;status.textContent='Choose Locate next to find '+type.selectedOptions[0].text.toLowerCase()+'.';});
  canvas.addEventListener('pointerdown',()=>{marker.hidden=true},{passive:true});
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- document.title='Shattered Crowns — v13.83';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ document.title='Shattered Crowns — v13.84';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
 })();
 </script>
 
@@ -4925,9 +4930,9 @@ body input, body textarea, body [contenteditable="true"] {
   const extra=document.createElement('label');extra.innerHTML='<input type="checkbox" id="sc1324Refined" checked> Refined roads and Royal Keep';section.append(extra);extra.querySelector('input').addEventListener('change',e=>{window.sc1324RefinedStreets=e.target.checked;});
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- document.title='Shattered Crowns — v13.83';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ document.title='Shattered Crowns — v13.84';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
 })();
 </script>
 
@@ -4946,9 +4951,9 @@ body input, body textarea, body [contenteditable="true"] {
   label.querySelector('input').addEventListener('change',e=>{window.sc1325Cobblestones=e.target.checked;});
  }}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- document.title='Shattered Crowns — v13.83';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ document.title='Shattered Crowns — v13.84';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
 })();
 </script>
 <style id="sc1326Style">#sc1326ArchitectureRow{margin-top:7px}</style>
@@ -4959,9 +4964,9 @@ body input, body textarea, body [contenteditable="true"] {
  const row=document.createElement('label');row.id='sc1326ArchitectureRow';row.innerHTML='<input id="sc1326Architecture" type="checkbox" checked> Roof and facade details';
  host.append(row);row.querySelector('input').addEventListener('change',e=>{window.sc1326Architecture=e.target.checked;});}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- document.title='Shattered Crowns — v13.83';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ document.title='Shattered Crowns — v13.84';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
 })();
 </script>
 
@@ -4972,9 +4977,9 @@ body input, body textarea, body [contenteditable="true"] {
  const label=document.createElement('label');label.innerHTML='<input id="sc1327Civic" type="checkbox" checked> Village well and market details';
  host.append(label);label.querySelector('input').addEventListener('change',e=>{window.sc1327CivicDetails=e.target.checked;});}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- document.title='Shattered Crowns — v13.83';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ document.title='Shattered Crowns — v13.84';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
 })();
 </script>
 
@@ -4990,9 +4995,9 @@ body input, body textarea, body [contenteditable="true"] {
   label.querySelector('input').addEventListener('change',e=>{window.sc1329FarmDetails=e.target.checked});
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- document.title='Shattered Crowns — v13.83';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ document.title='Shattered Crowns — v13.84';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
 })();
 </script>
 
@@ -5023,9 +5028,9 @@ body input, body textarea, body [contenteditable="true"] {
  if(panel&&close){
    close.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();panel.hidden=true;document.getElementById('sc1310AdvisorBtn')?.setAttribute('aria-expanded','false');},true);
  }
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- document.title='Shattered Crowns — v13.83';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ document.title='Shattered Crowns — v13.84';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
 })();
 </script>
 
@@ -5041,9 +5046,9 @@ body input, body textarea, body [contenteditable="true"] {
   label.querySelector('input').addEventListener('change',e=>{window.sc1334CivicLandscaping=e.target.checked;});
  };
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- document.title='Shattered Crowns — v13.83';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ document.title='Shattered Crowns — v13.84';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
 })();
 </script>
 <script id="sc1335WorkingVillage">
@@ -5058,17 +5063,17 @@ body input, body textarea, body [contenteditable="true"] {
   row.querySelector('input').addEventListener('change',e=>{window.sc1335WorkshopDetails=e.target.checked});
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';
- document.title='Shattered Crowns — v13.83';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';
+ document.title='Shattered Crowns — v13.84';
+ const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';
 })();
 </script><script id="sc1336CivicCraft">(()=>{'use strict';window.sc1336CivicCraft=true;
 function install(){const host=document.getElementById('sc1323Visual');if(!host||document.getElementById('sc1336CivicCraftToggle'))return;
 const label=document.createElement('label');label.innerHTML='<input type="checkbox" id="sc1336CivicCraftToggle" checked> Bakery and healer details';host.append(label);
 label.querySelector('input').addEventListener('change',e=>{window.sc1336CivicCraft=e.target.checked});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
-const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';document.title='Shattered Crowns — v13.83';
-const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';})();</script><script id="sc1338RenderGuard">(()=>{'use strict';const update=()=>{const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';document.title='Shattered Crowns — v13.83';};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',update);else update();})();</script><style id="sc1339Style">
+const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';document.title='Shattered Crowns — v13.84';
+const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';})();</script><script id="sc1338RenderGuard">(()=>{'use strict';const update=()=>{const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';document.title='Shattered Crowns — v13.84';};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',update);else update();})();</script><style id="sc1339Style">
 #sc1339Milestones{position:fixed;z-index:30000;top:12%;left:50%;transform:translateX(-50%);width:min(530px,calc(100vw - 30px));max-height:75vh;overflow:auto;padding:18px;background:#172c2b;color:#f0ead6;border:2px solid #bda36a;border-radius:12px;box-shadow:0 15px 55px #000b;font:14px/1.5 system-ui}
 #sc1339Milestones[hidden]{display:none!important}#sc1339Milestones h2{margin:0 0 8px;color:#f4db9a}#sc1339Milestones .goal{margin:8px 0;padding:9px;background:#253e38;border-radius:7px;border-left:4px solid #a98b56}#sc1339Milestones .goal.done{border-color:#80bf83}#sc1339Milestones .goal small{display:block;color:#c6d2c8}#sc1339Milestones button{background:#3a5145;color:white;border:1px solid #a7ad90;border-radius:5px;padding:6px 12px;cursor:pointer}
 </style>
@@ -5081,7 +5086,7 @@ const goals=[['Growing village','Reach 24 residents','population',24,'Build hous
 function refresh(){if(panel.hidden)return;const host=document.getElementById('sc1339Goals');host.replaceChildren();let done=0;for(const [name,description,id,target,hint] of goals){const val=read(id),passed=val>=target;if(passed)done++;const row=document.createElement('div');row.className='goal'+(passed?' done':'');const head=document.createElement('strong');head.textContent=(passed?'✓ ':'○ ')+name;const detail=document.createElement('div');detail.textContent=description+' — '+Math.min(Math.floor(val),target)+' / '+target;const note=document.createElement('small');note.textContent=passed?'Completed in your current settlement':hint;row.append(head,detail,note);host.append(row)}const count=document.createElement('p');count.textContent=done+' of '+goals.length+' settlement goals reached';host.prepend(count)}
 function show(v){panel.hidden=!v;btn.setAttribute('aria-expanded',String(v));if(v)refresh()}
 btn.addEventListener('click',()=>show(panel.hidden));panel.querySelector('#sc1339Close').addEventListener('click',()=>show(false));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)show(false)});setInterval(refresh,2500);
-const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.83 · Neighborhood services';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.83.0';document.title='Shattered Crowns — v13.83';}
+const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V13.84 · Neighborhood services';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v13.84.0';document.title='Shattered Crowns — v13.84';}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();</script><script id="sc1342TheaterInfo">(()=>{const set=()=>{const b=document.querySelector('[data-action="theater"]');if(b)b.title='Theater — 80 wood, 90 gold, 25 stone. Cultural venue: +0.4 happiness per food cycle (up to +1.2 from theaters).';};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',set);else set();})();</script><style id="sc1345TheaterStyle">
 #sc1345TheaterCard{position:fixed;bottom:89px;left:50%;transform:translateX(-50%);z-index:14000;max-width:min(560px,94vw);padding:10px 15px;background:#152f29;border:2px solid #d3ae64;border-radius:8px;color:#fff2d0;font:13px system-ui;box-shadow:0 4px 20px #0009;display:none;pointer-events:none;text-align:center}
@@ -5490,7 +5495,7 @@ function install(){
  const host=document.getElementById('advisorCard')||document.getElementById('advisorTop');
  if(!host||document.getElementById('sc1379AdvisorTests'))return;
  const panel=document.createElement('section');panel.id='sc1379AdvisorTests';
- const title=document.createElement('h4');title.textContent='🧪 Advisor · V13.83 playtests';panel.append(title);
+ const title=document.createElement('h4');title.textContent='🧪 Advisor · V13.84 playtests';panel.append(title);
  const counter=document.createElement('div');panel.append(counter);
  const checks=[];
  for(const task of tasks){const row=document.createElement('label'),cb=document.createElement('input');cb.type='checkbox';row.append(cb,document.createTextNode(task));panel.append(row);checks.push(cb);cb.addEventListener('change',refresh)}
@@ -5535,7 +5540,7 @@ panel.querySelector('#sc1380Reset').addEventListener('click',()=>setZoom(1));
 // Ctrl+wheel zooms around the pointer; ordinary wheel remains map scrolling.
 vp.addEventListener('wheel',e=>{if(!e.ctrlKey)return;e.preventDefault();e.stopImmediatePropagation();setZoom(zoom+(e.deltaY<0?.1:-.1),e.clientX,e.clientY)},{capture:true,passive:false});
 window.scMapZoom={set:setZoom,get:()=>zoom};
-const advisor=document.getElementById('sc1379AdvisorTests');if(advisor){const note=document.createElement('p');note.style.fontSize='11px';note.textContent='V13.83: use + / − to zoom. In Road mode, check the stone cost and blocked/affordable status before releasing the mouse.';advisor.append(note)}
+const advisor=document.getElementById('sc1379AdvisorTests');if(advisor){const note=document.createElement('p');note.style.fontSize='11px';note.textContent='V13.84: use + / − to zoom. In Road mode, check the stone cost and blocked/affordable status before releasing the mouse.';advisor.append(note)}
 })();
 </script>
 </body></html>
