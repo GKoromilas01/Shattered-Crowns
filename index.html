@@ -5782,7 +5782,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
-<!-- V14.03: compact in-button construction costs, without overlapping overlays. -->
+<!-- V14.04: compact in-button construction costs, without overlapping overlays. -->
 <style id="sc1402InlineCostsStyle">
 #sc1399Planner,#sc1350Budget,#sc196CostStrip{display:none!important}
 #sc140Commands button[data-sc1402-cost]::after{content:attr(data-sc1402-cost);display:block;font:600 10px/1.25 system-ui,sans-serif;color:#e8d4a0;white-space:nowrap;letter-spacing:-.15px;margin-top:3px;pointer-events:none}
@@ -5803,8 +5803,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh);else refresh();
  const host=document.getElementById('sc140Commands');if(host){new MutationObserver(refresh).observe(host,{childList:true,subtree:false});}
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V14.03';
- document.title='Shattered Crowns — v14.03';
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V14.04';
+ document.title='Shattered Crowns — v14.04';
 })();
 </script>
 
@@ -5837,6 +5837,38 @@ function refresh(){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{refresh();setInterval(refresh,1000)});
 else {refresh();setInterval(refresh,1000)}
+})();
+</script>
+
+<!-- v14.04: show the exact shortage on unaffordable building buttons. -->
+<style id="sc1404ShortfallStyle">
+#sc140Commands button[data-sc1404-shortfall]:not([data-sc1404-shortfall=""])::before{
+ content:attr(data-sc1404-shortfall);display:block;position:absolute;bottom:2px;left:3px;right:3px;
+ background:rgba(66,24,17,.92);color:#ffdbcc;border-radius:3px;
+ font:600 9px/1.2 system-ui,sans-serif;white-space:nowrap;pointer-events:none;
+}
+#sc140Commands button[data-sc1404-shortfall]{position:relative}
+#sc140Commands button[data-sc1404-shortfall]:not([data-sc1404-shortfall=""]){padding-bottom:15px!important}
+@media(max-width:650px){#sc140Commands button[data-sc1404-shortfall]:not([data-sc1404-shortfall=""])::before{font-size:8px}}
+</style>
+<script id="sc1404Shortfall">
+(()=>{'use strict';
+const costs={House:[60,25,0],Farm:[75,30,0],Road:[0,0,12],Market:[90,90,20],Well:[25,0,35],Lumber:[75,45,0],Fishery:[90,45,0],Granary:[85,0,35],Bakery:[80,45,15],Theater:[80,90,25],Healer:[70,65,25],Garden:[35,15,0],Plaza:[0,35,25],Tower:[100,100,0],Fortress:[150,180,120],Wall:[30,0,60]};
+const labels=['🌲','🪙','🪨'];
+function get(id){const el=document.getElementById(id);if(!el)return null;const m=(el.textContent||'').replace(/,/g,'').match(/-?\d+/);return m?Number(m[0]):null}
+function update(){
+ const host=document.getElementById('sc140Commands');if(!host)return;
+ const have=[get('resWood'),get('resGold'),get('resStone')];
+ for(const button of host.querySelectorAll('button[data-sc1402-cost]')){
+  const name=Object.keys(costs).find(n=>button.textContent.trim().endsWith(n));
+  if(!name)continue;
+  if(have.some(v=>v===null)){button.removeAttribute('data-sc1404-shortfall');continue}
+  const missing=costs[name].map((n,i)=>Math.max(0,n-have[i]));
+  button.setAttribute('data-sc1404-shortfall',missing.map((n,i)=>n?labels[i]+n:'').filter(Boolean).join(' '));
+ }
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{update();setInterval(update,1000)});
+else{update();setInterval(update,1000)}
 })();
 </script>
 </body></html>
