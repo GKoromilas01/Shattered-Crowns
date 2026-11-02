@@ -5,7 +5,7 @@ async function getJson(route){const r=await fetch('https://api.github.com/'+rout
 function output(values){if(process.env.GITHUB_OUTPUT)fs.appendFileSync(process.env.GITHUB_OUTPUT,Object.entries(values).map(([k,v])=>k+'='+v).join('\n')+'\n')}
 async function preflight(read=getJson){
  demand(process.env.GITHUB_REF==='refs/heads/main','Releases may run only from main');demand(process.env.CONFIRM_RELEASE==='deploy','Explicit deploy confirmation required');
- const repo=process.env.GITHUB_REPOSITORY;demand(repo==='GKoromilas01/Shattered-Crowns','Wrong repository');const runId=process.env.CANDIDATE_RUN_ID,sha=process.env.EXPECTED_RELEASE_SHA;
+ const repo=process.env.GITHUB_REPOSITORY;demand(repo==='GKoromilas01/Shattered-Crowns','Wrong repository');const runId=(process.env.CANDIDATE_RUN_ID||'').trim(),sha=process.env.EXPECTED_RELEASE_SHA;
  demand(/^\d+$/.test(runId||''),'Candidate run ID must be numeric');demand(['true','false'].includes(process.env.ROLLBACK),'Rollback selection must be explicit');
  assertProtectedEnvironment(await read('repos/'+repo+'/environments/production'));
  const run=await read('repos/'+repo+'/actions/runs/'+runId);const rollback=process.env.ROLLBACK==='true';if(rollback)assertStableReleaseRun(run,{repository:repo,runId});else assertVerifiedRun(run,{repository:repo,sourceSha:sha,runId});
@@ -15,7 +15,7 @@ async function preflight(read=getJson){
  const history=await read('repos/'+repo+'/actions/workflows/verified-pages-release.yml/runs?status=success&per_page=100');
  const previous=history.workflow_runs.find(r=>r.head_branch==='main'&&r.event==='workflow_dispatch'&&String(r.id)!==process.env.GITHUB_RUN_ID);
  let fallbackRun='';if(previous){assertStableReleaseRun(previous,{repository:repo,runId:String(previous.id)});fallbackRun=String(previous.id)}
- fs.writeFileSync('release-approval.json',JSON.stringify({candidateRun:runId,candidateSha:sha,rollback,fallbackRun,bootstrap:!previous},null,2));output({fallback_run:fallbackRun,bootstrap:String(!previous),rollback:String(rollback)});
+ fs.writeFileSync('release-approval.json',JSON.stringify({candidateRun:runId,candidateSha:sha,rollback,fallbackRun,bootstrap:!previous},null,2));output({candidate_run_id:runId,fallback_run:fallbackRun,bootstrap:String(!previous),rollback:String(rollback)});
  console.log('Approved verification provenance; production fallback will be validated before publishing.');
 }
 function bootstrap(){const baseline=JSON.parse(fs.readFileSync('release-baseline.json'));const bytes=execFileSync('git',['show',baseline.sourceSha+':index.html']);demand(digest(bytes)===baseline.indexSha256,'Pinned bootstrap bytes do not match the stable baseline');const root='work/bootstrap-source';fs.mkdirSync(root,{recursive:true});fs.writeFileSync(path.join(root,'index.html'),bytes);fs.writeFileSync(path.join(root,'release.json'),JSON.stringify({version:baseline.version,milestone:'Verified Milestone 2 bootstrap'}));buildSite(root,'fallback',{sourceSha:baseline.sourceSha,verificationRunId:'0'})}
