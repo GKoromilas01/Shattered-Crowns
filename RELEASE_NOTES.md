@@ -1,5 +1,13 @@
 # Release notes
 
+## 0.5.0 — Milestone 5: City Services & Citizen Happiness (proposed)
+
+- One service resolver explains water, healthcare and market reach, staffing, road access and empty food reserves. Working providers take precedence over nearer inactive ones.
+- Happiness now approaches an explained 0–100 satisfaction target by at most two points per five-second cycle. Actual residents, food fulfillment/reserves, services, employment and existing amenities determine the factors. Existing meal policies modify the target; paid events retain their explicit bonuses.
+- Existing housing, migration and prosperity respond to the same service and happiness state. City Life and selected-building feedback explain blockers and recovery; Advisor stays optional.
+- Existing food arithmetic, controls, roads/refunds, prices, staffing priorities and settlement grace are retained. Feature pushes now run read-only verification before a PR; main-only approved publishing and rollback safeguards remain unchanged.
+- New Chromium coverage includes a complete five-minute service shortage/recovery, bounded satisfaction, service boundaries and fallback, staffing, policies, pause/reset and narrow UI. See [Milestone 5](docs/MILESTONE5.md).
+
 ## 0.4.0 — Milestone 4: Living City (proposed)
 
 - Measured producer harvest, logistics, bakery inputs/output/exports and household consumption shares reconcile with the existing food reserve.
