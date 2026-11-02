@@ -38,7 +38,7 @@ Gentle original Web Audio chords and short distinct worker/army selection cues b
 
 ## Defense placement feedback
 
-Tower, fortress and wall rules keep their existing prices, collision checks and selected-worker range. The Construction details now explain missing workers, exact required/current resources, blocked plots and the 180-map-unit worker limit. A selected worker's blue circle marks that limit. Failure does not spend resources. Placement rechecks affordability after arming the tool, preventing a defense from spending resources already used on recruitment or other actions. Successful placement and undo retain the existing engine path. New tests exercise real controls and map clicks, including a narrow screen.
+Tower, fortress and wall rules keep their existing prices, collision checks and selected-worker range. The Construction details now explain missing workers, exact required/current resources, blocked plots and the 180-map-unit worker limit. A selected worker's blue circle marks that limit. Failure does not spend resources. Placement rechecks affordability after arming the tool, preventing a defense from spending resources already used on recruitment or other actions. Successful placement and undo retain the existing engine path. New tests exercise real controls and map clicks, including a narrow screen and a worker selected directly with the mouse. Construction clicks are marked by the authoritative engine so the legacy delayed selection refresh cannot overwrite placement feedback; the feedback area remains readable and scrollable at 390px.
 
 ## Visual proof of concept and longer-term ideas
 
