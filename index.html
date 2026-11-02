@@ -191,6 +191,7 @@ if(team===0&&window.sc158TrackingEnabled){
 return b};// V13.51: Festivals are real city actions, not advisory estimates.
 let scFestivalCooldown=0;let scEventFoodReserve=30;
 let cityFlows=[],cityHouseholds=[],citySatisfactionLast=null;
+let scCityIdentity='',scCitySequence=0;
 let cityCycleNumber=0,cityLedger=null,cityGrowth={progress:0,departure:0,reason:"Build serviced housing to welcome residents."};
 window.scFestival={reserve:()=>scEventFoodReserve,setReserve:v=>{scEventFoodReserve=Math.max(0,Math.min(150,Math.round(Number(v)||0)));return scEventFoodReserve},
  status:()=>({bakeries:buildings.filter(b=>b.team===0&&b.type==='bakery'&&b.hp>0).length,theaters:buildings.filter(b=>b.team===0&&b.type==='theater'&&b.hp>0).length,gold:Math.floor(gold),food:Math.floor(food),reserve:scEventFoodReserve,happiness:Math.round(happiness),cooldown:Math.ceil(scFestivalCooldown),paused}),
@@ -218,7 +219,7 @@ function scUndo(){
  updateUI();window.dispatchEvent(new Event('sc-undo-changed'));
 }
 window.scUndo={undo:scUndo,canUndo:()=>scUndoStack.length>0,peek:()=>scUndoStack[scUndoStack.length-1]?.label||''};
-const alive=o=>o&&o.hp>0;function init(){stats={spawned:[0,0],lost:[0,0],kills:[0,0],damage:[0,0],gathered:[0,0],raids:0};aiRally=null;units=[];buildings=[];nodes=[];effects=[];projectiles=[];combatTexts=[];gold=240;wood=100;stone=30;food=90;population=8;happiness=70;cityTimer=0;cityCycleNumber=0;cityLedger=null;cityFlows=[];cityHouseholds=[];citySatisfactionLast=null;cityGrowth={progress:0,departure:0,reason:"Build serviced housing to welcome residents."};tradeGoods=0;goodsSold=0;window.sc1411LogisticsSnapshot=null;window.sc1412MarketDistributionSnapshot=null;scFestivalCooldown=0;scEventFoodReserve=30;cityProsperity=0;wellCoverage=0;roadMarkets=0;healerCoverage=0;granaryCount=0;employment={jobs:0,filled:0,available:0,byId:new Map()};aiGold=240;aiWood=100;trainQueue=[];aiQueue=[];trainTimer=0;aiTrainTimer=0;aiDecision=0;aiAttackTimer=0;difficulty=el("difficulty").value;selected=[];inspectedBuilding=null;window.scRTSSelected=[];window.scRTSInspectedBuilding=null;drag=null;mode=null;paused=false;ended=false;elapsed=0;aiTimer=0;resourceTimer=0;nextId=1;uiRefresh=0;scUndoStack.length=0;addBuilding(0,'keep',120,310);addBuilding(1,'keep',1170,440);for(let i=0;i<3;i++)addUnit(0,'worker',170,255+i*40);for(let i=0;i<3;i++)addUnit(0,'soldier',205,290+i*30);for(let i=0;i<3;i++)addUnit(1,'soldier',1090,400+i*40);for(let i=0;i<3;i++)addUnit(1,'worker',1125,340+i*42);for(let i=0;i<7;i++)nodes.push({x:280+(i%3)*50,y:110+Math.floor(i/3)*65,type:'tree',amount:600,radius:18,renew:0});for(let i=0;i<5;i++)nodes.push({x:430+(i%2)*70,y:430+Math.floor(i/2)*55,type:'gold',amount:800,radius:19,renew:0});for(let i=0;i<5;i++)nodes.push({x:330+(i%2)*75,y:280+Math.floor(i/2)*43,type:'stone',amount:700,radius:19,renew:0});// Additional deposits support a larger settlement without replacing the original start.
+const alive=o=>o&&o.hp>0;function init(){scCityIdentity=Date.now().toString(36)+'-'+(++scCitySequence);stats={spawned:[0,0],lost:[0,0],kills:[0,0],damage:[0,0],gathered:[0,0],raids:0};aiRally=null;units=[];buildings=[];nodes=[];effects=[];projectiles=[];combatTexts=[];gold=240;wood=100;stone=30;food=90;population=8;happiness=70;cityTimer=0;cityCycleNumber=0;cityLedger=null;cityFlows=[];cityHouseholds=[];citySatisfactionLast=null;cityGrowth={progress:0,departure:0,reason:"Build serviced housing to welcome residents."};tradeGoods=0;goodsSold=0;window.sc1411LogisticsSnapshot=null;window.sc1412MarketDistributionSnapshot=null;scFestivalCooldown=0;scEventFoodReserve=30;cityProsperity=0;wellCoverage=0;roadMarkets=0;healerCoverage=0;granaryCount=0;employment={jobs:0,filled:0,available:0,byId:new Map()};aiGold=240;aiWood=100;trainQueue=[];aiQueue=[];trainTimer=0;aiTrainTimer=0;aiDecision=0;aiAttackTimer=0;difficulty=el("difficulty").value;selected=[];inspectedBuilding=null;window.scRTSSelected=[];window.scRTSInspectedBuilding=null;drag=null;mode=null;paused=false;ended=false;elapsed=0;aiTimer=0;resourceTimer=0;nextId=1;uiRefresh=0;scUndoStack.length=0;addBuilding(0,'keep',120,310);addBuilding(1,'keep',1170,440);for(let i=0;i<3;i++)addUnit(0,'worker',170,255+i*40);for(let i=0;i<3;i++)addUnit(0,'soldier',205,290+i*30);for(let i=0;i<3;i++)addUnit(1,'soldier',1090,400+i*40);for(let i=0;i<3;i++)addUnit(1,'worker',1125,340+i*42);for(let i=0;i<7;i++)nodes.push({x:280+(i%3)*50,y:110+Math.floor(i/3)*65,type:'tree',amount:600,radius:18,renew:0});for(let i=0;i<5;i++)nodes.push({x:430+(i%2)*70,y:430+Math.floor(i/2)*55,type:'gold',amount:800,radius:19,renew:0});for(let i=0;i<5;i++)nodes.push({x:330+(i%2)*75,y:280+Math.floor(i/2)*43,type:'stone',amount:700,radius:19,renew:0});// Additional deposits support a larger settlement without replacing the original start.
 for(let i=0;i<10;i++)nodes.push({x:1390+(i%5)*70,y:120+Math.floor(i/5)*120,type:i%3===0?'stone':'tree',amount:650,radius:18,renew:0});
 
 for(let i=0;i<5;i++)nodes.push({x:130+i*118,y:680+(i%2)*95,type:'tree',amount:600,radius:18,renew:0});
@@ -2762,6 +2763,112 @@ const updatePolitics=()=>{const select=document.getElementById('politicsRealm');
 })();
 
 window.scCancelConstruction=()=>{mode=null;drag=null;wallPointer=null;updateUI()};
+// Versioned session snapshots. Transient pointer/visual effects are deliberately not replayed.
+const scSaveFormat='shattered-crowns-city',scSaveLimit=1048576;
+const scUnitTypes=['worker','soldier','archer'];
+const scBuildingTypes=['keep','house','farm','fishery','road','market','well','lumberyard','granary','bakery','theater','clinic','garden','plaza','tower','fortress','wall'];
+const scUnitNumbers=['id','team','x','y','hp','max','speed','damage','range','radius','cool','carry'];
+const scUnitFlags=['scHoldPosition','scCharge','scShieldWall'];
+const scBuildingNumbers=['id','team','x','y','hp','max','radius','cool','cityTier','cityResidents','cityUpgrade','cityDecline'];
+const scClockFields=['elapsed','cityTimer','cityCycleNumber','aiTimer','resourceTimer','aiDecision','aiAttackTimer','aiTrainTimer','trainTimer','scFestivalCooldown'];
+const scClone=x=>JSON.parse(JSON.stringify(x));
+function scCaptureCity(){
+ cityReconcileOccupancy();assignEmployment();
+ const liveUnits=units.filter(alive),liveBuildings=buildings.filter(alive),entities=new Set([...liveUnits,...liveBuildings]);
+ const ref=o=>!o?null:entities.has(o)?{kind:'entity',id:o.id}:nodes.includes(o)?{kind:'node',index:nodes.indexOf(o)}:null;
+ const unitRows=liveUnits.map(u=>{
+  const row=Object.fromEntries(scUnitNumbers.map(k=>[k,u[k]??0]));row.type=u.type;
+  for(const k of scUnitFlags)row[k]=!!u[k];row.scLastMedic=u.scLastMedic??null;
+  row.target=ref(u.target);row.order=null;
+  if(u.order?.type==='move')row.order={type:'move',x:u.order.x,y:u.order.y};
+  else if(u.order&&ref(u.order.target))row.order={type:u.order.type,target:ref(u.order.target)};
+  return row;
+ });
+ const buildingRows=liveBuildings.map(b=>({...Object.fromEntries(scBuildingNumbers.map(k=>[k,k==='cityTier'?(b[k]||1):(b[k]??0)])),type:b.type,scLastNotifiedTier:b.scLastNotifiedTier??null}));
+ const zoom=window.scMapZoom?.get()||1;
+ return {format:scSaveFormat,schema:1,createdWith:'0.6.0',cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
+  resources:{gold,wood,stone,food,tradeGoods,goodsSold,aiGold,aiWood},people:{population,happiness,prosperity:cityProsperity},
+  clock:{elapsed,cityTimer,cityCycleNumber,aiTimer,resourceTimer,aiDecision,aiAttackTimer,aiTrainTimer,trainTimer,scFestivalCooldown},
+  options:{difficulty,formation,eventFoodReserve:scEventFoodReserve,showLabels,showMinimap,serviceOverlay,ration:window.scRationPolicy?.capture()||{mode:el('sc1303Mode')?.value||'normal',emergency:window.scRationFactor===.75},breadExport:window.scBreadExportEnabled!==false,breadReserveCycles:window.scBreadReserveCycles??2},
+  units:unitRows,buildings:buildingRows,nodes:nodes.map(n=>({type:n.type,x:n.x,y:n.y,amount:n.amount,radius:n.radius,renew:n.renew||0})),
+  selected:selected.filter(u=>liveUnits.includes(u)).map(u=>u.id),inspected:liveBuildings.includes(inspectedBuilding)?inspectedBuilding.id:null,squads:scSquads.map(g=>g.filter(u=>liveUnits.includes(u)).map(u=>u.id)),nextId,
+  stats:scClone(stats),growth:scClone(cityGrowth),ledger:scClone(cityLedger),flows:scClone(cityFlows),households:scClone(cityHouseholds),satisfactionLast:scClone(citySatisfactionLast),
+  measurements:{logistics:scClone(window.sc1411LogisticsSnapshot||null),distribution:scClone(window.sc1412MarketDistributionSnapshot||null),civic:scClone(window.sc1316CivicSnapshot||null)},
+  undo:scUndoStack.map(e=>({...scClone(e),gold:e.gold||0,wood:e.wood||0,stone:e.stone||0})),trainQueue:trainQueue.slice(),aiQueue:aiQueue.slice(),ended
+ }};
+}
+function scPrepareCity(input){
+ const fail=()=>{throw new Error('This save contains invalid or unsupported city data.');};
+ const text=JSON.stringify(input);if(!text||text.length>scSaveLimit||new TextEncoder().encode(text).length>scSaveLimit)throw new Error('Save exceeds the 1 MiB size limit.');
+ const data=JSON.parse(text);
+ function scan(v,depth=0){if(depth>16)fail();if(typeof v==='string'&&(v.length>600||/[<>\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(v)))fail();if(v&&typeof v==='object')for(const k of Object.keys(v)){if(['__proto__','prototype','constructor'].includes(k))fail();scan(v[k],depth+1);}}
+ scan(data);
+ function keys(o,allowed){if(!o||typeof o!=='object'||Array.isArray(o)||Object.keys(o).some(k=>!allowed.includes(k)))fail();}
+ function number(v,min=0,max=1e12,integer=false){if(!Number.isFinite(v)||v<min||v>max||integer&&!Number.isSafeInteger(v))fail();}
+ const bool=v=>{if(typeof v!=='boolean')fail();};
+ const choice=(v,list)=>{if(!list.includes(v))fail();};
+ function list(v,max=5000){if(!Array.isArray(v)||v.length>max)fail();}
+ const id=v=>number(v,1,1e9,true);
+ keys(data,['format','schema','createdWith','cityId','savedAt','world','view','state']);
+ if(data.format!==scSaveFormat||data.schema!==1)throw new Error('Unsupported save format or version. Your current city has not changed.');
+ if(typeof data.createdWith!=='string'||!/^\d+\.\d+\.\d+$/.test(data.createdWith)||typeof data.cityId!=='string'||!/^[a-zA-Z0-9-]{1,64}$/.test(data.cityId))fail();number(data.savedAt,0,1e15,true);
+ keys(data.world,['version','width','height']);if(data.world.version!==1||data.world.width!==W||data.world.height!==H)throw new Error('This save belongs to an unsupported world layout.');
+ keys(data.view,['zoom','centerX','centerY']);number(data.view.zoom,.55,1.55);number(data.view.centerX,0,W);number(data.view.centerY,0,H);
+ const s=data.state;keys(s,['resources','people','clock','options','units','buildings','nodes','selected','inspected','squads','nextId','stats','growth','ledger','flows','households','satisfactionLast','measurements','undo','trainQueue','aiQueue','ended']);
+ keys(s.resources,['gold','wood','stone','food','tradeGoods','goodsSold','aiGold','aiWood']);for(const k of ['gold','wood','stone','food','tradeGoods','goodsSold','aiGold','aiWood'])number(s.resources[k]);
+ number(s.resources.tradeGoods,0,80);number(s.resources.goodsSold,0,1e12,true);
+ keys(s.people,['population','happiness','prosperity']);number(s.people.population,4,1e6,true);number(s.people.happiness,0,100);number(s.people.prosperity,0,100);
+ keys(s.clock,scClockFields);for(const k of scClockFields)number(s.clock[k]);number(s.clock.cityTimer,0,5);number(s.clock.cityCycleNumber,0,1e9,true);
+ const o=s.options;keys(o,['difficulty','formation','eventFoodReserve','showLabels','showMinimap','serviceOverlay','ration','breadExport','breadReserveCycles']);choice(o.difficulty,['easy','normal','hard']);choice(o.formation,['line','column']);number(o.eventFoodReserve,0,150);bool(o.showLabels);bool(o.showMinimap);bool(o.breadExport);choice(o.serviceOverlay,['off','water','health','trade','roads']);choice(o.breadReserveCycles,[0,1,2,4]);keys(o.ration,['mode','emergency']);choice(o.ration.mode,['normal','conserve','generous','auto']);bool(o.ration.emergency);
+ list(s.units);list(s.buildings);list(s.nodes,2000);id(s.nextId);bool(s.ended);
+ const used=new Set();
+ function entity(row,fields,types){keys(row,fields);id(row.id);if(used.has(row.id)||row.id>=s.nextId)fail();used.add(row.id);choice(row.team,[0,1]);choice(row.type,types);number(row.x,0,W);number(row.y,0,H);number(row.hp,Number.MIN_VALUE,100000);number(row.max,row.hp,100000);number(row.radius,.1,1000);number(row.cool,-1e9,1e9);}
+ for(const u of s.units){entity(u,[...scUnitNumbers,'type',...scUnitFlags,'scLastMedic','target','order'],scUnitTypes);for(const k of ['speed','damage','range','carry'])number(u[k],0,100000);for(const k of scUnitFlags)bool(u[k]);if(u.scCharge&&u.scShieldWall)fail();if(u.scLastMedic!==null)number(u.scLastMedic,0,s.clock.elapsed);}
+ for(const b of s.buildings){entity(b,[...scBuildingNumbers,'type','scLastNotifiedTier'],scBuildingTypes);number(b.cityTier,1,4,true);number(b.cityResidents,0,1e6,true);number(b.cityUpgrade,0,10);number(b.cityDecline,0,30);if(b.scLastNotifiedTier!==null)number(b.scLastNotifiedTier,1,4,true);if(b.type==='house'?b.cityResidents>cityHouseCapacity(b):b.cityResidents!==0)fail();}
+ if(s.buildings.filter(b=>b.type==='house').reduce((n,b)=>n+b.cityResidents,0)>Math.max(0,s.people.population-8))fail();
+ if(!s.ended&&(!s.buildings.some(b=>b.type==='keep'&&b.team===0)||!s.buildings.some(b=>b.type==='keep'&&b.team===1)))fail();
+ for(const n of s.nodes){keys(n,['type','x','y','amount','radius','renew']);choice(n.type,['tree','stone','gold']);number(n.x,0,W);number(n.y,0,H);number(n.amount);number(n.radius,.1,1000);number(n.renew,0,1e9);}
+ const rebuiltUnits=s.units.map(u=>({...u})),rebuiltBuildings=s.buildings.map(b=>({...b})),rebuiltNodes=s.nodes.map(n=>({...n})),byId=new Map([...rebuiltUnits,...rebuiltBuildings].map(e=>[e.id,e]));
+ function ref(r,kind){if(r===null)return null;keys(r,r.kind==='node'?['kind','index']:['kind','id']);if(r.kind==='node'){if(kind==='entity')fail();number(r.index,0,rebuiltNodes.length-1,true);return rebuiltNodes[r.index];}if(r.kind!=='entity'||kind==='node')fail();id(r.id);const e=byId.get(r.id);if(!e)fail();return e;}
+ for(const u of rebuiltUnits){u.target=ref(u.target,'entity');if(u.target?.team===u.team)fail();if(u.order!==null){choice(u.order.type,['move','attack','gather']);if(u.order.type==='move'){keys(u.order,['type','x','y']);number(u.order.x,0,W);number(u.order.y,0,H);}else{keys(u.order,['type','target']);if(u.order.type==='gather'&&u.type!=='worker')fail();u.order={type:u.order.type,target:ref(u.order.target,u.order.type==='gather'?'node':'entity')};if(!u.order.target||u.order.type==='attack'&&u.order.target.team===u.team)fail();}}}
+ function playerIds(ids){list(ids);if(new Set(ids).size!==ids.length)fail();return ids.map(v=>{id(v);const u=rebuiltUnits.find(u=>u.id===v&&u.team===0);if(!u)fail();return u;});}
+ const rebuiltSelected=playerIds(s.selected);list(s.squads,3);if(s.squads.length!==3)fail();const rebuiltSquads=s.squads.map(playerIds);let rebuiltInspected=null;if(s.inspected!==null){id(s.inspected);rebuiltInspected=rebuiltBuildings.find(b=>b.id===s.inspected&&b.team===0);if(!rebuiltInspected)fail();}
+ keys(s.stats,['spawned','lost','kills','damage','gathered','raids']);for(const k of ['spawned','lost','kills','damage','gathered']){list(s.stats[k],2);if(s.stats[k].length!==2)fail();for(const v of s.stats[k])number(v);}number(s.stats.raids,0,1e9,true);
+ keys(s.growth,['progress','departure','reason']);number(s.growth.progress,0,15);number(s.growth.departure,0,15);if(typeof s.growth.reason!=='string')fail();
+ const close=(a,b)=>{if(!Number.isFinite(a)||!Number.isFinite(b)||Math.abs(a-b)>1e-4)fail();};
+ if(s.ledger!==null){keys(s.ledger,['opening','harvest','logistics','bakeryNet','exports','delivered','shortfall','overflow','closing','demand']);for(const k of ['opening','harvest','logistics','bakeryNet','exports','delivered','shortfall','overflow','closing','demand'])number(s.ledger[k]);const f=s.ledger;close(f.opening+f.harvest+f.logistics+f.bakeryNet-f.exports-f.delivered-f.overflow,f.closing);close(f.demand-f.delivered,f.shortfall);}
+ list(s.flows);for(const f of s.flows){keys(f,['id','type','staff','harvest','logistics','consumed','produced','exported']);id(f.id);choice(f.type,['farm','fishery','bakery']);for(const k of ['staff','harvest','logistics','consumed','produced','exported'])number(f[k]);}
+ list(s.households,5002);for(const h of s.households){keys(h,['id','label','residents','demand','delivered','shortfall']);if(h.id!==null)id(h.id);if(typeof h.label!=='string')fail();number(h.residents,0,1e6,true);for(const k of ['demand','delivered','shortfall'])number(h[k]);close(h.demand-h.delivered,h.shortfall);}
+ if(s.ledger){close(s.households.reduce((n,h)=>n+h.delivered,0),s.ledger.delivered);close(s.households.reduce((n,h)=>n+h.shortfall,0),s.ledger.shortfall);close(s.flows.reduce((n,f)=>n+f.harvest,0),s.ledger.harvest);close(s.flows.reduce((n,f)=>n+f.logistics,0),s.ledger.logistics);close(s.flows.reduce((n,f)=>n+f.produced-f.consumed,0),s.ledger.bakeryNet);close(s.flows.reduce((n,f)=>n+f.exported,0),s.ledger.exports);}
+ if(s.satisfactionLast!==null){const a=s.satisfactionLast;keys(a,['opening','target','closing','change','factors','modifier']);for(const k of ['opening','target','closing'])number(a[k],0,100);number(a.change,-2,2);close(a.closing-a.opening,a.change);list(a.factors,7);if(a.factors.length!==7)fail();for(const f of a.factors){keys(f,['label','max','points','reason']);if(typeof f.label!=='string'||typeof f.reason!=='string')fail();number(f.max,0,100);number(f.points,0,f.max);}keys(a.modifier,['label','points','reason']);if(typeof a.modifier.label!=='string'||typeof a.modifier.reason!=='string')fail();choice(a.modifier.points,[-2,0,1.5]);close(Math.round(clamp(a.factors.reduce((n,f)=>n+f.points,0)+a.modifier.points,0,100)*10)/10,a.target);}
+ keys(s.measurements,['logistics','distribution','civic']);for(const [k,fields] of Object.entries({logistics:['connected','bonus','total'],distribution:['served','homes','coverage','savings','base','actual','percent'],civic:['homes','served','rate','moodBonus']})){const v=s.measurements[k];if(v!==null){keys(v,fields);for(const f of fields)number(v[f]);}}
+ list(s.undo,30);for(const e of s.undo){choice(e.kind,['build','recruit']);keys(e,e.kind==='build'?['kind','ids','gold','wood','stone','label']:['kind','type','gold','wood','stone','label']);for(const k of ['gold','wood','stone'])number(e[k],0,1e9);if(typeof e.label!=='string')fail();if(e.kind==='build'){list(e.ids);for(const i of e.ids){id(i);if(i>=s.nextId)fail();}}else choice(e.type,scUnitTypes);}
+ for(const q of [s.trainQueue,s.aiQueue]){list(q,1000);for(const type of q)choice(type,scUnitTypes);}
+ return {data,units:rebuiltUnits,buildings:rebuiltBuildings,nodes:rebuiltNodes,selected:rebuiltSelected,inspected:rebuiltInspected,squads:rebuiltSquads};
+}
+function scRestoreCity(input){
+ let p;try{p=scPrepareCity(input);}catch(e){return {ok:false,message:e instanceof Error?e.message:'Invalid save. Your current city has not changed.'};}
+ const {state:s,view}=p.data;
+ window.scCancelConstruction?.();window.sc140UI?.showKeep(true);
+ units=p.units;buildings=p.buildings;nodes=p.nodes;selected=p.selected;inspectedBuilding=p.inspected;nextId=s.nextId;scCityIdentity=p.data.cityId;
+ ({gold,wood,stone,food,tradeGoods,goodsSold,aiGold,aiWood}=s.resources);population=s.people.population;happiness=s.people.happiness;cityProsperity=s.people.prosperity;
+ ({elapsed,cityTimer,cityCycleNumber,aiTimer,resourceTimer,aiDecision,aiAttackTimer,aiTrainTimer,trainTimer,scFestivalCooldown}=s.clock);
+ difficulty=s.options.difficulty;formation=s.options.formation;scEventFoodReserve=s.options.eventFoodReserve;showLabels=s.options.showLabels;showMinimap=s.options.showMinimap;serviceOverlay=s.options.serviceOverlay;
+ stats=s.stats;cityGrowth=s.growth;cityLedger=s.ledger;cityFlows=s.flows;cityHouseholds=s.households;citySatisfactionLast=s.satisfactionLast;
+ trainQueue=s.trainQueue;aiQueue=s.aiQueue;scUndoStack.splice(0,scUndoStack.length,...s.undo);for(let i=0;i<3;i++)scSquads[i]=p.squads[i];
+ window.sc1411LogisticsSnapshot=s.measurements.logistics;window.sc1412MarketDistributionSnapshot=s.measurements.distribution;window.sc1316CivicSnapshot=s.measurements.civic;
+ effects=[];projectiles=[];combatTexts=[];drag=null;rightPan=null;wallPointer=null;mode=null;aiRally=null;paused=true;ended=s.ended;tutorialVisible=false;last=performance.now();uiRefresh=0;c.classList.remove('panning');
+ window.scRTSUnits=units;window.scRTSNodes=nodes;window.scHoverBuildings=buildings;window.scRTSSelected=selected.slice();window.scRTSInspectedBuilding=inspectedBuilding;
+ el('difficulty').value=difficulty;el('resFood').textContent=Math.floor(food);el('population').textContent=population;
+ const ration=el('sc1303Mode');if(window.scRationPolicy)window.scRationPolicy.restore(s.options.ration);else if(ration){ration.value=s.options.ration.mode;ration.dispatchEvent(new Event('change'));}
+ const policy=el('sc1307BreadExport');if(policy){policy.checked=s.options.breadExport;policy.dispatchEvent(new Event('change'));}else window.scBreadExportEnabled=s.options.breadExport;
+ const reserve=el('sc1308Cycles');if(reserve){reserve.value=String(s.options.breadReserveCycles);reserve.dispatchEvent(new Event('change'));}else window.scBreadReserveCycles=s.options.breadReserveCycles;
+ window.scMapZoom?.set(view.zoom);mapViewport.scrollLeft=view.centerX*view.zoom-mapViewport.clientWidth/2;mapViewport.scrollTop=view.centerY*view.zoom-mapViewport.clientHeight/2;
+ scSquadStatus();scRefreshBattleReadout();updateUI();window.dispatchEvent(new CustomEvent('sc-selection-changed',{detail:{units:selected.slice(),building:inspectedBuilding}}));window.dispatchEvent(new Event('sc-undo-changed'));window.dispatchEvent(new Event('sc-city-restored'));
+ const message=ended?'Saved city restored. This game has ended.':'Saved city restored and paused. Press Resume to continue.';msg(message);return {ok:true,message};
+}
+window.scCitySave={capture:scCaptureCity,restore:scRestoreCity,validate:input=>{try{scPrepareCity(input);return {ok:true};}catch(e){return {ok:false,message:e.message};}},status:()=>({cityId:scCityIdentity,elapsed,paused,ended})};
+
 window.scCityEconomy={snapshot:citySnapshot};
 window.scHoverBuildings=buildings;function frame(now){let dt=Math.min((now-last)/1000,.05);last=now;window.scRTSUnits=units;window.scRTSNodes=nodes;window.scHoverBuildings=buildings;/* camera managed by v12.37 */if(!paused&&!ended&&!tutorialVisible){tick(dt);scFestivalCooldown=Math.max(0,scFestivalCooldown-dt);visualTime+=dt}draw();advisorAutoCheck(now);requestAnimationFrame(frame)}init();scRefreshBattleReadout();requestAnimationFrame(frame)})();
 </script><style id="treasuryStyles">
@@ -4617,12 +4724,16 @@ body input, body textarea, body [contenteditable="true"] {
    if(consumption>0){if(!emergency&&food<consumption*3)emergency=true;
      else if(emergency&&food>=consumption*8)emergency=false;}
    else emergency=false;
+   applyAutomatic();
+ }
+ function applyAutomatic(){
    window.scRationFactor=emergency?.75:1;
    window.scRationMood=emergency?-2:0;
    status.dataset.alert=String(emergency);
    status.textContent=emergency?'⚠ Emergency conservation ACTIVE — 25% less food, satisfaction target −2. Returns to normal at 8 cycles of reserves.':'✓ Normal meals — automatic conservation begins below 3 cycles of food reserves.';
    const effect=document.getElementById('sc1303Effect');if(effect)effect.textContent=emergency?'Automatic policy: conserving supplies until food reserves recover.':'Automatic policy: normal meals; reserve monitoring active.';
  }
+ window.scRationPolicy={capture:()=>({mode:mode.value,emergency}),restore:p=>{mode.value=p.mode;mode.dispatchEvent(new Event('change'));if(p.mode==='auto'){emergency=p.emergency;applyAutomatic();}}};
  mode.addEventListener('change',update);
  // Re-evaluate before each existing five-second economy cycle.
  setInterval(update,500);
@@ -6440,4 +6551,97 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  setInterval(refresh,150);
 })();
 </script>
+<style id="scSavedCityStyle">
+#sc146Menu{max-height:calc(100dvh - 166px)!important;overflow-y:auto!important;max-width:calc(100vw - 16px)!important}
+#sc146MenuButton[data-save-alert="true"]::after{content:"!";position:absolute;right:0;top:0;width:12px;height:12px;border-radius:50%;background:#f1c56b;color:#183b2e;font:bold 10px/12px system-ui;text-align:center;pointer-events:none}
+#scSavedCitySection{border-top:1px solid #718668;margin-top:6px;padding-top:7px;max-width:330px}
+#scSavedCitySection p{font:11px/1.45 system-ui;white-space:normal;margin:5px 2px;color:#e6eedb}
+#scSavedCitySection button{white-space:normal;text-align:left}
+</style>
+<script id="scSavedCityController">
+(()=>{'use strict';
+ const engine=window.scCitySave,menu=document.getElementById('sc146Menu');if(!engine||!menu)return;
+ const LIMIT=1048576,PRIMARY='shattered-crowns-city-v1',BACKUP='shattered-crowns-city-backup-v1';
+ function checksum(text){let h=2166136261;for(let i=0;i<text.length;i++)h=Math.imul(h^text.charCodeAt(i),16777619);return (h>>>0).toString(16).padStart(8,'0');}
+ function encode(data){const v=engine.validate(data);if(!v.ok)throw new Error(v.message);const text=JSON.stringify({format:'shattered-crowns-checkpoint',version:1,checksum:checksum(JSON.stringify(data)),data});if(new TextEncoder().encode(text).length>LIMIT)throw new Error('Save exceeds the 1 MiB file limit.');return text;}
+ function decode(text){
+  if(typeof text!=='string'||text.length>LIMIT||new TextEncoder().encode(text).length>LIMIT)throw new Error('Save exceeds the 1 MiB file limit.');
+  let box;try{box=JSON.parse(text);}catch(_){throw new Error('This is not a readable save file. Your city has not changed.');}
+  if(!box||Array.isArray(box)||box.format!=='shattered-crowns-checkpoint'||box.version!==1||typeof box.checksum!=='string'||!box.data||typeof box.data!=='object'||Array.isArray(box.data)||Object.keys(box).some(k=>!['format','version','checksum','data'].includes(k)))throw new Error('Unsupported or incomplete save-file format or version.');
+  if(box.checksum!==checksum(JSON.stringify(box.data)))throw new Error('Save-file integrity check failed. Your city has not changed.');
+  const v=engine.validate(box.data);if(!v.ok)throw new Error(v.message);return box.data;
+ }
+ let cache=null;
+ function read(){
+  let a,b;try{a=localStorage.getItem(PRIMARY);b=localStorage.getItem(BACKUP);}catch(_){return {storageAvailable:false,present:true,record:null,message:'Local saving is unavailable. Export a save file to keep your city.'};}
+  if(cache&&cache.primary===a&&cache.backup===b)return cache;
+  let record=null,source=null,error='';
+  for(const [name,text] of [['primary',a],['backup',b]])if(text!==null){try{record=decode(text);source=name;break;}catch(e){error=e.message;}}
+  cache={primary:a,backup:b,storageAvailable:true,present:a!==null||b!==null,record,source,message:record?(source==='backup'?'The latest checkpoint is unreadable; a previous good checkpoint is available.':'Saved city available.'):error?'Stored data could not be loaded; it has been protected. '+error:'No saved city yet.'};return cache;
+ }
+ const signature=data=>checksum(JSON.stringify({...data,savedAt:0}));
+ function persist(data){
+  const text=encode(data);let priorBackup=null,rotated=false;
+  try{
+   const prior=localStorage.getItem(PRIMARY);priorBackup=localStorage.getItem(BACKUP);let previous=null;if(prior!==null){try{previous=decode(prior);}catch(_){}}
+   if(previous&&signature(previous)===signature(data))return {ok:true,unchanged:true};
+   // Rotate only valid primary data; restore the old backup if the primary write fails.
+   if(previous){localStorage.setItem(BACKUP,prior);rotated=true;}
+   localStorage.setItem(PRIMARY,text);cache=null;return {ok:true};
+  }catch(_){
+   let recovered=true;if(rotated){try{if(priorBackup===null)localStorage.removeItem(BACKUP);else localStorage.setItem(BACKUP,priorBackup);}catch(_){recovered=false;}}
+   cache=null;return {ok:false,message:recovered?'Local saving failed. Existing checkpoints were kept; export a save file to keep current progress.':'Local saving failed. The latest checkpoint was kept, but its previous backup could not be restored. Export a save file to keep current progress.'};
+  }
+ }
+ const initial=engine.status();let activeId=initial.cityId,lastAttempt=initial.elapsed,autoArmed=!read().present,lastMessage='',saveAlert=false,localWriteProblem=false;
+ const menuControl=document.getElementById('sc146MenuButton'),menuTitle=menuControl?.title||'Game menu';
+ const section=document.createElement('section');section.id='scSavedCitySection';section.setAttribute('aria-label','Save and resume');
+ const heading=document.createElement('strong');heading.textContent='Save & resume';section.append(heading);
+ const summary=document.createElement('p');summary.id='scSavedCitySummary';section.append(summary);
+ function button(id,label,action){const b=document.createElement('button');b.id=id;b.type='button';b.textContent=label;b.addEventListener('click',action);section.append(b);return b;}
+ const saveButton=button('scSaveCity','Save city',()=>save());
+ const resumeButton=button('scResumeCity','Resume saved city',()=>resume());
+ button('scExportCity','Export save',()=>{
+  const result=exportText();if(!result.ok){announce(result.message);return;}
+  try{const url=URL.createObjectURL(new Blob([result.text],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='shattered-crowns-'+new Date().toISOString().slice(0,10)+'.json';a.hidden=true;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);announce('Save file exported. Keep it somewhere safe.');}catch(_){announce('The download could not start. Your city and saved checkpoints have not changed.');}
+ });
+ const file=document.createElement('input');file.id='scImportCityFile';file.type='file';file.accept='.json,application/json';file.hidden=true;section.append(file);
+ button('scImportCity','Import save',()=>file.click());
+ const status=document.createElement('p');status.id='scSavedCityStatus';status.setAttribute('aria-live','polite');section.append(status);menu.append(section);
+ file.addEventListener('change',async()=>{const f=file.files?.[0];if(!f)return;try{if(f.size>LIMIT)announce('Save exceeds the 1 MiB file limit. Your city has not changed.');else importText(await f.text());}catch(_){announce('The file could not be read. Your city has not changed.');}finally{file.value='';}});
+ function info(){const r=read();return {available:!!r.record,source:r.source||null,savedAt:r.record?.savedAt||null,cityId:r.record?.cityId||null,population:r.record?.state.people.population||null,elapsed:r.record?.state.clock.elapsed||0,storageAvailable:r.storageAvailable,autoArmed,message:r.message};}
+ function render(){const i=info();resumeButton.disabled=!i.available;summary.textContent=i.available?i.population+' residents · '+Math.floor(i.elapsed)+' game seconds · saved '+new Date(i.savedAt).toLocaleString()+'.':i.message;status.textContent=(lastMessage|| (!i.storageAvailable?i.message:autoArmed?'Autosave every 30 game seconds. Save city keeps one previous good checkpoint.':'Prior checkpoint protected. Resume it, import a file, or use Save city to replace the checkpoint.'))+(localWriteProblem?' Local saving is unavailable; keep an exported file.':'');if(menuControl){const alert=saveAlert||localWriteProblem||!i.storageAvailable;menuControl.dataset.saveAlert=String(alert);menuControl.title=alert?status.textContent:menuTitle;menuControl.setAttribute('aria-description',alert?'Saved city needs attention. '+status.textContent:i.available?'A saved city is available in this menu.':'');}}
+ function announce(message,warning=false){lastMessage=message;saveAlert=warning;render();}
+ function arm(){const s=engine.status();activeId=s.cityId;lastAttempt=s.elapsed;autoArmed=true;}
+ function save(options={}){
+  let result;try{result=persist(engine.capture());}catch(e){result={ok:false,message:e.message};}
+  localWriteProblem=!result.ok;
+  if(result.ok){arm();result.message=options.auto?'City autosaved.':'City saved. Later changes keep one previous good checkpoint.';}
+  else lastAttempt=engine.status().elapsed;
+  announce(result.message,!result.ok);return result;
+ }
+ function resume(){
+  const r=read();if(!r.record){const result={ok:false,message:r.message};announce(result.message,true);return result;}
+  const result=engine.restore(r.record);if(result.ok){arm();document.getElementById('sc146Menu')?.classList.remove('open');result.recovered=r.source==='backup';if(result.recovered)result.message='Previous good checkpoint recovered and paused. The damaged latest save was not copied over it.';}
+  announce(result.message,!result.ok||result.recovered);return result;
+ }
+ function exportText(){try{return {ok:true,text:encode(engine.capture()),message:'Save file ready.'};}catch(e){return {ok:false,message:e.message};}}
+ function importText(text){
+  let data;try{data=decode(text);}catch(e){const result={ok:false,message:e.message};announce(result.message,true);return result;}
+  const result=engine.restore(data);if(result.ok){arm();const stored=persist(data);localWriteProblem=!stored.ok;if(!stored.ok)result.message='City imported and paused. '+stored.message;document.getElementById('sc146Menu')?.classList.remove('open');}
+  announce(result.message,!result.ok||localWriteProblem);return result;
+ }
+ function autosave(leaving=false){
+  const s=engine.status();if(s.cityId!==activeId){activeId=s.cityId;lastAttempt=s.elapsed;autoArmed=!read().present;lastMessage='';render();}
+  if(!autoArmed||s.ended||!leaving&&s.paused)return;
+  if(leaving?s.elapsed>0:s.elapsed-lastAttempt>=30){lastAttempt=s.elapsed;save({auto:true});}
+ }
+ window.scSavedCity={save,resume,exportText,importText,info,keys:Object.freeze({primary:PRIMARY,backup:BACKUP})};
+ window.addEventListener('storage',e=>{if(e.key!==null&&e.key!==PRIMARY&&e.key!==BACKUP)return;cache=null;autoArmed=false;saveAlert=true;lastMessage='Checkpoint changed in another tab. Autosave paused; resume the saved city or use Save city to choose what to keep.';render();});
+ window.addEventListener('sc-city-restored',()=>{const s=engine.status();activeId=s.cityId;lastAttempt=s.elapsed;});
+ window.addEventListener('pagehide',()=>autosave(true));document.addEventListener('visibilitychange',()=>{if(document.hidden)autosave(true)});
+ setInterval(()=>autosave(),1000);document.getElementById('sc146MenuButton')?.addEventListener('click',render);render();
+})();
+</script>
+
 </body></html>

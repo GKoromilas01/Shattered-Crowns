@@ -1,5 +1,13 @@
 # Release notes
 
+## 0.6.0 — Save/Resume & Session Reliability (proposed)
+
+- Save the running city locally and resume it after reload; export/import a portable JSON save through the existing Menu. Restores pause the game and clear armed placement.
+- Session data includes economy/history, services/happiness, armies/orders, AI clocks, queues, control groups, undo, reinforced Keeps, cooldowns, policies and camera. Existing game rules and controls are retained.
+- Versioned bounded validation rejects corrupt/incompatible data before changing the city. Checkpoint rotation preserves a previous valid save and recovers from a damaged latest copy.
+- Fresh/restarted cities protect prior checkpoints; other-tab saves pause autosave and mark Menu for attention. Storage failures preserve good data and allow portable file use.
+- Chromium coverage includes real reload/file UI, policy restoration ordering, reference identity, storage denial, backup recovery, narrow layouts and ten simulated minutes with a mid-raid save/restore. See [Version 0.6.0 notes](docs/MILESTONE6.md).
+
 ## 0.5.0 — Milestone 5: City Services & Citizen Happiness (proposed)
 
 - One service resolver explains water, healthcare and market reach, staffing, road access and empty food reserves. Working providers take precedence over nearer inactive ones.
