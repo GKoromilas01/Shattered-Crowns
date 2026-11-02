@@ -190,7 +190,7 @@ if(team===0&&window.sc158TrackingEnabled){
 }
 return b};// V13.51: Festivals are real city actions, not advisory estimates.
 let scFestivalCooldown=0;let scEventFoodReserve=30;
-let cityFlows=[],cityHouseholds=[];
+let cityFlows=[],cityHouseholds=[],citySatisfactionLast=null;
 let cityCycleNumber=0,cityLedger=null,cityGrowth={progress:0,departure:0,reason:"Build serviced housing to welcome residents."};
 window.scFestival={reserve:()=>scEventFoodReserve,setReserve:v=>{scEventFoodReserve=Math.max(0,Math.min(150,Math.round(Number(v)||0)));return scEventFoodReserve},
  status:()=>({bakeries:buildings.filter(b=>b.team===0&&b.type==='bakery'&&b.hp>0).length,theaters:buildings.filter(b=>b.team===0&&b.type==='theater'&&b.hp>0).length,gold:Math.floor(gold),food:Math.floor(food),reserve:scEventFoodReserve,happiness:Math.round(happiness),cooldown:Math.ceil(scFestivalCooldown),paused}),
@@ -218,7 +218,7 @@ function scUndo(){
  updateUI();window.dispatchEvent(new Event('sc-undo-changed'));
 }
 window.scUndo={undo:scUndo,canUndo:()=>scUndoStack.length>0,peek:()=>scUndoStack[scUndoStack.length-1]?.label||''};
-const alive=o=>o&&o.hp>0;function init(){stats={spawned:[0,0],lost:[0,0],kills:[0,0],damage:[0,0],gathered:[0,0],raids:0};aiRally=null;units=[];buildings=[];nodes=[];effects=[];projectiles=[];combatTexts=[];gold=240;wood=100;stone=30;food=90;population=8;happiness=70;cityTimer=0;cityCycleNumber=0;cityLedger=null;cityFlows=[];cityHouseholds=[];cityGrowth={progress:0,departure:0,reason:"Build serviced housing to welcome residents."};tradeGoods=0;goodsSold=0;window.sc1411LogisticsSnapshot=null;window.sc1412MarketDistributionSnapshot=null;scFestivalCooldown=0;scEventFoodReserve=30;cityProsperity=0;wellCoverage=0;roadMarkets=0;healerCoverage=0;granaryCount=0;employment={jobs:0,filled:0,available:0,byId:new Map()};aiGold=240;aiWood=100;trainQueue=[];aiQueue=[];trainTimer=0;aiTrainTimer=0;aiDecision=0;aiAttackTimer=0;difficulty=el("difficulty").value;selected=[];inspectedBuilding=null;window.scRTSSelected=[];window.scRTSInspectedBuilding=null;drag=null;mode=null;paused=false;ended=false;elapsed=0;aiTimer=0;resourceTimer=0;nextId=1;uiRefresh=0;scUndoStack.length=0;addBuilding(0,'keep',120,310);addBuilding(1,'keep',1170,440);for(let i=0;i<3;i++)addUnit(0,'worker',170,255+i*40);for(let i=0;i<3;i++)addUnit(0,'soldier',205,290+i*30);for(let i=0;i<3;i++)addUnit(1,'soldier',1090,400+i*40);for(let i=0;i<3;i++)addUnit(1,'worker',1125,340+i*42);for(let i=0;i<7;i++)nodes.push({x:280+(i%3)*50,y:110+Math.floor(i/3)*65,type:'tree',amount:600,radius:18,renew:0});for(let i=0;i<5;i++)nodes.push({x:430+(i%2)*70,y:430+Math.floor(i/2)*55,type:'gold',amount:800,radius:19,renew:0});for(let i=0;i<5;i++)nodes.push({x:330+(i%2)*75,y:280+Math.floor(i/2)*43,type:'stone',amount:700,radius:19,renew:0});// Additional deposits support a larger settlement without replacing the original start.
+const alive=o=>o&&o.hp>0;function init(){stats={spawned:[0,0],lost:[0,0],kills:[0,0],damage:[0,0],gathered:[0,0],raids:0};aiRally=null;units=[];buildings=[];nodes=[];effects=[];projectiles=[];combatTexts=[];gold=240;wood=100;stone=30;food=90;population=8;happiness=70;cityTimer=0;cityCycleNumber=0;cityLedger=null;cityFlows=[];cityHouseholds=[];citySatisfactionLast=null;cityGrowth={progress:0,departure:0,reason:"Build serviced housing to welcome residents."};tradeGoods=0;goodsSold=0;window.sc1411LogisticsSnapshot=null;window.sc1412MarketDistributionSnapshot=null;scFestivalCooldown=0;scEventFoodReserve=30;cityProsperity=0;wellCoverage=0;roadMarkets=0;healerCoverage=0;granaryCount=0;employment={jobs:0,filled:0,available:0,byId:new Map()};aiGold=240;aiWood=100;trainQueue=[];aiQueue=[];trainTimer=0;aiTrainTimer=0;aiDecision=0;aiAttackTimer=0;difficulty=el("difficulty").value;selected=[];inspectedBuilding=null;window.scRTSSelected=[];window.scRTSInspectedBuilding=null;drag=null;mode=null;paused=false;ended=false;elapsed=0;aiTimer=0;resourceTimer=0;nextId=1;uiRefresh=0;scUndoStack.length=0;addBuilding(0,'keep',120,310);addBuilding(1,'keep',1170,440);for(let i=0;i<3;i++)addUnit(0,'worker',170,255+i*40);for(let i=0;i<3;i++)addUnit(0,'soldier',205,290+i*30);for(let i=0;i<3;i++)addUnit(1,'soldier',1090,400+i*40);for(let i=0;i<3;i++)addUnit(1,'worker',1125,340+i*42);for(let i=0;i<7;i++)nodes.push({x:280+(i%3)*50,y:110+Math.floor(i/3)*65,type:'tree',amount:600,radius:18,renew:0});for(let i=0;i<5;i++)nodes.push({x:430+(i%2)*70,y:430+Math.floor(i/2)*55,type:'gold',amount:800,radius:19,renew:0});for(let i=0;i<5;i++)nodes.push({x:330+(i%2)*75,y:280+Math.floor(i/2)*43,type:'stone',amount:700,radius:19,renew:0});// Additional deposits support a larger settlement without replacing the original start.
 for(let i=0;i<10;i++)nodes.push({x:1390+(i%5)*70,y:120+Math.floor(i/5)*120,type:i%3===0?'stone':'tree',amount:650,radius:18,renew:0});
 
 for(let i=0;i<5;i++)nodes.push({x:130+i*118,y:680+(i%2)*95,type:'tree',amount:600,radius:18,renew:0});
@@ -244,7 +244,7 @@ function assignEmployment(){
 function describeBuilding(b){
  if(!b||!alive(b))return '🏠 Building inspector: click a town building to see its role, staffing and nearby services.';
  const context={owned:cityOwned(),network:getRoadNetwork()};let hs=null;
- const role={theater:'Cultural stage: improves town happiness by 0.4 per food cycle (maximum +1.2), provided the town has food. No workers required.',house:'Starts with 8 resident spaces; each gradual housing upgrade adds 2.',farm:'Produces up to 13 base food every 5 seconds; connected staffed granary logistics add 25%.',fishery:'Coastal-only building. Two staffed citizens catch up to 9 base food every 5 seconds; granary logistics can add 25%.',market:'Staffed markets improve taxes and happiness. Roads within 135 pixels boost tax income. Markets near any 3+ section connected road group sell nearby bakery trade baskets for 4 gold each.',well:'Provides water service to houses within 190 pixels.',lumberyard:'Produces up to 5 wood every 5 seconds.',road:'Boosts nearby market tax income within 135 pixels.',bakery:'Two bakers use 3 stored food to make 5 bread food every 5 seconds near a granary. A staffed, road-connected market within 220px also lets them pack 2 extra food into valuable trade baskets.',granary:'Adds 160 food storage capacity.',clinic:'Improves happiness for nearby houses within 190 pixels.',tower:'Automatic defensive tower.',fortress:'Strong automatic defense.',wall:'Absorbs attacks, but does not yet block unit movement.',keep:'Your central stronghold.'};
+ const role={theater:'Cultural venue: supports occupied homes within 240 map units in the bounded Amenities & culture satisfaction factor (5 points maximum with beauty/civic care). No workers required.',house:'Starts with 8 resident spaces; each gradual housing upgrade adds 2.',farm:'Produces up to 13 base food every 5 seconds; connected staffed granary logistics add 25%.',fishery:'Coastal-only building. Two staffed citizens catch up to 9 base food every 5 seconds; granary logistics can add 25%.',market:'Staffed markets improve taxes and happiness. Roads within 135 pixels boost tax income. Markets near any 3+ section connected road group sell nearby bakery trade baskets for 4 gold each.',well:'Provides water service to houses within 190 pixels.',lumberyard:'Produces up to 5 wood every 5 seconds.',road:'Boosts nearby market tax income within 135 pixels.',bakery:'Two bakers use 3 stored food to make 5 bread food every 5 seconds near a granary. A staffed, road-connected market within 220px also lets them pack 2 extra food into valuable trade baskets.',granary:'Adds 160 food storage capacity.',clinic:'Improves happiness for nearby houses within 190 pixels.',tower:'Automatic defensive tower.',fortress:'Strong automatic defense.',wall:'Absorbs attacks, but does not yet block unit movement.',keep:'Your central stronghold.'};
  const staff=employment.byId.get(b.id);
  const near=(type,range)=>buildings.filter(x=>x.team===0&&alive(x)&&x.type===type&&dist(x,b)<range).length;
  let detail=staff?' | Staff: '+staff.count+'/'+staff.need:'';
@@ -263,7 +263,7 @@ function describeBuilding(b){
   }else detail+=' | MAXIMUM HOUSE LEVEL';
  }if(b.type==='well'||b.type==='clinic')detail+=' | Main road access: '+(civicHasRoadAccess(b)?'YES (happiness bonus)':'NO');
  const diagnostic=cityBuildingDetails(b,hs?[hs]:[],context);
- if(diagnostic){detail=' | NEXT ACTION: '+diagnostic.nextAction+detail;if(diagnostic.storage)detail+=' | Shared reserve allocation: '+diagnostic.storage.stock+'/160 (not an additional stock)';if(diagnostic.coverage)detail+=' | Service coverage: '+diagnostic.coverage.served+'/'+diagnostic.coverage.nearby+' nearby homes; food delivery depends on the shared reserve';if(diagnostic.last){const f=diagnostic.last;detail+=' | LAST CYCLE (5 sec): harvest '+f.harvest+', logistics '+f.logistics+', grain used '+f.consumed+', bread produced '+f.produced+', exported '+f.exported;}}
+ if(diagnostic){detail=' | NEXT ACTION: '+diagnostic.nextAction+detail;if(diagnostic.house)detail+=' | '+Object.entries(diagnostic.house.services).map(([k,v])=>(k==='health'?'Healthcare':k==='water'?'Water':'Market')+': '+v.status.replaceAll('_',' ')).join(' · ')+' | Satisfaction '+happiness.toFixed(1)+'/100; migration needs 45+ plus food, water and roads';if(diagnostic.service)detail+=' | '+diagnostic.service.message;if(diagnostic.sharedSupply)detail+=' | Shared food '+diagnostic.sharedSupply.food.toFixed(1)+'; trade baskets '+Math.floor(diagnostic.sharedSupply.tradeBaskets)+' (optional exports)';if(diagnostic.storage)detail+=' | Shared reserve allocation: '+diagnostic.storage.stock+'/160 (not an additional stock)';if(diagnostic.coverage)detail+=' | Service coverage: '+diagnostic.coverage.served+'/'+diagnostic.coverage.nearby+' nearby homes; food delivery depends on the shared reserve';if(diagnostic.last){const f=diagnostic.last;detail+=' | LAST CYCLE (5 sec): harvest '+f.harvest+', logistics '+f.logistics+', grain used '+f.consumed+', bread produced '+f.produced+', exported '+f.exported;}}
  return '🔎 '+b.type.toUpperCase()+' | Health '+Math.ceil(b.hp)+'/'+b.max+detail+' | '+(role[b.type]||'Kingdom structure.');
 }
 // Road groups are built from genuinely adjacent road pieces (44px snapping).
@@ -322,16 +322,70 @@ function neighborhoodBeautyBonus(owned){
 const cityTierNames=['','Cottage','Homestead','Townhouse','Manor'];
 function cityOwned(){return buildings.filter(b=>b.team===0&&alive(b));}
 function cityHouseCapacity(h){return 8+((h.cityTier||1)-1)*2;}
+// One resolver owns service reach and operating conditions for housing and feedback.
+const cityServiceDefs={water:{type:'well',label:'Water'},health:{type:'clinic',label:'Healthcare'},market:{type:'market',label:'Market'}};
+function cityProviderService(b,context){
+ const kind=Object.keys(cityServiceDefs).find(k=>cityServiceDefs[k].type===b.type);
+ if(!kind)return null;
+ const def=cityServiceDefs[kind],staff=employment.byId.get(b.id),network=context.network;
+ const staffed=kind==='water'||(staff?.efficiency||0)>=.5;
+ const road=kind==='market'?marketHasTradeAccess(b,network):civicHasRoadAccess(b,network);
+ const status=!staffed?'unstaffed':kind==='market'&&!road?'disconnected':kind==='market'&&food<=0?'no_food':'ready';
+ const messages={
+  unstaffed:def.label+': '+(staff?.count||0)+'/'+(staff?.need||2)+' staff; at least '+Math.ceil((staff?.need||2)/2)+' required. Grow serviced housing; food producers receive staff first.',
+  disconnected:'Market: connect a road group of at least three sections within 135 map units.',
+  no_food:'Market: shared food reserve is empty. Restore staffed farm or fishery harvest; baskets are optional exports.',
+  ready:kind==='water'?'Water: well ready within 190 map units; no staff or road required.':kind==='health'?'Healthcare: healer ready within 190 map units; no material input required.':'Market: staffed, road-connected and food available in the shared reserve.'
+ };
+ return {status,providerId:b.id,message:messages[status],staff:staff?{filled:staff.count,need:staff.need,minimum:Math.ceil(staff.need/2)}:null,roadAccess:road,foodAvailable:kind==='market'?food>0:null,quality:status==='ready'?(kind==='water'?1:staff.efficiency):0};
+}
+function cityHomeService(kind,h,context){
+ const def=cityServiceDefs[kind],near=context.owned.filter(b=>b.type===def.type&&dist(b,h)<190);
+ if(!near.length)return {status:'out_of_range',providerId:null,range:190,quality:0,message:def.label+': no '+(kind==='health'?'healer':def.type)+' within 190 map units. Build one closer to this home.'};
+ const rank={ready:3,no_food:2,disconnected:1,unstaffed:0};
+ // Prefer working providers, then service quality, then proximity.
+ const choices=near.map(b=>({...cityProviderService(b,context),distance:dist(b,h)})).sort((a,b)=>rank[b.status]-rank[a.status]||b.quality-a.quality||a.distance-b.distance);
+ const {distance,...result}=choices[0];return {...result,range:190};
+}
+function cityHomeServices(h,context){return Object.fromEntries(Object.keys(cityServiceDefs).map(k=>[k,cityHomeService(k,h,context)]));}
+function citySatisfactionDetails(context={owned:cityOwned(),network:getRoadNetwork()}){
+ const homes=context.owned.filter(b=>b.type==='house'),people=Math.max(1,population),keep=Math.min(8,population);
+ const occupied=homes.filter(h=>(h.cityResidents||0)>0).map(h=>({home:h,residents:h.cityResidents,services:cityHomeServices(h,context)}));
+ const serviceShare=kind=>(keep+occupied.reduce((n,h)=>n+h.residents*h.services[kind].quality,0))/people;
+ const demand=Math.max(1,Math.ceil(population*.45*(window.scRationFactor||1))),reserve=Math.min(1,food/Math.max(10,demand*2));
+ const fulfillment=cityLedger?(cityLedger.demand?cityLedger.delivered/cityLedger.demand:1):(food>0?1:0);
+ const amenity=occupied.reduce((n,h)=>n+h.residents*Math.max(homeBeauty(h.home).score/100,context.owned.some(b=>b.type==='theater'&&dist(b,h.home)<240)?1:0),0)/people;
+ const pool=Math.max(0,population-2),employed=pool?employment.filled/pool:1;
+ const careOwned=context.owned.filter(b=>b.type!=='house'||(b.cityResidents||0)>0),care=roadServiceBonus(careOwned,context.network)+neighborhoodBeautyBonus(careOwned);
+ const factors=[
+  {label:'Settlement foundation',max:5,points:5,reason:'Basic civic stability.'},
+  {label:'Food',max:35,points:35*(.8*fulfillment+.2*reserve),reason:'80% last-cycle meal fulfillment; 20% two-cycle food reserve.'},
+  {label:'Water',max:25,points:25*serviceShare('water'),reason:'Resident-weighted local water coverage; Keep residents have basic services.'},
+  {label:'Healthcare',max:10,points:10*serviceShare('health'),reason:'Resident-weighted healer reach and staffing quality; Keep has basic services.'},
+  {label:'Market access',max:10,points:10*serviceShare('market'),reason:'Resident-weighted staffed road access and available food; Keep uses its reserve.'},
+  {label:'Employment',max:10,points:10*employed,reason:employment.filled+'/'+pool+' civilian workers assigned; map units are a separate cohort.'},
+  {label:'Amenities & culture',max:5,points:Math.min(5,5*amenity+care),reason:'Occupied-home beauty, a theater within 240 map units and existing road-connected civic care.'}
+ ];
+ for(const f of factors)f.points=Math.round(clamp(f.points,0,f.max)*10)/10;
+ const modifier={label:'Meal policy',points:Number(window.scRationMood)||0,reason:'Conserve supplies: target −2. Generous meals: target +1.5. Satisfaction moves gradually toward this target.'};
+ const target=Math.round(clamp(factors.reduce((n,f)=>n+f.points,0)+modifier.points,0,100)*10)/10;
+ return {score:Math.round(happiness*10)/10,target,maxChange:2,migrationThreshold:45,factors,modifier,last:citySatisfactionLast?{...citySatisfactionLast,factors:citySatisfactionLast.factors.map(f=>({...f}))}:null};
+}
+function cityAdvanceSatisfaction(context){
+ const details=citySatisfactionDetails(context),opening=happiness;
+ happiness=clamp(happiness+clamp(details.target-happiness,-2,2),0,100);
+ citySatisfactionLast={opening,target:details.target,closing:happiness,change:happiness-opening,factors:details.factors,modifier:{...details.modifier}};
+}
 function houseTier(h,context){
  const owned=context?.owned||cityOwned(),network=context?.network||getRoadNetwork();
- const near=(type,range,staffed=false)=>owned.some(b=>b.type===type&&dist(b,h)<range&&(!staffed||(employment.byId.get(b.id)?.efficiency||0)>=.5));
+ const services=cityHomeServices(h,{owned,network});
  const foodReady=food>=Math.max(10,Math.ceil(population*.45*(window.scRationFactor||1))*2)&&!(cityLedger?.shortfall>0);
- const water=near('well',190),health=near('clinic',190,true);
+ const water=services.water.status==='ready',health=services.health.status==='ready';
  const access=network.roads.some(r=>network.serviced.has(r.id)&&dist(r,h)<115);
- const trade=owned.some(m=>m.type==='market'&&dist(m,h)<190&&marketHasTradeAccess(m,network)&&(employment.byId.get(m.id)?.efficiency||0)>=.5&&food>0);
+ const trade=services.market.status==='ready';
  const beauty=homeBeauty(h).score;
  const eligible=1+Number(foodReady&&water)+Number(foodReady&&water&&health&&access&&beauty>=25)+Number(foodReady&&water&&health&&access&&trade&&beauty>=65);
- return {level:h.cityTier||1,eligible,foodReady,water,health,access,trade,beauty,beautyForTownhouse:beauty>=25,beautyForManor:beauty>=65};
+ return {level:h.cityTier||1,eligible,foodReady,water,health,access,trade,services,beauty,beautyForTownhouse:beauty>=25,beautyForManor:beauty>=65};
 }
 function cityRequirements(h,level,context){
  const t=houseTier(h,context),req=[];
@@ -393,9 +447,9 @@ function cityBuildingDetails(b,houses,context={owned:cityOwned(),network:getRoad
  const a=employment.byId.get(b.id),h=houses.find(h=>h.id===b.id),{owned,network}=context;
  const supply=['farm','fishery'].includes(b.type)?cityProducerSupply(b,context):null;
  const connected=b.type==='market'?marketHasTradeAccess(b,network):civicHasRoadAccess(b,network),last=cityFlows.find(f=>f.id===b.id)||null;
- let blockers=[],coverage=null;
+ const service=cityProviderService(b,context);let blockers=[],coverage=null;
  if(a&&a.count<a.need)blockers.push('Staff '+a.count+'/'+a.need+': grow serviced housing; food producers receive staff first.');
- if(h){blockers=h.currentMissing.map(x=>'Restore '+x).concat(h.tier<4?h.nextRequirements.filter(r=>!r.met).map(r=>r.label):[]);if(!h.access)blockers.push('Connect three or more road sections within 115 map units for migration.');}
+ if(h){blockers=h.currentMissing.map(x=>'Restore '+x).concat(h.tier<4?h.nextRequirements.filter(r=>!r.met).map(r=>r.label):[]);if(!h.access)blockers.push('Connect three or more road sections within 115 map units for migration.');if(h.food){const gap=['water','health','market'].find(k=>h.services[k].status!=='ready'&&(k==='water'||k==='health'&&h.tier>=2||k==='market'&&h.tier>=3));if(gap)blockers.unshift(h.services[gap].message);}}
  if(supply){if(!supply.road)blockers.push('Connect at least three road sections within 125 map units for the harvest bonus.');if(!supply.depot)blockers.push('Provide a staffed, road-connected granary within 200 map units for the 25% harvest bonus.');}
  if(b.type==='bakery'){
   if(!owned.some(g=>g.type==='granary'&&dist(g,b)<190))blockers.push('Build a granary within 190 map units to convert grain.');
@@ -404,12 +458,14 @@ function cityBuildingDetails(b,houses,context={owned:cityOwned(),network:getRoad
  if(b.type==='granary'&&!connected)blockers.push('Connect three road sections nearby to supply producer bonuses.');
  if(['market','clinic','well'].includes(b.type)){
   coverage={nearby:owned.filter(h=>h.type==='house'&&dist(h,b)<190).length,served:0};
+  coverage.supplied=service.status==='ready'?coverage.nearby:0;
   coverage.served=coverage.nearby*(b.type==='well'||(a?.efficiency||0)>=.5&&(b.type!=='market'||marketHasTradeAccess(b,network))?1:0);
   if(b.type==='market'&&!marketHasTradeAccess(b,network))blockers.push('Connect three road sections within 135 map units to distribute food.');
  }
+ if(service&&service.status!=='ready'&&!blockers.includes(service.message))blockers.push(service.message);
  const idle=!!a&&(!a.count||b.type==='bakery'&&(!owned.some(g=>g.type==='granary'&&dist(g,b)<190)||food<3*a.efficiency));
  const nextAction=blockers[0]||(h?(h.tier===4?'Maintain current services to retain Manor housing.':'Maintain these services for '+Math.max(0,10-h.upgradeSeconds)+' more seconds for the next tier.'):(supply?'Harvest is staffed and logistics connected; monitor storage overflow.':b.type==='bakery'?'Keep grain available; exports use only the configured food reserve surplus.':'Monitor staffing and local coverage as the city grows.'));
- return {id:b.id,type:b.type,storage:b.type==='granary'?{stock:cityGranaryStock(b,owned),capacity:160}:null,staff:a?{filled:a.count,need:a.need}:null,connected,supply,coverage,idle,blockers,nextAction,house:h||null,last:last?{...last}:null};
+ return {id:b.id,type:b.type,service,sharedSupply:b.type==='market'?{food,tradeBaskets:tradeGoods}:null,storage:b.type==='granary'?{stock:cityGranaryStock(b,owned),capacity:160}:null,staff:a?{filled:a.count,need:a.need}:null,connected,supply,coverage,idle,blockers,nextAction,house:h||null,last:last?{...last}:null};
 }
 function cityAdvice(s){
  const advice=[];
@@ -417,6 +473,12 @@ function cityAdvice(s){
  else if(s.food.last&&s.food.last.harvest+s.food.last.logistics+s.food.last.bakeryNet-s.food.last.exports<s.food.last.demand)advice.push('Food deficit: last cycle net production was below household consumption; improve staffing or food supply.');
  else if(!s.food.last&&s.food.production<s.food.demand)advice.push('Food forecast: base harvest is below household demand. Establish staffed production and check the first cycle ledger.');
  if(s.housing.displaced)advice.push('Rebuild housing for '+s.housing.displaced+' displaced residents.');
+ if(s.satisfaction.score<45)advice.push('Happiness '+s.satisfaction.score+'/100: immigration pauses below 45. Restore food and occupied-home services; satisfaction recovers by at most 2 points per cycle.');
+ for(const kind of ['water','health','market']){
+  const home=s.housing.houses.find(h=>h.services[kind].status!=='ready'&&(kind==='water'||kind==='health'&&(h.tier>=2||h.occupancy>0)||kind==='market'&&(h.tier>=3||h.occupancy>=4)));
+  if(home)advice.push('House #'+home.id+' · '+home.services[kind].message);
+ }
+
  const idle=s.buildings.filter(b=>b.idle);
  if(idle.length)advice.push('Idle workplace: '+idle[0].type+' #'+idle[0].id+'. '+idle[0].nextAction);
  if(s.workforce.filled<s.workforce.jobs)advice.push('Workplaces lack '+(s.workforce.jobs-s.workforce.filled)+' residents; grow serviced housing. Food producers receive staff first.');
@@ -433,7 +495,7 @@ function cityAdvice(s){
  if(!advice.length)advice.push('No immediate shortage detected. Monitor last-cycle delivery, reserve and housing services before expanding.');
  return advice;
 }
-function cityHouseDetails(h,context){const t=houseTier(h,context),capacity=cityHouseCapacity(h),occupancy=h.cityResidents||0;return {id:h.id,tier:t.level,name:cityTierNames[t.level],capacity,occupancy,food:t.foodReady,water:t.water,access:t.access,health:t.health,market:t.trade,beauty:t.beauty,upgradeSeconds:h.cityUpgrade||0,downgradeSeconds:h.cityDecline||0,nextRequirements:cityRequirements(h,Math.min(4,t.level+1),context).map(([label,met])=>({label,met})),currentMissing:cityRequirements(h,t.level,context).filter(([,ok])=>!ok).map(([label])=>label)};}
+function cityHouseDetails(h,context){const t=houseTier(h,context),capacity=cityHouseCapacity(h),occupancy=h.cityResidents||0;return {id:h.id,tier:t.level,name:cityTierNames[t.level],capacity,occupancy,services:t.services,food:t.foodReady,water:t.water,access:t.access,health:t.health,market:t.trade,beauty:t.beauty,upgradeSeconds:h.cityUpgrade||0,downgradeSeconds:h.cityDecline||0,nextRequirements:cityRequirements(h,Math.min(4,t.level+1),context).map(([label,met])=>({label,met})),currentMissing:cityRequirements(h,t.level,context).filter(([,ok])=>!ok).map(([label])=>label)};}
 function citySnapshot(){
  assignEmployment();const owned=cityOwned(),context={owned,network:getRoadNetwork()},homes=owned.filter(b=>b.type==='house'),occupancyState=cityReconcileOccupancy(context);
  const houses=homes.map(h=>cityHouseDetails(h,context));
@@ -442,6 +504,7 @@ function citySnapshot(){
  const sites=owned.filter(b=>employment.byId.has(b.id)).map(b=>{const a=employment.byId.get(b.id);return {id:b.id,type:b.type,filled:a.count,need:a.need,efficiency:a.efficiency,output:(b.type==='farm'?13:b.type==='fishery'?9:b.type==='lumberyard'?5:0)*a.efficiency};});
  const demand=Math.ceil(population*.45*(window.scRationFactor||1)),production=sites.filter(b=>['farm','fishery'].includes(b.type)).reduce((n,b)=>n+b.output,0);
  const s={cycles:cityCycleNumber,population,happiness:Math.round(happiness),housing:{capacity:8+houses.reduce((n,h)=>n+h.capacity,0),keepResidents:occupancyState.keepResidents,displaced:occupancyState.displaced,houses},growth:{...cityGrowth},workforce:{pool:Math.max(0,population-2),reserved:Math.min(2,population),filled:employment.filled,idle:employment.available,jobs:employment.jobs,sites},food:{stock:food,capacity:90+depots.length*160,baseStock:Math.min(90,food),granaries,demand,production,reserveSeconds:demand?Math.floor(food/demand*5):0,last:cityLedger?{...cityLedger}:null,markets:{served:window.sc1412MarketDistributionSnapshot?.served||0,total:homes.length,savings:window.sc1412MarketDistributionSnapshot?.savings||0}},prosperity:cityProsperityDetails(context)};
+ s.satisfaction=citySatisfactionDetails(context);
  s.food.flows=cityFlows.map(f=>({...f}));s.food.households=cityHouseholds.map(h=>({...h}));
  s.buildings=owned.map(b=>cityBuildingDetails(b,houses,context));
  s.peace={graceSeconds:difficulty==='hard'?180:300,raidInterval:difficulty==='easy'?300:difficulty==='hard'?120:240,remaining:Math.max(0,(difficulty==='hard'?180:300)-elapsed),difficulty};
@@ -886,7 +949,8 @@ const civicCoverage=civicHomes.map(h=>{
 });
 const civicServed=civicCoverage.filter(c=>c.complete>=3).length;
 const civicServiceRate=civicHomes.length?civicServed/civicHomes.length:0;
-const civicMoodBonus=Math.min(1.5,civicServiceRate*1.5);
+// Compatibility coverage record: satisfaction now owns all automatic wellbeing.
+const civicMoodBonus=0;
 window.sc1316CivicSnapshot={homes:civicHomes.length,served:civicServed,rate:civicServiceRate,moodBonus:civicMoodBonus};
 // V14.12: staffed, road-connected markets reduce food waste for nearby households.
 const marketServedHomes=homes.filter(h=>alive(h)&&activeMarkets.some(m=>dist(m,h)<190)).length;
@@ -902,7 +966,7 @@ const cityDelivered=Math.min(food,consumption),cityShortfall=consumption-cityDel
 const cityOccupancy=cityReconcileOccupancy();
 cityHouseholds=[{id:null,label:'Keep',residents:cityOccupancy.keepResidents},...homes.map(h=>({id:h.id,label:'House #'+h.id,residents:h.cityResidents||0})),{id:null,label:'Displaced',residents:cityOccupancy.displaced}].map(h=>({...h,demand:consumption*h.residents/population,delivered:cityDelivered*h.residents/population,shortfall:cityShortfall*h.residents/population}));
 cityLedger={opening:cityOpening,harvest:farmOutput,logistics:logisticsBonus,bakeryNet:cityBakeryNet,exports:cityExports,delivered:cityDelivered,shortfall:cityShortfall,overflow:cityOverflow,closing:food,demand:consumption};
-if(!cityShortfall){happiness=Math.min(100,happiness+(window.scRationMood||0)+civicMoodBonus+roadServiceBonus(owned)+neighborhoodBeautyBonus(owned)+(owned.filter(b=>b.type==='market'&&(employment.byId.get(b.id)?.count||0)>0).length?1:0.1)+wellCoverage*.8+workingBakeries*.4+Math.min(1.2,owned.filter(b=>b.type==='theater').length*.4)+clinics.reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0)*homes.filter(h=>dist(h,b)<190).length*.55,0)-(homes.length&&!wellCoverage?.45:0));}else happiness=Math.max(0,happiness-8);
+cityReconcileOccupancy(citySupplyContext);cityAdvanceSatisfaction(citySupplyContext);
 cityEvolveHomes(homes);cityGrow(homes);assignEmployment();
 let marketEfficiency=owned.filter(b=>b.type==='market').reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0),0);let connectedEfficiency=owned.filter(b=>b.type==='market'&&marketHasTradeAccess(b)).reduce((v,b)=>v+(employment.byId.get(b.id)?.efficiency||0),0);// V10.3: Nearby granaries supply staffed, road-connected markets.
 // Each supplied market gives a modest trade bonus; no benefit from empty staffing.
@@ -1617,16 +1681,16 @@ for(let a of combatTexts){let f=1-a.life/a.maxLife;ctx.save();ctx.globalAlpha=Ma
 // Informational only: this does not change tax or trade calculations.
 if(inspectedBuilding&&alive(inspectedBuilding)&&inspectedBuilding.team===0&&inspectedBuilding.type==='market'){
  const m=inspectedBuilding;
- const road=marketHasTradeAccess(m);
- const staffed=(employment.byId.get(m.id)?.efficiency||0)>=.5;
- const active=road&&staffed;
- const homes=buildings.filter(h=>h.team===0&&alive(h)&&h.type==='house'&&dist(h,m)<200);
+ const service=cityProviderService(m,{network:getRoadNetwork()});
+ const active=service.status==='ready';
+ const homes=buildings.filter(h=>h.team===0&&alive(h)&&h.type==='house'&&dist(h,m)<190);
  ctx.save();ctx.fillStyle=active?'rgba(243,205,111,.07)':'rgba(219,128,105,.06)';
  ctx.strokeStyle=active?'#efc86c':'#e59a80';ctx.lineWidth=2;ctx.setLineDash([8,7]);
- ctx.beginPath();ctx.arc(m.x,m.y,200,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.setLineDash([]);
+ ctx.beginPath();ctx.arc(m.x,m.y,190,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.setLineDash([]);
  for(const h of homes){ctx.strokeStyle=active?'#f3d889':'#b98c77';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(h.x,h.y+5,h.radius+9,13,0,0,Math.PI*2);ctx.stroke()}
  ctx.font='bold 14px system-ui';ctx.fillStyle=active?'#ffdf96':'#ffc0a9';ctx.textAlign='center';
- ctx.fillText(active?'MARKET NEIGHBORHOOD':'MARKET NEEDS ROAD / WORKERS',m.x,m.y-210);
+ const label={ready:'MARKET SERVICE READY',no_food:'MARKET: EMPTY FOOD RESERVE',unstaffed:'MARKET: NEEDS STAFF',disconnected:'MARKET: CONNECT THREE ROAD SECTIONS'};
+ ctx.fillText(label[service.status],m.x,m.y-200);
  ctx.restore();
 }
 // V10.3 bakery neighborhood service: inspect the bakery to see exactly which
@@ -4497,7 +4561,7 @@ body input, body textarea, body [contenteditable="true"] {
  root.innerHTML='<strong>🌾 Food ration policy</strong><label for="sc1303Mode">How much food should residents receive?</label><select id="sc1303Mode"><option value="normal">Normal meals — standard consumption</option><option value="conserve">Conserve supplies — 25% less food, lower happiness</option><option value="generous">Generous meals — 25% more food, higher happiness</option></select><p id="sc1303Effect">Normal meals: no change to food use or happiness.</p><p>Policies change actual food consumption and happiness each 5-second economy cycle. Production and building rules stay the same.</p>';
  economy.prepend(root); // Keep the ration control visible immediately upon opening Economy.
  const select=root.querySelector('select'),effect=root.querySelector('#sc1303Effect');
- function apply(){const v=select.value;window.scRationFactor=v==='conserve'?.75:v==='generous'?1.25:1;window.scRationMood=v==='conserve'?-2:v==='generous'?1.5:0;effect.textContent=v==='conserve'?'Conservation: 25% less food used, happiness -2 per cycle.':v==='generous'?'Generous: 25% more food used, happiness +1.5 per cycle.':'Normal: standard food use, no happiness adjustment.';}
+ function apply(){const v=select.value;window.scRationFactor=v==='conserve'?.75:v==='generous'?1.25:1;window.scRationMood=v==='conserve'?-2:v==='generous'?1.5:0;effect.textContent=v==='conserve'?'Conservation: 25% less food used, satisfaction target −2.':v==='generous'?'Generous: 25% more food used, satisfaction target +1.5.':'Normal: standard food use, no satisfaction target adjustment.';}
  select.addEventListener('change',apply);apply();
  const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V14.01';
  document.title='Shattered Crowns — v14.01';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v14.01.0';
@@ -4556,7 +4620,7 @@ body input, body textarea, body [contenteditable="true"] {
    window.scRationFactor=emergency?.75:1;
    window.scRationMood=emergency?-2:0;
    status.dataset.alert=String(emergency);
-   status.textContent=emergency?'⚠ Emergency conservation ACTIVE — 25% less food, happiness −2 per cycle. Returns to normal at 8 cycles of reserves.':'✓ Normal meals — automatic conservation begins below 3 cycles of food reserves.';
+   status.textContent=emergency?'⚠ Emergency conservation ACTIVE — 25% less food, satisfaction target −2. Returns to normal at 8 cycles of reserves.':'✓ Normal meals — automatic conservation begins below 3 cycles of food reserves.';
    const effect=document.getElementById('sc1303Effect');if(effect)effect.textContent=emergency?'Automatic policy: conserving supplies until food reserves recover.':'Automatic policy: normal meals; reserve monitoring active.';
  }
  mode.addEventListener('change',update);
@@ -4837,21 +4901,10 @@ body input, body textarea, body [contenteditable="true"] {
   const out=block.querySelector('#sc1315ServicesText');
   const civic=document.createElement('div');civic.id='sc1316Coverage';civic.style.cssText='margin-top:7px;color:#d4f4c5';block.append(civic);
   function refresh(){if(advisor.hidden)return;
-   const buildings=(window.scHoverBuildings||[]).filter(b=>b&&b.team===0&&(b.hp===undefined||b.hp>0));
-   const count=t=>buildings.filter(b=>b.type===t).length;
-   const num=id=>{const m=(document.getElementById(id)?.textContent||'').match(/-?\d+(?:\.\d+)?/);return m?Number(m[0]):0};
-   const pop=num('population'),food=num('resFood'),happy=num('happiness');
-   const houses=count('house'),wells=count('well'),healers=count('clinic')+count('healer'),gardens=count('garden'),plazas=count('plaza'),markets=count('market');
-   const needs=[];
-   if(!houses)needs.push('Build houses to support population growth');
-   if(!wells)needs.push('Add a well to improve residential services');
-   if(!healers)needs.push('Build a healer to improve neighborhood coverage');
-   if(!gardens&&!plazas)needs.push('Add a garden or plaza to improve neighborhood beauty');
-   if(!markets)needs.push('Build a market to develop trade and tax income');
-   if(food<Math.max(10,pop*2))needs.unshift('Food reserves are low: prioritize food production');
-   const score=[houses>0,wells>0,healers>0,gardens+plazas>0,markets>0].filter(Boolean).length;
-   const c=window.sc1316CivicSnapshot; civic.textContent=c?`Neighborhood service coverage: ${c.served}/${c.homes} houses near at least 3 services · Happiness bonus +${c.moodBonus.toFixed(2)} per cycle · Prosperity bonus up to 8%.`:'Neighborhood coverage will update after the next economy cycle.';
-   out.textContent=`Civic services established: ${score}/5 · Population ${pop} · Happiness ${happy}% · Wells ${wells} · Healers ${healers} · Gardens/plazas ${gardens+plazas} · Markets ${markets}. ${needs.length?'Next priority: '+needs[0]+'.':'All five basic service categories are represented. Improve coverage and expand carefully.'}`;
+   const s=window.scCityEconomy?.snapshot();if(!s)return;
+   const houses=s.housing.houses,ready=kind=>houses.filter(h=>h.services[kind].status==='ready').length;
+   civic.textContent='Currently supplied homes: Water '+ready('water')+'/'+houses.length+' · Healthcare '+ready('health')+'/'+houses.length+' · Markets '+ready('market')+'/'+houses.length+'. Inspect a home for distance, staff, road or food blockers.';
+   out.textContent='Population '+s.population+' · Satisfaction '+s.satisfaction.score+'/100 · Target '+s.satisfaction.target+'. '+s.advice[0];
   }
   document.getElementById('sc1310AdvisorBtn')?.addEventListener('click',()=>setTimeout(refresh,0));
   document.addEventListener('sc:built',()=>setTimeout(refresh,0));setInterval(refresh,3000);
@@ -5285,7 +5338,7 @@ function show(v){panel.hidden=!v;btn.setAttribute('aria-expanded',String(v));if(
 btn.addEventListener('click',()=>show(panel.hidden));panel.querySelector('#sc1339Close').addEventListener('click',()=>show(false));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)show(false)});setInterval(refresh,2500);
 const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V14.01';const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v14.01.0';document.title='Shattered Crowns — v14.01';}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
-})();</script><script id="sc1342TheaterInfo">(()=>{const set=()=>{const b=document.querySelector('[data-action="theater"]');if(b)b.title='Theater — 80 wood, 90 gold, 25 stone. Cultural venue: +0.4 happiness per food cycle (up to +1.2 from theaters).';};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',set);else set();})();</script><style id="sc1345TheaterStyle">
+})();</script><script id="sc1342TheaterInfo">(()=>{const set=()=>{const b=document.querySelector('[data-action="theater"]');if(b)b.title='Theater — 80 wood, 90 gold, 25 stone. Cultural venue: supports occupied homes within 240 map units in the Amenities & culture satisfaction factor.';};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',set);else set();})();</script><style id="sc1345TheaterStyle">
 #sc1345TheaterCard{position:fixed;bottom:89px;left:50%;transform:translateX(-50%);z-index:14000;max-width:min(560px,94vw);padding:10px 15px;background:#152f29;border:2px solid #d3ae64;border-radius:8px;color:#fff2d0;font:13px system-ui;box-shadow:0 4px 20px #0009;display:none;pointer-events:none;text-align:center}
 #sc1345TheaterCard.visible{display:block}
 #sc140Commands button[data-sc1345-theater]{border:2px solid #d3ae64!important}
@@ -5337,7 +5390,7 @@ function install(){
  if(!panel||document.getElementById('sc1347Culture'))return;
  const section=document.createElement('section');
  section.id='sc1347Culture';
- section.innerHTML='<h3 style="margin:15px 0 7px;color:#f4db9a">🎭 Cultural Life</h3><div id="sc1347CultureInfo" style="background:#253e38;padding:12px;border-radius:7px;line-height:1.6">Checking city buildings…</div><p style="font-size:12px;opacity:.8">Theater benefit: +0.4 happiness per food cycle, up to +1.2. Neighborhood reach is a planning indicator, not an additional bonus.</p>';
+ section.innerHTML='<h3 style="margin:15px 0 7px;color:#f4db9a">🎭 Cultural Life</h3><div id="sc1347CultureInfo" style="background:#253e38;padding:12px;border-radius:7px;line-height:1.6">Checking city buildings…</div><p style="font-size:12px;opacity:.8">Theaters within 240 map units of occupied homes support the Amenities & culture satisfaction factor, capped at 5 points together with beauty and civic care. Paid events have the explicit effects shown below.</p>';
  const festival=document.createElement('div');festival.id='sc1351Festival';festival.style.cssText='margin:12px 0;padding:10px;background:#203a31;border:1px solid #987b49;border-radius:6px';festival.innerHTML='<strong>🎭 Town Festival</strong><p style="margin:6px 0;font-size:12px">Spend 35 gold and 12 food for +8 happiness and +4 prosperity. Requires a Theater. 90 game-second cooldown.</p><button type="button" id="sc1351FestivalBtn" style="padding:7px 13px;background:#94743e;color:white;border:1px solid #cbb478;border-radius:4px;cursor:pointer">Hold Festival</button><div id="sc1351FestivalStatus" role="status" style="margin-top:6px;font-size:12px"></div>';
  festival.insertAdjacentHTML('beforeend','<div style="border-top:1px solid #796848;margin-top:10px;padding-top:10px"><strong>🥖 Community Feast</strong><p style="font-size:12px;margin:6px 0">Requires a Bakery. Spend 20 gold and 20 food for +5 happiness and services support gradual migration. Shares the 90-second event cooldown.</p><button id="sc1352FeastBtn" type="button" style="padding:7px 13px;background:#94743e;color:white;border:1px solid #cbb478;border-radius:4px;cursor:pointer">Host Feast</button><div id="sc1352FeastStatus" role="status" style="font-size:12px;margin-top:6px"></div></div>');
  festival.insertAdjacentHTML('beforeend','<div id="sc1353Reserve" style="border-top:1px solid #796848;margin-top:10px;padding-top:9px"><strong>🌾 Protect Food Stores</strong><p style="font-size:12px;margin:5px 0">Prevent festivals and feasts from using food your town needs. The reserve applies to events only, not everyday consumption.</p><label style="font-size:12px">Minimum food to keep <input id="sc1353ReserveInput" type="number" min="0" max="150" step="10" value="30" style="width:65px;background:#10251e;color:#fff;border:1px solid #ab966b;padding:4px"></label><div id="sc1353ReserveStatus" role="status" style="font-size:12px;margin-top:5px"></div></div>');
@@ -5356,11 +5409,11 @@ function install(){
   const buildings=Array.isArray(window.scHoverBuildings)?window.scHoverBuildings:[];
   const owned=buildings.filter(b=>b&&b.team===0&&(!Number.isFinite(b.hp)||b.hp>0));
   const theaters=owned.filter(b=>b.type==='theater'),houses=owned.filter(b=>b.type==='house');
-  const served=houses.filter(home=>theaters.some(t=>Math.hypot(t.x-home.x,t.y-home.y)<=210)).length;
-  const mood=Math.min(1.2,theaters.length*.4).toFixed(1);
+  const served=houses.filter(home=>theaters.some(t=>Math.hypot(t.x-home.x,t.y-home.y)<240)).length;
+  const satisfaction=window.scCityEconomy.snapshot().satisfaction,amenity=satisfaction.factors.find(f=>f.label==='Amenities & culture');
   const summary=document.getElementById('sc1347CultureInfo');
   const f=window.scFestival?.status();if(f){feastBtn.disabled=!f.bakeries||f.cooldown>0||f.gold<20||f.food<20||f.food-20<f.reserve||f.paused;feastBtn.style.opacity=feastBtn.disabled?'.5':'1';feastStatus.textContent=f.paused?'Game paused':!f.bakeries?'Build a Bakery to unlock community feasts.':f.cooldown?'Next event in '+f.cooldown+' game seconds.':f.gold<20||f.food<20?'Requires 20 gold and 20 food.':f.food-20<f.reserve?'Protected reserve: '+f.reserve+' food must remain.':'Ready to host a community feast.';festivalBtn.disabled=!f.theaters||f.cooldown>0||f.gold<35||f.food<12||f.food-12<f.reserve||f.paused;festivalBtn.style.opacity=festivalBtn.disabled?'.5':'1';festivalStatus.textContent=f.paused?'Game paused':!f.theaters?'Build a Theater to unlock festivals.':f.cooldown?'Available in '+f.cooldown+' game seconds.':f.gold<35||f.food<12?'Not enough resources (35 gold, 12 food).':f.food-12<f.reserve?'Protected reserve: '+f.reserve+' food must remain.':'Ready to hold a festival.';reserveStatus.textContent='Current food: '+f.food+' · Protected reserve: '+f.reserve+' · Available for events: '+Math.max(0,f.food-f.reserve);}
-  summary.textContent=theaters.length+' theater'+(theaters.length===1?'':'s')+' built · '+served+' / '+houses.length+' houses within 210px of a theater · Up to +'+mood+' happiness per food cycle'+(theaters.length===0?' · Build your first theater to establish cultural life.':theaters.length<3?' · Another theater can increase the town-wide happiness benefit.':' · Town-wide theater bonus is at its current cap.');
+  summary.textContent=theaters.length+' theater'+(theaters.length===1?'':'s')+' built · '+served+'/'+houses.length+' homes within 240 map units · Amenities & culture: '+amenity.points+'/5 satisfaction target points (shared with beauty and civic care).';
  }
  refresh();setInterval(refresh,2500);
 }
@@ -6347,13 +6400,15 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   const signature=JSON.stringify({...s,peace:{...s.peace,remaining:0}});if(signature===renderedSignature)return;renderedSignature=signature;
   const open=new Set([...panel.querySelectorAll('details[open]')].map(d=>d.dataset.house));
   const focusHouse=panel.contains(document.activeElement)?document.activeElement?.closest('details')?.dataset.house:null;
-  const houses=s.housing.houses.map(h=>'<details data-house="'+h.id+'"'+(open.has(String(h.id))?' open':'')+'><summary>House #'+h.id+' · '+h.name+' · '+h.occupancy+'/'+h.capacity+' residents</summary><p>Upgrade: '+h.upgradeSeconds+'/10 seconds of sustained requirements. Decline: '+h.downgradeSeconds+'/30 seconds.</p>'+(h.tier<4?'<p>Next: '+h.nextRequirements.map(r=>(r.met?'✓ ':'✗ ')+r.label).join(' · ')+'</p>':'<p>Maximum tier reached.</p>')+(h.currentMissing.length?'<p class="cityWarn">Current tier at risk: '+h.currentMissing.join(', ')+'</p>':'')+'</details>').join('');
-  panel.innerHTML='<h3>Residents & housing</h3><p>'+s.population+' / '+s.housing.capacity+' civilian residents · '+s.housing.keepResidents+' in the Keep · '+s.housing.displaced+' displaced</p><p>'+s.growth.reason+' Progress: '+s.growth.progress+'/15 seconds.</p>'+houses+
+  const houses=s.housing.houses.map(h=>'<details data-house="'+h.id+'"'+(open.has(String(h.id))?' open':'')+'><summary>House #'+h.id+' · '+h.name+' · '+h.occupancy+'/'+h.capacity+' residents</summary><p>'+Object.entries(h.services).map(([k,v])=>(k==='health'?'Healthcare':k==='water'?'Water':'Market')+': '+v.status.replaceAll('_',' ')).join(' · ')+'</p>'+Object.values(h.services).filter(v=>v.status!=='ready').map(v=>'<p class="cityWarn">'+v.message+'</p>').join('')+'<p>Upgrade: '+h.upgradeSeconds+'/10 seconds of sustained requirements. Decline: '+h.downgradeSeconds+'/30 seconds.</p>'+(h.tier<4?'<p>Next: '+h.nextRequirements.map(r=>(r.met?'✓ ':'✗ ')+r.label).join(' · ')+'</p>':'<p>Maximum tier reached.</p>')+(h.currentMissing.length?'<p class="cityWarn">Current tier at risk: '+h.currentMissing.join(', ')+'</p>':'')+'</details>').join('');
+  const satisfaction=s.satisfaction;
+  panel.innerHTML='<h3>Citizen satisfaction '+number(satisfaction.score)+' / 100</h3><p>Target '+number(satisfaction.target)+' · approaches by at most 2 points per five-second cycle. Migration needs happiness 45+, vacant serviced housing and 15 seconds of stability. Existing residents stay through service gaps; shortages and lost housing capacity can cause departures.</p><table aria-label="Citizen satisfaction factors"><tr><th>Factor</th><th>Points</th><th>Explanation</th></tr>'+satisfaction.factors.map(f=>'<tr><th>'+f.label+'</th><td>'+number(f.points)+' / '+f.max+'</td><td>'+f.reason+'</td></tr>').join('')+row(satisfaction.modifier.label,(satisfaction.modifier.points>=0?'+':'')+number(satisfaction.modifier.points))+'</table><p>'+satisfaction.modifier.reason+' Target is clamped to 0–100. Keep residents have basic services; vacant homes do not count as citizens. Current service reach is separate from last-cycle meal delivery.</p>'+(satisfaction.last?'<p>Last satisfaction cycle: '+number(satisfaction.last.opening)+' → '+number(satisfaction.last.closing)+' (applied target '+number(satisfaction.last.target)+', change '+number(satisfaction.last.change)+'). Feasts and festivals can provide immediate happiness bonuses.</p>':'<p>Waiting for the first satisfaction cycle.</p>')+
+   '<h3>Residents & housing</h3><p>'+s.population+' / '+s.housing.capacity+' civilian residents · '+s.housing.keepResidents+' in the Keep · '+s.housing.displaced+' displaced</p><p>'+s.growth.reason+' Progress: '+s.growth.progress+'/15 seconds.</p>'+houses+
    '<h3>Food reserve & distribution</h3><p>'+number(s.food.stock)+' / '+s.food.capacity+' food stored · '+s.food.reserveSeconds+' seconds of household reserve (before new production).</p><p>Harvest at current staffing: '+number(s.food.production)+' · Household demand before distribution: '+s.food.demand+' / 5 seconds.</p><p>Markets serve '+s.food.markets.served+'/'+s.food.markets.total+' homes; '+s.food.markets.savings+' food saved last cycle.</p>'+
    (last?'<table aria-label="Last five-second food cycle">'+row('Opening reserve',number(last.opening))+row('Farm/fishery harvest','+'+number(last.harvest))+row('Supply logistics','+'+number(last.logistics))+row('Bakery conversion (net)','+'+number(last.bakeryNet))+row('Bread exports','−'+number(last.exports))+row('Household delivery','−'+number(last.delivered))+row('Storage overflow','−'+number(last.overflow))+row('Closing reserve',number(last.closing))+row('Unmet household demand',number(last.shortfall))+'</table>':'<p>Waiting for the first five-second economy cycle.</p>')+
    '<p>Shared reserve: '+number(s.food.baseStock)+'/90 base storage'+s.food.granaries.map(g=>' · Granary #'+g.id+' '+number(g.stock)+'/160 ('+g.staff+'/1 staff, '+(g.connected?'road connected':'needs connected roads')+')').join('')+'. Granaries share this reserve; these are not extra food stocks.</p>'+
    '<h3>Measured food chain · last 5-second cycle</h3><p>Farm / fishery → shared granary reserve → market waste savings → households. Producers still harvest without a granary; connected staffed granaries add 25%. Bakers use the same reserve. Markets save food, rather than creating another stock.</p><table aria-label="Measured production chain"><tr><th>Building</th><th>Harvest + logistics</th><th>Grain → bread</th><th>Exports</th></tr>'+s.food.flows.map(f=>'<tr><td>'+f.type+' #'+f.id+' ('+f.staff+' staff last cycle)</td><td>'+number(f.harvest)+' + '+number(f.logistics)+'</td><td>'+number(f.consumed)+' → '+number(f.produced)+'</td><td>'+number(f.exported)+'</td></tr>').join('')+'</table><p>Household accounting shares use residents present at the start of the last cycle; these are not simulated delivery carts. Display values are rounded to one decimal; calculations retain full precision.</p><table aria-label="Household food delivery"><tr><th>Home</th><th>Residents</th><th>Demand</th><th>Consumed</th><th>Unmet</th></tr>'+s.food.households.map(h=>'<tr><td>'+h.label+'</td><td>'+h.residents+'</td><td>'+number(h.demand)+'</td><td>'+number(h.delivered)+'</td><td>'+number(h.shortfall)+'</td></tr>').join('')+'</table>'+
-   '<h3>Building feedback</h3>'+s.buildings.filter(b=>b.staff||b.type==='well').map(b=>'<details data-house="site'+b.id+'"'+(open.has('site'+b.id)?' open':'')+'><summary>'+b.type+' #'+b.id+(b.staff?' · '+b.staff.filled+'/'+b.staff.need+' staff':'')+(b.idle?' · idle':'')+'</summary><p>'+b.nextAction+'</p>'+b.blockers.slice(1).map(x=>'<p class="cityWarn">'+x+'</p>').join('')+(b.coverage?'<p>Coverage: '+b.coverage.served+'/'+b.coverage.nearby+' nearby homes in service coverage; actual food shortages appear in the ledger.</p>':'')+'</details>').join('')+
+   '<h3>Building feedback</h3>'+s.buildings.filter(b=>b.staff||b.type==='well').map(b=>'<details data-house="site'+b.id+'"'+(open.has('site'+b.id)?' open':'')+'><summary>'+b.type+' #'+b.id+(b.staff?' · '+b.staff.filled+'/'+b.staff.need+' staff':'')+(b.idle?' · idle':'')+'</summary><p>'+b.nextAction+'</p>'+b.blockers.slice(1).map(x=>'<p class="cityWarn">'+x+'</p>').join('')+(b.service?'<p>'+b.service.message+'</p>':'')+(b.coverage?'<p>Service reach: '+b.coverage.served+'/'+b.coverage.nearby+' nearby homes covered · '+b.coverage.supplied+' currently supplied. Food delivery remains measured in the ledger.</p>':'')+'</details>').join('')+
    '<h3>Employment & production</h3><p>'+s.workforce.filled+' staffed + '+s.workforce.idle+' idle + '+s.workforce.reserved+' essential duties = '+s.population+' civilian residents. '+s.workforce.jobs+' jobs available.</p><p>Map workers and soldiers are separately recruited units; they do not also staff workplaces. Food producers receive civilian staff first.</p><table aria-label="Workplace staffing"><tr><th>Workplace</th><th>Staff</th><th>Forecast base output / 5 sec</th></tr>'+s.workforce.sites.map(b=>'<tr><td>'+b.type+' #'+b.id+'</td><td>'+b.filled+'/'+b.need+'</td><td>'+number(b.output)+(b.type==='farm'||b.type==='fishery'?' food':b.type==='lumberyard'?' wood':' service/conversion')+'</td></tr>').join('')+'</table>'+
    '<h3>Prosperity '+number(s.prosperity.score)+' / 100</h3><progress max="100" value="'+s.prosperity.score+'" aria-label="City prosperity"></progress><p>Target '+s.prosperity.target+'/100 · changes by at most 2 points per five-second cycle.</p><table aria-label="Prosperity contributions">'+s.prosperity.factors.map(f=>row(f.label,number(f.points)+' / '+f.max)).join('')+'</table><p>'+s.peace.difficulty+' difficulty: '+'<span id="scCityGraceRemaining">'+Math.ceil(s.peace.remaining)+'</span> seconds of settlement grace remain before offensive raids; later raids are spaced at least '+s.peace.raidInterval+' seconds apart. Enemy territory still defends itself.</p><h3>Next steps</h3>'+s.advice.map(a=>'<p>• '+a+'</p>').join('');
   if(focusHouse)panel.querySelector('details[data-house="'+focusHouse+'"] summary')?.focus({preventScroll:true});
