@@ -1,6 +1,6 @@
 # Shattered Crowns
 
-Browser-first medieval city-building RTS. Serve this directory with `python3 -m http.server 8000` and open http://localhost:8000.
+Browser-first medieval city-building RTS with a peaceful city campaign, kingdom overview and classic skirmish mode. Serve this directory with `python3 -m http.server 8000` and open http://localhost:8000.
 
 ## Automated testing
 
@@ -13,7 +13,7 @@ npm test
 
 The runner installs and uses the Chromium revision pinned by Playwright 1.57.0. A bare Linux host needs Chromium OS libraries (`npx playwright install-deps chromium`); CI installs these before the same test command. An explicit `CHROMIUM_PATH` override is available on restricted machines, and its actual browser version is recorded.
 
-The suite preserves all 28 Milestone 2 regressions and adds Living City scenarios, release-safety checks and five production-compatible smoke journeys. See [Milestone 4](docs/MILESTONE4.md) for production changes and [Milestone 5](docs/MILESTONE5.md) for services and satisfaction. [Version 0.6.0](docs/MILESTONE6.md) adds local save/resume and portable saves through Menu. Traces for failures, screenshots, browser errors, environment versions, JUnit, JSON-line results and logs are written to `test-results/`. Successful traces are pruned; historical committed screenshots are not overwritten.
+The suite preserves all 28 Milestone 2 regressions and adds Living City scenarios, release-safety checks and five production-compatible smoke journeys. See [Milestone 4](docs/MILESTONE4.md) for production changes and [Milestone 5](docs/MILESTONE5.md) for services and satisfaction. [Version 0.6.0](docs/MILESTONE6.md) adds local save/resume and portable saves through Menu. [Version 0.7.0](docs/MILESTONE7.md) adds the peaceful city campaign, a separate kingdom overview backward-compatible campaign saves, first-visit title screen, original ambient/selection audio and clearer defense placement feedback. Traces for failures, screenshots, browser errors, environment versions, JUnit, JSON-line results and logs are written to `test-results/`. Successful traces are pruned; historical committed screenshots are not overwritten.
 
 ```sh
 npm run test:unit
