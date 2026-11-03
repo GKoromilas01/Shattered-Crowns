@@ -1,6 +1,16 @@
 # Release notes
 
-## 0.6.0 — Save/Resume & Session Reliability (proposed)
+## 0.7.0 — Peaceful City & Kingdom Overview (proposed)
+
+- Fresh cities are peaceful: rival castles live on a separate informational kingdom overview. Classic skirmish remains selectable in Menu with its existing AI and raids.
+- Open Menu → Kingdom map or zoom beyond the city minimum; inspect settlements and return to the same camera/Pause setting. The overview suspends simulation and isolates city input.
+- Measured readiness goals explain food reserves, housing, happiness, treasury and defenses. Sustained prosperity never schedules an attack; campaign warfare is a later milestone.
+- Campaign schema-2 saves retain readiness and settlement selection; released schema-1 files restore as classic games without conversion. Existing checkpoint protection and backup safeguards remain.
+- First-time visitors get a keyboard-accessible title screen; the city waits until entry. Original gentle ambience and distinct worker/army selection cues have independent music/effects, mute and volume controls in Menu.
+- Defense placement explains workers, resources, range and blocked plots visibly, and rechecks resources at confirmation to prevent overspending after choosing a tool.
+- Original regression assertions and road/controller code are retained; new Chromium scenarios cover peace, migration, navigation, keyboard/mobile controls, readiness and import/reload. See [Milestone 7](docs/MILESTONE7.md).
+
+## 0.6.0 — Save/Resume & Session Reliability
 
 - Save the running city locally and resume it after reload; export/import a portable JSON save through the existing Menu. Restores pause the game and clear armed placement.
 - Session data includes economy/history, services/happiness, armies/orders, AI clocks, queues, control groups, undo, reinforced Keeps, cooldowns, policies and camera. Existing game rules and controls are retained.

@@ -7,7 +7,7 @@ let browser, server, url;
 before(async () => {
   server = http.createServer((req, res) => { res.setHeader('Content-Type', 'text/html'); res.end(fs.readFileSync('index.html')); });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
-  url = `http://127.0.0.1:${server.address().port}`;
+  url = `http://127.0.0.1:${server.address().port}/?scenario=skirmish`;
   browser = await launchBrowser();
 });
 after(async () => { await browser?.close(); server?.close(); });

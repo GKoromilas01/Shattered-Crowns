@@ -1,0 +1,727 @@
+{
+  "format": "shattered-crowns-city",
+  "schema": 1,
+  "createdWith": "0.6.0",
+  "cityId": "mvzrnwrf-1",
+  "savedAt": 1793654646655,
+  "world": {
+    "version": 1,
+    "width": 2450,
+    "height": 900
+  },
+  "view": {
+    "zoom": 1,
+    "centerX": 1020,
+    "centerY": 309.5
+  },
+  "state": {
+    "resources": {
+      "gold": 240,
+      "wood": 100,
+      "stone": 30,
+      "food": 90,
+      "tradeGoods": 0,
+      "goodsSold": 0,
+      "aiGold": 240,
+      "aiWood": 100
+    },
+    "people": {
+      "population": 8,
+      "happiness": 70,
+      "prosperity": 0
+    },
+    "clock": {
+      "elapsed": 0.9617000000000003,
+      "cityTimer": 0.9617000000000003,
+      "cityCycleNumber": 0,
+      "aiTimer": 0.9617000000000003,
+      "resourceTimer": 0.9617000000000003,
+      "aiDecision": 0.9617000000000003,
+      "aiAttackTimer": 0.9617000000000003,
+      "aiTrainTimer": 0,
+      "trainTimer": 0,
+      "scFestivalCooldown": 0
+    },
+    "options": {
+      "difficulty": "normal",
+      "formation": "line",
+      "eventFoodReserve": 30,
+      "showLabels": false,
+      "showMinimap": true,
+      "serviceOverlay": "off",
+      "ration": {
+        "mode": "normal",
+        "emergency": false
+      },
+      "breadExport": true,
+      "breadReserveCycles": 2
+    },
+    "units": [
+      {
+        "id": 3,
+        "team": 0,
+        "x": 670,
+        "y": 255,
+        "hp": 55,
+        "max": 55,
+        "speed": 58,
+        "damage": 6,
+        "range": 15,
+        "radius": 4,
+        "cool": 0,
+        "carry": 0,
+        "type": "worker",
+        "scHoldPosition": false,
+        "scCharge": false,
+        "scShieldWall": false,
+        "scLastMedic": null,
+        "target": null,
+        "order": null
+      },
+      {
+        "id": 4,
+        "team": 0,
+        "x": 670,
+        "y": 295,
+        "hp": 55,
+        "max": 55,
+        "speed": 58,
+        "damage": 6,
+        "range": 15,
+        "radius": 4,
+        "cool": 0,
+        "carry": 0,
+        "type": "worker",
+        "scHoldPosition": false,
+        "scCharge": false,
+        "scShieldWall": false,
+        "scLastMedic": null,
+        "target": null,
+        "order": null
+      },
+      {
+        "id": 5,
+        "team": 0,
+        "x": 670,
+        "y": 335,
+        "hp": 55,
+        "max": 55,
+        "speed": 58,
+        "damage": 6,
+        "range": 15,
+        "radius": 4,
+        "cool": 0,
+        "carry": 0,
+        "type": "worker",
+        "scHoldPosition": false,
+        "scCharge": false,
+        "scShieldWall": false,
+        "scLastMedic": null,
+        "target": null,
+        "order": null
+      },
+      {
+        "id": 6,
+        "team": 0,
+        "x": 705,
+        "y": 290,
+        "hp": 115,
+        "max": 115,
+        "speed": 64,
+        "damage": 15,
+        "range": 24,
+        "radius": 11.5,
+        "cool": 0,
+        "carry": 0,
+        "type": "soldier",
+        "scHoldPosition": false,
+        "scCharge": false,
+        "scShieldWall": false,
+        "scLastMedic": null,
+        "target": null,
+        "order": null
+      },
+      {
+        "id": 7,
+        "team": 0,
+        "x": 705,
+        "y": 320,
+        "hp": 115,
+        "max": 115,
+        "speed": 64,
+        "damage": 15,
+        "range": 24,
+        "radius": 11.5,
+        "cool": 0,
+        "carry": 0,
+        "type": "soldier",
+        "scHoldPosition": false,
+        "scCharge": false,
+        "scShieldWall": false,
+        "scLastMedic": null,
+        "target": null,
+        "order": null
+      },
+      {
+        "id": 8,
+        "team": 0,
+        "x": 705,
+        "y": 350,
+        "hp": 115,
+        "max": 115,
+        "speed": 64,
+        "damage": 15,
+        "range": 24,
+        "radius": 11.5,
+        "cool": 0,
+        "carry": 0,
+        "type": "soldier",
+        "scHoldPosition": false,
+        "scCharge": false,
+        "scShieldWall": false,
+        "scLastMedic": null,
+        "target": null,
+        "order": null
+      },
+      {
+        "id": 9,
+        "team": 1,
+        "x": 1590,
+        "y": 400,
+        "hp": 115,
+        "max": 115,
+        "speed": 64,
+        "damage": 15,
+        "range": 24,
+        "radius": 11.5,
+        "cool": 0,
+        "carry": 0,
+        "type": "soldier",
+        "scHoldPosition": false,
+        "scCharge": false,
+        "scShieldWall": false,
+        "scLastMedic": null,
+        "target": null,
+        "order": null
+      },
+      {
+        "id": 10,
+        "team": 1,
+        "x": 1590,
+        "y": 440,
+        "hp": 115,
+        "max": 115,
+        "speed": 64,
+        "damage": 15,
+        "range": 24,
+        "radius": 11.5,
+        "cool": 0,
+        "carry": 0,
+        "type": "soldier",
+        "scHoldPosition": false,
+        "scCharge": false,
+        "scShieldWall": false,
+        "scLastMedic": null,
+        "target": null,
+        "order": null
+      },
+      {
+        "id": 11,
+        "team": 1,
+        "x": 1590,
+        "y": 480,
+        "hp": 115,
+        "max": 115,
+        "speed": 64,
+        "damage": 15,
+        "range": 24,
+        "radius": 11.5,
+        "cool": 0,
+        "carry": 0,
+        "type": "soldier",
+        "scHoldPosition": false,
+        "scCharge": false,
+        "scShieldWall": false,
+        "scLastMedic": null,
+        "target": null,
+        "order": null
+      },
+      {
+        "id": 12,
+        "team": 1,
+        "x": 1625,
+        "y": 340,
+        "hp": 55,
+        "max": 55,
+        "speed": 58,
+        "damage": 6,
+        "range": 15,
+        "radius": 4,
+        "cool": 0,
+        "carry": 0,
+        "type": "worker",
+        "scHoldPosition": false,
+        "scCharge": false,
+        "scShieldWall": false,
+        "scLastMedic": null,
+        "target": null,
+        "order": null
+      },
+      {
+        "id": 13,
+        "team": 1,
+        "x": 1625,
+        "y": 382,
+        "hp": 55,
+        "max": 55,
+        "speed": 58,
+        "damage": 6,
+        "range": 15,
+        "radius": 4,
+        "cool": 0,
+        "carry": 0,
+        "type": "worker",
+        "scHoldPosition": false,
+        "scCharge": false,
+        "scShieldWall": false,
+        "scLastMedic": null,
+        "target": null,
+        "order": null
+      },
+      {
+        "id": 14,
+        "team": 1,
+        "x": 1625,
+        "y": 424,
+        "hp": 55,
+        "max": 55,
+        "speed": 58,
+        "damage": 6,
+        "range": 15,
+        "radius": 4,
+        "cool": 0,
+        "carry": 0,
+        "type": "worker",
+        "scHoldPosition": false,
+        "scCharge": false,
+        "scShieldWall": false,
+        "scLastMedic": null,
+        "target": null,
+        "order": null
+      }
+    ],
+    "buildings": [
+      {
+        "id": 1,
+        "team": 0,
+        "x": 620,
+        "y": 310,
+        "hp": 900,
+        "max": 900,
+        "radius": 38,
+        "cool": 0,
+        "cityTier": 1,
+        "cityResidents": 0,
+        "cityUpgrade": 0,
+        "cityDecline": 0,
+        "type": "keep",
+        "scLastNotifiedTier": null
+      },
+      {
+        "id": 2,
+        "team": 1,
+        "x": 1670,
+        "y": 440,
+        "hp": 900,
+        "max": 900,
+        "radius": 38,
+        "cool": 0,
+        "cityTier": 1,
+        "cityResidents": 0,
+        "cityUpgrade": 0,
+        "cityDecline": 0,
+        "type": "keep",
+        "scLastNotifiedTier": null
+      }
+    ],
+    "nodes": [
+      {
+        "type": "tree",
+        "x": 780,
+        "y": 110,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 830,
+        "y": 110,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 880,
+        "y": 110,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 780,
+        "y": 175,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 830,
+        "y": 175,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 880,
+        "y": 175,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 780,
+        "y": 240,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "gold",
+        "x": 930,
+        "y": 430,
+        "amount": 800,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "gold",
+        "x": 1000,
+        "y": 430,
+        "amount": 800,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "gold",
+        "x": 930,
+        "y": 485,
+        "amount": 800,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "gold",
+        "x": 1000,
+        "y": 485,
+        "amount": 800,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "gold",
+        "x": 930,
+        "y": 540,
+        "amount": 800,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 830,
+        "y": 280,
+        "amount": 700,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 905,
+        "y": 280,
+        "amount": 700,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 830,
+        "y": 323,
+        "amount": 700,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 905,
+        "y": 323,
+        "amount": 700,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 830,
+        "y": 366,
+        "amount": 700,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 1890,
+        "y": 120,
+        "amount": 650,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 1960,
+        "y": 120,
+        "amount": 650,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 2030,
+        "y": 120,
+        "amount": 650,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 2100,
+        "y": 120,
+        "amount": 650,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 2170,
+        "y": 120,
+        "amount": 650,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 1890,
+        "y": 240,
+        "amount": 650,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 1960,
+        "y": 240,
+        "amount": 650,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 2030,
+        "y": 240,
+        "amount": 650,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 2100,
+        "y": 240,
+        "amount": 650,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 2170,
+        "y": 240,
+        "amount": 650,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 630,
+        "y": 680,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 748,
+        "y": 775,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 866,
+        "y": 680,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 984,
+        "y": 775,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 1102,
+        "y": 680,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 1140,
+        "y": 730,
+        "amount": 700,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 1235,
+        "y": 795,
+        "amount": 700,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 1330,
+        "y": 730,
+        "amount": 700,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "gold",
+        "x": 1285,
+        "y": 580,
+        "amount": 800,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "gold",
+        "x": 1385,
+        "y": 665,
+        "amount": 800,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 80,
+        "y": 140,
+        "amount": 550,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 172,
+        "y": 460,
+        "amount": 550,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 264,
+        "y": 140,
+        "amount": 550,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 356,
+        "y": 460,
+        "amount": 550,
+        "radius": 18,
+        "renew": 0
+      }
+    ],
+    "selected": [],
+    "inspected": null,
+    "squads": [
+      [],
+      [],
+      []
+    ],
+    "nextId": 15,
+    "stats": {
+      "spawned": [
+        0,
+        0
+      ],
+      "lost": [
+        0,
+        0
+      ],
+      "kills": [
+        0,
+        0
+      ],
+      "damage": [
+        0,
+        0
+      ],
+      "gathered": [
+        0,
+        0
+      ],
+      "raids": 0
+    },
+    "growth": {
+      "progress": 0,
+      "departure": 0,
+      "reason": "Build serviced housing to welcome residents."
+    },
+    "ledger": null,
+    "flows": [],
+    "households": [],
+    "satisfactionLast": null,
+    "measurements": {
+      "logistics": null,
+      "distribution": null,
+      "civic": null
+    },
+    "undo": [],
+    "trainQueue": [],
+    "aiQueue": [],
+    "ended": false
+  }
+}
