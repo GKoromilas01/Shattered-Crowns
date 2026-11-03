@@ -16,7 +16,7 @@ The actual title dialog is now the first body element, with critical CSS ahead o
 
 The opening appears on every page load, including reloads. The existing Advisor-intro history key remains, but it no longer skips the title. Existing saves remain protected: entry itself does not resume or overwrite a prior checkpoint. Use Menu → Resume saved city as before.
 
-The background reuses the approved original city-art illustration, optimized and embedded as WebP in index.html. The concept's heading is outside the displayed crop. No external asset request is needed, including for extracted offline builds. This improves the title presentation; it is not a new gameplay renderer or a promise that the illustration is the playable city.
+The background reuses the approved original city-art illustration, optimized and embedded as WebP in index.html. The concept's heading is outside the displayed crop. No external asset request is needed, including for extracted offline builds. Exact-source packaging uses a bounded 16 MiB Git-read buffer so embedded artwork can exceed the default 1 MiB limit without bypassing provenance checks. This improves the title presentation; it is not a new gameplay renderer or a promise that the illustration is the playable city.
 
 [Desktop title](screenshots/opening-v081-desktop.png) · [Phone title](screenshots/opening-v081-mobile.png)
 
