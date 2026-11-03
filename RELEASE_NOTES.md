@@ -1,5 +1,14 @@
 # Release notes
 
+## v0.8.1 — Opening, Construction & Music Polish
+
+- Construction/Units commands retain the 88px HUD and show complete cards with visible previous/next controls, including native Windows-style scrollbars. Wheel, touch and keyboard scrolling remain available.
+- The illustrated title appears before engine UI, covers the city until entry and waits for initialization; page reloads also start at the title. The approved city illustration is embedded title art, while gameplay retains its existing renderer.
+- Added an original sixteen-bar melodic city theme with soft plucked accompaniment, bass and harmony. Menu → Sound offers the original gentle ambience too; style persists separately from existing volume/mute/music/effects preferences.
+- Preserved roads, costs/undo, game controls, scenarios, save formats and safeguards. No dependencies, external media requests or licensed recordings.
+
+See [v0.8.1 notes](docs/POLISH081.md) for previews and verification.
+
 ## v0.8.0 — City Planning & Economy Clarity
 
 - City Life now leads with measured food balance, housing, staffing and home-service summaries. Food production minus demand, reserve change, shortages and overflow are labeled separately.

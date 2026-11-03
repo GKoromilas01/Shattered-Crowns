@@ -1,0 +1,23 @@
+# v0.8.1 verification record
+
+Base: owner-merged v0.8.0 at 04328f5055eaef403d645cde7107233297b7f03f. User supplied a Windows browser screenshot of clipped Construction choices, asked for a fuller musical trial, and then requested an illustrated title visible before any map/units. No competing openPR was present when work started.
+
+## Reproductions
+
+Native-scrollbar Chromium (Playwright default hide-scrollbars flag removed) reproduced an 80 px host with70px client height and72px cards beginning4px above its clip boundary. Four screenshot-sized regressions failed before repair. Default hidden-scrollbar tests had masked the issue. Whole-column review then caught legacy max-width/margins causing a Bakery card10px beyond the visible edge; the new partial-column assertion failed before the final maximum/margin/sizing repair.
+
+A streamed partial HTML response containing the engine but withholding late UI scripts showed no title in the old source. Its new regression failed before static first-body markup and early CSS. New reload/title/artwork checks also failed before implementation. They now verify the title is visible, city hidden, clock0 and entry disabled while loading; entry/Advisor work once ready and on subsequent loads.
+
+Two initial music tests failed against the old three-note chord scheduling and absent style control. Real oscillators now demonstrate timed pitch/waveform variety, not a mocked score. Old four-field preferences stay intact, with theme stored separately. Rapid12style switching separately reproduced a silent scheduled bar; its regression passed after waiting for stopping voices to drain before advancing the score.
+
+Fresh read-only whole-branch review found a second audio issue: canceling future gain automation could expose defaultgain 1. Actual OfflineAudioContext rendering reproduced a stopped future note peaking at .025227 instead of silence. The fix immediately cancels/disconnects future voices, while active voices hold the current envelope and fade. Native hold and analytical fallback paths are checked after stop time. The offline probe must sample after cancellation: pre-rendering a canceled automation endpoint can alter not-yet-rendered earlier samples, which is not a real-time past-audio change.
+
+## Evidence and scope
+
+Presentation 7/7 targeted cases passed at 1366×606,1440×900,768×800 and390×844, including full native-scrollbar cards, all-choice reachability and Space/Pause isolation; streamed opening; title-on-reload/Advisor and embedded art. Existing save/checkpoint/Advisor reload journeys 4/4 passed after explicitly entering the city. Existing assertions were retained. All 13 audio cases have passing targeted evidence, including original 9 and 4 new varied-score/style/switch/envelope checks. The resumed uninterrupted source suite passed **152/152, 0 failed, 0 skipped**, in 897.0 seconds using `CHROMIUM_PATH=/usr/bin/chromium TEST_ARTIFACT_DIR=test-results/v081-resumed npm test`. The earlier run was interrupted during the owner-requested credits pause and is not counted as a completed result. Exact packaged smoke and file-launch results are recorded in the PR after execution.
+
+The 55.33-second MP3 preview was rendered with the exact shipped sixteen-bar score and voice helper in OfflineAudioContext, 22050 Hz, default 35%master/.08musicbus, then encoded byffmpeg. PCM peak .01605295  and RMS .00255481: audible nonzero synthesis without hard clipping. No loudness normalization or alternate score was substituted. Taste, listening levels and final musical approval require the owner's review. Original ambience remains selectable.
+
+Screenshots in docs/screenshots and notes in docs/POLISH081.md distinguish embedded title illustration from the unchanged gameplay renderer. Game engine/roads/collision/economy and unified control script remain intact; createdWith/version 0.8.1 does not change save schema. No dependencies, external asset/audio requests, paid recordings or services were added. No merge/deployment was performed.
+
+Physical Windows/touch hardware, real background-tab throttling, other browser engines and subjective audio fidelity are not certified by these browser checks. Local Chromium override is recorded by the test runner; pinned CI is separate evidence.
