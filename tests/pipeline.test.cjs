@@ -52,3 +52,14 @@ test('release preflight accepts pasted surrounding whitespace and passes the val
  fs.unlinkSync('release-approval.json');conclusion='failure';await assert.rejects(preflight(read),/success/);assert.equal(fs.existsSync('release-approval.json'),false,'Whitespace normalization must not bypass failed-CI rejection');
  for(const value of ['4\t2','42other','\t','']){process.env.CANDIDATE_RUN_ID=value;const before=routes.length;await assert.rejects(preflight(read),/numeric/);assert.equal(routes.length,before);assert.equal(fs.existsSync('release-approval.json'),false)}
 });
+
+test('large self-contained title artwork builds and verifies committed bytes without weakening dirty-source rejection',t=>{
+ const a=api(),root=fixture(t),{execFileSync}=require('node:child_process');
+ const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
+ const game='<!doctype html><title>Embedded city art</title><!--'+'x'.repeat(2*1024*1024)+'--><body>game</body>';
+ fs.writeFileSync(path.join(root,'index.html'),game);git('init','-q');git('config','user.name','Pipeline test');git('config','user.email','test@example.invalid');git('add','index.html','release.json');git('commit','-qm','large fixture');const sha=git('rev-parse','HEAD');
+ const cli=path.resolve('scripts/release.cjs'),out=path.join(root,'site'),env={...process.env,GITHUB_RUN_ID:'42'};
+ assert.doesNotThrow(()=>execFileSync(process.execPath,[cli,'build',out],{cwd:root,env,stdio:'pipe'}),'A legitimate embedded-art source above1MiB must package');
+ assert.equal(fs.readFileSync(path.join(out,'index.html'),'utf8'),game);assert.equal(a.verifyGitSource(out,{cwd:root}).sourceSha,sha);
+ fs.appendFileSync(path.join(root,'index.html'),'dirty');assert.throws(()=>execFileSync(process.execPath,[cli,'build',path.join(root,'dirty-site')],{cwd:root,env,stdio:'pipe'}),e=>/differs from tested committed source/.test(String(e.stderr)),'More buffer must not allow uncommitted game bytes');
+});

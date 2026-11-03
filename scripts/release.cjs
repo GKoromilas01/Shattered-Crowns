@@ -1,4 +1,5 @@
 const fs=require('node:fs');const path=require('node:path');const crypto=require('node:crypto');const {execFileSync}=require('node:child_process');
+const GIT_MAX_BUFFER=16*1024*1024;
 const SHA=/^[a-f0-9]{40}$/;const FILES=['index.html','release-manifest.json','release.json'];
 function demand(ok,message){if(!ok)throw new Error(message)}
 const digest=data=>crypto.createHash('sha256').update(data).digest('hex');
@@ -22,7 +23,7 @@ function verifySite(dir,expected={}){
 }
 function verifyGitSource(dir,{cwd='.',bootstrap}={}){
  const m=verifySite(dir);
- const read=name=>execFileSync('git',['show',m.sourceSha+':'+name],{cwd,stdio:['ignore','pipe','pipe']});
+ const read=name=>execFileSync('git',['show',m.sourceSha+':'+name],{cwd,maxBuffer:GIT_MAX_BUFFER,stdio:['ignore','pipe','pipe']});
  demand(digest(read('index.html'))===m.files['index.html'],'Artifact game does not match immutable committed Git source');
  if(bootstrap&&m.sourceSha===bootstrap.sourceSha&&m.verificationRunId==='0')demand(m.files['index.html']===bootstrap.indexSha256,'Wrong pinned bootstrap Git source');
  else demand(digest(read('release.json'))===m.files['release.json'],'Artifact version does not match committed Git source');
@@ -56,7 +57,7 @@ if(require.main===module){
  try{
   const [command,arg='dist']=process.argv.slice(2);
   if(command==='build'){
-   const sha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();for(const name of ['index.html','release.json'])demand(execFileSync('git',['show',sha+':'+name]).equals(fs.readFileSync(name)),'Site differs from tested committed source: '+name);
+   const sha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();for(const name of ['index.html','release.json'])demand(execFileSync('git',['show',sha+':'+name],{maxBuffer:GIT_MAX_BUFFER}).equals(fs.readFileSync(name)),'Site differs from tested committed source: '+name);
    console.log(JSON.stringify(buildSite('.',arg,{sourceSha:sha,verificationRunId:process.env.GITHUB_RUN_ID||'0'})));
   }else if(command==='verify')console.log(JSON.stringify(verifySite(arg,{sourceSha:process.env.EXPECTED_RELEASE_SHA,verificationRunId:process.env.EXPECTED_RUN_ID})));
   else throw new Error('Usage: node scripts/release.cjs build|verify [directory]');

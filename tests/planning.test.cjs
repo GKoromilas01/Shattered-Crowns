@@ -43,7 +43,7 @@ for(const width of [390,768,1440])test('Planning sections and controls remain re
  const p=await game(t,width);await seed(p,[['house',1100,200],['well',1120,260],['farm',1180,100]]);await advance(p,5);
  await p.waitForFunction(()=>document.querySelector('#scPlanServices')?.textContent.includes('Water 1/1'));
  await p.screenshot({path:'test-results/gallery/m8-overview-'+width+'.png'});
- const bounds=await overview(p).boundingBox();assert.ok(bounds.x>=0&&bounds.x+bounds.width<=width+1);
+ await overview(p).waitFor({state:'visible'});const bounds=await overview(p).evaluate(e=>{const r=e.getBoundingClientRect();return {x:r.x,width:r.width,height:r.height,connected:e.isConnected}});assert.ok(bounds.connected&&bounds.width>0&&bounds.height>0);assert.ok(bounds.x>=0&&bounds.x+bounds.width<=width+1);
  for(const section of ['Food','Housing','Employment','Satisfaction']){const nav=p.getByRole('button',{name:section,exact:true});await nav.focus();await p.keyboard.press('Enter');const heading=p.locator('#scPlanSection'+section);await heading.waitFor({state:'visible'});assert.equal(await heading.evaluate(e=>document.activeElement===e),true);const b=await heading.boundingBox();const root=await p.locator('#sc159Pulse').boundingBox();assert.ok(b.y>=root.y&&b.y<root.y+root.height);await advance(p,5);await p.waitForTimeout(650);assert.equal(await heading.evaluate(e=>document.activeElement===e),true,'Section focus survives updates');}
  await p.getByRole('button',{name:'Housing',exact:true}).click();await p.screenshot({path:'test-results/gallery/m8-planning-'+width+'.png'});
 });
@@ -72,7 +72,7 @@ test('A genuine v0.7 campaign checkpoint restores without changing simulation or
  const p=await game(t),saved=JSON.parse(fs.readFileSync('tests/fixtures/city-v070.json'));
  assert.equal(saved.createdWith,'0.7.0');assert.equal(saved.schema,2);
  const r=await p.evaluate(s=>window.scCitySave.restore(s),saved);assert.equal(r.ok,true,r.message);
- const after=await p.evaluate(()=>window.scCitySave.capture());assert.equal(after.createdWith,'0.8.0');assert.deepEqual(after.state,saved.state);assert.deepEqual(after.campaign,saved.campaign);assert.equal(await p.evaluate(()=>window.scCitySave.status().paused),true);
+ const after=await p.evaluate(()=>window.scCitySave.capture());assert.equal(after.createdWith,'0.8.1');assert.deepEqual(after.state,saved.state);assert.deepEqual(after.campaign,saved.campaign);assert.equal(await p.evaluate(()=>window.scCitySave.status().paused),true);
 });
 
 test('Space activates planning navigation and Locate without changing Pause or arming camera pan',async t=>{
