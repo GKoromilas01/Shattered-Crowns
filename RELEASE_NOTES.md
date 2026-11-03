@@ -1,5 +1,15 @@
 # Release notes
 
+## v0.8.0 — City Planning & Economy Clarity
+
+- City Life now leads with measured food balance, housing, staffing and home-service summaries. Food production minus demand, reserve change, shortages and overflow are labeled separately.
+- Keyboard-accessible section navigation and Locate actions help find the next planning problem while retaining current zoom, Pause, selected units, orders and armed construction.
+- Live updates preserve focused section/Locate controls and expanded details; responsive cards use the existing green/cream/gold palette.
+- Fixed stale opening-music preview state and unavailable-audio interaction without changing the approved ambience.
+- Existing controls, roads, peaceful/classic modes and save formats remain compatible. No simulation balance, dependency, deployment or release-approval changes.
+
+See [Milestone 8](docs/MILESTONE8.md) for exact meanings, verification and limits.
+
 ## 0.7.0 — Peaceful City & Kingdom Overview (proposed)
 
 - Fresh cities are peaceful: rival castles live on a separate informational kingdom overview. Classic skirmish remains selectable in Menu with its existing AI and raids.
