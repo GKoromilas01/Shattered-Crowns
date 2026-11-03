@@ -26,7 +26,7 @@ The new default is an original sixteen-bar city theme at 72 BPM: restrained sust
 
 Menu → Sound → Music style offers **City theme · melody & strings** and **Original gentle ambience**. The previous four-field settings and key remain unchanged; the style has its own local key. Existing volume, music/effects and mute controls apply to either style. Switching style fades/stops old voices before scheduling the new phrase, avoiding a silent bar if rapid toggles fill the bounded voice pool. Future notes are canceled without becoming audible; active notes hold their current gain before fading, including a fallback for browsers without cancelAndHoldAtTime. Hidden pages and mute cancel future notes. No sound begins without a gesture.
 
-[Listen to the city-theme preview](audio/city-theme-v081.mp3). It is rendered using the same score/voice helpers as the live game, at its default 35% volume. The preview is for listening review; subjective musical approval belongs to Giannis. The original ambience remains available if preferred. Selection cues are unchanged and still provisional.
+[Listen to the city-theme preview](audio/city-theme-v081.mp3). It is rendered using the same score/voice helpers as the live game, at its default 35% volume. The corrected preview uses calibrated listening levels and peak protection; see the [audio recovery follow-up](validation/2026-11-04-audio-recovery.md). The earlier preview was too quiet despite a nonzero signal. Menu → Sound also has an explicit Enable sound & test recovery control. The preview is for listening review; subjective musical approval belongs to Giannis. The original ambience remains available if preferred. Selection cues are unchanged and still provisional.
 
 ## Verification and release
 
