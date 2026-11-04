@@ -33,3 +33,9 @@ Final review-fix focused run: **33/33 passed**, zero failures/skips (ten origin 
 Deferred minor: direct API restore before initial title entry is inspected but not directly browser-tested; normal Menu/portable/checkpoint restores after entry are covered. The UI does not expose pre-entry restore, so this is future-facing coverage rather than a known user-visible defect.
 
 [Village gameplay](../screenshots/m10-brookstead-city-1440.png) · [Village ownership in atlas](../screenshots/m10-brookstead-atlas-1440.png) · [Phone starting choices](../screenshots/m10-start-choices-390.png) · [Phone city](../screenshots/m10-brookstead-city-390.png) · [Phone atlas](../screenshots/m10-brookstead-atlas-390.png).
+
+## Complete source regression
+
+The uninterrupted full project command `CHROMIUM_PATH=/usr/bin/chromium TEST_ARTIFACT_DIR=test-results/m10-full npm test` passed **188/188**, with **0 failures, 0 skipped, 0 cancelled**, in 1360.3 seconds. Tested source: `e17e6fa1c8561b8e4f578828e02a4a0287fa85d1`. Node24.19 / Playwright1.57 / explicit systemChromium154. All original178 cases remain, with only requested current-version/default-music/available-home expectations adapted; ten origin cases are added. The deterministic worker-cue check was inherited from the separately verified dependency repair.
+
+Only evidence documentation changes after this run. index.html and release.json must remain byte-identical before exact committed-source build, manifest/Git byte verification and five packaged smoke journeys. Package result and pinned download are recorded in the PR. No merge/deploy/spending is authorized.
