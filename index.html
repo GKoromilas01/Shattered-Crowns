@@ -6611,12 +6611,15 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  const root=document.getElementById('sc159Pulse'),button=document.getElementById('sc1312CityLifeBtn');
  root.setAttribute('role','dialog');root.setAttribute('aria-label','City Life and Economy');
  // Let focused panel controls keep native Space activation before game shortcuts.
-  let nativeSpacePress=false;
+  let nativeSpacePress=false,nativePointerPress=false;
   window.addEventListener('keydown',e=>{if(!root.hidden&&e.code==='Space'&&e.target.closest?.('#scCityPlanningNav button,#scCityEconomyPanel button,#scCityEconomyPanel summary')){nativeSpacePress=true;e.stopImmediatePropagation();}},true);
   // Native button activation occurs after keyup. Keep the pressed node alive
   // until its click completes; restored focus alone cannot preserve that click.
   window.addEventListener('keyup',e=>{if(e.code==='Space'&&nativeSpacePress)setTimeout(()=>{nativeSpacePress=false;refresh();},0);},true);
-  window.addEventListener('blur',()=>{nativeSpacePress=false;});
+  root.addEventListener('pointerdown',e=>{if(e.button===0&&e.target.closest?.('#scCityPlanningNav button,#scCityEconomyPanel button,#scCityEconomyPanel summary'))nativePointerPress=true;});
+  window.addEventListener('pointerup',()=>{if(nativePointerPress)setTimeout(()=>{nativePointerPress=false;refresh();},0);},true);
+  window.addEventListener('pointercancel',()=>{nativePointerPress=false;refresh();},true);
+  window.addEventListener('blur',()=>{nativeSpacePress=false;nativePointerPress=false;});
  const close=document.createElement('button');close.id='scCityLifeClose';close.type='button';close.textContent='✕ Close';close.setAttribute('aria-label','Close City Life');
  document.getElementById('sc159PulseHeader').append(close);
  close.addEventListener('click',()=>{root.hidden=true;button.setAttribute('aria-expanded','false');button.focus()});
@@ -6641,7 +6644,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  const row=(label,value)=>'<tr><th>'+label+'</th><td>'+value+'</td></tr>';
  let renderedSignature='';
  function refresh(){
-   if(root.hidden||nativeSpacePress)return;
+   if(root.hidden||nativeSpacePress||nativePointerPress)return;
   const s=window.scCityEconomy.snapshot(),last=s.food.last;
   const clock=panel.querySelector('#scCityGraceRemaining');if(clock)clock.textContent=Math.ceil(s.peace.remaining);
   const signature=JSON.stringify({...s,peace:{...s.peace,remaining:0}});if(signature===renderedSignature)return;renderedSignature=signature;

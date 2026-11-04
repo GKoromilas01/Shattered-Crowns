@@ -75,3 +75,7 @@ test('Live updates preserve a native Space press until keyup activates the curre
  const p=await game(t);await p.locator('#sc1312CityLifeBtn').click();await p.locator('[data-steward="idle"]').focus();await p.keyboard.down('Space');await p.evaluate(()=>window.__stewardTest.busy());await p.waitForTimeout(750);await p.keyboard.up('Space');
  assert.equal(await p.locator('#sc159Pulse').isVisible(),false,'A refresh must not discard the held native button activation');assert.equal((await capture(p)).state.selected.length,1);assert.equal(await p.evaluate(()=>window.scCitySave.status().paused),true);assert.notEqual(await p.evaluate(()=>window.scSpacePan),true);
 });
+test('Live updates preserve a pressed pointer button until release activates the current idle-worker action',async t=>{
+ const p=await game(t);await p.locator('#sc1312CityLifeBtn').click();const at=await p.locator('[data-steward="idle"]').boundingBox();await p.mouse.move(at.x+at.width/2,at.y+at.height/2);await p.mouse.down();await p.evaluate(()=>window.__stewardTest.busy());await p.waitForTimeout(750);await p.mouse.up();
+ assert.equal(await p.locator('#sc159Pulse').isVisible(),false,'A refresh must not discard a held pointer activation');assert.equal((await capture(p)).state.selected.length,1);assert.equal(await p.evaluate(()=>window.scCitySave.status().paused),true);
+});
