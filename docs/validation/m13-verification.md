@@ -14,7 +14,9 @@ The resource tests caught a first-open focus failure: existing City Life renders
 
 ## Full verification
 
-Pending final full regression, exact-source package verification, packaged smoke, fresh review and remote CI. The draft PR will not claim readiness until these results are complete.
+Run `CHROMIUM_PATH=/usr/bin/chromium TEST_ARTIFACT_DIR=test-results/m13-full npm test` locally, followed by exact committed-source package build/manifest and Git-source verification and five packaged smoke journeys. Local browser version is Chromium154.0.8037.57/Playwright1.57.0/Node24.19; CI installs the Playwright-pinned browser. Exact final counts, source commit, CI runs and candidate ZIP are recorded in the PR after completion. Required GitHub CI independently runs the full suite, packages the committed game, validates its checksums and smoke-tests that package before publishing a candidate. No release/deployment is triggered.
+
+Fresh read-only review found no Critical/Important issue and one stale generic invalid-placement hint saying selected worker. The hint now says friendly worker. Reviewer also recommended direct range-ring coverage; the browser test records the actual canvas180unit arc while moving the pointer between workers. Physical Windows audio and final owner/Alex acceptance remain outside automated review.
 
 ## Audio and human limits
 

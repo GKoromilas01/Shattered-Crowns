@@ -46,3 +46,7 @@ test('Resource guide returns a running city to play without changing Pause or wo
 test('Hovering mobile map and Pause controls does not pan the city behind the HUD',async t=>{
  const p=await city(t,390);await p.mouse.move(195,450);await p.evaluate(async()=>{document.querySelector('#field').parentElement.scrollTop=200;await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));});const before=await capture(p);await p.getByRole('button',{name:'World map',exact:true}).hover();await p.waitForTimeout(300);assert.deepEqual((await capture(p)).view,before.view);await p.locator('#sc154Pause').hover();await p.waitForTimeout(300);assert.deepEqual((await capture(p)).view,before.view);
 });
+
+test('Defense range ring follows the friendly worker nearest the pointer without selecting units',async t=>{
+ const p=await city(t);await p.evaluate(()=>{window.__usabilityTest.funds();window.__usabilityTest.workers(670,255);const arc=CanvasRenderingContext2D.prototype.arc;CanvasRenderingContext2D.prototype.arc=function(x,y,r,...rest){if(this.canvas.id==='field'&&r===180)window.__defenseRange={x,y};return arc.call(this,x,y,r,...rest);};});await buildTool(p,'tower');for(const [x,workerX] of [[600,670],[900,830]]){const q=await point(p,x,170);await p.mouse.move(q.x,q.y);await p.waitForFunction(x=>window.__defenseRange?.x===x,workerX);assert.equal((await p.evaluate(()=>window.__defenseRange)).y,255);}assert.equal((await capture(p)).state.selected.length,0);
+});
