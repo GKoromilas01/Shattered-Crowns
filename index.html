@@ -263,16 +263,17 @@ if(scScenario==='city'&&scOriginId==='brookstead'){
 }
 el('pause').textContent='Pause';el('liveOverview').textContent=scScenario==='city'?'A peaceful settlement begins.':'Battle beginning...';el('report').textContent='Battle in progress. Depleted resource sites recover after 45 seconds.';msg(scScenario==='city'?'A peaceful home city: build food, housing, roads and services. Discover the surrounding realm in Menu → Kingdom map.':'Build your town: assign workers, construct houses and farms, then add wells, markets, granaries, healers, roads and lumberyards. Defend against occasional raids.');if(scScenario==='city')el('report').textContent='Peaceful city campaign. Rival castles belong to the kingdom overview; no attacks are scheduled.';updateUI();window.dispatchEvent(new Event('sc-city-started'))};// Citizens staff production and service buildings. Food production is staffed first
 // to prevent city starvation from purely cosmetic building order.
+const cityJobSlots=Object.freeze({fishery:2,farm:3,lumberyard:2,market:2,clinic:2,granary:1,bakery:2});
 function assignEmployment(){
- const roles={fishery:2,farm:3,lumberyard:2,market:2,clinic:2,granary:1,bakery:2};
+ const roles=cityJobSlots;
  const priority=['farm','fishery','lumberyard','market','clinic','granary','bakery'];
  const sites=buildings.filter(b=>b.team===0&&alive(b)&&roles[b.type]);
  let available=Math.max(0,population-2),byId=new Map(),filled=0;
  for(const type of priority)for(const b of sites.filter(x=>x.type===type)){
-  let count=Math.min(available,roles[type]);available-=count;filled+=count;
-  byId.set(b.id,{count,need:roles[type],efficiency:count/roles[type]});
+  let count=b.cityWorkPaused?0:Math.min(available,roles[type]);available-=count;filled+=count;
+  byId.set(b.id,{count,need:roles[type],efficiency:count/roles[type],paused:!!b.cityWorkPaused});
  }
- employment={jobs:sites.reduce((n,b)=>n+roles[b.type],0),filled,available,byId};
+ employment={jobs:sites.reduce((n,b)=>n+(b.cityWorkPaused?0:roles[b.type]),0),filled,available,byId};
  window.scEmploymentSnapshot={jobs:employment.jobs,filled:employment.filled,available:employment.available,sites:sites.map(b=>({id:b.id,type:b.type,filled:byId.get(b.id)?.count||0,need:roles[b.type]}))};
 }
 function describeBuilding(b){
@@ -336,7 +337,7 @@ function civicHasRoadAccess(b,network=getRoadNetwork()){
 function roadServiceBonus(owned,network=getRoadNetwork()){
  const houses=owned.filter(b=>b.type==='house');
  const wells=owned.filter(b=>b.type==='well'&&civicHasRoadAccess(b,network));
- const clinics=owned.filter(b=>b.type==='clinic'&&civicHasRoadAccess(b,network));
+ const clinics=owned.filter(b=>b.type==='clinic'&&!b.cityWorkPaused&&civicHasRoadAccess(b,network));
  return houses.reduce((total,h)=>total+
   (wells.some(w=>dist(w,h)<190)?.22:0)+
   (clinics.some(c=>dist(c,h)<190)?.3:0),0);
@@ -366,7 +367,7 @@ function cityProviderService(b,context){
  const road=kind==='market'?marketHasTradeAccess(b,network):civicHasRoadAccess(b,network);
  const status=!staffed?'unstaffed':kind==='market'&&!road?'disconnected':kind==='market'&&food<=0?'no_food':'ready';
  const messages={
-  unstaffed:def.label+': '+(staff?.count||0)+'/'+(staff?.need||2)+' staff; at least '+Math.ceil((staff?.need||2)/2)+' required. Grow serviced housing; food producers receive staff first.',
+  unstaffed:staff?.paused?def.label+': paused by the governor. Open this workplace in City Life → Employment.':def.label+': '+(staff?.count||0)+'/'+(staff?.need||2)+' staff; at least '+Math.ceil((staff?.need||2)/2)+' required. Grow serviced housing; food producers receive staff first.',
   disconnected:'Market: connect a road group of at least three sections within 135 map units.',
   no_food:'Market: shared food reserve is empty. Restore staffed farm or fishery harvest; baskets are optional exports.',
   ready:kind==='water'?'Water: well ready within 190 map units; no staff or road required.':kind==='health'?'Healthcare: healer ready within 190 map units; no material input required.':'Market: staffed, road-connected and food available in the shared reserve.'
@@ -445,14 +446,29 @@ function cityReconcileOccupancy(context){
  for(const h of homes){if(remaining<=0)break;if(!cityCanMigrate(h,context))continue;const assigned=Math.min(remaining,cityHouseCapacity(h)-h.cityResidents);h.cityResidents+=assigned;remaining-=assigned;}
  return {keepResidents:Math.min(8,population),displaced:remaining};
 }
+function cityMigrationReadiness(homes,context,occupancy){
+ context??={owned:cityOwned(),network:getRoadNetwork()};occupancy??=cityReconcileOccupancy(context);
+ const capacity=8+homes.reduce((n,h)=>n+cityHouseCapacity(h),0),reserve=Math.max(10,Math.ceil(population*.45*(window.scRationFactor||1))*2);
+ const vacant=h=>Math.max(0,cityHouseCapacity(h)-(h.cityResidents||0));
+ const serviced=homes.filter(h=>{const t=houseTier(h,context);return vacant(h)>0&&t.water&&t.access;});
+ const eligibleVacancies=homes.filter(h=>cityCanMigrate(h,context)).reduce((n,h)=>n+vacant(h),0);
+ const checks=[
+  {id:'meals',label:'Measured meals delivered',met:!!cityLedger&&cityLedger.shortfall===0,detail:cityLedger?(cityLedger.shortfall?'Last cycle had '+cityLedger.shortfall+' unmet meals.':'No unmet meals in the last cycle.'):'Waiting for the first five-second food cycle.'},
+  {id:'reserve',label:'Food reserve',met:food>=reserve,detail:'At least '+reserve+' food: two base-demand cycles, minimum 10.'},
+  {id:'housing',label:'Housing space',met:population<capacity,detail:population+' / '+capacity+' residents.'},
+  {id:'settled',label:'Existing residents housed',met:occupancy.displaced===0,detail:occupancy.displaced+' displaced residents.'},
+  {id:'services',label:'Vacant home with water and roads',met:serviced.length>0,detail:'A well within 190 and a connected road group within 115 map units.'},
+  {id:'happiness',label:'Happiness 45 or higher',met:happiness>=45,detail:(Math.round(happiness*10)/10)+' / 100.'}
+ ];
+ const ready=checks.every(c=>c.met);return {ready,measured:!!cityLedger,checks,capacity,eligibleVacancies,nextResidentSeconds:ready?Math.max(0,15-cityGrowth.progress):null};
+}
 function cityGrow(homes){
- const cap=8+homes.reduce((n,h)=>n+cityHouseCapacity(h),0);
- const occupancy=cityReconcileOccupancy();
- const eligible=homes.some(h=>cityCanMigrate(h)&&(h.cityResidents||0)<cityHouseCapacity(h));
+ const context={owned:cityOwned(),network:getRoadNetwork()},occupancy=cityReconcileOccupancy(context),readiness=cityMigrationReadiness(homes,context,occupancy);
+ const cap=readiness.capacity,eligible=readiness.eligibleVacancies>0;
  cityGrowth.reason=cityLedger.shortfall>0?'Food shortage: restore farm or fishery production.':occupancy.displaced>0?'Residents are displaced: rebuild serviced housing.':population>=cap?'Housing is full: build another house.':!eligible?'Migration needs vacant housing with a food reserve, nearby water and connected roads.':happiness<45?'Improve food and services until happiness reaches 45.':'A new resident can arrive after 15 seconds of stable services.';
  if(cityLedger.shortfall>0||occupancy.displaced>0){cityGrowth.progress=0;cityGrowth.departure+=5;if(cityGrowth.departure>=15&&population>4){population--;cityGrowth.departure=0;}return;}
  cityGrowth.departure=0;
- if(eligible&&population<cap&&happiness>=45){cityGrowth.progress+=5;if(cityGrowth.progress>=15){population++;cityGrowth.progress=0;}}
+ if(readiness.ready){cityGrowth.progress+=5;if(cityGrowth.progress>=15){population++;cityGrowth.progress=0;}}
  else cityGrowth.progress=0;
 }
 function cityProsperityDetails(context){
@@ -482,7 +498,7 @@ function cityBuildingDetails(b,houses,context={owned:cityOwned(),network:getRoad
  const supply=['farm','fishery'].includes(b.type)?cityProducerSupply(b,context):null;
  const connected=b.type==='market'?marketHasTradeAccess(b,network):civicHasRoadAccess(b,network),last=cityFlows.find(f=>f.id===b.id)||null;
  const service=cityProviderService(b,context);let blockers=[],coverage=null;
- if(a&&a.count<a.need)blockers.push('Staff '+a.count+'/'+a.need+': grow serviced housing; food producers receive staff first.');
+  if(a&&!a.paused&&a.count<a.need)blockers.push('Staff '+a.count+'/'+a.need+': grow serviced housing; food producers receive staff first.');
  if(h){blockers=h.currentMissing.map(x=>'Restore '+x).concat(h.tier<4?h.nextRequirements.filter(r=>!r.met).map(r=>r.label):[]);if(!h.access)blockers.push('Connect three or more road sections within 115 map units for migration.');if(h.food){const gap=['water','health','market'].find(k=>h.services[k].status!=='ready'&&(k==='water'||k==='health'&&h.tier>=2||k==='market'&&h.tier>=3));if(gap)blockers.unshift(h.services[gap].message);}}
  if(supply){if(!supply.road)blockers.push('Connect at least three road sections within 125 map units for the harvest bonus.');if(!supply.depot)blockers.push('Provide a staffed, road-connected granary within 200 map units for the 25% harvest bonus.');}
  if(b.type==='bakery'){
@@ -497,9 +513,10 @@ function cityBuildingDetails(b,houses,context={owned:cityOwned(),network:getRoad
   if(b.type==='market'&&!marketHasTradeAccess(b,network))blockers.push('Connect three road sections within 135 map units to distribute food.');
  }
  if(service&&service.status!=='ready'&&!blockers.includes(service.message))blockers.push(service.message);
- const idle=!!a&&(!a.count||b.type==='bakery'&&(!owned.some(g=>g.type==='granary'&&dist(g,b)<190)||food<3*a.efficiency));
+  if(a?.paused)blockers.unshift('Paused by the governor. Open this workplace to offer '+a.need+' civilian jobs again. Production and staffed services are stopped; physical storage is retained.');
+  const idle=!!a&&(!a.count||b.type==='bakery'&&(!owned.some(g=>g.type==='granary'&&dist(g,b)<190)||food<3*a.efficiency));
  const nextAction=blockers[0]||(h?(h.tier===4?'Maintain current services to retain Manor housing.':'Maintain these services for '+Math.max(0,10-h.upgradeSeconds)+' more seconds for the next tier.'):(supply?'Harvest is staffed and logistics connected; monitor storage overflow.':b.type==='bakery'?'Keep grain available; exports use only the configured food reserve surplus.':'Monitor staffing and local coverage as the city grows.'));
- return {id:b.id,type:b.type,service,sharedSupply:b.type==='market'?{food,tradeBaskets:tradeGoods}:null,storage:b.type==='granary'?{stock:cityGranaryStock(b,owned),capacity:160}:null,staff:a?{filled:a.count,need:a.need}:null,connected,supply,coverage,idle,blockers,nextAction,house:h||null,last:last?{...last}:null};
+  return {id:b.id,type:b.type,workplace:a?{paused:a.paused}:null,service,sharedSupply:b.type==='market'?{food,tradeBaskets:tradeGoods}:null,storage:b.type==='granary'?{stock:cityGranaryStock(b,owned),capacity:160}:null,staff:a?{filled:a.count,need:a.need}:null,connected,supply,coverage,idle,blockers,nextAction,house:h||null,last:last?{...last}:null};
 }
 function cityAdvice(s){
  const advice=[];if(scScenario==='city'){advice.push('Peaceful city campaign: no enemy attacks are scheduled. Open Menu → Kingdom map for measured prosperity and preparation goals.');const goal=scReadiness(s).find(r=>!r.met);if(goal)advice.push('City readiness — '+goal.label+': '+goal.detail+'.');}
@@ -513,7 +530,7 @@ function cityAdvice(s){
   if(home)advice.push('House #'+home.id+' · '+home.services[kind].message);
  }
 
- const idle=s.buildings.filter(b=>b.idle);
+  const idle=s.buildings.filter(b=>b.idle&&!b.workplace?.paused);
  if(idle.length)advice.push('Idle workplace: '+idle[0].type+' #'+idle[0].id+'. '+idle[0].nextAction);
  if(s.workforce.filled<s.workforce.jobs)advice.push('Workplaces lack '+(s.workforce.jobs-s.workforce.filled)+' residents; grow serviced housing. Food producers receive staff first.');
  if(s.food.last?.overflow>0)advice.push('Food storage overflow: '+s.food.last.overflow.toFixed(1)+' lost last cycle. Add granary capacity before more farms.');
@@ -521,7 +538,7 @@ function cityAdvice(s){
  if(disconnected)advice.push('Supply link: '+disconnected.type+' #'+disconnected.id+'. '+disconnected.blockers.find(x=>/road|granary/.test(x)));
  if(!s.housing.houses.length)advice.push('Build a house, a nearby well and a connected road block to welcome residents.');
  if(s.housing.houses.some(h=>!h.water||!h.access))advice.push('Provide nearby wells and connected roads to homes so migration can resume.');
- if(s.workforce.idle)advice.push(s.workforce.idle+' civilian residents are unemployed. Add useful workplaces as food reserves allow; map workers are separate units.');
+  if(s.workforce.idle)advice.push(s.workforce.idle+' civilian residents are unemployed. '+(s.workforce.pausedJobs?'Open a useful paused workplace as food reserves allow.':'Add useful workplaces as food reserves allow; map workers are separate units.'));
  if(s.food.markets.served<s.housing.houses.length)advice.push('Connect and staff a market within 190 map units of homes to reduce food waste.');
  if(s.food.granaries.length===0)advice.push('Add a granary for 160 more shared food storage and staff it near connected producers.');
  const home=s.buildings.find(b=>b.house&&b.house.tier<4);
@@ -551,14 +568,14 @@ function citySnapshot(){
  const houses=homes.map(h=>cityHouseDetails(h,context));
  const depots=owned.filter(b=>b.type==='granary');
  const granaries=depots.map(g=>{const stock=cityGranaryStock(g,owned);return {id:g.id,stock,capacity:160,staff:employment.byId.get(g.id)?.count||0,connected:civicHasRoadAccess(g,context.network)};});
- const sites=owned.filter(b=>employment.byId.has(b.id)).map(b=>{const a=employment.byId.get(b.id);return {id:b.id,type:b.type,filled:a.count,need:a.need,efficiency:a.efficiency,output:(b.type==='farm'?13:b.type==='fishery'?9:b.type==='lumberyard'?5:0)*a.efficiency};});
+  const sites=owned.filter(b=>employment.byId.has(b.id)).map(b=>{const a=employment.byId.get(b.id);return {id:b.id,type:b.type,paused:a.paused,filled:a.count,need:a.need,efficiency:a.efficiency,output:(b.type==='farm'?13:b.type==='fishery'?9:b.type==='lumberyard'?5:0)*a.efficiency};});
  const demand=Math.ceil(population*.45*(window.scRationFactor||1)),production=sites.filter(b=>['farm','fishery'].includes(b.type)).reduce((n,b)=>n+b.output,0);
  const s={cycles:cityCycleNumber,population,happiness:Math.round(happiness),housing:{capacity:8+houses.reduce((n,h)=>n+h.capacity,0),keepResidents:occupancyState.keepResidents,displaced:occupancyState.displaced,houses},growth:{...cityGrowth},workforce:{pool:Math.max(0,population-2),reserved:Math.min(2,population),filled:employment.filled,idle:employment.available,jobs:employment.jobs,sites},food:{stock:food,capacity:90+depots.length*160,baseStock:Math.min(90,food),granaries,demand,production,reserveSeconds:demand?Math.floor(food/demand*5):0,last:cityLedger?{...cityLedger}:null,markets:{served:window.sc1412MarketDistributionSnapshot?.served||0,total:homes.length,savings:window.sc1412MarketDistributionSnapshot?.savings||0}},prosperity:cityProsperityDetails(context)};
  s.satisfaction=citySatisfactionDetails(context);
  s.food.flows=cityFlows.map(f=>({...f}));s.food.households=cityHouseholds.map(h=>({...h}));
  s.buildings=owned.map(b=>cityBuildingDetails(b,houses,context));
  s.peace=scScenario==='city'?{scenario:'city',description:'Peaceful city campaign: no enemy attacks are scheduled. Readiness is preparation, not a war timer.',graceSeconds:0,remaining:0,raidInterval:0,difficulty}:{graceSeconds:difficulty==='hard'?180:300,raidInterval:difficulty==='easy'?300:difficulty==='hard'?120:240,remaining:Math.max(0,(difficulty==='hard'?180:300)-elapsed),difficulty};
- s.village=cityVillageSnapshot();s.advice=cityAdvice(s);return s;
+  s.growth.readiness=cityMigrationReadiness(homes,context,occupancyState);s.workforce.pausedJobs=sites.filter(b=>b.paused).reduce((n,b)=>n+b.need,0);s.village=cityVillageSnapshot();s.advice=cityAdvice(s);return s;
 }
 
 function updateUI(){assignEmployment();el('buildingInspector').textContent=describeBuilding(inspectedBuilding).replaceAll(' | ','\n');let cityOwned=buildings.filter(b=>b.team===0&&alive(b));let farmRate=cityOwned.filter(b=>b.type==='farm').reduce((v,b)=>v+13*(employment.byId.get(b.id)?.efficiency||0),0)+cityOwned.filter(b=>b.type==='fishery').reduce((v,b)=>v+9*(employment.byId.get(b.id)?.efficiency||0),0);let useRate=Math.ceil(population*.45*(window.scRationFactor||1));let stored=90+cityOwned.filter(b=>b.type==='granary').length*160;el('foodBalance').textContent=`🌾 Food: +${farmRate.toFixed(1)} production / -${useRate} consumption every 5 seconds | Net ${farmRate-useRate>=0?'+':''}${(farmRate-useRate).toFixed(1)} | Storage ${Math.floor(food)}/${stored}`;const network=getRoadNetwork();
@@ -2865,9 +2882,9 @@ function scCaptureCity(){
   else if(u.order&&ref(u.order.target))row.order={type:u.order.type,target:ref(u.order.target)};
   return row;
  });
- const buildingRows=liveBuildings.map(b=>({...Object.fromEntries(scBuildingNumbers.map(k=>[k,k==='cityTier'?(b[k]||1):(b[k]??0)])),type:b.type,scLastNotifiedTier:b.scLastNotifiedTier??null}));
+  const buildingRows=liveBuildings.map(b=>({...Object.fromEntries(scBuildingNumbers.map(k=>[k,k==='cityTier'?(b[k]||1):(b[k]??0)])),type:b.type,scLastNotifiedTier:b.scLastNotifiedTier??null,...(typeof b.cityWorkPaused==='boolean'?{cityWorkPaused:b.cityWorkPaused}:{})}));
  const zoom=window.scMapZoom?.get()||1;
- return {format:scSaveFormat,schema:scScenario==='city'?(scOriginId==='brookstead'?3:2):1,...(scScenario==='city'?{campaign:{mode:'city',stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,...(scOriginId==='brookstead'?{originId:scOriginId}:{})}}:{}),createdWith:'0.11.0',cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
+ return {format:scSaveFormat,schema:scScenario==='city'?(scOriginId==='brookstead'?3:2):1,...(scScenario==='city'?{campaign:{mode:'city',stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,...(scOriginId==='brookstead'?{originId:scOriginId}:{})}}:{}),createdWith:'0.12.0',cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
   resources:{gold,wood,stone,food,tradeGoods,goodsSold,aiGold,aiWood},people:{population,happiness,prosperity:cityProsperity},
   clock:{elapsed,cityTimer,cityCycleNumber,aiTimer,resourceTimer,aiDecision,aiAttackTimer,aiTrainTimer,trainTimer,scFestivalCooldown},
   options:{difficulty,formation,eventFoodReserve:scEventFoodReserve,showLabels,showMinimap,serviceOverlay,ration:window.scRationPolicy?.capture()||{mode:el('sc1303Mode')?.value||'normal',emergency:window.scRationFactor===.75},breadExport:window.scBreadExportEnabled!==false,breadReserveCycles:window.scBreadReserveCycles??2},
@@ -2906,7 +2923,7 @@ function scPrepareCity(input){
  const used=new Set();
  function entity(row,fields,types){keys(row,fields);id(row.id);if(used.has(row.id)||row.id>=s.nextId)fail();used.add(row.id);choice(row.team,[0,1]);choice(row.type,types);number(row.x,0,W);number(row.y,0,H);number(row.hp,Number.MIN_VALUE,100000);number(row.max,row.hp,100000);number(row.radius,.1,1000);number(row.cool,-1e9,1e9);}
  for(const u of s.units){entity(u,[...scUnitNumbers,'type',...scUnitFlags,'scLastMedic','target','order'],scUnitTypes);for(const k of ['speed','damage','range','carry'])number(u[k],0,100000);for(const k of scUnitFlags)bool(u[k]);if(u.scCharge&&u.scShieldWall)fail();if(u.scLastMedic!==null)number(u.scLastMedic,0,s.clock.elapsed);}
- for(const b of s.buildings){entity(b,[...scBuildingNumbers,'type','scLastNotifiedTier'],scBuildingTypes);number(b.cityTier,1,4,true);number(b.cityResidents,0,1e6,true);number(b.cityUpgrade,0,10);number(b.cityDecline,0,30);if(b.scLastNotifiedTier!==null)number(b.scLastNotifiedTier,1,4,true);if(b.type==='house'?b.cityResidents>cityHouseCapacity(b):b.cityResidents!==0)fail();}
+ for(const b of s.buildings){entity(b,[...scBuildingNumbers,'type','scLastNotifiedTier','cityWorkPaused'],scBuildingTypes);if(Object.hasOwn(b,'cityWorkPaused')){bool(b.cityWorkPaused);if(b.team!==0||!Object.hasOwn(cityJobSlots,b.type))fail();}number(b.cityTier,1,4,true);number(b.cityResidents,0,1e6,true);number(b.cityUpgrade,0,10);number(b.cityDecline,0,30);if(b.scLastNotifiedTier!==null)number(b.scLastNotifiedTier,1,4,true);if(b.type==='house'?b.cityResidents>cityHouseCapacity(b):b.cityResidents!==0)fail();}
  if(s.buildings.filter(b=>b.type==='house').reduce((n,b)=>n+b.cityResidents,0)>Math.max(0,s.people.population-8))fail();
  if(!s.ended&&(!s.buildings.some(b=>b.type==='keep'&&b.team===0)||(data.schema===1&&!s.buildings.some(b=>b.type==='keep'&&b.team===1))))fail();
  for(const n of s.nodes){keys(n,['type','x','y','amount','radius','renew']);choice(n.type,['tree','stone','gold']);number(n.x,0,W);number(n.y,0,H);number(n.amount);number(n.radius,.1,1000);number(n.renew,0,1e9);}
@@ -2951,7 +2968,13 @@ function scRestoreCity(input){
 }
 window.scCitySave={capture:scCaptureCity,restore:scRestoreCity,validate:input=>{try{scPrepareCity(input);return {ok:true};}catch(e){return {ok:false,message:e.message};}},status:()=>({cityId:scCityIdentity,elapsed,paused,ended})};
 
-window.scCityEconomy={snapshot:citySnapshot,selectIdleWorkers:()=>{
+window.scCityEconomy={snapshot:citySnapshot,setWorkplaceOpen:(id,open)=>{
+ if(!scVillageActionReady()||!Number.isSafeInteger(id)||typeof open!=='boolean')return false;
+ const b=buildings.find(b=>b.id===id&&b.team===0&&alive(b)&&Object.hasOwn(cityJobSlots,b.type));if(!b)return false;
+ if(!!b.cityWorkPaused===!open)return true;
+ if(open)delete b.cityWorkPaused;else b.cityWorkPaused=true;
+ assignEmployment();updateUI();window.dispatchEvent(new Event('sc-workplace-changed'));msg(b.type+' #'+id+(open?' opened. Residents staff open workplaces in food-first order.':' paused. Residents are available for other open workplaces.'));return true;
+},selectIdleWorkers:()=>{
  if(!scVillageActionReady())return false;const idle=units.filter(scIdleMapWorker);if(!idle.length)return false;
  selected=idle;inspectedBuilding=null;window.scRTSSelected=selected.slice();window.scRTSInspectedBuilding=null;scVillageCenter(idle[0]);updateUI();
  window.dispatchEvent(new CustomEvent('sc-selection-changed',{detail:{units:selected.slice(),building:null,source:'village'}}));msg(idle.length+' idle workers selected. Right-click a resource deposit to gather.');return true;
@@ -6629,6 +6652,10 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  const panel=document.createElement('section');panel.id='scCityEconomyPanel';root.append(panel);
  nav.addEventListener('click',e=>{const name=e.target.closest('[data-section]')?.dataset.section;if(!name)return;const heading=panel.querySelector('#scPlanSection'+name);heading?.focus({preventScroll:true});heading?.scrollIntoView({block:'start'});});
   panel.addEventListener('click',e=>{
+   const workplace=e.target.closest('[data-workplace]');if(workplace){
+    if(!window.scCityEconomy.setWorkplaceOpen(Number(workplace.dataset.workplace),workplace.dataset.open==='true'))locationStatus.textContent='That workplace is no longer available. Choose a current workplace.';else locationStatus.textContent='Workplace updated. Civilian staff reassign immediately; output and resident progress update on five-second cycles.';
+    refresh();return;
+   }
    const section=e.target.closest('[data-village-section]')?.dataset.villageSection;if(section){const heading=panel.querySelector('#scPlanSection'+section);heading?.focus({preventScroll:true});heading?.scrollIntoView({block:'start'});return;}
    const action=e.target.closest('[data-steward]');if(action){
     const ok=action.dataset.steward==='idle'?window.scCityEconomy.selectIdleWorkers():window.scCityEconomy.locateResource(action.dataset.stewardResource);
@@ -6652,7 +6679,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   const focused=document.activeElement;
   const focusHouse=panel.contains(focused)?focused?.closest('details')?.dataset.house:null;
    const focusLocate=focused?.dataset?.locate,focusSection=focused?.id?.startsWith('scPlanSection')?focused.id:null;
-   const focusSteward=panel.contains(focused)?focused?.dataset?.steward:null,focusResource=focused?.dataset?.stewardResource,focusNeed=panel.contains(focused)?focused?.dataset?.villageSection:null;
+   const focusSteward=panel.contains(focused)?focused?.dataset?.steward:null,focusResource=focused?.dataset?.stewardResource,focusNeed=panel.contains(focused)?focused?.dataset?.villageSection:null,focusWorkplace=panel.contains(focused)?focused?.dataset?.workplace:null;
   const lastBalance=last?last.harvest+last.logistics+last.bakeryNet-last.exports-last.demand:null;
   const signed=x=>(x>0?'+':'')+number(x);
   const ready=kind=>s.housing.houses.filter(h=>h.services[kind].status==='ready').length;
@@ -6672,27 +6699,29 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
    '<article id="scPlanJobs"><h3>Employment</h3><strong>'+s.workforce.filled+' / '+s.workforce.jobs+'</strong> jobs staffed<p>'+Math.max(0,s.workforce.jobs-s.workforce.filled)+' unfilled · '+s.workforce.idle+' idle residents · '+s.workforce.reserved+' essential duties.</p><p>Map workers are separate recruited units.</p></article>'+
    '<article id="scPlanServices"><h3>Home services</h3>'+(s.housing.houses.length?'<p>Water '+ready('water')+'/'+s.housing.houses.length+' · Healthcare '+ready('health')+'/'+s.housing.houses.length+' · Market '+ready('market')+'/'+s.housing.houses.length+'</p><p>Ready services across all built homes, including vacant homes.</p>':'<p>No houses yet. Build a house near water and connected roads.</p>')+'</article></section>';
   const houses=s.housing.houses.map(h=>'<details data-house="'+h.id+'"'+(open.has(String(h.id))?' open':'')+'><summary>House #'+h.id+' · '+h.name+' · '+h.occupancy+'/'+h.capacity+' residents</summary>'+locate(h.id,'house')+'<p>'+Object.entries(h.services).map(([k,v])=>(k==='health'?'Healthcare':k==='water'?'Water':'Market')+': '+v.status.replaceAll('_',' ')).join(' · ')+'</p>'+Object.values(h.services).filter(v=>v.status!=='ready').map(v=>'<p class="cityWarn">'+v.message+'</p>').join('')+'<p>Upgrade: '+h.upgradeSeconds+'/10 seconds of sustained requirements. Decline: '+h.downgradeSeconds+'/30 seconds.</p>'+(h.tier<4?'<p>Next: '+h.nextRequirements.map(r=>(r.met?'✓ ':'✗ ')+r.label).join(' · ')+'</p>':'<p>Maximum tier reached.</p>')+(h.currentMissing.length?'<p class="cityWarn">Current tier at risk: '+h.currentMissing.join(', ')+'</p>':'')+'</details>').join('');
-  const satisfaction=s.satisfaction;
+  const growth=s.growth.readiness;
+   const growthPanel='<section id="scGrowthReadiness" aria-label="Next resident requirements"><strong>Welcome the next resident</strong><p>'+s.growth.progress+' / 15 stable seconds · '+(growth.ready?growth.nextResidentSeconds+' more stable seconds needed.':'Resolve the unmet checks below.')+'</p><progress id="scGrowthProgress" max="15" value="'+s.growth.progress+'" aria-label="Resident arrival progress"></progress><ul>'+growth.checks.map(c=>'<li'+(c.met?'':' class="cityWarn"')+'>'+(c.met?'✓ ':'✗ ')+c.label+': '+c.detail+'</li>').join('')+'</ul><p>Progress advances on five-second simulation cycles while these conditions hold. Pause freezes progress. Home upgrades separately need 10 seconds of sustained requirements; inspect a house below.</p></section>';
+   const satisfaction=s.satisfaction;
    panel.innerHTML=steward+summary+'<h3 id="scPlanSectionSatisfaction" tabindex="-1">Citizen satisfaction '+number(satisfaction.score)+' / 100</h3><p>Target '+number(satisfaction.target)+' · approaches by at most 2 points per five-second cycle. Migration needs happiness 45+, vacant serviced housing and 15 seconds of stability. Existing residents stay through service gaps; shortages and lost housing capacity can cause departures.</p><table aria-label="Citizen satisfaction factors"><tr><th>Factor</th><th>Points</th><th>Explanation</th></tr>'+satisfaction.factors.map(f=>'<tr><th>'+f.label+'</th><td>'+number(f.points)+' / '+f.max+'</td><td>'+f.reason+'</td></tr>').join('')+row(satisfaction.modifier.label,(satisfaction.modifier.points>=0?'+':'')+number(satisfaction.modifier.points))+'</table><p>'+satisfaction.modifier.reason+' Target is clamped to 0–100. Keep residents have basic services; vacant homes do not count as citizens. Current service reach is separate from last-cycle meal delivery.</p>'+(satisfaction.last?'<p>Last satisfaction cycle: '+number(satisfaction.last.opening)+' → '+number(satisfaction.last.closing)+' (applied target '+number(satisfaction.last.target)+', change '+number(satisfaction.last.change)+'). Feasts and festivals can provide immediate happiness bonuses.</p>':'<p>Waiting for the first satisfaction cycle.</p>')+
-   '<h3 id="scPlanSectionHousing" tabindex="-1">Residents & housing</h3><p>'+s.population+' / '+s.housing.capacity+' civilian residents · '+s.housing.keepResidents+' in the Keep · '+s.housing.displaced+' displaced</p><p>'+s.growth.reason+' Progress: '+s.growth.progress+'/15 seconds.</p>'+houses+
+   '<h3 id="scPlanSectionHousing" tabindex="-1">Residents & housing</h3><p>'+s.population+' / '+s.housing.capacity+' civilian residents · '+s.housing.keepResidents+' in the Keep · '+s.housing.displaced+' displaced</p><p>'+s.growth.reason+' Progress: '+s.growth.progress+'/15 seconds.</p>'+growthPanel+houses+
    '<h3 id="scPlanSectionFood" tabindex="-1">Food reserve & distribution</h3><p>'+number(s.food.stock)+' / '+s.food.capacity+' food stored · '+s.food.reserveSeconds+' seconds of household reserve (before new production).</p><p>Harvest at current staffing: '+number(s.food.production)+' · Household demand before distribution: '+s.food.demand+' / 5 seconds.</p><p>Markets serve '+s.food.markets.served+'/'+s.food.markets.total+' homes; '+s.food.markets.savings+' food saved last cycle.</p>'+
    (last?'<table aria-label="Last five-second food cycle">'+row('Opening reserve',number(last.opening))+row('Farm/fishery harvest','+'+number(last.harvest))+row('Supply logistics','+'+number(last.logistics))+row('Bakery conversion (net)','+'+number(last.bakeryNet))+row('Bread exports','−'+number(last.exports))+row('Household delivery','−'+number(last.delivered))+row('Storage overflow','−'+number(last.overflow))+row('Closing reserve',number(last.closing))+row('Unmet household demand',number(last.shortfall))+'</table>':'<p>Waiting for the first five-second economy cycle.</p>')+
    '<p>Shared reserve: '+number(s.food.baseStock)+'/90 base storage'+s.food.granaries.map(g=>' · Granary #'+g.id+' '+number(g.stock)+'/160 ('+g.staff+'/1 staff, '+(g.connected?'road connected':'needs connected roads')+')').join('')+'. Granaries share this reserve; these are not extra food stocks.</p>'+
    '<h3>Measured food chain · last 5-second cycle</h3><p>Farm / fishery → shared granary reserve → market waste savings → households. Producers still harvest without a granary; connected staffed granaries add 25%. Bakers use the same reserve. Markets save food, rather than creating another stock.</p><table aria-label="Measured production chain"><tr><th>Building</th><th>Harvest + logistics</th><th>Grain → bread</th><th>Exports</th></tr>'+s.food.flows.map(f=>'<tr><td>'+f.type+' #'+f.id+' ('+f.staff+' staff last cycle)</td><td>'+number(f.harvest)+' + '+number(f.logistics)+'</td><td>'+number(f.consumed)+' → '+number(f.produced)+'</td><td>'+number(f.exported)+'</td></tr>').join('')+'</table><p>Household accounting shares use residents present at the start of the last cycle; these are not simulated delivery carts. Display values are rounded to one decimal; calculations retain full precision.</p><table aria-label="Household food delivery"><tr><th>Home</th><th>Residents</th><th>Demand</th><th>Consumed</th><th>Unmet</th></tr>'+s.food.households.map(h=>'<tr><td>'+h.label+'</td><td>'+h.residents+'</td><td>'+number(h.demand)+'</td><td>'+number(h.delivered)+'</td><td>'+number(h.shortfall)+'</td></tr>').join('')+'</table>'+
-   '<h3>Building feedback</h3>'+s.buildings.filter(b=>b.staff||b.type==='well').map(b=>'<details data-house="site'+b.id+'"'+(open.has('site'+b.id)?' open':'')+'><summary>'+b.type+' #'+b.id+(b.staff?' · '+b.staff.filled+'/'+b.staff.need+' staff':'')+(b.idle?' · idle':'')+'</summary>'+locate(b.id,b.type)+'<p>'+b.nextAction+'</p>'+b.blockers.slice(1).map(x=>'<p class="cityWarn">'+x+'</p>').join('')+(b.service?'<p>'+b.service.message+'</p>':'')+(b.coverage?'<p>Service reach: '+b.coverage.served+'/'+b.coverage.nearby+' nearby homes covered · '+b.coverage.supplied+' currently supplied. Food delivery remains measured in the ledger.</p>':'')+'</details>').join('')+
-   '<h3 id="scPlanSectionEmployment" tabindex="-1">Employment & production</h3><p>'+s.workforce.filled+' staffed + '+s.workforce.idle+' idle + '+s.workforce.reserved+' essential duties = '+s.population+' civilian residents. '+s.workforce.jobs+' jobs available.</p><p>Map workers and soldiers are separately recruited units; they do not also staff workplaces. Food producers receive civilian staff first.</p><table aria-label="Workplace staffing"><tr><th>Workplace</th><th>Staff</th><th>Forecast base output / 5 sec</th></tr>'+s.workforce.sites.map(b=>'<tr><td>'+b.type+' #'+b.id+'</td><td>'+b.filled+'/'+b.need+'</td><td>'+number(b.output)+(b.type==='farm'||b.type==='fishery'?' food':b.type==='lumberyard'?' wood':' service/conversion')+'</td></tr>').join('')+'</table>'+
+   '<h3>Building feedback</h3>'+s.buildings.filter(b=>b.staff||b.type==='well').map(b=>'<details data-house="site'+b.id+'"'+(open.has('site'+b.id)?' open':'')+'><summary>'+b.type+' #'+b.id+(b.staff?' · '+b.staff.filled+'/'+b.staff.need+' staff':'')+(b.workplace?.paused?' · paused':b.idle?' · idle':'')+'</summary>'+locate(b.id,b.type)+'<p>'+b.nextAction+'</p>'+b.blockers.slice(1).map(x=>'<p class="cityWarn">'+x+'</p>').join('')+(b.service?'<p>'+b.service.message+'</p>':'')+(b.coverage?'<p>Service reach: '+b.coverage.served+'/'+b.coverage.nearby+' nearby homes covered · '+b.coverage.supplied+' currently supplied. Food delivery remains measured in the ledger.</p>':'')+'</details>').join('')+
+   '<h3 id="scPlanSectionEmployment" tabindex="-1">Employment & production</h3><p>'+s.workforce.filled+' staffed + '+s.workforce.idle+' idle + '+s.workforce.reserved+' essential duties = '+s.population+' civilian residents. '+s.workforce.jobs+' open job slots · '+s.workforce.pausedJobs+' paused job slots.</p><p>Map workers and soldiers are separately recruited units. Food producers receive civilian staff first among open workplaces. Pause surplus production to free residents for other jobs; pausing food producers can cause shortages. Granaries retain physical storage. Last-cycle figures may precede a workplace change.</p><table aria-label="Workplace staffing"><tr><th>Workplace</th><th>Staff</th><th>Forecast base output / 5 sec</th><th>Operation</th></tr>'+s.workforce.sites.map(b=>'<tr><td>'+b.type+' #'+b.id+(b.paused?' · paused':' · open')+'</td><td>'+b.filled+'/'+b.need+'</td><td>'+number(b.output)+(b.type==='farm'||b.type==='fishery'?' food':b.type==='lumberyard'?' wood':' service/conversion')+'</td><td><button type="button" data-workplace="'+b.id+'" data-open="'+b.paused+'">'+(b.paused?'Open ':'Pause ')+b.type+' #'+b.id+'</button></td></tr>').join('')+'</table>'+
    '<h3>Prosperity '+number(s.prosperity.score)+' / 100</h3><progress max="100" value="'+s.prosperity.score+'" aria-label="City prosperity"></progress><p>Target '+s.prosperity.target+'/100 · changes by at most 2 points per five-second cycle.</p><table aria-label="Prosperity contributions">'+s.prosperity.factors.map(f=>row(f.label,number(f.points)+' / '+f.max)).join('')+'</table><p>'+(s.peace.scenario==='city'?s.peace.description:s.peace.difficulty+' difficulty: <span id="scCityGraceRemaining">'+Math.ceil(s.peace.remaining)+'</span> seconds of settlement grace remain before offensive raids; later raids are spaced at least '+s.peace.raidInterval+' seconds apart. Enemy territory still defends itself.')+'</p><h3>Next steps</h3>'+s.advice.map(a=>'<p>• '+a+'</p>').join('');
    const actionFocus=focusSteward?panel.querySelector(focusResource?'[data-steward-resource="'+focusResource+'"]':'[data-steward="idle"]'):focusNeed?panel.querySelector('[data-village-section="'+focusNeed+'"]'):null;
-   const focusTarget=focusSection?panel.querySelector('#'+focusSection):focusLocate?panel.querySelector('[data-locate="'+focusLocate+'"]'):focusHouse?panel.querySelector('details[data-house="'+focusHouse+'"] summary'):actionFocus;
+   const focusTarget=focusWorkplace?panel.querySelector('[data-workplace="'+focusWorkplace+'"]'):focusSection?panel.querySelector('#'+focusSection):focusLocate?panel.querySelector('[data-locate="'+focusLocate+'"]'):focusHouse?panel.querySelector('details[data-house="'+focusHouse+'"] summary'):actionFocus;
    if(focusTarget&&!focusTarget.disabled)focusTarget.focus({preventScroll:true});
    else if(focusSteward||focusNeed){const heading=panel.querySelector('#scPlanSectionVillage');heading?.focus({preventScroll:true});heading?.scrollIntoView({block:'nearest'});}
-  else if(focusLocate||focusHouse){
+  else if(focusWorkplace||focusLocate||focusHouse){
    locationStatus.textContent='That building is no longer available. Choose a current building.';
-   const fallback=panel.querySelector('#scPlanSection'+(focusHouse?.startsWith('site')?'Employment':'Housing'));
+   const fallback=panel.querySelector('#scPlanSection'+(focusWorkplace||focusHouse?.startsWith('site')?'Employment':'Housing'));
    fallback?.focus({preventScroll:true});fallback?.scrollIntoView({block:'nearest'});
   }
  }
- button.addEventListener('click',()=>setTimeout(refresh,0));window.addEventListener('sc:built',refresh);setInterval(refresh,500);
+ button.addEventListener('click',()=>setTimeout(refresh,0));window.addEventListener('sc:built',refresh);window.addEventListener('sc-workplace-changed',refresh);setInterval(refresh,500);
 })();
 </script>
 
