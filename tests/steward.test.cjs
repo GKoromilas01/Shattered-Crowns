@@ -71,3 +71,7 @@ test('No idle action interrupts targeting or carried resources, and disabled act
  await p.waitForFunction(()=>document.querySelector('[data-steward="idle"]')?.disabled);assert.equal(await p.locator('#scPlanSectionVillage').evaluate(e=>e===document.activeElement),true);
  const before=await capture(p);assert.equal(await p.evaluate(()=>window.scCityEconomy.selectIdleWorkers()),false);assert.deepEqual((await capture(p)).state,before.state);const v=await village(p);assert.equal(v.workers.total,2);assert.equal(v.workers.idle,0);assert.equal(v.workers.other,2);
 });
+test('Live updates preserve a native Space press until keyup activates the current idle-worker action',async t=>{
+ const p=await game(t);await p.locator('#sc1312CityLifeBtn').click();await p.locator('[data-steward="idle"]').focus();await p.keyboard.down('Space');await p.evaluate(()=>window.__stewardTest.busy());await p.waitForTimeout(750);await p.keyboard.up('Space');
+ assert.equal(await p.locator('#sc159Pulse').isVisible(),false,'A refresh must not discard the held native button activation');assert.equal((await capture(p)).state.selected.length,1);assert.equal(await p.evaluate(()=>window.scCitySave.status().paused),true);assert.notEqual(await p.evaluate(()=>window.scSpacePan),true);
+});
