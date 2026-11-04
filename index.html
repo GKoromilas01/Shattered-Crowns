@@ -263,16 +263,17 @@ if(scScenario==='city'&&scOriginId==='brookstead'){
 }
 el('pause').textContent='Pause';el('liveOverview').textContent=scScenario==='city'?'A peaceful settlement begins.':'Battle beginning...';el('report').textContent='Battle in progress. Depleted resource sites recover after 45 seconds.';msg(scScenario==='city'?'A peaceful home city: build food, housing, roads and services. Discover the surrounding realm in Menu → Kingdom map.':'Build your town: assign workers, construct houses and farms, then add wells, markets, granaries, healers, roads and lumberyards. Defend against occasional raids.');if(scScenario==='city')el('report').textContent='Peaceful city campaign. Rival castles belong to the kingdom overview; no attacks are scheduled.';updateUI();window.dispatchEvent(new Event('sc-city-started'))};// Citizens staff production and service buildings. Food production is staffed first
 // to prevent city starvation from purely cosmetic building order.
+const cityJobSlots=Object.freeze({fishery:2,farm:3,lumberyard:2,market:2,clinic:2,granary:1,bakery:2});
 function assignEmployment(){
- const roles={fishery:2,farm:3,lumberyard:2,market:2,clinic:2,granary:1,bakery:2};
+ const roles=cityJobSlots;
  const priority=['farm','fishery','lumberyard','market','clinic','granary','bakery'];
  const sites=buildings.filter(b=>b.team===0&&alive(b)&&roles[b.type]);
  let available=Math.max(0,population-2),byId=new Map(),filled=0;
  for(const type of priority)for(const b of sites.filter(x=>x.type===type)){
-  let count=Math.min(available,roles[type]);available-=count;filled+=count;
-  byId.set(b.id,{count,need:roles[type],efficiency:count/roles[type]});
+  let count=b.cityWorkPaused?0:Math.min(available,roles[type]);available-=count;filled+=count;
+  byId.set(b.id,{count,need:roles[type],efficiency:count/roles[type],paused:!!b.cityWorkPaused});
  }
- employment={jobs:sites.reduce((n,b)=>n+roles[b.type],0),filled,available,byId};
+ employment={jobs:sites.reduce((n,b)=>n+(b.cityWorkPaused?0:roles[b.type]),0),filled,available,byId};
  window.scEmploymentSnapshot={jobs:employment.jobs,filled:employment.filled,available:employment.available,sites:sites.map(b=>({id:b.id,type:b.type,filled:byId.get(b.id)?.count||0,need:roles[b.type]}))};
 }
 function describeBuilding(b){
@@ -497,9 +498,10 @@ function cityBuildingDetails(b,houses,context={owned:cityOwned(),network:getRoad
   if(b.type==='market'&&!marketHasTradeAccess(b,network))blockers.push('Connect three road sections within 135 map units to distribute food.');
  }
  if(service&&service.status!=='ready'&&!blockers.includes(service.message))blockers.push(service.message);
- const idle=!!a&&(!a.count||b.type==='bakery'&&(!owned.some(g=>g.type==='granary'&&dist(g,b)<190)||food<3*a.efficiency));
+  if(a?.paused)blockers.unshift('Paused by the governor. Open this workplace to offer '+a.need+' civilian jobs again. Production and staffed services are stopped; physical storage is retained.');
+  const idle=!!a&&(!a.count||b.type==='bakery'&&(!owned.some(g=>g.type==='granary'&&dist(g,b)<190)||food<3*a.efficiency));
  const nextAction=blockers[0]||(h?(h.tier===4?'Maintain current services to retain Manor housing.':'Maintain these services for '+Math.max(0,10-h.upgradeSeconds)+' more seconds for the next tier.'):(supply?'Harvest is staffed and logistics connected; monitor storage overflow.':b.type==='bakery'?'Keep grain available; exports use only the configured food reserve surplus.':'Monitor staffing and local coverage as the city grows.'));
- return {id:b.id,type:b.type,service,sharedSupply:b.type==='market'?{food,tradeBaskets:tradeGoods}:null,storage:b.type==='granary'?{stock:cityGranaryStock(b,owned),capacity:160}:null,staff:a?{filled:a.count,need:a.need}:null,connected,supply,coverage,idle,blockers,nextAction,house:h||null,last:last?{...last}:null};
+  return {id:b.id,type:b.type,workplace:a?{paused:a.paused}:null,service,sharedSupply:b.type==='market'?{food,tradeBaskets:tradeGoods}:null,storage:b.type==='granary'?{stock:cityGranaryStock(b,owned),capacity:160}:null,staff:a?{filled:a.count,need:a.need}:null,connected,supply,coverage,idle,blockers,nextAction,house:h||null,last:last?{...last}:null};
 }
 function cityAdvice(s){
  const advice=[];if(scScenario==='city'){advice.push('Peaceful city campaign: no enemy attacks are scheduled. Open Menu → Kingdom map for measured prosperity and preparation goals.');const goal=scReadiness(s).find(r=>!r.met);if(goal)advice.push('City readiness — '+goal.label+': '+goal.detail+'.');}
@@ -513,7 +515,7 @@ function cityAdvice(s){
   if(home)advice.push('House #'+home.id+' · '+home.services[kind].message);
  }
 
- const idle=s.buildings.filter(b=>b.idle);
+  const idle=s.buildings.filter(b=>b.idle&&!b.workplace?.paused);
  if(idle.length)advice.push('Idle workplace: '+idle[0].type+' #'+idle[0].id+'. '+idle[0].nextAction);
  if(s.workforce.filled<s.workforce.jobs)advice.push('Workplaces lack '+(s.workforce.jobs-s.workforce.filled)+' residents; grow serviced housing. Food producers receive staff first.');
  if(s.food.last?.overflow>0)advice.push('Food storage overflow: '+s.food.last.overflow.toFixed(1)+' lost last cycle. Add granary capacity before more farms.');
@@ -521,7 +523,7 @@ function cityAdvice(s){
  if(disconnected)advice.push('Supply link: '+disconnected.type+' #'+disconnected.id+'. '+disconnected.blockers.find(x=>/road|granary/.test(x)));
  if(!s.housing.houses.length)advice.push('Build a house, a nearby well and a connected road block to welcome residents.');
  if(s.housing.houses.some(h=>!h.water||!h.access))advice.push('Provide nearby wells and connected roads to homes so migration can resume.');
- if(s.workforce.idle)advice.push(s.workforce.idle+' civilian residents are unemployed. Add useful workplaces as food reserves allow; map workers are separate units.');
+  if(s.workforce.idle)advice.push(s.workforce.idle+' civilian residents are unemployed. '+(s.workforce.pausedJobs?'Open a useful paused workplace as food reserves allow.':'Add useful workplaces as food reserves allow; map workers are separate units.'));
  if(s.food.markets.served<s.housing.houses.length)advice.push('Connect and staff a market within 190 map units of homes to reduce food waste.');
  if(s.food.granaries.length===0)advice.push('Add a granary for 160 more shared food storage and staff it near connected producers.');
  const home=s.buildings.find(b=>b.house&&b.house.tier<4);
@@ -551,14 +553,14 @@ function citySnapshot(){
  const houses=homes.map(h=>cityHouseDetails(h,context));
  const depots=owned.filter(b=>b.type==='granary');
  const granaries=depots.map(g=>{const stock=cityGranaryStock(g,owned);return {id:g.id,stock,capacity:160,staff:employment.byId.get(g.id)?.count||0,connected:civicHasRoadAccess(g,context.network)};});
- const sites=owned.filter(b=>employment.byId.has(b.id)).map(b=>{const a=employment.byId.get(b.id);return {id:b.id,type:b.type,filled:a.count,need:a.need,efficiency:a.efficiency,output:(b.type==='farm'?13:b.type==='fishery'?9:b.type==='lumberyard'?5:0)*a.efficiency};});
+  const sites=owned.filter(b=>employment.byId.has(b.id)).map(b=>{const a=employment.byId.get(b.id);return {id:b.id,type:b.type,paused:a.paused,filled:a.count,need:a.need,efficiency:a.efficiency,output:(b.type==='farm'?13:b.type==='fishery'?9:b.type==='lumberyard'?5:0)*a.efficiency};});
  const demand=Math.ceil(population*.45*(window.scRationFactor||1)),production=sites.filter(b=>['farm','fishery'].includes(b.type)).reduce((n,b)=>n+b.output,0);
  const s={cycles:cityCycleNumber,population,happiness:Math.round(happiness),housing:{capacity:8+houses.reduce((n,h)=>n+h.capacity,0),keepResidents:occupancyState.keepResidents,displaced:occupancyState.displaced,houses},growth:{...cityGrowth},workforce:{pool:Math.max(0,population-2),reserved:Math.min(2,population),filled:employment.filled,idle:employment.available,jobs:employment.jobs,sites},food:{stock:food,capacity:90+depots.length*160,baseStock:Math.min(90,food),granaries,demand,production,reserveSeconds:demand?Math.floor(food/demand*5):0,last:cityLedger?{...cityLedger}:null,markets:{served:window.sc1412MarketDistributionSnapshot?.served||0,total:homes.length,savings:window.sc1412MarketDistributionSnapshot?.savings||0}},prosperity:cityProsperityDetails(context)};
  s.satisfaction=citySatisfactionDetails(context);
  s.food.flows=cityFlows.map(f=>({...f}));s.food.households=cityHouseholds.map(h=>({...h}));
  s.buildings=owned.map(b=>cityBuildingDetails(b,houses,context));
  s.peace=scScenario==='city'?{scenario:'city',description:'Peaceful city campaign: no enemy attacks are scheduled. Readiness is preparation, not a war timer.',graceSeconds:0,remaining:0,raidInterval:0,difficulty}:{graceSeconds:difficulty==='hard'?180:300,raidInterval:difficulty==='easy'?300:difficulty==='hard'?120:240,remaining:Math.max(0,(difficulty==='hard'?180:300)-elapsed),difficulty};
- s.village=cityVillageSnapshot();s.advice=cityAdvice(s);return s;
+  s.workforce.pausedJobs=sites.filter(b=>b.paused).reduce((n,b)=>n+b.need,0);s.village=cityVillageSnapshot();s.advice=cityAdvice(s);return s;
 }
 
 function updateUI(){assignEmployment();el('buildingInspector').textContent=describeBuilding(inspectedBuilding).replaceAll(' | ','\n');let cityOwned=buildings.filter(b=>b.team===0&&alive(b));let farmRate=cityOwned.filter(b=>b.type==='farm').reduce((v,b)=>v+13*(employment.byId.get(b.id)?.efficiency||0),0)+cityOwned.filter(b=>b.type==='fishery').reduce((v,b)=>v+9*(employment.byId.get(b.id)?.efficiency||0),0);let useRate=Math.ceil(population*.45*(window.scRationFactor||1));let stored=90+cityOwned.filter(b=>b.type==='granary').length*160;el('foodBalance').textContent=`🌾 Food: +${farmRate.toFixed(1)} production / -${useRate} consumption every 5 seconds | Net ${farmRate-useRate>=0?'+':''}${(farmRate-useRate).toFixed(1)} | Storage ${Math.floor(food)}/${stored}`;const network=getRoadNetwork();
@@ -2865,7 +2867,7 @@ function scCaptureCity(){
   else if(u.order&&ref(u.order.target))row.order={type:u.order.type,target:ref(u.order.target)};
   return row;
  });
- const buildingRows=liveBuildings.map(b=>({...Object.fromEntries(scBuildingNumbers.map(k=>[k,k==='cityTier'?(b[k]||1):(b[k]??0)])),type:b.type,scLastNotifiedTier:b.scLastNotifiedTier??null}));
+  const buildingRows=liveBuildings.map(b=>({...Object.fromEntries(scBuildingNumbers.map(k=>[k,k==='cityTier'?(b[k]||1):(b[k]??0)])),type:b.type,scLastNotifiedTier:b.scLastNotifiedTier??null,...(typeof b.cityWorkPaused==='boolean'?{cityWorkPaused:b.cityWorkPaused}:{})}));
  const zoom=window.scMapZoom?.get()||1;
  return {format:scSaveFormat,schema:scScenario==='city'?(scOriginId==='brookstead'?3:2):1,...(scScenario==='city'?{campaign:{mode:'city',stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,...(scOriginId==='brookstead'?{originId:scOriginId}:{})}}:{}),createdWith:'0.11.0',cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
   resources:{gold,wood,stone,food,tradeGoods,goodsSold,aiGold,aiWood},people:{population,happiness,prosperity:cityProsperity},
@@ -2906,7 +2908,7 @@ function scPrepareCity(input){
  const used=new Set();
  function entity(row,fields,types){keys(row,fields);id(row.id);if(used.has(row.id)||row.id>=s.nextId)fail();used.add(row.id);choice(row.team,[0,1]);choice(row.type,types);number(row.x,0,W);number(row.y,0,H);number(row.hp,Number.MIN_VALUE,100000);number(row.max,row.hp,100000);number(row.radius,.1,1000);number(row.cool,-1e9,1e9);}
  for(const u of s.units){entity(u,[...scUnitNumbers,'type',...scUnitFlags,'scLastMedic','target','order'],scUnitTypes);for(const k of ['speed','damage','range','carry'])number(u[k],0,100000);for(const k of scUnitFlags)bool(u[k]);if(u.scCharge&&u.scShieldWall)fail();if(u.scLastMedic!==null)number(u.scLastMedic,0,s.clock.elapsed);}
- for(const b of s.buildings){entity(b,[...scBuildingNumbers,'type','scLastNotifiedTier'],scBuildingTypes);number(b.cityTier,1,4,true);number(b.cityResidents,0,1e6,true);number(b.cityUpgrade,0,10);number(b.cityDecline,0,30);if(b.scLastNotifiedTier!==null)number(b.scLastNotifiedTier,1,4,true);if(b.type==='house'?b.cityResidents>cityHouseCapacity(b):b.cityResidents!==0)fail();}
+ for(const b of s.buildings){entity(b,[...scBuildingNumbers,'type','scLastNotifiedTier','cityWorkPaused'],scBuildingTypes);if(Object.hasOwn(b,'cityWorkPaused')){bool(b.cityWorkPaused);if(b.team!==0||!Object.hasOwn(cityJobSlots,b.type))fail();}number(b.cityTier,1,4,true);number(b.cityResidents,0,1e6,true);number(b.cityUpgrade,0,10);number(b.cityDecline,0,30);if(b.scLastNotifiedTier!==null)number(b.scLastNotifiedTier,1,4,true);if(b.type==='house'?b.cityResidents>cityHouseCapacity(b):b.cityResidents!==0)fail();}
  if(s.buildings.filter(b=>b.type==='house').reduce((n,b)=>n+b.cityResidents,0)>Math.max(0,s.people.population-8))fail();
  if(!s.ended&&(!s.buildings.some(b=>b.type==='keep'&&b.team===0)||(data.schema===1&&!s.buildings.some(b=>b.type==='keep'&&b.team===1))))fail();
  for(const n of s.nodes){keys(n,['type','x','y','amount','radius','renew']);choice(n.type,['tree','stone','gold']);number(n.x,0,W);number(n.y,0,H);number(n.amount);number(n.radius,.1,1000);number(n.renew,0,1e9);}
@@ -2951,7 +2953,13 @@ function scRestoreCity(input){
 }
 window.scCitySave={capture:scCaptureCity,restore:scRestoreCity,validate:input=>{try{scPrepareCity(input);return {ok:true};}catch(e){return {ok:false,message:e.message};}},status:()=>({cityId:scCityIdentity,elapsed,paused,ended})};
 
-window.scCityEconomy={snapshot:citySnapshot,selectIdleWorkers:()=>{
+window.scCityEconomy={snapshot:citySnapshot,setWorkplaceOpen:(id,open)=>{
+ if(!scVillageActionReady()||!Number.isSafeInteger(id)||typeof open!=='boolean')return false;
+ const b=buildings.find(b=>b.id===id&&b.team===0&&alive(b)&&Object.hasOwn(cityJobSlots,b.type));if(!b)return false;
+ if(!!b.cityWorkPaused===!open)return true;
+ if(open)delete b.cityWorkPaused;else b.cityWorkPaused=true;
+ assignEmployment();updateUI();window.dispatchEvent(new Event('sc-workplace-changed'));msg(b.type+' #'+id+(open?' opened. Residents staff open workplaces in food-first order.':' paused. Residents are available for other open workplaces.'));return true;
+},selectIdleWorkers:()=>{
  if(!scVillageActionReady())return false;const idle=units.filter(scIdleMapWorker);if(!idle.length)return false;
  selected=idle;inspectedBuilding=null;window.scRTSSelected=selected.slice();window.scRTSInspectedBuilding=null;scVillageCenter(idle[0]);updateUI();
  window.dispatchEvent(new CustomEvent('sc-selection-changed',{detail:{units:selected.slice(),building:null,source:'village'}}));msg(idle.length+' idle workers selected. Right-click a resource deposit to gather.');return true;
