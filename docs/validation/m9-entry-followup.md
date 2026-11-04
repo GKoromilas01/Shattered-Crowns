@@ -27,3 +27,9 @@ Fresh focused read-only review found no Critical, Important or Minor findings. I
 The navigation case passed in isolation after that harness change (1/1, 3.9 seconds). Fresh complete-suite evidence follows before PR handoff; no product changes were made after the review.
 
 [Compact starting guide](../screenshots/m9-start-choices-390.png) · [Visible city map/music controls](../screenshots/m9-city-controls-1366.png). These are actual game screenshots.
+
+## Final complete regression
+
+The uninterrupted full project command `CHROMIUM_PATH=/usr/bin/chromium TEST_ARTIFACT_DIR=test-results/m9-entry-full npm test` passed **178/178**, with **0 failures, 0 skipped, 0 cancelled**, in 1071.7 seconds. Tested source commit: `c531738b2e81d05b41d49196edd8f994466abc7d`. Environment: Node24.19, Playwright1.57, explicit system Chromium154. The eight entry cases supplement the previous 170 regressions; existing audio/presentation cases retain their assertions with the requested interface changes described above. Logs, screenshots, browser errors, environment metadata, JUnit and JSON-line results are in test-results/m9-entry-full.
+
+Only this evidence documentation changes after that run. Runtime index.html and release.json remain byte-identical to the tested commit before exact-source packaging. Package source/digest and five smoke results are recorded in PR #14 alongside the final pinned download. No merge, deployment or paid services are authorized.
