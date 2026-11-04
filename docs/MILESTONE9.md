@@ -27,3 +27,9 @@ The atlas uses the existing modal lifecycle: simulation and camera input suspend
 City construction, 3×3/6×6 roads and undo/costs, measured economy, peaceful mode and classic skirmish, saves/checkpoints/import, opening screen and approved music remain. Only release metadata becomes 0.9.0; existing schema 1/2 saves remain compatible. No new dependencies, network assets, backend, paid services or 3D engine.
 
 [Verification and screenshots](validation/m9-verification.md). Real hardware and Windows listening evidence remain separate from Linux browser tests. No merge or deployment is authorized by this milestone.
+
+## Owner-playtest entry and discovery follow-up
+
+The title's primary action is now **Choose your starting place**. It identifies the playable continent/kingdom/home, labels other choices as future or inspection-only, and offers **Explore the world first**, **Begin as governor**, or **Back to title**. This is guidance for the one existing city, not a new multi-city simulation. The world can be inspected before city entry without exposing or advancing the city behind the title.
+
+**World map** and **Music on/off** are visible in the city toolbar. The opening music preview is removed; enabled music begins on actual city entry. If the old preview left music disabled, click **Music off** once to enable it. Ordinary entry retains saved mute, volume, effects and style choices. See the [playtest follow-up evidence](validation/m9-entry-followup.md).

@@ -2,6 +2,8 @@
 
 ## v0.9.0 — The Living World
 
+- Owner-playtest follow-up: removed opening music preview; added a starting-home guide and pre-entry world inspection, plus visible World map and Music on/off controls in the city. Music begins on actual entry when enabled.
+
 - Replaced the sparse kingdom terrain with original inline mountains, valley contours, forest, river and coastline, plus distinct village/town/castle markers.
 - Added Highpass Gate, Willow Ford and West Beacon as inspectable geographic landmarks, without travel orders or resource bonuses.
 - Connected Menu/world/continent/kingdom/city navigation; three continent and kingdom records prepare later governor selection. Only the Marches is playable; future regions are clearly labeled.
