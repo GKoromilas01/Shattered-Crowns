@@ -2,6 +2,8 @@
 
 ## v0.10.0 — Settlement Starts
 
+- Opening music begins with the first title click/navigation key and continues into play, with no preview button. Master mute/zero volume and restored-city sound choices remain respected.
+
 - Choose the unchanged Marches home or a real Brookstead village with its own starting arrangement and farm/house/well/roads. Map inspection never commits the choice.
 - Village saves use strict schema3 origin metadata; old schema1/2 checkpoints restore unchanged. Only the actual home is marked yours in the atlas.
 - New games enable music while preserving master mute, volume, effects and style. Restoring a city or using maps does not reset sound choices.

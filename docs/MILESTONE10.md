@@ -15,7 +15,7 @@ The atlas marks only the actual home as **Your home**. If you govern Brookstead,
 
 ## Music defaults
 
-Explicit new-game entry and new scenario initialization enable music, including when an earlier game saved music as off. Master mute, volume (including zero), effects and music style are retained. The title remains quiet; the toolbar music control remains available. Turning music off during a game stays off through ordinary maps/menus and save restore. A scene restored before initial entry is also exempt from the new-game reset.
+Explicit new-game entry and new scenario initialization enable music, including when an earlier game saved music as off. Master mute, volume (including zero), effects and music style are retained. Opening music begins after the first title click or navigation key, without a preview button, and continues into the city; the toolbar music control remains available. Turning music off during a game stays off through ordinary maps/menus and save restore. A scene restored before initial entry is also exempt from the new-game reset.
 
 ## Saves
 
@@ -28,3 +28,5 @@ Brookstead saves require v0.10.0 or later; older builds reject that new schema r
 Peaceful/classic rules,44-unit road snapping and3×3 roads with costs/undo, existing economy, controls, title art and original music score/mix remain. No multiplayer, accounts, political questionnaire,3D conversion, paid services or production release. Further continents and villages are later milestones.
 
 [Verification evidence](validation/m10-verification.md).
+
+Owner-playtest correction: [opening-music activation and regression evidence](validation/m10-opening-music.md). Browser policy may require that first interaction before sound can play.

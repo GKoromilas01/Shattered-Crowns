@@ -27,3 +27,7 @@ Trace terrain rendering, node regeneration, starting camera, building proximity 
 Use targeted failing-then-passing tests while developing. Run one final complete regression suite after implementation and focused review, then exact committed-source package verification and smoke tests. Repeat broadly only for runtime changes, failures or unresolved concerns. Do not rerun the unchanged v0.9.0 suite for this planning-only commit.
 
 Acceptance requires both homes to be actually playable, resources and roads usable, fresh music behavior visible, chosen-origin persistence correct, all released save fixtures restored without data loss, no false home ownership, retained peaceful/classic rules and controls, screenshots, and a separately reviewed unmerged PR. Merge, deployment and spending require explicit approval. This scope is preparation; no v0.10.0 build is yet available.
+
+## Subsequent opening-music feedback
+
+The owner then requested audible opening music. This supersedes the quiet-title requirement only: begin after the first trusted title click/navigation key and continue the same context into play, with no preview button. Keep city suspension, explicit master mute/zero-volume and restored-city preference preservation. No zero-interaction autoplay guarantee is possible across browsers.
