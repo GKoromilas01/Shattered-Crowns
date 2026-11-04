@@ -530,6 +530,22 @@ function cityAdvice(s){
  return advice;
 }
 function cityHouseDetails(h,context){const t=houseTier(h,context),capacity=cityHouseCapacity(h),occupancy=h.cityResidents||0;return {id:h.id,tier:t.level,name:cityTierNames[t.level],capacity,occupancy,services:t.services,food:t.foodReady,water:t.water,access:t.access,health:t.health,market:t.trade,beauty:t.beauty,upgradeSeconds:h.cityUpgrade||0,downgradeSeconds:h.cityDecline||0,nextRequirements:cityRequirements(h,Math.min(4,t.level+1),context).map(([label,met])=>({label,met})),currentMissing:cityRequirements(h,t.level,context).filter(([,ok])=>!ok).map(([label])=>label)};}
+const scVillageResources=[['wood','tree'],['stone','stone'],['gold','gold']];
+const scIdleMapWorker=u=>u.team===0&&u.type==='worker'&&alive(u)&&!u.order&&!u.target&&!u.carry;
+function cityVillageSnapshot(){
+ const workers=units.filter(u=>u.team===0&&u.type==='worker'&&alive(u));
+ const gathering=Object.fromEntries(scVillageResources.map(([resource,type])=>[resource,workers.filter(u=>u.order?.type==='gather'&&u.order.target?.type===type).length]));
+ const idle=workers.filter(scIdleMapWorker).length,keep=buildings.find(b=>b.team===0&&b.type==='keep'&&alive(b));
+ return {resources:{gold,wood,stone},workers:{total:workers.length,idle,gathering,other:workers.length-idle-Object.values(gathering).reduce((a,b)=>a+b,0)},deposits:scVillageResources.map(([resource,type])=>{
+  const sites=nodes.filter(n=>n.type===type),active=sites.filter(n=>n.amount>0);
+  const nearest=keep?active.reduce((best,n)=>!best||dist(keep,n)<dist(keep,best)?n:best,null):null;
+  return {resource,remaining:sites.reduce((sum,n)=>sum+n.amount,0),active:active.length,recovering:sites.length-active.length,nearest:nearest?{x:nearest.x,y:nearest.y}:null};
+ })};
+}
+function scVillageActionReady(){return !ended&&!scOverview&&!tutorialVisible&&document.getElementById('sc1310Welcome')?.hidden!==false;}
+function scVillageCenter(point){
+ const rect=c.getBoundingClientRect();mapViewport.scrollLeft=point.x*rect.width/c.width-mapViewport.clientWidth/2;mapViewport.scrollTop=point.y*rect.height/c.height-mapViewport.clientHeight/2;
+}
 function citySnapshot(){
  assignEmployment();const owned=cityOwned(),context={owned,network:getRoadNetwork()},homes=owned.filter(b=>b.type==='house'),occupancyState=cityReconcileOccupancy(context);
  const houses=homes.map(h=>cityHouseDetails(h,context));
@@ -542,7 +558,7 @@ function citySnapshot(){
  s.food.flows=cityFlows.map(f=>({...f}));s.food.households=cityHouseholds.map(h=>({...h}));
  s.buildings=owned.map(b=>cityBuildingDetails(b,houses,context));
  s.peace=scScenario==='city'?{scenario:'city',description:'Peaceful city campaign: no enemy attacks are scheduled. Readiness is preparation, not a war timer.',graceSeconds:0,remaining:0,raidInterval:0,difficulty}:{graceSeconds:difficulty==='hard'?180:300,raidInterval:difficulty==='easy'?300:difficulty==='hard'?120:240,remaining:Math.max(0,(difficulty==='hard'?180:300)-elapsed),difficulty};
- s.advice=cityAdvice(s);return s;
+ s.village=cityVillageSnapshot();s.advice=cityAdvice(s);return s;
 }
 
 function updateUI(){assignEmployment();el('buildingInspector').textContent=describeBuilding(inspectedBuilding).replaceAll(' | ','\n');let cityOwned=buildings.filter(b=>b.team===0&&alive(b));let farmRate=cityOwned.filter(b=>b.type==='farm').reduce((v,b)=>v+13*(employment.byId.get(b.id)?.efficiency||0),0)+cityOwned.filter(b=>b.type==='fishery').reduce((v,b)=>v+9*(employment.byId.get(b.id)?.efficiency||0),0);let useRate=Math.ceil(population*.45*(window.scRationFactor||1));let stored=90+cityOwned.filter(b=>b.type==='granary').length*160;el('foodBalance').textContent=`🌾 Food: +${farmRate.toFixed(1)} production / -${useRate} consumption every 5 seconds | Net ${farmRate-useRate>=0?'+':''}${(farmRate-useRate).toFixed(1)} | Storage ${Math.floor(food)}/${stored}`;const network=getRoadNetwork();
@@ -2851,7 +2867,7 @@ function scCaptureCity(){
  });
  const buildingRows=liveBuildings.map(b=>({...Object.fromEntries(scBuildingNumbers.map(k=>[k,k==='cityTier'?(b[k]||1):(b[k]??0)])),type:b.type,scLastNotifiedTier:b.scLastNotifiedTier??null}));
  const zoom=window.scMapZoom?.get()||1;
- return {format:scSaveFormat,schema:scScenario==='city'?(scOriginId==='brookstead'?3:2):1,...(scScenario==='city'?{campaign:{mode:'city',stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,...(scOriginId==='brookstead'?{originId:scOriginId}:{})}}:{}),createdWith:'0.10.0',cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
+ return {format:scSaveFormat,schema:scScenario==='city'?(scOriginId==='brookstead'?3:2):1,...(scScenario==='city'?{campaign:{mode:'city',stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,...(scOriginId==='brookstead'?{originId:scOriginId}:{})}}:{}),createdWith:'0.11.0',cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
   resources:{gold,wood,stone,food,tradeGoods,goodsSold,aiGold,aiWood},people:{population,happiness,prosperity:cityProsperity},
   clock:{elapsed,cityTimer,cityCycleNumber,aiTimer,resourceTimer,aiDecision,aiAttackTimer,aiTrainTimer,trainTimer,scFestivalCooldown},
   options:{difficulty,formation,eventFoodReserve:scEventFoodReserve,showLabels,showMinimap,serviceOverlay,ration:window.scRationPolicy?.capture()||{mode:el('sc1303Mode')?.value||'normal',emergency:window.scRationFactor===.75},breadExport:window.scBreadExportEnabled!==false,breadReserveCycles:window.scBreadReserveCycles??2},
@@ -2935,7 +2951,15 @@ function scRestoreCity(input){
 }
 window.scCitySave={capture:scCaptureCity,restore:scRestoreCity,validate:input=>{try{scPrepareCity(input);return {ok:true};}catch(e){return {ok:false,message:e.message};}},status:()=>({cityId:scCityIdentity,elapsed,paused,ended})};
 
-window.scCityEconomy={snapshot:citySnapshot,locate:id=>{
+window.scCityEconomy={snapshot:citySnapshot,selectIdleWorkers:()=>{
+ if(!scVillageActionReady())return false;const idle=units.filter(scIdleMapWorker);if(!idle.length)return false;
+ selected=idle;inspectedBuilding=null;window.scRTSSelected=selected.slice();window.scRTSInspectedBuilding=null;scVillageCenter(idle[0]);updateUI();
+ window.dispatchEvent(new CustomEvent('sc-selection-changed',{detail:{units:selected.slice(),building:null,source:'village'}}));msg(idle.length+' idle workers selected. Right-click a resource deposit to gather.');return true;
+},locateResource:resource=>{
+ if(!scVillageActionReady()||!scVillageResources.some(([name])=>name===resource))return false;
+ const site=cityVillageSnapshot().deposits.find(d=>d.resource===resource)?.nearest;if(!site)return false;
+ scVillageCenter(site);msg('Located '+resource+' nearest your Keep. Select workers and right-click the deposit to gather.');return true;
+},locate:id=>{
  if(!Number.isSafeInteger(id)||scOverview)return false;
  const b=buildings.find(b=>b.id===id&&b.team===0&&alive(b));if(!b)return false;
  const scaleX=c.getBoundingClientRect().width/c.width,scaleY=c.getBoundingClientRect().height/c.height;
@@ -6577,6 +6601,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 #scCityPlanningSummary strong{font-size:17px;font-variant-numeric:tabular-nums;color:#ffe1a0}
 #scCityEconomyPanel [id^=scPlanSection]{scroll-margin-top:42px}
 #scPlanLocationStatus{margin:0 12px;color:#ffd094;font:12px/1.5 system-ui}
+#scVillageBoard{padding:10px;background:#213f35;border:1px solid #708b67;border-radius:6px;margin:8px 0;overflow-wrap:anywhere}
+#scVillageBoard h3{margin-top:0}#scVillageBoard table{table-layout:fixed}#scVillageBoard td,#scVillageBoard th{overflow-wrap:anywhere}
+#scVillageBoard button{max-width:100%}#scVillageBoard button:disabled{opacity:.6;cursor:default}#scVillageNeeds li{margin:7px 0}#scVillageNeeds ul{padding-left:17px}
 @media(max-width:480px){#scCityPlanningSummary{grid-template-columns:1fr}}
 </style>
 <script id="cityEconomyPresentation">
@@ -6584,16 +6611,31 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  const root=document.getElementById('sc159Pulse'),button=document.getElementById('sc1312CityLifeBtn');
  root.setAttribute('role','dialog');root.setAttribute('aria-label','City Life and Economy');
  // Let focused panel controls keep native Space activation before game shortcuts.
- window.addEventListener('keydown',e=>{if(!root.hidden&&e.code==='Space'&&e.target.closest?.('#scCityPlanningNav button,#scCityEconomyPanel button,#scCityEconomyPanel summary'))e.stopImmediatePropagation();},true);
+  let nativeSpacePress=false,nativePointerPress=false;
+  window.addEventListener('keydown',e=>{if(!root.hidden&&e.code==='Space'&&e.target.closest?.('#scCityPlanningNav button,#scCityEconomyPanel button,#scCityEconomyPanel summary')){nativeSpacePress=true;e.stopImmediatePropagation();}},true);
+  // Native button activation occurs after keyup. Keep the pressed node alive
+  // until its click completes; restored focus alone cannot preserve that click.
+  window.addEventListener('keyup',e=>{if(e.code==='Space'&&nativeSpacePress)setTimeout(()=>{nativeSpacePress=false;refresh();},0);},true);
+  root.addEventListener('pointerdown',e=>{if(e.button===0&&e.target.closest?.('#scCityPlanningNav button,#scCityEconomyPanel button,#scCityEconomyPanel summary'))nativePointerPress=true;});
+  window.addEventListener('pointerup',()=>{if(nativePointerPress)setTimeout(()=>{nativePointerPress=false;refresh();},0);},true);
+  window.addEventListener('pointercancel',()=>{nativePointerPress=false;refresh();},true);
+  window.addEventListener('blur',()=>{nativeSpacePress=false;nativePointerPress=false;});
  const close=document.createElement('button');close.id='scCityLifeClose';close.type='button';close.textContent='✕ Close';close.setAttribute('aria-label','Close City Life');
  document.getElementById('sc159PulseHeader').append(close);
  close.addEventListener('click',()=>{root.hidden=true;button.setAttribute('aria-expanded','false');button.focus()});
  const nav=document.createElement('nav');nav.id='scCityPlanningNav';nav.setAttribute('aria-label','City Life sections');
- nav.innerHTML=['Food','Housing','Employment','Satisfaction'].map(name=>'<button type="button" data-section="'+name+'">'+name+'</button>').join('');root.append(nav);
+  nav.innerHTML=['Village','Food','Housing','Employment','Satisfaction'].map(name=>'<button type="button" data-section="'+name+'">'+name+'</button>').join('');root.append(nav);
  const locationStatus=document.createElement('p');locationStatus.id='scPlanLocationStatus';locationStatus.setAttribute('role','status');root.append(locationStatus);
  const panel=document.createElement('section');panel.id='scCityEconomyPanel';root.append(panel);
  nav.addEventListener('click',e=>{const name=e.target.closest('[data-section]')?.dataset.section;if(!name)return;const heading=panel.querySelector('#scPlanSection'+name);heading?.focus({preventScroll:true});heading?.scrollIntoView({block:'start'});});
- panel.addEventListener('click',e=>{const target=e.target.closest('[data-locate]');if(!target)return;
+  panel.addEventListener('click',e=>{
+   const section=e.target.closest('[data-village-section]')?.dataset.villageSection;if(section){const heading=panel.querySelector('#scPlanSection'+section);heading?.focus({preventScroll:true});heading?.scrollIntoView({block:'start'});return;}
+   const action=e.target.closest('[data-steward]');if(action){
+    const ok=action.dataset.steward==='idle'?window.scCityEconomy.selectIdleWorkers():window.scCityEconomy.locateResource(action.dataset.stewardResource);
+    if(!ok){locationStatus.textContent='That action is no longer available. Check the current workers and deposits.';refresh();return;}
+    locationStatus.textContent='';root.hidden=true;button.setAttribute('aria-expanded','false');button.focus({preventScroll:true});return;
+   }
+   const target=e.target.closest('[data-locate]');if(!target)return;
   if(!window.scCityEconomy.locate(Number(target.dataset.locate))){locationStatus.textContent='That building is no longer available. Choose a current building.';refresh();return;}
   locationStatus.textContent='';root.hidden=true;button.setAttribute('aria-expanded','false');button.focus({preventScroll:true});
  });
@@ -6602,17 +6644,28 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  const row=(label,value)=>'<tr><th>'+label+'</th><td>'+value+'</td></tr>';
  let renderedSignature='';
  function refresh(){
-  if(root.hidden)return;
+   if(root.hidden||nativeSpacePress||nativePointerPress)return;
   const s=window.scCityEconomy.snapshot(),last=s.food.last;
   const clock=panel.querySelector('#scCityGraceRemaining');if(clock)clock.textContent=Math.ceil(s.peace.remaining);
   const signature=JSON.stringify({...s,peace:{...s.peace,remaining:0}});if(signature===renderedSignature)return;renderedSignature=signature;
   const open=new Set([...panel.querySelectorAll('details[open]')].map(d=>d.dataset.house));
   const focused=document.activeElement;
   const focusHouse=panel.contains(focused)?focused?.closest('details')?.dataset.house:null;
-  const focusLocate=focused?.dataset?.locate,focusSection=focused?.id?.startsWith('scPlanSection')?focused.id:null;
+   const focusLocate=focused?.dataset?.locate,focusSection=focused?.id?.startsWith('scPlanSection')?focused.id:null;
+   const focusSteward=panel.contains(focused)?focused?.dataset?.steward:null,focusResource=focused?.dataset?.stewardResource,focusNeed=panel.contains(focused)?focused?.dataset?.villageSection:null;
   const lastBalance=last?last.harvest+last.logistics+last.bakeryNet-last.exports-last.demand:null;
   const signed=x=>(x>0?'+':'')+number(x);
   const ready=kind=>s.housing.houses.filter(h=>h.services[kind].status==='ready').length;
+   const v=s.village,needs=[];
+   const need=(text,section,label)=>'<li>'+text+' <button type="button" data-village-section="'+section+'">Review '+label+'</button></li>';
+   if(last?.shortfall>0)needs.push(need(number(last.shortfall)+' unmet meals in the last measured cycle.','Food','food'));
+   else if(lastBalance!==null&&lastBalance<0)needs.push(need('Last-cycle food balance '+signed(lastBalance)+' before storage overflow.','Food','food'));
+   else if(s.food.production===0)needs.push(need('No staffed farm or fishery production. Build food production before reserves run low.','Food','food'));
+   if(s.housing.displaced||s.population>=s.housing.capacity)needs.push(need(s.housing.displaced?'Residents need housing space.':'Housing is full. Serviced homes make room for new residents.','Housing','housing'));
+   if(s.workforce.jobs>s.workforce.filled)needs.push(need((s.workforce.jobs-s.workforce.filled)+' civilian workplace jobs are unfilled. Map workers cannot staff these jobs.','Employment','staffing'));
+   const missing=['water','health','market'].filter(kind=>ready(kind)<s.housing.houses.length);
+   if(missing.length)needs.push(need('Built homes lack ready '+missing.map(k=>k==='health'?'healthcare':k).join(', ')+' services; vacant homes are included.','Housing','services'));
+   const steward='<section id="scVillageBoard" aria-label="Village stewardship"><h3 id="scPlanSectionVillage" tabindex="-1">Village steward</h3><p><strong>'+v.workers.idle+' / '+v.workers.total+' map workers idle</strong> · '+v.workers.other+' on other orders</p><p>Gathering: '+v.workers.gathering.wood+' wood · '+v.workers.gathering.stone+' stone · '+v.workers.gathering.gold+' gold. Recruited map workers are separate from civilian workplace staff.</p><button type="button" data-steward="idle"'+(!v.workers.idle?' disabled':'')+'>Select idle workers</button><p>Select idle workers, locate a deposit, then right-click it to gather. Busy workers keep their orders.</p><table aria-label="Gatherable resource deposits"><tr><th>Resource / stock</th><th>Deposits</th><th>Find</th></tr>'+v.deposits.map(d=>'<tr><td>'+d.resource+'<br>'+number(v.resources[d.resource])+' stored</td><td>'+number(d.remaining)+' remaining<br>'+d.active+' active · '+d.recovering+' recovering</td><td><button type="button" data-steward="locate" data-steward-resource="'+d.resource+'"'+(!d.nearest?' disabled':'')+'>Locate '+d.resource+'</button></td></tr>').join('')+'</table><p>Locate finds the active deposit nearest your Keep; it issues no orders. Remaining amounts cover the whole city map. Depleted sites recover after 45 simulation seconds.</p><div id="scVillageNeeds"><strong>Village needs</strong>'+(needs.length?'<ul>'+needs.join('')+'</ul>':'<p>No food, housing, staffing or home-service issue flagged by the current checks. Keep monitoring as the village grows.</p>')+'</div></section>';
   const summary='<section id="scCityPlanningSummary" aria-label="City planning overview">'+
    '<article id="scPlanFood"><h3>Food balance</h3>'+(last?'<strong id="scPlanFoodBalance">'+signed(lastBalance)+'</strong> food / 5 seconds<p>Last-cycle production minus demand, before storage overflow.</p><p>Unmet meals: <span id="scPlanFoodShortfall">'+number(last.shortfall)+'</span> · Overflow lost: <span id="scPlanFoodOverflow">'+number(last.overflow)+'</span></p><p>Reserve change: '+signed(last.closing-last.opening)+'</p>':'<p>Waiting for the first measured cycle.</p>')+'<p>Reserve '+number(s.food.stock)+'/'+s.food.capacity+' · '+s.food.reserveSeconds+' seconds before new production.</p></article>'+
    '<article id="scPlanHousing"><h3>Housing</h3><strong>'+s.population+' / '+s.housing.capacity+'</strong> residents<p>'+s.housing.displaced+' displaced · '+(s.housing.capacity-s.population>0?s.housing.capacity-s.population:0)+' total vacant spaces; services still required.</p><p>'+s.growth.reason+'</p></article>'+
@@ -6620,7 +6673,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
    '<article id="scPlanServices"><h3>Home services</h3>'+(s.housing.houses.length?'<p>Water '+ready('water')+'/'+s.housing.houses.length+' · Healthcare '+ready('health')+'/'+s.housing.houses.length+' · Market '+ready('market')+'/'+s.housing.houses.length+'</p><p>Ready services across all built homes, including vacant homes.</p>':'<p>No houses yet. Build a house near water and connected roads.</p>')+'</article></section>';
   const houses=s.housing.houses.map(h=>'<details data-house="'+h.id+'"'+(open.has(String(h.id))?' open':'')+'><summary>House #'+h.id+' · '+h.name+' · '+h.occupancy+'/'+h.capacity+' residents</summary>'+locate(h.id,'house')+'<p>'+Object.entries(h.services).map(([k,v])=>(k==='health'?'Healthcare':k==='water'?'Water':'Market')+': '+v.status.replaceAll('_',' ')).join(' · ')+'</p>'+Object.values(h.services).filter(v=>v.status!=='ready').map(v=>'<p class="cityWarn">'+v.message+'</p>').join('')+'<p>Upgrade: '+h.upgradeSeconds+'/10 seconds of sustained requirements. Decline: '+h.downgradeSeconds+'/30 seconds.</p>'+(h.tier<4?'<p>Next: '+h.nextRequirements.map(r=>(r.met?'✓ ':'✗ ')+r.label).join(' · ')+'</p>':'<p>Maximum tier reached.</p>')+(h.currentMissing.length?'<p class="cityWarn">Current tier at risk: '+h.currentMissing.join(', ')+'</p>':'')+'</details>').join('');
   const satisfaction=s.satisfaction;
-  panel.innerHTML=summary+'<h3 id="scPlanSectionSatisfaction" tabindex="-1">Citizen satisfaction '+number(satisfaction.score)+' / 100</h3><p>Target '+number(satisfaction.target)+' · approaches by at most 2 points per five-second cycle. Migration needs happiness 45+, vacant serviced housing and 15 seconds of stability. Existing residents stay through service gaps; shortages and lost housing capacity can cause departures.</p><table aria-label="Citizen satisfaction factors"><tr><th>Factor</th><th>Points</th><th>Explanation</th></tr>'+satisfaction.factors.map(f=>'<tr><th>'+f.label+'</th><td>'+number(f.points)+' / '+f.max+'</td><td>'+f.reason+'</td></tr>').join('')+row(satisfaction.modifier.label,(satisfaction.modifier.points>=0?'+':'')+number(satisfaction.modifier.points))+'</table><p>'+satisfaction.modifier.reason+' Target is clamped to 0–100. Keep residents have basic services; vacant homes do not count as citizens. Current service reach is separate from last-cycle meal delivery.</p>'+(satisfaction.last?'<p>Last satisfaction cycle: '+number(satisfaction.last.opening)+' → '+number(satisfaction.last.closing)+' (applied target '+number(satisfaction.last.target)+', change '+number(satisfaction.last.change)+'). Feasts and festivals can provide immediate happiness bonuses.</p>':'<p>Waiting for the first satisfaction cycle.</p>')+
+   panel.innerHTML=steward+summary+'<h3 id="scPlanSectionSatisfaction" tabindex="-1">Citizen satisfaction '+number(satisfaction.score)+' / 100</h3><p>Target '+number(satisfaction.target)+' · approaches by at most 2 points per five-second cycle. Migration needs happiness 45+, vacant serviced housing and 15 seconds of stability. Existing residents stay through service gaps; shortages and lost housing capacity can cause departures.</p><table aria-label="Citizen satisfaction factors"><tr><th>Factor</th><th>Points</th><th>Explanation</th></tr>'+satisfaction.factors.map(f=>'<tr><th>'+f.label+'</th><td>'+number(f.points)+' / '+f.max+'</td><td>'+f.reason+'</td></tr>').join('')+row(satisfaction.modifier.label,(satisfaction.modifier.points>=0?'+':'')+number(satisfaction.modifier.points))+'</table><p>'+satisfaction.modifier.reason+' Target is clamped to 0–100. Keep residents have basic services; vacant homes do not count as citizens. Current service reach is separate from last-cycle meal delivery.</p>'+(satisfaction.last?'<p>Last satisfaction cycle: '+number(satisfaction.last.opening)+' → '+number(satisfaction.last.closing)+' (applied target '+number(satisfaction.last.target)+', change '+number(satisfaction.last.change)+'). Feasts and festivals can provide immediate happiness bonuses.</p>':'<p>Waiting for the first satisfaction cycle.</p>')+
    '<h3 id="scPlanSectionHousing" tabindex="-1">Residents & housing</h3><p>'+s.population+' / '+s.housing.capacity+' civilian residents · '+s.housing.keepResidents+' in the Keep · '+s.housing.displaced+' displaced</p><p>'+s.growth.reason+' Progress: '+s.growth.progress+'/15 seconds.</p>'+houses+
    '<h3 id="scPlanSectionFood" tabindex="-1">Food reserve & distribution</h3><p>'+number(s.food.stock)+' / '+s.food.capacity+' food stored · '+s.food.reserveSeconds+' seconds of household reserve (before new production).</p><p>Harvest at current staffing: '+number(s.food.production)+' · Household demand before distribution: '+s.food.demand+' / 5 seconds.</p><p>Markets serve '+s.food.markets.served+'/'+s.food.markets.total+' homes; '+s.food.markets.savings+' food saved last cycle.</p>'+
    (last?'<table aria-label="Last five-second food cycle">'+row('Opening reserve',number(last.opening))+row('Farm/fishery harvest','+'+number(last.harvest))+row('Supply logistics','+'+number(last.logistics))+row('Bakery conversion (net)','+'+number(last.bakeryNet))+row('Bread exports','−'+number(last.exports))+row('Household delivery','−'+number(last.delivered))+row('Storage overflow','−'+number(last.overflow))+row('Closing reserve',number(last.closing))+row('Unmet household demand',number(last.shortfall))+'</table>':'<p>Waiting for the first five-second economy cycle.</p>')+
@@ -6629,8 +6682,10 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
    '<h3>Building feedback</h3>'+s.buildings.filter(b=>b.staff||b.type==='well').map(b=>'<details data-house="site'+b.id+'"'+(open.has('site'+b.id)?' open':'')+'><summary>'+b.type+' #'+b.id+(b.staff?' · '+b.staff.filled+'/'+b.staff.need+' staff':'')+(b.idle?' · idle':'')+'</summary>'+locate(b.id,b.type)+'<p>'+b.nextAction+'</p>'+b.blockers.slice(1).map(x=>'<p class="cityWarn">'+x+'</p>').join('')+(b.service?'<p>'+b.service.message+'</p>':'')+(b.coverage?'<p>Service reach: '+b.coverage.served+'/'+b.coverage.nearby+' nearby homes covered · '+b.coverage.supplied+' currently supplied. Food delivery remains measured in the ledger.</p>':'')+'</details>').join('')+
    '<h3 id="scPlanSectionEmployment" tabindex="-1">Employment & production</h3><p>'+s.workforce.filled+' staffed + '+s.workforce.idle+' idle + '+s.workforce.reserved+' essential duties = '+s.population+' civilian residents. '+s.workforce.jobs+' jobs available.</p><p>Map workers and soldiers are separately recruited units; they do not also staff workplaces. Food producers receive civilian staff first.</p><table aria-label="Workplace staffing"><tr><th>Workplace</th><th>Staff</th><th>Forecast base output / 5 sec</th></tr>'+s.workforce.sites.map(b=>'<tr><td>'+b.type+' #'+b.id+'</td><td>'+b.filled+'/'+b.need+'</td><td>'+number(b.output)+(b.type==='farm'||b.type==='fishery'?' food':b.type==='lumberyard'?' wood':' service/conversion')+'</td></tr>').join('')+'</table>'+
    '<h3>Prosperity '+number(s.prosperity.score)+' / 100</h3><progress max="100" value="'+s.prosperity.score+'" aria-label="City prosperity"></progress><p>Target '+s.prosperity.target+'/100 · changes by at most 2 points per five-second cycle.</p><table aria-label="Prosperity contributions">'+s.prosperity.factors.map(f=>row(f.label,number(f.points)+' / '+f.max)).join('')+'</table><p>'+(s.peace.scenario==='city'?s.peace.description:s.peace.difficulty+' difficulty: <span id="scCityGraceRemaining">'+Math.ceil(s.peace.remaining)+'</span> seconds of settlement grace remain before offensive raids; later raids are spaced at least '+s.peace.raidInterval+' seconds apart. Enemy territory still defends itself.')+'</p><h3>Next steps</h3>'+s.advice.map(a=>'<p>• '+a+'</p>').join('');
-  const focusTarget=focusSection?panel.querySelector('#'+focusSection):focusLocate?panel.querySelector('[data-locate="'+focusLocate+'"]'):focusHouse?panel.querySelector('details[data-house="'+focusHouse+'"] summary'):null;
-  if(focusTarget)focusTarget.focus({preventScroll:true});
+   const actionFocus=focusSteward?panel.querySelector(focusResource?'[data-steward-resource="'+focusResource+'"]':'[data-steward="idle"]'):focusNeed?panel.querySelector('[data-village-section="'+focusNeed+'"]'):null;
+   const focusTarget=focusSection?panel.querySelector('#'+focusSection):focusLocate?panel.querySelector('[data-locate="'+focusLocate+'"]'):focusHouse?panel.querySelector('details[data-house="'+focusHouse+'"] summary'):actionFocus;
+   if(focusTarget&&!focusTarget.disabled)focusTarget.focus({preventScroll:true});
+   else if(focusSteward||focusNeed){const heading=panel.querySelector('#scPlanSectionVillage');heading?.focus({preventScroll:true});heading?.scrollIntoView({block:'nearest'});}
   else if(focusLocate||focusHouse){
    locationStatus.textContent='That building is no longer available. Choose a current building.';
    const fallback=panel.querySelector('#scPlanSection'+(focusHouse?.startsWith('site')?'Employment':'Housing'));

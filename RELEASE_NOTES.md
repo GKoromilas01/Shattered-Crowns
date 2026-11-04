@@ -1,5 +1,14 @@
 # Release notes
 
+## v0.11.0 — Village Steward
+
+- City Life → Village shows actual idle/gathering map workers, gathered resources and remaining/recovering deposits.
+- Select idle workers without disturbing busy orders; locate the active deposit nearest your Keep and use existing right-click gathering controls.
+- Village needs link measured food shortages and current housing, staffing and service gaps to existing details.
+- Preserve economy balance, audio, roads, controls, peaceful/classic modes and save schemas1/2/3, including a genuine v0.10village fixture.
+
+Draft dependent on PR15; no merge or deployment authorized. See [Milestone11](docs/MILESTONE11.md).
+
 ## v0.10.0 — Settlement Starts
 
 - Opening music begins with the first title click/navigation key and continues into play, with no preview button. Master mute/zero volume and restored-city sound choices remain respected.
