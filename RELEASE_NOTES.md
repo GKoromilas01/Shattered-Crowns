@@ -1,5 +1,14 @@
 # Release notes
 
+## v0.12.0 — Village Growth & Prosperity
+
+- Open/pause existing workplaces to reassign civilian staff without demolition, while retaining food-first staffing and original rates/costs.
+- Show current next-resident requirements and the existing15-second progression in Housing, alongside housing-upgrade details.
+- Separate paused slots from job vacancies and current staffing from last-cycle output; explain paused services clearly.
+- Preserve camera, selection, roads, gathering, audio and save schemas1/2/3. Optional paused-workplace save flags requirev0.12+; all earlier fixtures restore unchanged.
+
+See [Milestone12](docs/MILESTONE12.md). Draft only; no merge or deployment authorized.
+
 ## v0.11.0 — Village Steward
 
 - City Life → Village shows actual idle/gathering map workers, gathered resources and remaining/recovering deposits.
