@@ -1,5 +1,15 @@
 # Release notes
 
+## v0.13.0 — Gameplay Usability & Polish
+
+- Show both real starting homes as keyboard-accessible radio cards; label current regions and future previews honestly.
+- Keep the approved title/city music engine and sound preferences while removing native chooser popups.
+- Build defenses without manually selecting workers; automatically use the nearest living friendly worker while retaining range, costs, collision and Undo.
+- Make detailed regional terrain and the existing Village resource guide easier to find; world inspection never relocates your governor.
+- Preserve city economy, staffing, controls, roads, peaceful/classic play and all existing save schemas.
+
+See [Milestone13](docs/MILESTONE13.md). Draft only; no merge or deployment authorized.
+
 ## v0.12.0 — Village Growth & Prosperity
 
 - Open/pause existing workplaces to reassign civilian staff without demolition, while retaining food-first staffing and original rates/costs.

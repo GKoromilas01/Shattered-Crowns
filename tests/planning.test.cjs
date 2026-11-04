@@ -72,7 +72,7 @@ test('A genuine v0.7 campaign checkpoint restores without changing simulation or
  const p=await game(t),saved=JSON.parse(fs.readFileSync('tests/fixtures/city-v070.json'));
  assert.equal(saved.createdWith,'0.7.0');assert.equal(saved.schema,2);
  const r=await p.evaluate(s=>window.scCitySave.restore(s),saved);assert.equal(r.ok,true,r.message);
- const after=await p.evaluate(()=>window.scCitySave.capture());assert.equal(after.createdWith,'0.12.0');assert.deepEqual(after.state,saved.state);assert.deepEqual(after.campaign,saved.campaign);assert.equal(await p.evaluate(()=>window.scCitySave.status().paused),true);
+ const after=await p.evaluate(()=>window.scCitySave.capture());assert.equal(after.createdWith,'0.13.0');assert.deepEqual(after.state,saved.state);assert.deepEqual(after.campaign,saved.campaign);assert.equal(await p.evaluate(()=>window.scCitySave.status().paused),true);
 });
 
 test('Space activates planning navigation and Locate without changing Pause or arming camera pan',async t=>{
