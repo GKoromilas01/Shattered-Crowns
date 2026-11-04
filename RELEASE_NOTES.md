@@ -1,5 +1,14 @@
 # Release notes
 
+## v0.10.0 — Settlement Starts
+
+- Choose the unchanged Marches home or a real Brookstead village with its own starting arrangement and farm/house/well/roads. Map inspection never commits the choice.
+- Village saves use strict schema3 origin metadata; old schema1/2 checkpoints restore unchanged. Only the actual home is marked yours in the atlas.
+- New games enable music while preserving master mute, volume, effects and style. Restoring a city or using maps does not reset sound choices.
+- Preserve peaceful/classic rules, city economy, controls and roads/costs/undo. No paid services, multiplayer or production release.
+
+See [Milestone10](docs/MILESTONE10.md) and [verification](docs/validation/m10-verification.md).
+
 ## v0.9.0 — The Living World
 
 - Owner-playtest follow-up: removed opening music preview; added a starting-home guide and pre-entry world inspection, plus visible World map and Music on/off controls in the city. Music begins on actual entry when enabled.
