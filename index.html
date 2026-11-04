@@ -337,7 +337,7 @@ function civicHasRoadAccess(b,network=getRoadNetwork()){
 function roadServiceBonus(owned,network=getRoadNetwork()){
  const houses=owned.filter(b=>b.type==='house');
  const wells=owned.filter(b=>b.type==='well'&&civicHasRoadAccess(b,network));
- const clinics=owned.filter(b=>b.type==='clinic'&&civicHasRoadAccess(b,network));
+ const clinics=owned.filter(b=>b.type==='clinic'&&!b.cityWorkPaused&&civicHasRoadAccess(b,network));
  return houses.reduce((total,h)=>total+
   (wells.some(w=>dist(w,h)<190)?.22:0)+
   (clinics.some(c=>dist(c,h)<190)?.3:0),0);
