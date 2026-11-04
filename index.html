@@ -530,6 +530,22 @@ function cityAdvice(s){
  return advice;
 }
 function cityHouseDetails(h,context){const t=houseTier(h,context),capacity=cityHouseCapacity(h),occupancy=h.cityResidents||0;return {id:h.id,tier:t.level,name:cityTierNames[t.level],capacity,occupancy,services:t.services,food:t.foodReady,water:t.water,access:t.access,health:t.health,market:t.trade,beauty:t.beauty,upgradeSeconds:h.cityUpgrade||0,downgradeSeconds:h.cityDecline||0,nextRequirements:cityRequirements(h,Math.min(4,t.level+1),context).map(([label,met])=>({label,met})),currentMissing:cityRequirements(h,t.level,context).filter(([,ok])=>!ok).map(([label])=>label)};}
+const scVillageResources=[['wood','tree'],['stone','stone'],['gold','gold']];
+const scIdleMapWorker=u=>u.team===0&&u.type==='worker'&&alive(u)&&!u.order&&!u.target&&!u.carry;
+function cityVillageSnapshot(){
+ const workers=units.filter(u=>u.team===0&&u.type==='worker'&&alive(u));
+ const gathering=Object.fromEntries(scVillageResources.map(([resource,type])=>[resource,workers.filter(u=>u.order?.type==='gather'&&u.order.target?.type===type).length]));
+ const idle=workers.filter(scIdleMapWorker).length,keep=buildings.find(b=>b.team===0&&b.type==='keep'&&alive(b));
+ return {resources:{gold,wood,stone},workers:{total:workers.length,idle,gathering,other:workers.length-idle-Object.values(gathering).reduce((a,b)=>a+b,0)},deposits:scVillageResources.map(([resource,type])=>{
+  const sites=nodes.filter(n=>n.type===type),active=sites.filter(n=>n.amount>0);
+  const nearest=keep?active.reduce((best,n)=>!best||dist(keep,n)<dist(keep,best)?n:best,null):null;
+  return {resource,remaining:sites.reduce((sum,n)=>sum+n.amount,0),active:active.length,recovering:sites.length-active.length,nearest:nearest?{x:nearest.x,y:nearest.y}:null};
+ })};
+}
+function scVillageActionReady(){return !ended&&!scOverview&&!tutorialVisible&&document.getElementById('sc1310Welcome')?.hidden!==false;}
+function scVillageCenter(point){
+ const rect=c.getBoundingClientRect();mapViewport.scrollLeft=point.x*rect.width/c.width-mapViewport.clientWidth/2;mapViewport.scrollTop=point.y*rect.height/c.height-mapViewport.clientHeight/2;
+}
 function citySnapshot(){
  assignEmployment();const owned=cityOwned(),context={owned,network:getRoadNetwork()},homes=owned.filter(b=>b.type==='house'),occupancyState=cityReconcileOccupancy(context);
  const houses=homes.map(h=>cityHouseDetails(h,context));
@@ -542,7 +558,7 @@ function citySnapshot(){
  s.food.flows=cityFlows.map(f=>({...f}));s.food.households=cityHouseholds.map(h=>({...h}));
  s.buildings=owned.map(b=>cityBuildingDetails(b,houses,context));
  s.peace=scScenario==='city'?{scenario:'city',description:'Peaceful city campaign: no enemy attacks are scheduled. Readiness is preparation, not a war timer.',graceSeconds:0,remaining:0,raidInterval:0,difficulty}:{graceSeconds:difficulty==='hard'?180:300,raidInterval:difficulty==='easy'?300:difficulty==='hard'?120:240,remaining:Math.max(0,(difficulty==='hard'?180:300)-elapsed),difficulty};
- s.advice=cityAdvice(s);return s;
+ s.village=cityVillageSnapshot();s.advice=cityAdvice(s);return s;
 }
 
 function updateUI(){assignEmployment();el('buildingInspector').textContent=describeBuilding(inspectedBuilding).replaceAll(' | ','\n');let cityOwned=buildings.filter(b=>b.team===0&&alive(b));let farmRate=cityOwned.filter(b=>b.type==='farm').reduce((v,b)=>v+13*(employment.byId.get(b.id)?.efficiency||0),0)+cityOwned.filter(b=>b.type==='fishery').reduce((v,b)=>v+9*(employment.byId.get(b.id)?.efficiency||0),0);let useRate=Math.ceil(population*.45*(window.scRationFactor||1));let stored=90+cityOwned.filter(b=>b.type==='granary').length*160;el('foodBalance').textContent=`🌾 Food: +${farmRate.toFixed(1)} production / -${useRate} consumption every 5 seconds | Net ${farmRate-useRate>=0?'+':''}${(farmRate-useRate).toFixed(1)} | Storage ${Math.floor(food)}/${stored}`;const network=getRoadNetwork();
@@ -2935,7 +2951,15 @@ function scRestoreCity(input){
 }
 window.scCitySave={capture:scCaptureCity,restore:scRestoreCity,validate:input=>{try{scPrepareCity(input);return {ok:true};}catch(e){return {ok:false,message:e.message};}},status:()=>({cityId:scCityIdentity,elapsed,paused,ended})};
 
-window.scCityEconomy={snapshot:citySnapshot,locate:id=>{
+window.scCityEconomy={snapshot:citySnapshot,selectIdleWorkers:()=>{
+ if(!scVillageActionReady())return false;const idle=units.filter(scIdleMapWorker);if(!idle.length)return false;
+ selected=idle;inspectedBuilding=null;window.scRTSSelected=selected.slice();window.scRTSInspectedBuilding=null;scVillageCenter(idle[0]);updateUI();
+ window.dispatchEvent(new CustomEvent('sc-selection-changed',{detail:{units:selected.slice(),building:null,source:'village'}}));msg(idle.length+' idle workers selected. Right-click a resource deposit to gather.');return true;
+},locateResource:resource=>{
+ if(!scVillageActionReady()||!scVillageResources.some(([name])=>name===resource))return false;
+ const site=cityVillageSnapshot().deposits.find(d=>d.resource===resource)?.nearest;if(!site)return false;
+ scVillageCenter(site);msg('Located '+resource+' nearest your Keep. Select workers and right-click the deposit to gather.');return true;
+},locate:id=>{
  if(!Number.isSafeInteger(id)||scOverview)return false;
  const b=buildings.find(b=>b.id===id&&b.team===0&&alive(b));if(!b)return false;
  const scaleX=c.getBoundingClientRect().width/c.width,scaleY=c.getBoundingClientRect().height/c.height;
