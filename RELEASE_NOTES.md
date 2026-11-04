@@ -1,5 +1,16 @@
 # Release notes
 
+## v0.9.0 — The Living World
+
+- Owner-playtest follow-up: removed opening music preview; added a starting-home guide and pre-entry world inspection, plus visible World map and Music on/off controls in the city. Music begins on actual entry when enabled.
+
+- Replaced the sparse kingdom terrain with original inline mountains, valley contours, forest, river and coastline, plus distinct village/town/castle markers.
+- Added Highpass Gate, Willow Ford and West Beacon as inspectable geographic landmarks, without travel orders or resource bonuses.
+- Connected Menu/world/continent/kingdom/city navigation; three continent and kingdom records prepare later governor selection. Only the Marches is playable; future regions are clearly labeled.
+- Preserved city simulation, peaceful mode, economy, roads/undo, controls, opening/music and schema 1/2 saves. World browsing never replaces a city. No backend, 3D conversion or paid infrastructure.
+
+See [Milestone 9](docs/MILESTONE9.md) and [verification evidence](docs/validation/m9-verification.md).
+
 ## v0.8.1 — Opening, Construction & Music Polish
 
 - Construction/Units commands retain the 88px HUD and show complete cards with visible previous/next controls, including native Windows-style scrollbars. Wheel, touch and keyboard scrolling remain available.
