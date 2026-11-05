@@ -7831,9 +7831,28 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  const cityBeat=60/72;
  const cityChords=[[57,60,64],[53,57,60],[48,55,60],[55,59,62],[50,57,62],[57,60,64],[53,57,60],[55,59,62],[57,60,64],[53,57,60],[48,55,60],[55,59,62],[50,57,62],[53,57,60],[52,55,59],[57,60,64]];
  const cityMelody=[[[0,69,1],[1,72,1],[2,76,1.6]],[[.5,74,1],[1.5,72,1],[3,69,.8]],[[0,67,1.5],[2,72,1],[3,71,.8]],[[0,67,1],[1.5,69,.8],[2.5,71,1.2]],[[0,74,1.5],[2,72,1],[3,69,.8]],[[0,72,1],[1,71,1],[2,69,1.7]],[[.5,69,1],[1.5,67,1],[3,65,.8]],[[0,67,2],[2.5,71,1.2]],[[0,76,1],[1,74,1],[2,72,1.6]],[[.5,72,1],[1.5,77,1],[3,76,.8]],[[0,76,1],[1,79,1],[2.5,76,1.2]],[[0,74,1.5],[2,71,1],[3,67,.8]],[[0,69,1],[1,74,1],[2,72,1.6]],[[.5,69,1],[1.5,72,1],[3,69,.8]],[[0,71,1],[1,67,1],[2,64,1.6]],[[0,69,3.4]]];
+ // Original quiet viola/violin-like countermelody; no borrowed theme or percussion.
+ const cityStrings=[64,60,60,62,62,64,60,62,64,65,67,62,62,60,59,57];
  const noteFrequency=midi=>440*Math.pow(2,(midi-69)/12);
- function scheduleCityBar(index,at,emit){const i=index%cityChords.length,chord=cityChords[i];for(const n of chord)emit(noteFrequency(n),at,cityBeat*4+.16,'music',.105,'pad');emit(noteFrequency(chord[0]-12),at,cityBeat*3.1,'music',.17,'bass');const pattern=[chord[0],chord[2],chord[1],chord[2],chord[0]+12,chord[2],chord[1],chord[2]];pattern.forEach((n,j)=>emit(noteFrequency(n),at+j*cityBeat/2,cityBeat*.9,'music',j%2?.15:.21,'pluck'));for(const [beat,n,length] of cityMelody[i])emit(noteFrequency(n),at+beat*cityBeat,length*cityBeat*.95,'music',.27,'flute');}
- function createAudioVoice(ctx,destination,frequency,at,duration,kind,amplitude,flavor='pad'){const osc=ctx.createOscillator(),gain=ctx.createGain(),voice={osc,gain,kind};osc.type=kind==='music'?(flavor==='pluck'?'triangle':'sine'):'triangle';osc.frequency.value=frequency;const attack=Math.min(kind!=='music'?.015:flavor==='pluck'?.012:flavor==='flute'?.12:flavor==='bass'?.16:1.8,duration*.4);voice.startsAt=at;voice.levelAt=when=>{const age=when-at;if(age<=0)return .0001;if(age<attack)return .0001+(amplitude-.0001)*age/attack;if(age>=duration)return .0001;return amplitude*Math.pow(.0001/amplitude,(age-attack)/(duration-attack));};gain.gain.setValueAtTime(.0001,at);gain.gain.linearRampToValueAtTime(amplitude,at+attack);gain.gain.exponentialRampToValueAtTime(.0001,at+duration);osc.connect(gain);gain.connect(destination);osc.start(at);osc.stop(at+duration+.01);return voice;}
+ function scheduleCityBar(index,at,emit){const i=index%cityChords.length,chord=cityChords[i];for(const n of chord)emit(noteFrequency(n),at,cityBeat*4+.16,'music',.095,'pad');emit(noteFrequency(chord[0]-12),at,cityBeat*3.1,'music',.17,'bass');const pattern=[chord[0],chord[2],chord[1],chord[2],chord[0]+12,chord[2],chord[1],chord[2]];pattern.forEach((n,j)=>emit(noteFrequency(n),at+j*cityBeat/2,cityBeat*.9,'music',j%2?.15:.21,'pluck'));for(const [beat,n,length] of cityMelody[i])emit(noteFrequency(n),at+beat*cityBeat,length*cityBeat*.95,'music',.27,'flute');emit(noteFrequency(cityStrings[i]),at+.08,cityBeat*3.6,'music',.045,'strings');}
+ const stringWaves=new WeakMap();
+ function createAudioVoice(ctx,destination,frequency,at,duration,kind,amplitude,flavor='pad'){
+  const osc=ctx.createOscillator(),gain=ctx.createGain(),voice={osc,gain,kind};
+  const bowed=kind==='music'&&flavor==='strings';
+  osc.type=kind==='music'?(flavor==='pluck'?'triangle':'sine'):'triangle';
+  if(bowed){let wave=stringWaves.get(ctx);if(!wave){wave=ctx.createPeriodicWave(new Float32Array(7),new Float32Array([0,1,.3,.18,.12,.06,.03]));stringWaves.set(ctx,wave);}osc.setPeriodicWave(wave);}
+  osc.frequency.value=frequency;
+  const attack=Math.min(kind!=='music'?.015:bowed?.45:flavor==='pluck'?.012:flavor==='flute'?.12:flavor==='bass'?.16:1.8,duration*.4);
+  const releaseStart=Math.max(attack,duration-Math.min(.65,duration*.25));
+  voice.startsAt=at;voice.levelAt=when=>{
+   const age=when-at;if(age<=0)return .0001;if(age<attack)return .0001+(amplitude-.0001)*age/attack;if(age>=duration)return .0001;
+   if(bowed){if(age<releaseStart)return amplitude*(1-.15*(age-attack)/(releaseStart-attack));return amplitude*.85*Math.pow(.0001/(amplitude*.85),(age-releaseStart)/(duration-releaseStart));}
+   return amplitude*Math.pow(.0001/amplitude,(age-attack)/(duration-attack));
+  };
+  gain.gain.setValueAtTime(.0001,at);gain.gain.linearRampToValueAtTime(amplitude,at+attack);
+  if(bowed)gain.gain.linearRampToValueAtTime(amplitude*.85,at+releaseStart);
+  gain.gain.exponentialRampToValueAtTime(.0001,at+duration);osc.connect(gain);gain.connect(destination);osc.start(at);osc.stop(at+duration+.01);return voice;
+ }
 
  function tone(frequency,at,duration,kind,amplitude,flavor){if(!context||voices.size>=32)return;const voice=createAudioVoice(context,kind==='music'?music:effects,frequency,at,duration,kind,amplitude,flavor);voices.add(voice);voice.osc.onended=()=>{voices.delete(voice);voice.osc.disconnect();voice.gain.disconnect();};}
  function ambient(){if(document.getElementById('sc1310Welcome')?.hidden===false&&!openingActivated||!context||context.state!=='running'||document.hidden||!settings.music||settings.muted||settings.volume===0)return;const now=context.currentTime;if([...voices].some(v=>v.kind==='music'&&v.stopping))return;
