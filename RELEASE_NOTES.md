@@ -1,5 +1,9 @@
 # Release notes
 
+## v0.16.0 — Playable 2.5D Visual Improvements
+
+A small playable visual proof: softer cached meadow terrain, layered broadleaf trees, dimensional cottage details and clearer unit clothing. Existing simulation, roads, controls, save fields and audio remain unchanged. This is a first art pass, not a complete replacement of all buildings. See [Milestone 16](docs/MILESTONE16.md).
+
 ## v0.15.0 — City Progression & Staffing Priorities
 
 - Give selected workplaces high civilian staffing priority across job types, with default food-first behavior preserved until the governor opts in.
