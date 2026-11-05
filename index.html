@@ -1261,7 +1261,7 @@ for(let i=0;i<Math.min(population,9);i++){
 // Ambient motes move gently without affecting gameplay.
 for(let i=0;i<38;i++){let x=(i*137.71+Math.sin(visualTime*.42+i)*14)%W,y=(i*97.31+Math.cos(visualTime*.35+i*2)*10)%H;if(x>454&&x<544)continue;ctx.globalAlpha=.13+.12*(.5+.5*Math.sin(visualTime*1.6+i));ctx.fillStyle=i%3?'#c9dca1':'#e8cf8d';ctx.beginPath();ctx.arc(x,y,i%4===0?1.8:1,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1;
 // Painted resource props: layered firs, faceted boulders, and glowing ore.
-for(let n of nodes){const x=n.x,y=n.y;ctx.save();ctx.fillStyle='rgba(7,22,18,.34)';ctx.beginPath();ctx.ellipse(x+9,y+14,34,12,-.15,0,Math.PI*2);ctx.fill();if(n.amount<=0){ctx.fillStyle='#726e5d';ctx.beginPath();ctx.ellipse(x,y+5,17,8,0,0,Math.PI*2);ctx.fill();if(showLabels)label('RECHARGING',x,y+30,9,'#f0dcb3');ctx.restore();continue}
+for(let n of nodes){const x=n.x,y=n.y;ctx.save();if(n.type!=='tree'||n.amount<=0){ctx.fillStyle='rgba(7,22,18,.34)';ctx.beginPath();ctx.ellipse(x+9,y+14,34,12,-.15,0,Math.PI*2);ctx.fill();}if(n.amount<=0){ctx.fillStyle='#726e5d';ctx.beginPath();ctx.ellipse(x,y+5,17,8,0,0,Math.PI*2);ctx.fill();if(showLabels)label('RECHARGING',x,y+30,9,'#f0dcb3');ctx.restore();continue}
 if(n.type==='tree'){sc16PaintTree(ctx,n)}
 else if(n.type==='stone'){for(let k=0;k<4;k++){const xx=x+(k-1.5)*12,yy=y+(k%2)*5;ctx.beginPath();ctx.moveTo(xx-13,yy+13);ctx.lineTo(xx-10,yy-7);ctx.lineTo(xx+2,yy-20-(k%2)*7);ctx.lineTo(xx+14,yy-3);ctx.lineTo(xx+12,yy+13);ctx.closePath();ctx.fillStyle=k%2?'#849b9f':'#a8b4ae';ctx.fill();ctx.beginPath();ctx.moveTo(xx+2,yy-20-(k%2)*7);ctx.lineTo(xx+14,yy-3);ctx.lineTo(xx+12,yy+13);ctx.lineTo(xx+3,yy+8);ctx.closePath();ctx.fillStyle='#586d75';ctx.fill();ctx.strokeStyle='#dce4d8';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(xx-10,yy-7);ctx.lineTo(xx+2,yy-20-(k%2)*7);ctx.stroke()}}
 else{ctx.fillStyle='#4d3829';ctx.beginPath();ctx.ellipse(x,y+9,30,12,0,0,Math.PI*2);ctx.fill();for(let k=0;k<5;k++){let xx=x+(k-2)*11,hh=13+(k%3)*7;ctx.beginPath();ctx.moveTo(xx-9,y+8);ctx.lineTo(xx-5,y-hh);ctx.lineTo(xx+2,y-hh-7);ctx.lineTo(xx+10,y+8);ctx.closePath();ctx.fillStyle=k%2?'#dfb953':'#a77d31';ctx.fill();ctx.strokeStyle='#ffdf85';ctx.lineWidth=1.5;ctx.stroke()}}
@@ -2971,7 +2971,7 @@ function scCaptureCity(){
  });
   const buildingRows=liveBuildings.map(b=>({...Object.fromEntries(scBuildingNumbers.map(k=>[k,k==='cityTier'?(b[k]||1):(b[k]??0)])),type:b.type,scLastNotifiedTier:b.scLastNotifiedTier??null,...(typeof b.cityWorkPaused==='boolean'?{cityWorkPaused:b.cityWorkPaused}:{}),...(typeof b.cityWorkPriority==='boolean'?{cityWorkPriority:b.cityWorkPriority}:{})}));
  const zoom=window.scMapZoom?.get()||1;
- return {format:scSaveFormat,schema:scScenario==='city'?(scOriginId==='brookstead'?3:2):1,...(scScenario==='city'?{campaign:{mode:'city',stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,...(scOriginId==='brookstead'?{originId:scOriginId}:{})}}:{}),createdWith:'0.16.0',cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
+ return {format:scSaveFormat,schema:scScenario==='city'?(scOriginId==='brookstead'?3:2):1,...(scScenario==='city'?{campaign:{mode:'city',stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,...(scOriginId==='brookstead'?{originId:scOriginId}:{})}}:{}),createdWith:'0.17.0',cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
   resources:{gold,wood,stone,food,tradeGoods,goodsSold,aiGold,aiWood},people:{population,happiness,prosperity:cityProsperity},
   clock:{elapsed,cityTimer,cityCycleNumber,aiTimer,resourceTimer,aiDecision,aiAttackTimer,aiTrainTimer,trainTimer,scFestivalCooldown},
   options:{difficulty,formation,eventFoodReserve:scEventFoodReserve,showLabels,showMinimap,serviceOverlay,ration:window.scRationPolicy?.capture()||{mode:el('sc1303Mode')?.value||'normal',emergency:window.scRationFactor===.75},breadExport:window.scBreadExportEnabled!==false,breadReserveCycles:window.scBreadReserveCycles??2},
@@ -7022,6 +7022,28 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 @media(max-width:700px){#scKingdomPanel .kingdomColumns{display:flex}#scKingdomTerrain,#scWorldTerrain{height:360px;flex-shrink:0}#scKingdomTerrain .scAtlasSettlement{min-width:62px;max-width:90px;padding:4px}#scKingdomTerrain .scAtlasSettlement span{font-size:11px}#scKingdomTerrain .scAtlasSettlement small{font-size:9px}#scKingdomTerrain .scPlaceSymbol{height:25px;width:29px;margin-top:-17px}.scAtlasEdition{width:100%;order:3}.scAtlasNav button{font-size:12px;padding:8px}#scWorldTerrain button{font-size:12px;padding:8px}.scAtlasLandmarks{gap:5px}.scAtlasLandmarks button{font-size:11px}.scAtlasLegend{margin:8px 0}#scWorldDetails h3{font-size:21px}}
 
 </style>
+<style id="scWorldIdentityStyle">
+#scWorldIdentity{color:#ede5ce;min-width:0;text-align:left;font:14px/1.65 system-ui}
+#scWorldIdentity button{white-space:normal;overflow-wrap:anywhere}
+.scIdentityCrumbs{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:10px 0;border-bottom:1px solid #68795d}
+.scIdentityCrumbs button{margin:0;font-size:12px;padding:8px}
+.scIdentityHero{display:flex;align-items:center;gap:22px;padding:24px 18px;margin:16px 0;background:linear-gradient(120deg,#304a3a,#162f32);border:1px solid #9b8860;border-radius:9px;box-shadow:inset 0 0 40px #c3a55b0a}
+#scIdentityBanner{flex:0 0 84px;filter:drop-shadow(0 5px 6px #071e23)}#scIdentityBanner svg{width:84px;height:100px}
+.scIdentityHero h3{font:32px/1.15 Georgia,serif;color:#f5d996;margin:6px 0}.scIdentityMotto{font:italic 18px/1.4 Georgia,serif;color:#d7c79c;margin:8px 0}
+.scIdentityEyebrow{font-size:11px!important;letter-spacing:.08em;color:#bdcaa7;text-transform:uppercase}
+.scIdentityColumns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:20px}
+#scWorldIdentity article{padding:16px;margin-bottom:14px;border:1px solid #617760;border-radius:8px;background:#183632}
+#scWorldIdentity h4{font:22px/1.3 Georgia,serif;color:#f0d597;margin:0 0 12px}#scWorldIdentity h5{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#d3c392;margin:18px 0 5px}
+#scWorldIdentity p{font-size:13px;line-height:1.7;margin:8px 0}#scWorldIdentity li{margin:8px 0}
+.scIdentityMap{position:relative;height:420px;width:100%;border:1px solid #ac9e73;border-radius:8px;overflow:hidden;background:#315456}
+.scIdentityMap>svg{position:absolute;inset:0;width:100%;height:100%}
+.scIdentityMap>button{position:absolute;transform:translate(-50%,-50%);width:116px;max-width:46%;min-height:70px;margin:0!important;padding:5px!important;display:flex;align-items:center;flex-direction:column;background:#1c3934f2!important;border:1px solid #b4a273!important;box-shadow:0 4px 10px #18332f66;font-size:12px!important;line-height:1.2}
+.scIdentityMap>button[aria-pressed=true]{outline:2px solid #ffe1a0;outline-offset:2px;background:#675533!important}
+.scIdentityPlaceIcon{font-size:24px;color:#e6cd8e}.scIdentityMap small{font-size:10px;color:#bcc8ad;margin-top:3px}
+.scIdentityNote{font-size:11px!important;color:#bdc8b3}.scIdentityAvailability{border-left:3px solid #c5a45c;padding:10px;background:#314a3a}
+#scSettlementIdentity{border-color:#b29d6c!important;background:linear-gradient(120deg,#304636,#193633)!important}
+@media(max-width:700px){.scIdentityColumns{grid-template-columns:minmax(0,1fr)}.scIdentityHero{gap:12px;padding:16px 10px}.scIdentityHero h3{font-size:25px}#scIdentityBanner{flex-basis:64px}#scIdentityBanner svg{width:64px;height:80px}.scIdentityMap>button{width:110px;font-size:11px!important}.scIdentityMap{height:420px}.scIdentityCrumbs{gap:3px}.scIdentityCrumbs button{font-size:11px;padding:7px}}
+</style>
 <script id="scKingdomController">
 (()=>{'use strict';
  const engine=window.scCampaign,menu=document.getElementById('sc146Menu');if(!engine||!menu)return;
@@ -7038,7 +7060,619 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  const placement={home:[20,74,'Town'],ironmere:[81,24,'Castle'],ashford:[82,72,'Town'],valewatch:[35,22,'Castle'],brookstead:[48,62,'Village']};
  locations.forEach(p=>{const [x,y,kind]=placement[p.id];Object.assign(p,{x,y,kind,kingdomId:'marches',playable:['home','brookstead'].includes(p.id)});});
  const landmarks=[{id:'highpass',kingdomId:'marches',name:'Highpass Gate',x:60,y:33,icon:'gate',description:'A stone watch gate overlooks the narrow gap through the Ironspine. The upland road connects Valewatch and Ironmere here. This landmark has no travel command or resource bonus.'},{id:'willow-ford',kingdomId:'marches',name:'Willow Ford',x:68,y:49,icon:'ford',description:'The shallow crossing links the farming valley to Ashford. River banks and the road make this an important geographic reference. This landmark has no travel command or resource bonus.'},{id:'west-beacon',kingdomId:'marches',name:'West Beacon',x:12,y:45,icon:'beacon',description:'An old coastal beacon marks the approach to the western bay and the Elderwood edge. This landmark has no travel command or resource bonus.'}];
- window.scWorldAtlas=freeze({version:1,continents,kingdoms,settlements:locations,landmarks});
+
+ // M17 canonical identities reconcile the old sixteen-realm lore with stable atlas IDs.
+ continents.push(...[{"id": "verdance", "name": "Verdance", "x": 22, "y": 78, "description": "Broad western grasslands, deep forests and branching tropical rivers."}, {"id": "stormisles", "name": "Storm Isles", "x": 49, "y": 62, "description": "A chain of ocean islands and sheltered harbors between the great continents."}, {"id": "southveil", "name": "Southveil", "x": 52, "y": 91, "description": "Southern sea cliffs, misty island ports and the edge of the polar waters."}]);
+ const identities=[
+ {
+  "id": "marches",
+  "legacyRealmId": "aurelian",
+  "continentId": "aurelia",
+  "name": "The Shattered Marches",
+  "government": "Stewardship under a divided crown",
+  "ruler": "Steward Elian of the Willow Council",
+  "motto": "What We Sow, We Guard",
+  "mythology": "The Hearthkeeper is said to have hidden the first seed beneath a broken crown.",
+  "history": "The Willow Compact ended the bridge toll wars by placing common granaries under village care.",
+  "heroes": [
+   {
+    "name": "Mira Willowguard",
+    "deed": "Kept the northern woodland roads open through the Long Flood."
+   },
+   {
+    "name": "Elian Breadwarden",
+    "deed": "Organized the shared granaries after the crown fractured."
+   }
+  ],
+  "placeNames": [
+   "Marches Landing",
+   "Ironmere",
+   "Ashford",
+   "Valewatch",
+   "Brookstead",
+   "Willowcross",
+   "Dawnquay",
+   "Ashgrove"
+  ],
+  "banner": {
+   "field": "#284f45",
+   "accent": "#e6cd8e",
+   "charge": "sheaf"
+  },
+  "description": "The Willow Compact ended the bridge toll wars by placing common granaries under village care. The Hearthkeeper is said to have hidden the first seed beneath a broken crown."
+ },
+ {
+  "id": "winter-crown",
+  "legacyRealmId": "tharwen",
+  "continentId": "frostward",
+  "name": "The Winter Crown",
+  "government": "Elective highland crown and clan assembly",
+  "ruler": "High Queen Saela Stonevoice",
+  "motto": "No Summit Bows",
+  "mythology": "The mountains are sleeping witnesses who remember each oath spoken above the snow.",
+  "history": "The Seven Pass Oath joined rival clans after an avalanche buried their common winter road.",
+  "heroes": [
+   {
+    "name": "Saela Stonevoice",
+    "deed": "United the pass keepers without claiming their ancestral halls."
+   },
+   {
+    "name": "Torren Lanternbearer",
+    "deed": "Carried grain across the ice to the stranded eastern holds."
+   }
+  ],
+  "placeNames": [
+   "Tharwen Seat",
+   "Lanternfell",
+   "High Cairn",
+   "Snowmere",
+   "Oathpass",
+   "Pinebridge",
+   "White Hollow",
+   "Ridgewatch"
+  ],
+  "banner": {
+   "field": "#354f69",
+   "accent": "#e6cd8e",
+   "charge": "peak"
+  },
+  "description": "The Seven Pass Oath joined rival clans after an avalanche buried their common winter road. The mountains are sleeping witnesses who remember each oath spoken above the snow."
+ },
+ {
+  "id": "cinder-coast",
+  "legacyRealmId": "cinder",
+  "continentId": "emberreach",
+  "name": "The Cinder Coast",
+  "government": "Federation of mountain guilds",
+  "ruler": "First Hammer Neris Vale",
+  "motto": "From Stone, Resolve",
+  "mythology": "The Ember Smith shaped the coast from a cooled star and left its heart beneath the mountains.",
+  "history": "The Foundry Accord replaced hereditary mine levies with elected guild stewards.",
+  "heroes": [
+   {
+    "name": "Neris Vale",
+    "deed": "Reopened the coastal foundries after the Ashfall winter."
+   },
+   {
+    "name": "Bren Copperhand",
+    "deed": "Built the safe cliff road used by the valley caravans."
+   }
+  ],
+  "placeNames": [
+   "Cindervault",
+   "Copperhaven",
+   "Ash Quay",
+   "Deepbell",
+   "Emberwell",
+   "Slateford",
+   "Forgeward",
+   "Cliffrest"
+  ],
+  "banner": {
+   "field": "#6b4336",
+   "accent": "#e6cd8e",
+   "charge": "hammer"
+  },
+  "description": "The Foundry Accord replaced hereditary mine levies with elected guild stewards. The Ember Smith shaped the coast from a cooled star and left its heart beneath the mountains."
+ },
+ {
+  "id": "veyrn",
+  "legacyRealmId": "veyrn",
+  "continentId": "frostward",
+  "name": "Veyrn Reach",
+  "government": "Assembly of hearth elders",
+  "ruler": "Speaker Ylva Rowan",
+  "motto": "Through Winter, We Endure",
+  "mythology": "White pines shelter wandering winter spirits until the first spring fire is lit.",
+  "history": "The Hearth Charter guaranteed winter shelter to travelers after the Silent Frost.",
+  "heroes": [
+   {
+    "name": "Ylva Rowan",
+    "deed": "Opened the river halls to families displaced by the Silent Frost."
+   },
+   {
+    "name": "Osric Firward",
+    "deed": "Mapped the safe timber crossings through the northern forests."
+   }
+  ],
+  "placeNames": [
+   "Veyrn Hall",
+   "Firhaven",
+   "Coldwater",
+   "Wolfpine",
+   "Hearthmere",
+   "Birchrest",
+   "Frostford",
+   "Elkwatch"
+  ],
+  "banner": {
+   "field": "#355d4b",
+   "accent": "#e6cd8e",
+   "charge": "pine"
+  },
+  "description": "The Hearth Charter guaranteed winter shelter to travelers after the Silent Frost. White pines shelter wandering winter spirits until the first spring fire is lit."
+ },
+ {
+  "id": "duskmoor",
+  "legacyRealmId": "duskmoor",
+  "continentId": "aurelia",
+  "name": "Duskmoor",
+  "government": "Chartered wetland baronies",
+  "ruler": "Baroness Ilyra Reed",
+  "motto": "The Marsh Remembers",
+  "mythology": "A silver heron carries forgotten promises between the pools at dusk.",
+  "history": "The Causeway Settlement bound the barons to maintain a public road above the floodplain.",
+  "heroes": [
+   {
+    "name": "Ilyra Reed",
+    "deed": "Raised the public causeway through the flood years."
+   },
+   {
+    "name": "Cadan Heron",
+    "deed": "Rescued the reed villages during the blackwater surge."
+   }
+  ],
+  "placeNames": [
+   "Duskcourt",
+   "Reedharbor",
+   "Heronfen",
+   "Mossbank",
+   "Stillwater",
+   "Wickerford",
+   "Lantern Marsh",
+   "Grey Causeway"
+  ],
+  "banner": {
+   "field": "#46545e",
+   "accent": "#e6cd8e",
+   "charge": "heron"
+  },
+  "description": "The Causeway Settlement bound the barons to maintain a public road above the floodplain. A silver heron carries forgotten promises between the pools at dusk."
+ },
+ {
+  "id": "lyran",
+  "legacyRealmId": "lyran",
+  "continentId": "aurelia",
+  "name": "Lyran League",
+  "government": "League of elected merchant councils",
+  "ruler": "Convener Dara Keel",
+  "motto": "Our Word Crosses Seas",
+  "mythology": "The Star Navigator taught the first boatbuilders to read the river in the night sky.",
+  "history": "The Open Wharf Treaty replaced private harbor chains with common weights and measures.",
+  "heroes": [
+   {
+    "name": "Dara Keel",
+    "deed": "Negotiated common harbor weights after the river blockade."
+   },
+   {
+    "name": "Lio Starward",
+    "deed": "Piloted the first relief fleet through the winter estuary."
+   }
+  ],
+  "placeNames": [
+   "Lyran Port",
+   "Waxhaven",
+   "Amber Quay",
+   "Sailbridge",
+   "Lockmere",
+   "Chartwell",
+   "Tidemarket",
+   "Candleford"
+  ],
+  "banner": {
+   "field": "#315f72",
+   "accent": "#e6cd8e",
+   "charge": "sail"
+  },
+  "description": "The Open Wharf Treaty replaced private harbor chains with common weights and measures. The Star Navigator taught the first boatbuilders to read the river in the night sky."
+ },
+ {
+  "id": "briar",
+  "legacyRealmId": "briar",
+  "continentId": "verdance",
+  "name": "Briarwatch",
+  "government": "Wardenship with village forest councils",
+  "ruler": "Warden Talin Thorn",
+  "motto": "Guard the Living Border",
+  "mythology": "The Thorn Mother grows a new path whenever a lost child asks the forest for shelter.",
+  "history": "The Green Boundary Pact reserved woodland paths and herb grounds for the villages.",
+  "heroes": [
+   {
+    "name": "Talin Thorn",
+    "deed": "Ended the forest toll feud with the Green Boundary Pact."
+   },
+   {
+    "name": "Nessa Honeyhand",
+    "deed": "Kept the herb gardens alive during the blight years."
+   }
+  ],
+  "placeNames": [
+   "Briar Hall",
+   "Honeycross",
+   "Thornmere",
+   "Oak Lantern",
+   "Fernwell",
+   "Beechford",
+   "Mossgate",
+   "Herbrest"
+  ],
+  "banner": {
+   "field": "#385c3c",
+   "accent": "#e6cd8e",
+   "charge": "oak"
+  },
+  "description": "The Green Boundary Pact reserved woodland paths and herb grounds for the villages. The Thorn Mother grows a new path whenever a lost child asks the forest for shelter."
+ },
+ {
+  "id": "solen",
+  "legacyRealmId": "solen",
+  "continentId": "emberreach",
+  "name": "Solenmar Coast",
+  "government": "Terrace communes under a ceremonial prince",
+  "ruler": "Prince Aven Sunward",
+  "motto": "By Tide and Toil",
+  "mythology": "The Dawn Weaver lays a golden road across the sea for sailors returning home.",
+  "history": "The Terrace Covenant granted the hillside orchards shared rights to their water channels.",
+  "heroes": [
+   {
+    "name": "Aven Sunward",
+    "deed": "Yielded the royal cisterns to the orchard communes."
+   },
+   {
+    "name": "Mara Saltwind",
+    "deed": "Led the coastal rescue boats during the broken harbor winter."
+   }
+  ],
+  "placeNames": [
+   "Solenmar",
+   "Olive Bay",
+   "Golden Terrace",
+   "Vinecross",
+   "Saltgarden",
+   "Sunwell",
+   "Dawnport",
+   "Citrus Rest"
+  ],
+  "banner": {
+   "field": "#855c36",
+   "accent": "#e6cd8e",
+   "charge": "sun"
+  },
+  "description": "The Terrace Covenant granted the hillside orchards shared rights to their water channels. The Dawn Weaver lays a golden road across the sea for sailors returning home."
+ },
+ {
+  "id": "ember",
+  "legacyRealmId": "ember",
+  "continentId": "emberreach",
+  "name": "Emberfall March",
+  "government": "Border crown advised by rebuilding councils",
+  "ruler": "Queen Rhea Ashen",
+  "motto": "We Rise From Ruin",
+  "mythology": "A red-winged bird is believed to nest in the first green tree after a field burns.",
+  "history": "The Rebuilding Charter established a common labor fund after the eastern watchfires fell.",
+  "heroes": [
+   {
+    "name": "Rhea Ashen",
+    "deed": "Rebuilt the border villages before restoring the royal hall."
+   },
+   {
+    "name": "Deren Redwing",
+    "deed": "Carried the surviving seed stores out of the burning valley."
+   }
+  ],
+  "placeNames": [
+   "Emberfall",
+   "Redwing Hold",
+   "Ashgreen",
+   "Obsidian Ford",
+   "Cinderwell",
+   "Hearthrise",
+   "Blackstone",
+   "New Orchard"
+  ],
+  "banner": {
+   "field": "#763f3c",
+   "accent": "#e6cd8e",
+   "charge": "wing"
+  },
+  "description": "The Rebuilding Charter established a common labor fund after the eastern watchfires fell. A red-winged bird is believed to nest in the first green tree after a field burns."
+ },
+ {
+  "id": "caldris",
+  "legacyRealmId": "caldris",
+  "continentId": "emberreach",
+  "name": "Caldris Imperium",
+  "government": "Imperial civil service with provincial assemblies",
+  "ruler": "Empress Selene Oris",
+  "motto": "Order Is Our Shield",
+  "mythology": "Seven lanterns beneath the earth are said to keep the great delta from sinking into the sea.",
+  "history": "The Seven Gate Reform opened imperial petition halls to provincial delegates.",
+  "heroes": [
+   {
+    "name": "Selene Oris",
+    "deed": "Reopened the petition halls after the Marble Interregnum."
+   },
+   {
+    "name": "Cassian Reedstar",
+    "deed": "Repaired the delta sluices during three successive floods."
+   }
+  ],
+  "placeNames": [
+   "Caldris",
+   "Seven Gates",
+   "Marble Reach",
+   "Silkwater",
+   "Oris Quay",
+   "Lantern Delta",
+   "White Arcade",
+   "Reedstar"
+  ],
+  "banner": {
+   "field": "#594769",
+   "accent": "#e6cd8e",
+   "charge": "gate"
+  },
+  "description": "The Seven Gate Reform opened imperial petition halls to provincial delegates. Seven lanterns beneath the earth are said to keep the great delta from sinking into the sea."
+ },
+ {
+  "id": "saffron",
+  "legacyRealmId": "saffron",
+  "continentId": "emberreach",
+  "name": "Saffron Expanse",
+  "government": "Confederation of oasis custodians",
+  "ruler": "Custodian Amira Sen",
+  "motto": "The Wells Shall Never Fail",
+  "mythology": "The Sand Listener marks hidden springs with stones that sing when the desert wind returns.",
+  "history": "The Wellkeepers Covenant forbade the closing of public wells during caravan disputes.",
+  "heroes": [
+   {
+    "name": "Amira Sen",
+    "deed": "Restored the covenant when the eastern wells ran dry."
+   },
+   {
+    "name": "Rafi Coppertrail",
+    "deed": "Surveyed the sheltered caravan road between the copper hills."
+   }
+  ],
+  "placeNames": [
+   "Saffron Wells",
+   "Copper Oasis",
+   "Datehaven",
+   "Windstone",
+   "Amber Dune",
+   "Sen Crossing",
+   "Salt Lantern",
+   "Veiled Spring"
+  ],
+  "banner": {
+   "field": "#936d39",
+   "accent": "#e6cd8e",
+   "charge": "drop"
+  },
+  "description": "The Wellkeepers Covenant forbade the closing of public wells during caravan disputes. The Sand Listener marks hidden springs with stones that sing when the desert wind returns."
+ },
+ {
+  "id": "greenwater",
+  "legacyRealmId": "greenwater",
+  "continentId": "verdance",
+  "name": "Greenwater Duchies",
+  "government": "River duchies bound by a water assembly",
+  "ruler": "Duchess Edda Brook",
+  "motto": "Many Streams, One Course",
+  "mythology": "The River Sisters meet beneath each bridge to weigh the fairness of the season’s water share.",
+  "history": "The Confluence Charter ended the private diversion of the lower river channels.",
+  "heroes": [
+   {
+    "name": "Edda Brook",
+    "deed": "Joined the duchies around a shared flood calendar."
+   },
+   {
+    "name": "Iven Claywright",
+    "deed": "Built the first public flood terraces along the lower river."
+   }
+  ],
+  "placeNames": [
+   "Greenwater",
+   "Clayhaven",
+   "Confluence",
+   "Brookgarden",
+   "Millow",
+   "Willow Basin",
+   "Reed Orchard",
+   "Potters Bend"
+  ],
+  "banner": {
+   "field": "#3d7164",
+   "accent": "#e6cd8e",
+   "charge": "wave"
+  },
+  "description": "The Confluence Charter ended the private diversion of the lower river channels. The River Sisters meet beneath each bridge to weigh the fairness of the season’s water share."
+ },
+ {
+  "id": "vaskor",
+  "legacyRealmId": "vaskor",
+  "continentId": "verdance",
+  "name": "Vaskor Steppe",
+  "government": "Seasonal assembly of riding clans",
+  "ruler": "First Rider Sora Venn",
+  "motto": "Ride Beyond the Horizon",
+  "mythology": "The Wind Mare opens the grass roads at spring and closes them when the last foal is sheltered.",
+  "history": "The Open Pasture Accord marked seasonal grazing rights without enclosing the steppe.",
+  "heroes": [
+   {
+    "name": "Sora Venn",
+    "deed": "Secured winter grazing for the scattered eastern herds."
+   },
+   {
+    "name": "Kestrel Nalin",
+    "deed": "Carried the truce banner between the seven riding clans."
+   }
+  ],
+  "placeNames": [
+   "Vaskor Camp",
+   "Venn Crossing",
+   "Marewell",
+   "Grass Lantern",
+   "Windrest",
+   "Feltford",
+   "Horizon Gate",
+   "Foalhaven"
+  ],
+  "banner": {
+   "field": "#706044",
+   "accent": "#e6cd8e",
+   "charge": "horse"
+  },
+  "description": "The Open Pasture Accord marked seasonal grazing rights without enclosing the steppe. The Wind Mare opens the grass roads at spring and closes them when the last foal is sheltered."
+ },
+ {
+  "id": "stormhaven",
+  "legacyRealmId": "stormhaven",
+  "continentId": "stormisles",
+  "name": "Stormhaven Archipelago",
+  "government": "Island moot of harbor captains",
+  "ruler": "Tide Speaker Eira Mast",
+  "motto": "Our Keels Outlast the Storm",
+  "mythology": "The Tempest Keeper hangs lost bells beneath the sea so their sound can guide returning ships.",
+  "history": "The Anchor Compact joined the islands into a common rescue fleet after the Nine Storms.",
+  "heroes": [
+   {
+    "name": "Eira Mast",
+    "deed": "Created the island rescue fleet after the Nine Storms."
+   },
+   {
+    "name": "Haldor Bellward",
+    "deed": "Built the beacon chain across the western shoals."
+   }
+  ],
+  "placeNames": [
+   "Stormhaven",
+   "Bell Shoal",
+   "Anchor Key",
+   "Mastwatch",
+   "Tern Harbor",
+   "Raincliff",
+   "Keelrest",
+   "Blue Beacon"
+  ],
+  "banner": {
+   "field": "#345870",
+   "accent": "#e6cd8e",
+   "charge": "anchor"
+  },
+  "description": "The Anchor Compact joined the islands into a common rescue fleet after the Nine Storms. The Tempest Keeper hangs lost bells beneath the sea so their sound can guide returning ships."
+ },
+ {
+  "id": "mistmere",
+  "legacyRealmId": "mistmere",
+  "continentId": "southveil",
+  "name": "Mistmere Isle",
+  "government": "Island crown constrained by harbor charters",
+  "ruler": "Queen Nerys Valeglass",
+  "motto": "In Mist, We Find Our Way",
+  "mythology": "The Mist Lantern appears above safe channels only to those who leave a light for strangers.",
+  "history": "The Lantern Charter assigned the tin ports shared responsibility for the outer beacons.",
+  "heroes": [
+   {
+    "name": "Nerys Valeglass",
+    "deed": "Restored the harbor charter after the tin-port dispute."
+   },
+   {
+    "name": "Fenn Glasslight",
+    "deed": "Kept the outer beacon lit through a month of southern fog."
+   }
+  ],
+  "placeNames": [
+   "Mistmere",
+   "Tinharbor",
+   "Glasslight",
+   "Shepherds Quay",
+   "Fogwell",
+   "Valeglass",
+   "Outer Lantern",
+   "Silver Inlet"
+  ],
+  "banner": {
+   "field": "#52616b",
+   "accent": "#e6cd8e",
+   "charge": "lantern"
+  },
+  "description": "The Lantern Charter assigned the tin ports shared responsibility for the outer beacons. The Mist Lantern appears above safe channels only to those who leave a light for strangers."
+ },
+ {
+  "id": "sable",
+  "legacyRealmId": "sable",
+  "continentId": "stormisles",
+  "name": "Sable Key",
+  "government": "Port republic of elected quay delegates",
+  "ruler": "First Delegate Luma Pearl",
+  "motto": "Small Shores, Far Horizons",
+  "mythology": "The Pearl Keeper stores the names of safe harbors inside the moon’s reflection.",
+  "history": "The Free Quay Charter replaced the old pearl tribute with elected port delegates.",
+  "heroes": [
+   {
+    "name": "Luma Pearl",
+    "deed": "Ended the hereditary pearl tribute through the Free Quay Charter."
+   },
+   {
+    "name": "Tavi Moonwake",
+    "deed": "Charted a safe crossing through the reef passages."
+   }
+  ],
+  "placeNames": [
+   "Sable Port",
+   "Pearlwater",
+   "Moonwake",
+   "Spice Key",
+   "Coralford",
+   "Luma Quay",
+   "Shellgarden",
+   "Far Harbor"
+  ],
+  "banner": {
+   "field": "#644f70",
+   "accent": "#e6cd8e",
+   "charge": "star"
+  },
+  "description": "The Free Quay Charter replaced the old pearl tribute with elected port delegates. The Pearl Keeper stores the names of safe harbors inside the moon’s reflection."
+ }
+];
+ const allSettlements=[];
+ for(const [ki,identity] of identities.entries()){
+  let k=kingdoms.find(k=>k.id===identity.id);if(k)Object.assign(k,identity);else {k={...identity,playable:false};kingdoms.push(k);}
+  k.relationships=[{kingdomId:identities[(ki+1)%identities.length].id,description:'Unratified exchange routes; recorded lore only. No active treaty or war.'},{kingdomId:identities[(ki+identities.length-1)%identities.length].id,description:'Neighboring envoys share seasonal road reports. Diplomacy is not simulated.'}];
+  for(let i=0;i<8;i++){
+   const legacy=k.id==='marches'&&i<5?locations[i]:null;
+   const id=legacy?.id||k.id+'-'+String(i+1);
+   allSettlements.push({...legacy,id,name:identity.placeNames[i],kingdomId:k.id,kind:legacy?.kind||["City", "Town", "Village", "Town", "Village", "Town", "Village", "Village"][i],playable:!!legacy?.playable,x:legacy?.x||([24,75][i%2]),y:legacy?.y||(15+Math.floor(i/2)*22),
+    location:identity.placeNames[i]+' lies '+["at the meeting of the old roads", "beside the sheltered trade crossing", "among the cultivated lower slopes", "above the inland travel road", "around the shared well and common land", "beside the kingdom\u2019s supply route", "near the protected outer woodland", "on the edge of the settled country"][i]+', within '+k.name+'.',
+    description:identity.placeNames[i]+' is the '+["administrative seat and public market", "craft and river exchange center", "food-growing rural community", "road and caravan junction", "water and pasture settlement", "storehouse and artisan quarter", "woodland and garden community", "coastal or border watch village"][i]+' of '+k.name+'. Its map identity is available for inspection; local production outside your active city is not simulated.',
+    history:identity.placeNames[i]+' grew as a '+["administrative seat and public market", "craft and river exchange center", "food-growing rural community", "road and caravan junction", "water and pasture settlement", "storehouse and artisan quarter", "woodland and garden community", "coastal or border watch village"][i]+' after the founding agreement remembered in '+k.name+'. '+k.history,
+    ruler:legacy?.ruler||['Charter steward','Market speaker','Village elder','Road warden','Well keeper','Guild steward','Garden custodian','Watch captain'][i]+' of '+identity.placeNames[i]});
+  }
+  delete k.placeNames;
+ }
+ window.scWorldAtlas=freeze({version:2,continents,kingdoms,settlements:allSettlements,landmarks});
  let scope='region',continentId='aurelia',landmarkId=null,detailKey='',worldKey='';
  function displayPlace(place){const homeId=engine.status().originId==='brookstead'?'brookstead':'home';if(place.id===homeId)return {...place,ruler:'You',relations:'Your home settlement',description:homeId==='brookstead'?'Your playable Brookstead village. Return to city to manage its real farm, homes, services and roads.':place.description};if(place.id==='home')return {...place,name:'Marches Landing',ruler:'Local stewards',relations:'Neighboring settlement',strength:'An informational neighboring settlement',trade:'Potential future exchange; no active contract.',description:'The original landing in the Marches. Your active home is Brookstead; this location is informational.'};return place;}
  const regionArt=`<svg class="scAtlasArt" viewBox="0 0 700 460" preserveAspectRatio="none" aria-hidden="true">
@@ -7075,7 +7709,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  terrain.after(landmarkList);
  const legend=document.createElement('p');legend.className='scAtlasLegend';legend.textContent='Village · small homes   /   Town · clustered roofs   /   Castle · battlements   /   ◇ Landmark';landmarkList.after(legend);
  const regionNote=dialog.querySelector('.kingdomColumns>div:first-child>.kingdomNote');regionNote.textContent='Inspect a settlement or landmark. This regional geography illustrates the realm; gatherable deposits are in your city. Dashed paths are not active trade routes.';
- const worldMap=document.createElement('div');worldMap.id='scWorldTerrain';worldMap.hidden=true;worldMap.setAttribute('role','group');worldMap.setAttribute('aria-label','World continents');worldMap.innerHTML=worldArt;terrain.before(worldMap);
+ const worldMap=document.createElement('div');worldMap.id='scWorldTerrain';worldMap.hidden=true;worldMap.setAttribute('role','group');worldMap.setAttribute('aria-label','World continents');worldMap.innerHTML=worldArt;worldMap.querySelector('svg').insertAdjacentHTML('beforeend','<g fill="#69835c" stroke="#c9c396" stroke-width="2"><path d="M55 292L104 270 142 286 179 311 189 351 163 388 120 405 83 377 62 334Z"/><path d="M335 270L361 255 386 277 373 308 348 298ZM389 320L418 308 432 328 411 348 388 343Z"/><path d="M251 426L296 408 343 418 391 405 434 432 410 457H260Z" fill="#afc0b8"/></g>');terrain.before(worldMap);
  for(const c of continents){const b=document.createElement('button');b.type='button';b.dataset.continent=c.id;b.style.left=c.x+'%';b.style.top=c.y+'%';b.textContent=c.name;b.addEventListener('click',()=>{continentId=c.id;worldKey='';render()});worldMap.append(b);}
  const worldDetails=document.createElement('article');worldDetails.id='scWorldDetails';worldDetails.hidden=true;worldDetails.setAttribute('aria-live','polite');dialog.querySelector('#scKingdomDetails').before(worldDetails);
  const limits=dialog.querySelector('#scKingdomDetails').nextElementSibling;limits.id='scAtlasLimits';
@@ -7087,11 +7721,62 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   // City Life renders on its opening click's next task; navigate after that render.
   setTimeout(()=>{if(cityLife&&!cityLife.hidden&&!dialog.open)document.querySelector('#scCityPlanningNav [data-section="Village"]')?.click();},0);
  });
- function setScope(value){scope=value;render();(scope==='world'?navWorld:navRegion).focus();}
+ // One dossier view inside the existing modal; no second atlas or persisted selection.
+ const dossier=document.createElement('section');dossier.id='scWorldIdentity';dossier.hidden=true;
+ dossier.innerHTML='<nav class="scIdentityCrumbs" aria-label="World hierarchy"><button id="scIdentityWorld" type="button">World</button><span>›</span><button id="scIdentityContinent" type="button"></button><span>›</span><button id="scIdentityKingdom" type="button"></button></nav><div id="scIdentityContent"></div>';
+ dialog.querySelector('.kingdomColumns').before(dossier);
+ const identityButton=document.createElement('button');identityButton.type='button';identityButton.id='scAtlasIdentity';identityButton.textContent='Kingdom identity · 8 settlements';dialog.querySelector('.scAtlasNav').append(identityButton);
+ let identityKingdom='marches',identityPlace=null,identityKey='';
+ const chargePaths={sheaf:'M36 66V28M24 48L36 60 48 48M24 34L36 46 48 34M27 21L36 33 45 21',peak:'M10 66L28 27 39 48 48 19 66 66ZM21 45L28 27 35 43M41 36L48 19 56 37',hammer:'M19 31L34 16 53 35 45 43 36 34 19 68 11 61 28 27',pine:'M36 13L21 34H28L15 51H28L19 63H53L44 51H57L44 34H51ZM36 62V74',heron:'M20 64L30 49 25 35 40 20 58 25 40 28 36 42 44 55M30 49L46 61M30 49L16 43M44 55V72',sail:'M36 12V66M31 18L14 51H31ZM42 23L59 51H42ZM12 60Q36 79 62 60Z',oak:'M36 72V41M36 52L21 38M36 46L51 33M13 30Q8 12 30 18Q38 4 48 19Q72 18 61 38Q67 53 45 51Q26 61 20 45Q4 48 13 30Z',sun:'M36 24A17 17 0 1 0 36 58A17 17 0 1 0 36 24M36 7V17M36 65V76M3 41H13M59 41H69M12 16L20 24M52 58L61 68M13 68L21 60M52 24L61 15',wing:'M9 61Q12 25 35 14L30 35 53 20 43 44 65 37Q54 65 33 66L24 76 25 60Z',gate:'M12 70V23H23V13H31V23H41V13H49V23H60V70H45V52Q36 35 27 52V70ZM19 36H25M47 36H53',drop:'M36 12Q4 48 20 63Q36 80 53 63Q68 48 36 12ZM27 55Q25 62 36 65',wave:'M8 30Q20 17 33 30T62 30M8 46Q20 33 33 46T62 46M8 62Q20 49 33 62T62 62',horse:'M13 67L18 42 36 14 53 24 58 45 41 42 35 54 44 69ZM36 14L33 5 44 15M43 30H46',anchor:'M36 28V70M25 18A11 11 0 1 0 47 18A11 11 0 1 0 25 18M17 40H55M8 52Q10 74 36 74Q62 74 64 52M8 52L21 57M64 52L51 57',lantern:'M24 29L30 18H42L48 29V64L36 74 24 64ZM19 29H53M19 64H53M36 36L29 51 36 58 43 51ZM36 18V8',star:'M36 10L43 31 66 32 48 46 54 69 36 56 18 69 24 46 6 32 29 31ZM36 29L41 42 36 49 31 42Z'};
+ function banner(k){return '<svg viewBox="0 0 84 100" role="img" aria-label="'+k.name+' banner"><path d="M7 5H77V72L42 95 7 72Z" fill="'+k.banner.field+'" stroke="'+k.banner.accent+'" stroke-width="3"/><path d="M12 10H72V69L42 88 12 69Z" fill="none" stroke="'+k.banner.accent+'" opacity=".35"/><g transform="translate(6 4)" fill="none" stroke="'+k.banner.accent+'" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><path d="'+chargePaths[k.banner.charge]+'"/></g></svg>';}
+ function node(tag,text,parent,cls){const n=document.createElement(tag);if(text)n.textContent=text;if(cls)n.className=cls;parent.append(n);return n;}
+ function showIdentity(id){if(!kingdoms.some(k=>k.id===id))return false;identityKingdom=id;identityPlace=null;identityKey='';scope='identity';landmarkId=null;render();dossier.querySelector('h3')?.focus({preventScroll:true});return true;}
+ identityButton.addEventListener('click',()=>showIdentity(identityKingdom));
+ dossier.querySelector('#scIdentityWorld').addEventListener('click',()=>{scope='world';worldKey='';render();worldMap.querySelector('[data-continent="'+continentId+'"]')?.focus({preventScroll:true});});
+ dossier.querySelector('#scIdentityContinent').addEventListener('click',()=>{continentId=kingdoms.find(k=>k.id===identityKingdom).continentId;scope='world';worldKey='';render();worldDetails.querySelector('[data-identity="'+identityKingdom+'"]')?.focus({preventScroll:true});});
+ dossier.querySelector('#scIdentityKingdom').addEventListener('click',()=>{identityPlace=null;identityKey='';renderIdentity();dossier.querySelector('h3')?.focus({preventScroll:true});});
+ function renderIdentity(){
+  const k=kingdoms.find(k=>k.id===identityKingdom),c=continents.find(c=>c.id===k.continentId),key=k.id+'|'+(identityPlace||'')+'|'+document.getElementById('sc1310Welcome').hidden;
+  if(key===identityKey)return;const sameKingdom=dossier.dataset.kingdom===k.id;identityKey=key;continentId=c.id;dialog.querySelector('#scKingdomTitle').textContent=k.name;
+  dossier.querySelector('#scIdentityContinent').textContent=c.name;dossier.querySelector('#scIdentityKingdom').textContent=k.name;
+  if(!sameKingdom){
+   dossier.dataset.kingdom=k.id;const host=dossier.querySelector('#scIdentityContent');host.replaceChildren();
+   const hero=node('div',null,host,'scIdentityHero'),flag=node('div',null,hero);flag.id='scIdentityBanner';flag.innerHTML=banner(k);
+   const introduction=node('div',null,hero);node('p',c.name+' · '+(k.playable?'Two existing city starts':'Inspection only · not playable yet'),introduction,'scIdentityEyebrow');const title=node('h3',k.name,introduction);title.tabIndex=-1;node('p','“'+k.motto+'”',introduction,'scIdentityMotto');
+   const columns=node('div',null,host,'scIdentityColumns'),mapSide=node('section',null,columns);node('h4','Explore eight settlements',mapSide);
+   const map=node('div',null,mapSide,'scIdentityMap');map.setAttribute('aria-label',k.name+' settlement map');
+   map.innerHTML='<svg viewBox="0 0 400 390" preserveAspectRatio="none" aria-hidden="true"><rect width="400" height="390" fill="#284c53"/><path d="M0 0H400V329Q350 304 308 347T210 357Q130 324 83 365T0 339Z" fill="#647c56" stroke="#b8ae7f" stroke-width="4"/><path d="M42 20L67 66 91 18 125 72M255 13L280 61 308 20 341 78" fill="#425e54" stroke="#a7b39a" stroke-width="2"/><path d="M210 0Q160 84 215 142T203 240Q168 310 227 390" fill="none" stroke="#3b717b" stroke-width="12"/><path d="M210 0Q160 84 215 142T203 240Q168 310 227 390" fill="none" stroke="#9ebca6" stroke-width="2"/><path d="M60 82L302 82 98 169 300 169 96 255 302 255 90 331 302 331" fill="none" stroke="#d0ba82" stroke-width="2" stroke-dasharray="5 7"/></svg>';
+   for(const [i,s] of allSettlements.filter(s=>s.kingdomId===k.id).entries()){
+    const b=node('button',null,map);b.type='button';b.dataset.worldPlace=s.id;b.style.left=(i%2?75:25)+'%';b.style.top=(15+Math.floor(i/2)*22)+'%';node('span',s.kind==='City'?'♜':s.kind==='Castle'?'♖':s.kind==='Town'?'⌂':'♧',b,'scIdentityPlaceIcon');node('span',s.name,b);node('small',s.kind+(s.playable?' · existing start':''),b);b.addEventListener('click',()=>{identityPlace=s.id;renderIdentity();dossier.querySelector('#scSettlementIdentity').scrollIntoView({block:'nearest'});});
+   }
+   node('p','Relative positions are illustrative. These locations do not simulate travel, production or armies.',mapSide,'scIdentityNote');
+   const info=node('div',null,columns);const lore=node('article',null,info);lore.id='scIdentityLore';node('h4','Lore & legacy',lore);node('p','Motto: '+k.motto,lore);node('h5','History',lore);node('p',k.history,lore);node('h5','Mythology',lore);node('p',k.mythology,lore);node('h5','Notable heroes',lore);const heroes=node('ul',null,lore);for(const h of k.heroes)node('li',h.name+' — '+h.deed,heroes);
+   const politics=node('article',null,info);politics.id='scIdentityPolitics';node('h4','Politics',politics);node('p','Government: '+k.government,politics);node('p','Ruler: '+k.ruler,politics);node('h5','Relationships',politics);for(const rel of k.relationships){const other=kingdoms.find(x=>x.id===rel.kingdomId);const b=node('button',other.name,politics);b.type='button';b.addEventListener('click',()=>showIdentity(other.id));node('p',rel.description,politics);}node('p','Political identity is recorded lore. Treaties, elections, rebellions and diplomacy are not active systems.',politics,'scIdentityNote');
+   const detail=node('article',null,info);detail.id='scSettlementIdentity';detail.setAttribute('aria-live','polite');info.prepend(detail);
+  }
+  for(const b of dossier.querySelectorAll('[data-world-place]'))b.setAttribute('aria-pressed',String(b.dataset.worldPlace===identityPlace));
+  const detail=dossier.querySelector('#scSettlementIdentity');detail.replaceChildren();const place=allSettlements.find(s=>s.id===identityPlace);
+  if(place){node('h4',place.name+' · '+place.kind,detail);node('p',c.name+' → '+k.name+' → '+place.name,detail,'scIdentityEyebrow');node('p',place.location,detail);node('p',place.description,detail);node('h5','Local history',detail);node('p',place.history,detail);node('p','Local steward: '+place.ruler,detail);node('p',place.playable?'Available in the existing starting choices: '+(place.id==='home'?'Marches home':'Brookstead village')+'. Exploring this dossier does not replace your city.':'Inspection only — this settlement is not an available city start. No local economy, garrison or governor is being simulated.',detail,'scIdentityAvailability');}
+  else {node('h4','Choose a settlement on the map',detail);node('p','All eight locations can be inspected. Only Marches home and Brookstead village are available in the existing starting choices.',detail);}
+  if(!document.getElementById('sc1310Welcome').hidden){const b=node('button','Back to existing starting choices',detail);b.type='button';b.addEventListener('click',()=>{close();document.getElementById('scStartChoose').click();});}
+ }
+ function setScope(value){scope=value;if(value==='region'){identityKingdom='marches';identityPlace=null;identityKey='';}render();(scope==='world'?navWorld:navRegion).focus();}
  navWorld.addEventListener('click',()=>setScope('world'));navRegion.addEventListener('click',()=>setScope('region'));worldButton.addEventListener('click',()=>openWorld());
- function renderWorld(){const c=continents.find(x=>x.id===continentId)||continents[0];const key=c.id;if(worldKey===key)return;worldKey=key;worldDetails.replaceChildren();const h=document.createElement('h3');h.textContent=c.name;worldDetails.append(h);const p=document.createElement('p');p.textContent=c.description;worldDetails.append(p);for(const k of kingdoms.filter(x=>x.continentId===c.id)){const b=document.createElement('button');b.type='button';b.dataset.kingdom=k.id;b.textContent=k.playable?'Explore detailed terrain · '+k.name:'Preview '+k.name+' · future region';b.addEventListener('click',()=>{if(k.playable){setScope('region');return;}let note=worldDetails.querySelector('.scFutureRegion');if(!note){note=document.createElement('p');note.className='scFutureRegion';worldDetails.append(note);}note.textContent=k.name+': '+k.description+' This region is not playable yet. Your city and governor remain unchanged.';});worldDetails.append(b);}for(const b of worldMap.querySelectorAll('[data-continent]'))b.setAttribute('aria-pressed',String(b.dataset.continent===c.id));}
+ function renderWorld(){
+  const c=continents.find(x=>x.id===continentId)||continents[0];if(worldKey===c.id)return;worldKey=c.id;worldDetails.replaceChildren();
+  node('p','World → '+c.name,worldDetails,'scIdentityEyebrow');node('h3',c.name,worldDetails);node('p',c.description,worldDetails);
+  for(const k of kingdoms.filter(x=>x.continentId===c.id)){
+   const b=node('button','Kingdom identity · '+k.name,worldDetails);b.type='button';b.dataset.identity=k.id;
+   if(k.id!=='marches')b.dataset.kingdom=k.id;
+   b.addEventListener('click',()=>showIdentity(k.id));
+   if(k.id==='marches'){const terrainButton=node('button','Explore detailed terrain · '+k.name,worldDetails);terrainButton.type='button';terrainButton.dataset.kingdom=k.id;terrainButton.addEventListener('click',()=>setScope('region'));}
+  }
+  for(const b of worldMap.querySelectorAll('[data-continent]'))b.setAttribute('aria-pressed',String(b.dataset.continent===c.id));
+ }
+
  const back=dialog.querySelector('#scKingdomReturn'),choice=section.querySelector('#scScenarioChoice');let lastFocus=null;
  function render(){const state=engine.status(),place=displayPlace(locations.find(p=>p.id===state.selectedLocation)||locations[0]);section.querySelector('#scScenarioCurrent').textContent=state.scenario==='city'?'Peaceful city campaign':'Classic skirmish';if(!dialog.open)return;
+  const identityView=scope==='identity';dossier.hidden=!identityView;dialog.querySelector('.kingdomColumns').hidden=identityView;if(identityView){scopeNote.textContent='World → Continent → Kingdom → Settlement · 16 kingdoms · 128 locations';renderIdentity();return;}
   dialog.querySelector('#scKingdomMode').textContent=state.scenario==='city'?'Your peaceful home city belongs to a wider realm. Rival castles are beyond its borders.':'Classic skirmish: the local enemy and raid rules still apply when you return. This overview does not change the battle.';
   const isWorld=scope==='world';resources.hidden=!document.getElementById('sc1310Welcome').hidden;
   const scopeText=isWorld?'World overview: choose a continent, then Explore detailed terrain for the playable Marches. Future regions are previews only.':'Regional terrain: mountains, valleys, rivers, forests and coastlines. Inspect settlements and landmarks here; Find city resources opens your village deposit and worker guide.';
@@ -7105,13 +7790,13 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   const progress=engine.snapshot();dialog.querySelector('#scKingdomPhase').textContent=state.scenario==='skirmish'?'Classic battle — campaign readiness inactive':progress.ready?'Prosperous city — prepared for the future':'Build a prosperous city';dialog.querySelector('#scKingdomSustain').textContent=progress.stableCycles+' / 12 healthy five-second cycles. Meet all five conditions together; shortages reset the streak. Readiness never schedules an attack.';dialog.querySelector('#scKingdomProgress').value=progress.stableCycles;
   const list=dialog.querySelector('#scKingdomCriteria');list.replaceChildren();for(const row of progress.criteria){const li=document.createElement('li'),label=document.createElement('strong'),detail=document.createElement('span');label.textContent=(row.met?'✓ ':'○ ')+row.label;detail.textContent=row.detail;li.append(label,detail);list.append(li);}
  }
- function open(){if(dialog.open)return;back.textContent=document.getElementById('sc1310Welcome')?.hidden===false?'Back to starting choices':'Return to city';scope='region';landmarkId=null;detailKey='';lastFocus=document.activeElement;window.scCancelConstruction?.();menu.classList.remove('open');engine.setOverview(true);window.sc148Camera?.suspend(true);dialog.showModal();render();back.focus();}
+ function open(){if(dialog.open)return;identityKingdom='marches';identityPlace=null;identityKey='';back.textContent=document.getElementById('sc1310Welcome')?.hidden===false?'Back to starting choices':'Return to city';scope='region';landmarkId=null;detailKey='';lastFocus=document.activeElement;window.scCancelConstruction?.();menu.classList.remove('open');engine.setOverview(true);window.sc148Camera?.suspend(true);dialog.showModal();render();back.focus();}
  function openWorld(){if(!dialog.open)open();scope='world';render();back.focus();}
  function close(){if(!dialog.open){engine.setOverview(false);return;}dialog.close();engine.setOverview(false);window.sc148Camera?.suspend(false);const target=lastFocus?.isConnected&&lastFocus.getClientRects().length?lastFocus:document.getElementById('sc146MenuButton');target?.focus();}
  back.addEventListener('click',close);dialog.addEventListener('cancel',e=>{e.preventDefault();close()});dialog.addEventListener('close',()=>{if(!dialog.open){engine.setOverview(false);window.sc148Camera?.suspend(false);}});dialog.addEventListener('keydown',e=>e.stopPropagation());
  section.querySelector('#scKingdomOpen').addEventListener('click',()=>open());
  section.querySelector('#scScenarioStart').addEventListener('click',()=>{if(!window.confirm('Start a new '+(choice.value==='city'?'peaceful city campaign':'classic skirmish')+'? Current unsaved progress will be replaced. Your saved checkpoints will remain.'))return;close();engine.start(choice.value);menu.classList.remove('open');render();});
- function synchronize(){close();scope='region';continentId='aurelia';landmarkId=null;detailKey='';worldKey='';choice.value=engine.status().scenario;render();}
+ function synchronize(){close();identityKingdom='marches';identityPlace=null;identityKey='';dossier.dataset.kingdom='';scope='region';continentId='aurelia';landmarkId=null;detailKey='';worldKey='';choice.value=engine.status().scenario;render();}
  window.addEventListener('sc-city-started',synchronize);window.addEventListener('sc-city-restored',synchronize);
  window.scKingdomUI={open,close,openWorld};choice.value=engine.status().scenario;render();setInterval(()=>{if(dialog.open)render()},1000);
 })();
