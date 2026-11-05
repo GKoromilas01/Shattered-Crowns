@@ -1,5 +1,9 @@
 # Release notes
 
+## v0.19.0 — A Living, Prosperous City
+
+Real-data Governor overview and actionable advice, five building-specific workplace panels, and extended economic/save tests across all five starts. Workplace operations and economic rules are shared with the existing game. A bounded departure timer fixes long-shortage checkpoint rejection without changing save formats or population rules. See [Milestone 19](docs/MILESTONE19.md).
+
 ## v0.18.0 — Governors & Living World Maps
 
 Three additional governor starts, natural continent/kingdom maps, illustrated settlements and governor identity connect the atlas to the playable city. Five starts are available across four kingdoms; all 128 locations remain inspectable. New origins use validated schema-four saves; existing schemas and gameplay remain compatible. An original bowed-strings music style is optional, with the approved default preserved. See [Milestone 18](docs/MILESTONE18.md).
