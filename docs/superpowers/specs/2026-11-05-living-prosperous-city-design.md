@@ -1,6 +1,6 @@
 # Milestone 19 — A Living, Prosperous City
 
-**Status: owner authorized implementation after Alex scope review, 2026-11-05.** Prepared 2026-11-05. No product code, tests, dependencies or PR #25 files changed. No merge/deployment authorized.
+**Status: owner authorized implementation after Alex scope review, 2026-11-05.** Prepared 2026-11-05. Implementation proceeds separately under this authorization. PR #25 remains unchanged. No merge/deployment authorized.
 
 ## Baseline and intent
 
@@ -15,7 +15,7 @@ Reviewed current `citySnapshot`, `cityBuildingDetails`, `cityAdvice`, workplace 
 1. **Recommended: deepen the existing economy through direct controls, truthful feedback and measured balance.** Reuse current production/storage/staffing rules and save fields. The milestone delivers a useful Governor overview, five building panels and evidence that all starts support a playable growth route. Avoid changing rates until extended tests demonstrate a specific problem.
 2. **Defer: add a new industry or split grain/bread inventories alongside the interface work.** This creates new balancing and save contracts before the current chain is fully legible, making results harder to assess. Consider it after M19 playtesting.
 
-This is Atlas's recommendation for review, not a claim that Alex has selected either approach.
+Alex recommended the existing-chain scope with three clarifications; the owner subsequently authorized its implementation.
 
 ## 1. Governor overview and actionable Advisor
 
@@ -74,7 +74,7 @@ After scope/implementation authorization: separate feature branch; small verifie
 
 A fresh read-only builder check found no blocking contradictions. Its suggested finite growth horizon is incorporated above. Explicit owner approval of all four Figma designs is recorded in the conversation; their example mechanics remain excluded. Measured market-sales telemetry stays conditional on data already exposed by the simulation. This review does not authorize implementation.
 
-**Requested review decision:** Is this bounded existing-chain + Governor/building-controls scope the right M19 target? No implementation starts from this document alone.
+**Scope decision:** Alex recommended this bounded existing-chain scope; owner authorization and the three binding clarifications are recorded below. No merge or deployment approval is implied.
 
 ## Authorized clarifications and branch arrangement
 
