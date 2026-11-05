@@ -1,5 +1,14 @@
 # Release notes
 
+## v0.15.0 — City Progression & Staffing Priorities
+
+- Give selected workplaces high civilian staffing priority across job types, with default food-first behavior preserved until the governor opts in.
+- Show changed staffing and food/service risks, with per-site reversal and a one-click return to default allocation; paused sites keep their choice and use no labor.
+- Make Economy policy/reserve choices and effects explicit, including saved choices without a bakery and current Pause status.
+- Preserve production rates, controls, roads, graphics, audio and old saves. Optional validated priority flags require v0.15+; no new resources or dependencies.
+
+See [Milestone15](docs/MILESTONE15.md) and [verification](docs/validation/m15-verification.md). Draft for Alex; no merge or deployment authorized.
+
 ## v0.14.0 — City Economy & Quality of Life
 
 - Manage existing food-priority/export and reserve policies from City Life → Economy, synchronized with legacy controls and saves.

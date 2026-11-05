@@ -1,0 +1,970 @@
+{
+  "format": "shattered-crowns-city",
+  "schema": 3,
+  "campaign": {
+    "mode": "city",
+    "stableCycles": 0,
+    "selectedLocation": "brookstead",
+    "originId": "brookstead"
+  },
+  "createdWith": "0.14.0",
+  "cityId": "mw2z61aa-2",
+  "savedAt": 1793848656704,
+  "world": {
+    "version": 1,
+    "width": 2450,
+    "height": 900
+  },
+  "view": {
+    "zoom": 1,
+    "centerX": 1170,
+    "centerY": 508.5
+  },
+  "state": {
+    "resources": {
+      "gold": 1943.75,
+      "wood": 217.5,
+      "stone": 243.5,
+      "food": 156.5,
+      "tradeGoods": 4,
+      "goodsSold": 4,
+      "aiGold": 240,
+      "aiWood": 100
+    },
+    "people": {
+      "population": 12,
+      "happiness": 91.4,
+      "prosperity": 24
+    },
+    "clock": {
+      "elapsed": 60.3833,
+      "cityTimer": 0.3833000000000002,
+      "cityCycleNumber": 12,
+      "aiTimer": 60.3833,
+      "resourceTimer": 60.3833,
+      "aiDecision": 60.3833,
+      "aiAttackTimer": 60.3833,
+      "aiTrainTimer": 0,
+      "trainTimer": 0,
+      "scFestivalCooldown": 0
+    },
+    "options": {
+      "difficulty": "normal",
+      "formation": "line",
+      "eventFoodReserve": 30,
+      "showLabels": false,
+      "showMinimap": true,
+      "serviceOverlay": "off",
+      "ration": {
+        "mode": "normal",
+        "emergency": false
+      },
+      "breadExport": true,
+      "breadReserveCycles": 4
+    },
+    "units": [
+      {
+        "id": 2,
+        "team": 0,
+        "x": 1414.4655503145475,
+        "y": 696.2254983468524,
+        "hp": 55,
+        "max": 55,
+        "speed": 58,
+        "damage": 6,
+        "range": 15,
+        "radius": 4,
+        "cool": 0,
+        "carry": 0,
+        "type": "worker",
+        "scHoldPosition": false,
+        "scCharge": false,
+        "scShieldWall": false,
+        "scLastMedic": null,
+        "target": null,
+        "order": {
+          "type": "gather",
+          "target": {
+            "kind": "node",
+            "index": 10
+          }
+        }
+      },
+      {
+        "id": 3,
+        "team": 0,
+        "x": 1414.4655507141824,
+        "y": 696.2254971838853,
+        "hp": 55,
+        "max": 55,
+        "speed": 58,
+        "damage": 6,
+        "range": 15,
+        "radius": 4,
+        "cool": 0,
+        "carry": 0,
+        "type": "worker",
+        "scHoldPosition": false,
+        "scCharge": false,
+        "scShieldWall": false,
+        "scLastMedic": null,
+        "target": null,
+        "order": {
+          "type": "gather",
+          "target": {
+            "kind": "node",
+            "index": 10
+          }
+        }
+      },
+      {
+        "id": 4,
+        "team": 0,
+        "x": 1414.4655514741223,
+        "y": 696.2254949724042,
+        "hp": 55,
+        "max": 55,
+        "speed": 58,
+        "damage": 6,
+        "range": 15,
+        "radius": 4,
+        "cool": 0,
+        "carry": 0,
+        "type": "worker",
+        "scHoldPosition": false,
+        "scCharge": false,
+        "scShieldWall": false,
+        "scLastMedic": null,
+        "target": null,
+        "order": {
+          "type": "gather",
+          "target": {
+            "kind": "node",
+            "index": 10
+          }
+        }
+      },
+      {
+        "id": 5,
+        "team": 0,
+        "x": 1145,
+        "y": 510,
+        "hp": 115,
+        "max": 115,
+        "speed": 64,
+        "damage": 15,
+        "range": 24,
+        "radius": 11.5,
+        "cool": 0,
+        "carry": 0,
+        "type": "soldier",
+        "scHoldPosition": false,
+        "scCharge": false,
+        "scShieldWall": false,
+        "scLastMedic": null,
+        "target": null,
+        "order": null
+      },
+      {
+        "id": 6,
+        "team": 0,
+        "x": 1145,
+        "y": 540,
+        "hp": 115,
+        "max": 115,
+        "speed": 64,
+        "damage": 15,
+        "range": 24,
+        "radius": 11.5,
+        "cool": 0,
+        "carry": 0,
+        "type": "soldier",
+        "scHoldPosition": false,
+        "scCharge": false,
+        "scShieldWall": false,
+        "scLastMedic": null,
+        "target": null,
+        "order": null
+      },
+      {
+        "id": 7,
+        "team": 0,
+        "x": 1145,
+        "y": 570,
+        "hp": 115,
+        "max": 115,
+        "speed": 64,
+        "damage": 15,
+        "range": 24,
+        "radius": 11.5,
+        "cool": 0,
+        "carry": 0,
+        "type": "soldier",
+        "scHoldPosition": false,
+        "scCharge": false,
+        "scShieldWall": false,
+        "scLastMedic": null,
+        "target": null,
+        "order": null
+      }
+    ],
+    "buildings": [
+      {
+        "id": 1,
+        "team": 0,
+        "x": 1060,
+        "y": 530,
+        "hp": 900,
+        "max": 900,
+        "radius": 38,
+        "cool": 0,
+        "cityTier": 1,
+        "cityResidents": 0,
+        "cityUpgrade": 0,
+        "cityDecline": 0,
+        "type": "keep",
+        "scLastNotifiedTier": null
+      },
+      {
+        "id": 8,
+        "team": 0,
+        "x": 940,
+        "y": 530,
+        "hp": 130,
+        "max": 130,
+        "radius": 27,
+        "cool": 0,
+        "cityTier": 1,
+        "cityResidents": 0,
+        "cityUpgrade": 0,
+        "cityDecline": 0,
+        "type": "farm",
+        "scLastNotifiedTier": null
+      },
+      {
+        "id": 9,
+        "team": 0,
+        "x": 1000,
+        "y": 650,
+        "hp": 160,
+        "max": 160,
+        "radius": 16,
+        "cool": 0,
+        "cityTier": 2,
+        "cityResidents": 4,
+        "cityUpgrade": 0,
+        "cityDecline": 0,
+        "type": "house",
+        "scLastNotifiedTier": 2
+      },
+      {
+        "id": 10,
+        "team": 0,
+        "x": 910,
+        "y": 630,
+        "hp": 190,
+        "max": 190,
+        "radius": 13,
+        "cool": 0,
+        "cityTier": 1,
+        "cityResidents": 0,
+        "cityUpgrade": 0,
+        "cityDecline": 0,
+        "type": "well",
+        "scLastNotifiedTier": null
+      },
+      {
+        "id": 11,
+        "team": 0,
+        "x": 956,
+        "y": 606,
+        "hp": 110,
+        "max": 110,
+        "radius": 15,
+        "cool": 0,
+        "cityTier": 1,
+        "cityResidents": 0,
+        "cityUpgrade": 0,
+        "cityDecline": 0,
+        "type": "road",
+        "scLastNotifiedTier": null
+      },
+      {
+        "id": 12,
+        "team": 0,
+        "x": 1000,
+        "y": 606,
+        "hp": 110,
+        "max": 110,
+        "radius": 15,
+        "cool": 0,
+        "cityTier": 1,
+        "cityResidents": 0,
+        "cityUpgrade": 0,
+        "cityDecline": 0,
+        "type": "road",
+        "scLastNotifiedTier": null
+      },
+      {
+        "id": 13,
+        "team": 0,
+        "x": 1044,
+        "y": 606,
+        "hp": 110,
+        "max": 110,
+        "radius": 15,
+        "cool": 0,
+        "cityTier": 1,
+        "cityResidents": 0,
+        "cityUpgrade": 0,
+        "cityDecline": 0,
+        "type": "road",
+        "scLastNotifiedTier": null
+      },
+      {
+        "id": 14,
+        "team": 0,
+        "x": 1100,
+        "y": 580,
+        "hp": 260,
+        "max": 260,
+        "radius": 28,
+        "cool": 0,
+        "cityTier": 1,
+        "cityResidents": 0,
+        "cityUpgrade": 0,
+        "cityDecline": 0,
+        "type": "granary",
+        "scLastNotifiedTier": null
+      },
+      {
+        "id": 15,
+        "team": 0,
+        "x": 1088,
+        "y": 626,
+        "hp": 110,
+        "max": 110,
+        "radius": 15,
+        "cool": 0,
+        "cityTier": 1,
+        "cityResidents": 0,
+        "cityUpgrade": 0,
+        "cityDecline": 0,
+        "type": "road",
+        "scLastNotifiedTier": null
+      },
+      {
+        "id": 16,
+        "team": 0,
+        "x": 1132,
+        "y": 626,
+        "hp": 110,
+        "max": 110,
+        "radius": 15,
+        "cool": 0,
+        "cityTier": 1,
+        "cityResidents": 0,
+        "cityUpgrade": 0,
+        "cityDecline": 0,
+        "type": "road",
+        "scLastNotifiedTier": null
+      },
+      {
+        "id": 17,
+        "team": 0,
+        "x": 1152,
+        "y": 586,
+        "hp": 110,
+        "max": 110,
+        "radius": 15,
+        "cool": 0,
+        "cityTier": 1,
+        "cityResidents": 0,
+        "cityUpgrade": 0,
+        "cityDecline": 0,
+        "type": "road",
+        "scLastNotifiedTier": null
+      },
+      {
+        "id": 18,
+        "team": 0,
+        "x": 1196,
+        "y": 586,
+        "hp": 110,
+        "max": 110,
+        "radius": 15,
+        "cool": 0,
+        "cityTier": 1,
+        "cityResidents": 0,
+        "cityUpgrade": 0,
+        "cityDecline": 0,
+        "type": "road",
+        "scLastNotifiedTier": null
+      },
+      {
+        "id": 19,
+        "team": 0,
+        "x": 1150,
+        "y": 680,
+        "hp": 230,
+        "max": 230,
+        "radius": 29,
+        "cool": 0,
+        "cityTier": 1,
+        "cityResidents": 0,
+        "cityUpgrade": 0,
+        "cityDecline": 0,
+        "type": "market",
+        "scLastNotifiedTier": null
+      },
+      {
+        "id": 20,
+        "team": 0,
+        "x": 1170,
+        "y": 540,
+        "hp": 190,
+        "max": 190,
+        "radius": 18,
+        "cool": 0,
+        "cityTier": 1,
+        "cityResidents": 0,
+        "cityUpgrade": 0,
+        "cityDecline": 0,
+        "type": "bakery",
+        "scLastNotifiedTier": null
+      }
+    ],
+    "nodes": [
+      {
+        "type": "tree",
+        "x": 1220,
+        "y": 330,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 1270,
+        "y": 330,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 1320,
+        "y": 330,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 1220,
+        "y": 395,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 1270,
+        "y": 395,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 1320,
+        "y": 395,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 1220,
+        "y": 460,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "gold",
+        "x": 1370,
+        "y": 650,
+        "amount": 0,
+        "radius": 19,
+        "renew": 21.5
+      },
+      {
+        "type": "gold",
+        "x": 1440,
+        "y": 650,
+        "amount": 800,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "gold",
+        "x": 1370,
+        "y": 705,
+        "amount": 0,
+        "radius": 19,
+        "renew": 4.5
+      },
+      {
+        "type": "gold",
+        "x": 1440,
+        "y": 705,
+        "amount": 634.25,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "gold",
+        "x": 1370,
+        "y": 760,
+        "amount": 800,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 1270,
+        "y": 500,
+        "amount": 368.5,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 1345,
+        "y": 500,
+        "amount": 700,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 1270,
+        "y": 586,
+        "amount": 700,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 1890,
+        "y": 120,
+        "amount": 650,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 1960,
+        "y": 120,
+        "amount": 650,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 2030,
+        "y": 120,
+        "amount": 650,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 2100,
+        "y": 120,
+        "amount": 650,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 2170,
+        "y": 120,
+        "amount": 650,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 1890,
+        "y": 240,
+        "amount": 650,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 1960,
+        "y": 240,
+        "amount": 650,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 2030,
+        "y": 240,
+        "amount": 650,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 2100,
+        "y": 240,
+        "amount": 650,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 2170,
+        "y": 240,
+        "amount": 650,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 630,
+        "y": 680,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 748,
+        "y": 775,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 866,
+        "y": 680,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 984,
+        "y": 775,
+        "amount": 600,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 1102,
+        "y": 680,
+        "amount": 217.5,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 1140,
+        "y": 730,
+        "amount": 700,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 1235,
+        "y": 795,
+        "amount": 700,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 1330,
+        "y": 730,
+        "amount": 700,
+        "radius": 19,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 80,
+        "y": 140,
+        "amount": 550,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 172,
+        "y": 460,
+        "amount": 550,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "tree",
+        "x": 264,
+        "y": 140,
+        "amount": 550,
+        "radius": 18,
+        "renew": 0
+      },
+      {
+        "type": "stone",
+        "x": 356,
+        "y": 460,
+        "amount": 550,
+        "radius": 18,
+        "renew": 0
+      }
+    ],
+    "selected": [
+      2,
+      3,
+      4
+    ],
+    "inspected": null,
+    "squads": [
+      [],
+      [],
+      []
+    ],
+    "nextId": 21,
+    "stats": {
+      "spawned": [
+        0,
+        0
+      ],
+      "lost": [
+        0,
+        0
+      ],
+      "kills": [
+        0,
+        0
+      ],
+      "damage": [
+        0,
+        0
+      ],
+      "gathered": [
+        2479.75,
+        0
+      ],
+      "raids": 0
+    },
+    "growth": {
+      "progress": 0,
+      "departure": 0,
+      "reason": "A new resident can arrive after 15 seconds of stable services."
+    },
+    "ledger": {
+      "opening": 145.25,
+      "harvest": 13,
+      "logistics": 3.25,
+      "bakeryNet": 2,
+      "exports": 2,
+      "delivered": 5,
+      "shortfall": 0,
+      "overflow": 0,
+      "closing": 156.5,
+      "demand": 5
+    },
+    "flows": [
+      {
+        "id": 8,
+        "type": "farm",
+        "staff": 3,
+        "harvest": 13,
+        "logistics": 3.25,
+        "consumed": 0,
+        "produced": 0,
+        "exported": 0
+      },
+      {
+        "id": 20,
+        "type": "bakery",
+        "staff": 2,
+        "harvest": 0,
+        "logistics": 0,
+        "consumed": 3,
+        "produced": 5,
+        "exported": 2
+      }
+    ],
+    "households": [
+      {
+        "id": null,
+        "label": "Keep",
+        "residents": 8,
+        "demand": 3.6363636363636362,
+        "delivered": 3.6363636363636362,
+        "shortfall": 0
+      },
+      {
+        "id": 9,
+        "label": "House #9",
+        "residents": 3,
+        "demand": 1.3636363636363635,
+        "delivered": 1.3636363636363635,
+        "shortfall": 0
+      },
+      {
+        "id": null,
+        "label": "Displaced",
+        "residents": 0,
+        "demand": 0,
+        "delivered": 0,
+        "shortfall": 0
+      }
+    ],
+    "satisfactionLast": {
+      "opening": 91.4,
+      "target": 91.4,
+      "closing": 91.4,
+      "change": 0,
+      "factors": [
+        {
+          "label": "Settlement foundation",
+          "max": 5,
+          "points": 5,
+          "reason": "Basic civic stability."
+        },
+        {
+          "label": "Food",
+          "max": 35,
+          "points": 35,
+          "reason": "80% last-cycle meal fulfillment; 20% two-cycle food reserve."
+        },
+        {
+          "label": "Water",
+          "max": 25,
+          "points": 25,
+          "reason": "Resident-weighted local water coverage; Keep residents have basic services."
+        },
+        {
+          "label": "Healthcare",
+          "max": 10,
+          "points": 7.3,
+          "reason": "Resident-weighted healer reach and staffing quality; Keep has basic services."
+        },
+        {
+          "label": "Market access",
+          "max": 10,
+          "points": 10,
+          "reason": "Resident-weighted staffed road access and available food; Keep uses its reserve."
+        },
+        {
+          "label": "Employment",
+          "max": 10,
+          "points": 8.9,
+          "reason": "8/9 civilian workers assigned; map units are a separate cohort."
+        },
+        {
+          "label": "Amenities & culture",
+          "max": 5,
+          "points": 0.2,
+          "reason": "Occupied-home beauty, a theater within 240 map units and existing road-connected civic care."
+        }
+      ],
+      "modifier": {
+        "label": "Meal policy",
+        "points": 0,
+        "reason": "Conserve supplies: target −2. Generous meals: target +1.5. Satisfaction moves gradually toward this target."
+      }
+    },
+    "measurements": {
+      "logistics": {
+        "connected": 1,
+        "bonus": 3.3,
+        "total": 1
+      },
+      "distribution": {
+        "served": 1,
+        "homes": 1,
+        "coverage": 1,
+        "savings": 0,
+        "base": 5,
+        "actual": 5,
+        "percent": 15
+      },
+      "civic": {
+        "homes": 1,
+        "served": 0,
+        "rate": 0,
+        "moodBonus": 0
+      }
+    },
+    "undo": [
+      {
+        "kind": "build",
+        "ids": [
+          14
+        ],
+        "gold": 0,
+        "wood": 85,
+        "stone": 35,
+        "label": "granary"
+      },
+      {
+        "kind": "build",
+        "ids": [
+          15,
+          16
+        ],
+        "gold": 0,
+        "wood": 0,
+        "stone": 24,
+        "label": "2 road sections"
+      },
+      {
+        "kind": "build",
+        "ids": [
+          17,
+          18
+        ],
+        "gold": 0,
+        "wood": 0,
+        "stone": 24,
+        "label": "2 road sections"
+      },
+      {
+        "kind": "build",
+        "ids": [
+          19
+        ],
+        "gold": 90,
+        "wood": 90,
+        "stone": 20,
+        "label": "market"
+      },
+      {
+        "kind": "build",
+        "ids": [
+          20
+        ],
+        "gold": 45,
+        "wood": 80,
+        "stone": 15,
+        "label": "bakery"
+      }
+    ],
+    "trainQueue": [],
+    "aiQueue": [],
+    "ended": false
+  }
+}

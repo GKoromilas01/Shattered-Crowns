@@ -13,7 +13,7 @@ const adapter=`window.__tradeTest={
 };`;
 before(async()=>{fs.mkdirSync('test-results/gallery',{recursive:true});server=http.createServer((q,r)=>{r.setHeader('Content-Type','text/html');r.end(fs.readFileSync('index.html','utf8').replace('window.scHoverBuildings=buildings;function frame',adapter+'window.scHoverBuildings=buildings;function frame'));});await new Promise(r=>server.listen(0,'127.0.0.1',r));url='http://127.0.0.1:'+server.address().port;browser=await launchBrowser();});
 after(async()=>{await browser?.close();server?.close();});
-async function game(t,width=1440,enter=true){const {page:p}=await browserPage(t,browser,{viewport:{width,height:900},reducedMotion:'reduce'});p.setDefaultTimeout(6500);await p.goto(url);if(enter){await p.locator('#sc1310Skip').click();await p.locator('#sc154Pause').click();}return p;}
+async function game(t,width=1440,enter=true,height=900){const {page:p}=await browserPage(t,browser,{viewport:{width,height},reducedMotion:'reduce'});p.setDefaultTimeout(6500);await p.goto(url);if(enter){await p.locator('#sc1310Skip').click();await p.locator('#sc154Pause').click();}return p;}
 const capture=p=>p.evaluate(()=>scCitySave.capture()),snap=p=>p.evaluate(()=>scCityEconomy.snapshot());
 const policy=(p,enabled,reserve)=>p.evaluate(([e,r])=>scCityEconomy.setTradePolicy(e,r),[enabled,reserve]);
 const setup=(p,v={})=>p.evaluate(v=>window.__tradeTest.setup(v),v);
@@ -63,4 +63,12 @@ test('Legacy controls and restored policies update the Economy board during live
 
 test('Live refresh retains bakery Locate focus in its original Food details rather than Economy',async t=>{
  const p=await game(t);await setup(p);const id=(await snap(p)).trade.sites[0].id;await economy(p);await p.locator('#scCityPlanningNav').getByRole('button',{name:'Food',exact:true}).click();const detail=p.locator('details[data-house="site'+id+'"]');await detail.locator('summary').click();const locate=detail.locator('[data-locate]');await locate.focus();await advance(p);await p.waitForTimeout(650);assert.equal(await locate.evaluate(e=>e===document.activeElement),true);assert.equal(await detail.getAttribute('open'),'');
+});
+
+for(const width of [390,1366])test('Economy policy choices and confirmation are explicit and visible at '+width,async t=>{
+ const p=await game(t,width,true,width===1366?606:900);await economy(p);const root=p.locator('#sc159Pulse');await p.getByText('Food reserve before exports',{exact:true}).waitFor({state:'visible'});
+ for(const n of [0,1,2,4]){const r=await p.locator('[data-trade-reserve="'+n+'"]').boundingBox(),box=await root.boundingBox();assert.ok(r.y>=box.y&&r.y+r.height<=box.y+box.height,'Reserve choice is visible without searching below the panel');}
+ assert.match(await p.locator('#scTradeCurrentPolicy').innerText(),/Export surplus.*2 cycles.*10 seconds/i);assert.match(await p.locator('#scTradeEffect').innerText(),/no bakery/i);
+ await p.locator('[data-trade-export="false"]').click();await p.waitForFunction(()=>document.querySelector('#scTradeCurrentPolicy')?.textContent.includes('Food priority'));assert.match(await p.locator('[data-trade-export="false"]').innerText(),/✓/);await p.locator('[data-trade-reserve="4"]').click();await p.waitForFunction(()=>document.querySelector('#scTradeCurrentPolicy')?.textContent.includes('4 cycles'));
+ const status=p.locator('#scTradeCurrentPolicy');assert.match(await status.innerText(),/Food priority.*4 cycles.*20 seconds/i);const a=await status.boundingBox(),b=await root.boundingBox();assert.ok(a.y>=b.y&&a.y+a.height<=b.y+b.height,'Confirmation stays in the visible City Life panel');assert.match(await p.locator('#scTradeEffect').innerText(),/paused|resume/i);await p.screenshot({path:'test-results/gallery/m15-policy-feedback-'+width+'.png'});await p.locator('#sc154Pause').click();await p.waitForFunction(()=>!document.querySelector('#scTradeEffect').textContent.includes('Game paused'),{},{timeout:2500});await p.locator('#sc154Pause').click();
 });
