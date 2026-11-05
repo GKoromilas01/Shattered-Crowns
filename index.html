@@ -181,7 +181,7 @@ window.addEventListener('keydown',e=>{
   if(!allowed)e.preventDefault();e.stopImmediatePropagation();return;
  }
  if(!document.getElementById('scKingdomPanel')?.open)return;
- if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();window.scKingdomUI?.close();}else if(!['Tab','Enter',' '].includes(e.key)){e.preventDefault();e.stopImmediatePropagation();}
+ if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();window.scKingdomUI?.close();}else if(!['Tab','Enter',' '].includes(e.key)){const mapScroll=e.target instanceof Element&&e.target.closest('#scContinentMap')&&['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','PageUp','PageDown'].includes(e.key);if(!mapScroll)e.preventDefault();e.stopImmediatePropagation();}
 },true);
 </script>
 <script>
