@@ -585,6 +585,19 @@ function scVillageActionReady(){return !ended&&!scOverview&&!tutorialVisible&&do
 function scVillageCenter(point){
  const rect=c.getBoundingClientRect();mapViewport.scrollLeft=point.x*rect.width/c.width-mapViewport.clientWidth/2;mapViewport.scrollTop=point.y*rect.height/c.height-mapViewport.clientHeight/2;
 }
+function scTradePolicyReady(){return scVillageActionReady()&&buildings.some(b=>b.team===0&&b.type==='keep'&&alive(b));}
+// Used at actual export time and for the current-conditions planning view.
+function cityExportReadiness(bakery,granaries,activeMarkets){
+ const floor=Math.max(8,Math.ceil(population*.45*(window.scRationFactor||1))*(window.scBreadReserveCycles??2));
+ const checks=[
+  {key:'policy',met:window.scBreadExportEnabled!==false,label:'Enable surplus exports to pack new trade baskets.'},
+  {key:'staff',met:(employment.byId.get(bakery.id)?.efficiency||0)>=.5,label:'Open the bakery and fill at least half its civilian jobs.'},
+  {key:'granary',met:granaries.some(g=>dist(g,bakery)<190),label:'A granary must be strictly within 190 map units; physical storage remains available when paused.'},
+  {key:'market',met:activeMarkets.some(m=>dist(m,bakery)<220),label:'An open, at least half-staffed market with connected road access must be strictly within 220 map units.'},
+  {key:'capacity',met:tradeGoods<80,label:'Trade basket storage must have room below its 80-basket limit.'},
+  {key:'reserve',met:food-2>=floor,label:'After packing 2 food, retain at least '+floor+' food under the current reserve policy.'}
+ ];return {ready:checks.every(c=>c.met),checks};
+}
 function citySnapshot(){
  assignEmployment();const owned=cityOwned(),context={owned,network:getRoadNetwork()},homes=owned.filter(b=>b.type==='house'),occupancyState=cityReconcileOccupancy(context);
  const houses=homes.map(h=>cityHouseDetails(h,context));
@@ -593,6 +606,8 @@ function citySnapshot(){
   const sites=owned.filter(b=>employment.byId.has(b.id)).map(b=>{const a=employment.byId.get(b.id);return {id:b.id,type:b.type,paused:a.paused,filled:a.count,need:a.need,efficiency:a.efficiency,output:(b.type==='farm'?13:b.type==='fishery'?9:b.type==='lumberyard'?5:0)*a.efficiency};});
  const demand=Math.ceil(population*.45*(window.scRationFactor||1)),production=sites.filter(b=>['farm','fishery'].includes(b.type)).reduce((n,b)=>n+b.output,0);
  const s={cycles:cityCycleNumber,population,happiness:Math.round(happiness),housing:{capacity:8+houses.reduce((n,h)=>n+h.capacity,0),keepResidents:occupancyState.keepResidents,displaced:occupancyState.displaced,houses},growth:{...cityGrowth},workforce:{pool:Math.max(0,population-2),reserved:Math.min(2,population),filled:employment.filled,idle:employment.available,jobs:employment.jobs,sites},food:{stock:food,capacity:90+depots.length*160,baseStock:Math.min(90,food),granaries,demand,production,reserveSeconds:demand?Math.floor(food/demand*5):0,last:cityLedger?{...cityLedger}:null,markets:{served:window.sc1412MarketDistributionSnapshot?.served||0,total:homes.length,savings:window.sc1412MarketDistributionSnapshot?.savings||0}},prosperity:cityProsperityDetails(context)};
+ const activeMarkets=owned.filter(m=>m.type==='market'&&marketHasTradeAccess(m,context.network)&&(employment.byId.get(m.id)?.efficiency||0)>=.5);
+ s.trade={enabled:window.scBreadExportEnabled!==false,reserveCycles:window.scBreadReserveCycles??2,reserveFloor:Math.max(8,demand*(window.scBreadReserveCycles??2)),goods:tradeGoods,goodsSold,canManage:scTradePolicyReady(),sites:owned.filter(b=>b.type==='bakery').map(b=>({id:b.id,...cityExportReadiness(b,depots,activeMarkets)}))};
  s.satisfaction=citySatisfactionDetails(context);
  s.food.flows=cityFlows.map(f=>({...f}));s.food.households=cityHouseholds.map(h=>({...h}));
  s.buildings=owned.map(b=>cityBuildingDetails(b,houses,context));
@@ -1040,7 +1055,7 @@ for(const bakery of bakeries){
 const activeMarkets=owned.filter(m=>m.type==='market'&&marketHasTradeAccess(m)&&(employment.byId.get(m.id)?.efficiency||0)>=.5);
 for(const bakery of bakeries){
  const eff=employment.byId.get(bakery.id)?.efficiency||0;
- if(window.scBreadExportEnabled!==false&&eff>=.5&&granaries.some(g=>dist(g,bakery)<190)&&activeMarkets.some(m=>dist(m,bakery)<220)&&tradeGoods<80&&food-2>=Math.max(8,Math.ceil(population*.45*(window.scRationFactor||1))*(window.scBreadReserveCycles??2))){
+ if(cityExportReadiness(bakery,granaries,activeMarkets).ready){
    food-=2;cityExports+=2;cityFlows.find(f=>f.id===bakery.id).exported+=2;tradeGoods=Math.min(80,tradeGoods+Math.max(1,Math.floor(2*eff)));
  }
 }
@@ -2911,7 +2926,7 @@ function scCaptureCity(){
  });
   const buildingRows=liveBuildings.map(b=>({...Object.fromEntries(scBuildingNumbers.map(k=>[k,k==='cityTier'?(b[k]||1):(b[k]??0)])),type:b.type,scLastNotifiedTier:b.scLastNotifiedTier??null,...(typeof b.cityWorkPaused==='boolean'?{cityWorkPaused:b.cityWorkPaused}:{})}));
  const zoom=window.scMapZoom?.get()||1;
- return {format:scSaveFormat,schema:scScenario==='city'?(scOriginId==='brookstead'?3:2):1,...(scScenario==='city'?{campaign:{mode:'city',stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,...(scOriginId==='brookstead'?{originId:scOriginId}:{})}}:{}),createdWith:'0.13.0',cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
+ return {format:scSaveFormat,schema:scScenario==='city'?(scOriginId==='brookstead'?3:2):1,...(scScenario==='city'?{campaign:{mode:'city',stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,...(scOriginId==='brookstead'?{originId:scOriginId}:{})}}:{}),createdWith:'0.14.0',cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
   resources:{gold,wood,stone,food,tradeGoods,goodsSold,aiGold,aiWood},people:{population,happiness,prosperity:cityProsperity},
   clock:{elapsed,cityTimer,cityCycleNumber,aiTimer,resourceTimer,aiDecision,aiAttackTimer,aiTrainTimer,trainTimer,scFestivalCooldown},
   options:{difficulty,formation,eventFoodReserve:scEventFoodReserve,showLabels,showMinimap,serviceOverlay,ration:window.scRationPolicy?.capture()||{mode:el('sc1303Mode')?.value||'normal',emergency:window.scRationFactor===.75},breadExport:window.scBreadExportEnabled!==false,breadReserveCycles:window.scBreadReserveCycles??2},
@@ -2995,7 +3010,14 @@ function scRestoreCity(input){
 }
 window.scCitySave={capture:scCaptureCity,restore:scRestoreCity,validate:input=>{try{scPrepareCity(input);return {ok:true};}catch(e){return {ok:false,message:e.message};}},status:()=>({cityId:scCityIdentity,elapsed,paused,ended})};
 
-window.scCityEconomy={snapshot:citySnapshot,setWorkplaceOpen:(id,open)=>{
+window.scCityEconomy={snapshot:citySnapshot,setTradePolicy:(enabled,reserveCycles)=>{
+ if(!scTradePolicyReady()||typeof enabled!=='boolean'||![0,1,2,4].includes(reserveCycles))return false;
+ const exportControl=el('sc1307BreadExport'),reserveControl=el('sc1308Cycles');
+ window.scBreadExportEnabled=enabled;window.scBreadReserveCycles=reserveCycles;
+ if(exportControl){exportControl.checked=enabled;exportControl.dispatchEvent(new Event('change'));}
+ if(reserveControl){reserveControl.value=String(reserveCycles);reserveControl.dispatchEvent(new Event('change'));}
+ updateUI();window.dispatchEvent(new Event('sc-trade-policy-changed'));msg(enabled?'Surplus exports enabled. Current staffing, local supply and food reserve rules still apply.':'Food priority: stop packing new trade baskets. Existing goods may still sell.');return true;
+},setWorkplaceOpen:(id,open)=>{
  if(!scVillageActionReady()||!Number.isSafeInteger(id)||typeof open!=='boolean')return false;
  const b=buildings.find(b=>b.id===id&&b.team===0&&alive(b)&&Object.hasOwn(cityJobSlots,b.type));if(!b)return false;
  if(!!b.cityWorkPaused===!open)return true;
@@ -6653,7 +6675,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 #scPlanLocationStatus{margin:0 12px;color:#ffd094;font:12px/1.5 system-ui}
 #scVillageBoard{padding:10px;background:#213f35;border:1px solid #708b67;border-radius:6px;margin:8px 0;overflow-wrap:anywhere}
 #scVillageBoard h3{margin-top:0}#scVillageBoard table{table-layout:fixed}#scVillageBoard td,#scVillageBoard th{overflow-wrap:anywhere}
-#scVillageBoard button{max-width:100%}#scVillageBoard button:disabled{opacity:.6;cursor:default}#scVillageNeeds li{margin:7px 0}#scVillageNeeds ul{padding-left:17px}
+#scCityEconomyPanel button[aria-pressed=true]{background:#725b33;border-color:#f0d49b}#scEconomyPlan{padding:10px;border:1px solid #708b67;border-radius:6px;margin:12px 0;background:#213f35}#scEconomyPlan [role=group]{display:flex;flex-wrap:wrap;gap:6px}#scEconomyPlan button{margin:4px 4px 4px 0;max-width:100%}#scVillageBoard button{max-width:100%}#scVillageBoard button:disabled{opacity:.6;cursor:default}#scVillageNeeds li{margin:7px 0}#scVillageNeeds ul{padding-left:17px}
 @media(max-width:480px){#scCityPlanningSummary{grid-template-columns:1fr}}
 </style>
 <script id="cityEconomyPresentation">
@@ -6674,11 +6696,18 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  document.getElementById('sc159PulseHeader').append(close);
  close.addEventListener('click',()=>{root.hidden=true;button.setAttribute('aria-expanded','false');button.focus()});
  const nav=document.createElement('nav');nav.id='scCityPlanningNav';nav.setAttribute('aria-label','City Life sections');
-  nav.innerHTML=['Village','Food','Housing','Employment','Satisfaction'].map(name=>'<button type="button" data-section="'+name+'">'+name+'</button>').join('');root.append(nav);
+  nav.innerHTML=['Village','Economy','Food','Housing','Employment','Satisfaction'].map(name=>'<button type="button" data-section="'+name+'">'+name+'</button>').join('');root.append(nav);
  const locationStatus=document.createElement('p');locationStatus.id='scPlanLocationStatus';locationStatus.setAttribute('role','status');root.append(locationStatus);
  const panel=document.createElement('section');panel.id='scCityEconomyPanel';root.append(panel);
  nav.addEventListener('click',e=>{const name=e.target.closest('[data-section]')?.dataset.section;if(!name)return;const heading=panel.querySelector('#scPlanSection'+name);heading?.focus({preventScroll:true});heading?.scrollIntoView({block:'start'});});
   panel.addEventListener('click',e=>{
+   const policy=e.target.closest('[data-trade-export],[data-trade-reserve]');if(policy){
+    const trade=window.scCityEconomy.snapshot().trade;
+    const enabled=policy.hasAttribute('data-trade-export')?policy.dataset.tradeExport==='true':trade.enabled,reserve=policy.hasAttribute('data-trade-reserve')?Number(policy.dataset.tradeReserve):trade.reserveCycles;
+    if(!window.scCityEconomy.setTradePolicy(enabled,reserve))locationStatus.textContent='Trade policy cannot change here. Return to an active city with a living Keep.';else locationStatus.textContent='Trade policy updated. Production rechecks staffing, local supply and food reserves each five-second cycle.';
+    refresh();return;
+   }
+   const economySection=e.target.closest('[data-economy-section]')?.dataset.economySection;if(economySection){const heading=panel.querySelector('#scPlanSection'+economySection);heading?.focus({preventScroll:true});heading?.scrollIntoView({block:'start'});return;}
    const workplace=e.target.closest('[data-workplace]');if(workplace){
     if(!window.scCityEconomy.setWorkplaceOpen(Number(workplace.dataset.workplace),workplace.dataset.open==='true'))locationStatus.textContent='That workplace is no longer available. Choose a current workplace.';else locationStatus.textContent='Workplace updated. Civilian staff reassign immediately; output and resident progress update on five-second cycles.';
     refresh();return;
@@ -6707,6 +6736,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   const focusHouse=panel.contains(focused)?focused?.closest('details')?.dataset.house:null;
    const focusLocate=focused?.dataset?.locate,focusSection=focused?.id?.startsWith('scPlanSection')?focused.id:null;
    const focusSteward=panel.contains(focused)?focused?.dataset?.steward:null,focusResource=focused?.dataset?.stewardResource,focusNeed=panel.contains(focused)?focused?.dataset?.villageSection:null,focusWorkplace=panel.contains(focused)?focused?.dataset?.workplace:null;
+  const focusPolicy=panel.contains(focused)?(focused.hasAttribute('data-trade-export')?'[data-trade-export="'+focused.dataset.tradeExport+'"]':focused.hasAttribute('data-trade-reserve')?'[data-trade-reserve="'+focused.dataset.tradeReserve+'"]':null):null,focusEconomy=panel.contains(focused)?focused?.dataset?.economySection:null;
   const lastBalance=last?last.harvest+last.logistics+last.bakeryNet-last.exports-last.demand:null;
   const signed=x=>(x>0?'+':'')+number(x);
   const ready=kind=>s.housing.houses.filter(h=>h.services[kind].status==='ready').length;
@@ -6728,8 +6758,19 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   const houses=s.housing.houses.map(h=>'<details data-house="'+h.id+'"'+(open.has(String(h.id))?' open':'')+'><summary>House #'+h.id+' · '+h.name+' · '+h.occupancy+'/'+h.capacity+' residents</summary>'+locate(h.id,'house')+'<p>'+Object.entries(h.services).map(([k,v])=>(k==='health'?'Healthcare':k==='water'?'Water':'Market')+': '+v.status.replaceAll('_',' ')).join(' · ')+'</p>'+Object.values(h.services).filter(v=>v.status!=='ready').map(v=>'<p class="cityWarn">'+v.message+'</p>').join('')+'<p>Upgrade: '+h.upgradeSeconds+'/10 seconds of sustained requirements. Decline: '+h.downgradeSeconds+'/30 seconds.</p>'+(h.tier<4?'<p>Next: '+h.nextRequirements.map(r=>(r.met?'✓ ':'✗ ')+r.label).join(' · ')+'</p>':'<p>Maximum tier reached.</p>')+(h.currentMissing.length?'<p class="cityWarn">Current tier at risk: '+h.currentMissing.join(', ')+'</p>':'')+'</details>').join('');
   const growth=s.growth.readiness;
    const growthPanel='<section id="scGrowthReadiness" aria-label="Next resident requirements"><strong>Welcome the next resident</strong><p>'+s.growth.progress+' / 15 stable seconds · '+(growth.ready?growth.nextResidentSeconds+' more stable seconds needed.':'Resolve the unmet checks below.')+'</p><progress id="scGrowthProgress" max="15" value="'+s.growth.progress+'" aria-label="Resident arrival progress"></progress><ul>'+growth.checks.map(c=>'<li'+(c.met?'':' class="cityWarn"')+'>'+(c.met?'✓ ':'✗ ')+c.label+': '+c.detail+'</li>').join('')+'</ul><p>Progress advances on five-second simulation cycles while these conditions hold. Pause freezes progress. Home upgrades separately need 10 seconds of sustained requirements; inspect a house below.</p></section>';
+   const trade=s.trade;
+   const policyButton=(attribute,value,label,pressed)=>'<button type="button" '+attribute+'="'+value+'" aria-pressed="'+pressed+'"'+(!trade.canManage?' disabled':'')+'>'+label+'</button>';
+   const economy='<section id="scEconomyPlan" aria-label="City economy management"><h3 id="scPlanSectionEconomy" tabindex="-1">Production & trade plan</h3><p>Food producers → shared food reserve → bakery bread → surplus trade baskets → market sales. Grain and bread use the same food reserve.</p><p>Gold held: '+number(s.village.resources.gold)+' · Trade baskets: '+number(trade.goods)+' / 80 · Total baskets sold: '+number(trade.goodsSold)+'. Eligible markets sell existing baskets for 4 gold each.</p>'+
+    '<div role="group" aria-label="Bakery export policy">'+policyButton('data-trade-export','false','Food priority',!trade.enabled)+policyButton('data-trade-export','true','Export surplus',trade.enabled)+'</div><p>Food priority stops packing new baskets; grain-to-bread conversion continues, and markets can still sell existing baskets.</p>'+
+    '<div role="group" aria-label="Food reserve before exports">'+[0,1,2,4].map(n=>policyButton('data-trade-reserve',n,n===0?'0 cycles (risky)':n+' cycle'+(n===1?'':'s'),trade.reserveCycles===n)).join('')+'</div><p>Retain at least '+number(trade.reserveFloor)+' food after packing 2 food. The existing 8-food minimum always applies. A cycle is five simulation seconds; Pause freezes production.</p>'+
+    (!trade.canManage?'<p class="cityWarn">Policy changes require the active city view and a living Keep.</p>':'')+
+    '<h4>Current readiness · rechecked during production</h4><p>These are current conditions, not a promise of next-cycle exports. Harvest, baking, staffing and consumption can change them. Reserve checks occur before household delivery.</p>'+
+    (trade.sites.length?trade.sites.map(site=>{const measured=s.food.flows.find(f=>f.id===site.id);return '<details data-house="trade'+site.id+'"'+(open.has('trade'+site.id)?' open':'')+'><summary>Bakery #'+site.id+' · '+(site.ready?'current conditions ready':'needs attention')+'</summary>'+locate(site.id,'bakery')+'<ul>'+site.checks.map(c=>'<li'+(c.met?'':' class="cityWarn"')+'>'+(c.met?'✓ ':'✗ ')+c.label+'</li>').join('')+'</ul><p>'+(measured?'Last measured cycle: '+number(measured.consumed)+' grain → '+number(measured.produced)+' bread; '+number(measured.exported)+' food packed for exports.':'No production cycle measured yet.')+'</p></details>';}).join(''):'<p>Establish food production and serviced housing first. A bakery needs civilian staff and a nearby granary; exports also need a staffed market with connected roads.</p>')+
+    '<button type="button" data-economy-section="Employment">Manage production staffing</button><button type="button" data-economy-section="Food">Review measured food chain</button>'+
+    '<h4>Population & prosperity</h4><p>'+s.population+' / '+s.housing.capacity+' residents · Next arrival: '+s.growth.progress+' / 15 stable seconds. '+(growth.ready?growth.nextResidentSeconds+' more stable seconds needed.':growth.checks.filter(c=>!c.met).map(c=>c.label+': '+c.detail).join(' · '))+'</p><button type="button" data-economy-section="Housing">Plan resident growth</button>'+
+    '<p>Prosperity '+number(s.prosperity.score)+' / 100 · Current target '+number(s.prosperity.target)+'. Approaches its target by at most 2 points each five-second cycle.</p><table aria-label="City prosperity factors"><tr><th>Factor</th><th>Current points</th></tr>'+s.prosperity.factors.map(f=>'<tr><th>'+f.label+'</th><td>'+number(f.points)+' / '+f.max+'</td></tr>').join('')+'</table><button type="button" data-economy-section="Satisfaction">Review citizen satisfaction</button></section>';
    const satisfaction=s.satisfaction;
-   panel.innerHTML=steward+summary+'<h3 id="scPlanSectionSatisfaction" tabindex="-1">Citizen satisfaction '+number(satisfaction.score)+' / 100</h3><p>Target '+number(satisfaction.target)+' · approaches by at most 2 points per five-second cycle. Migration needs happiness 45+, vacant serviced housing and 15 seconds of stability. Existing residents stay through service gaps; shortages and lost housing capacity can cause departures.</p><table aria-label="Citizen satisfaction factors"><tr><th>Factor</th><th>Points</th><th>Explanation</th></tr>'+satisfaction.factors.map(f=>'<tr><th>'+f.label+'</th><td>'+number(f.points)+' / '+f.max+'</td><td>'+f.reason+'</td></tr>').join('')+row(satisfaction.modifier.label,(satisfaction.modifier.points>=0?'+':'')+number(satisfaction.modifier.points))+'</table><p>'+satisfaction.modifier.reason+' Target is clamped to 0–100. Keep residents have basic services; vacant homes do not count as citizens. Current service reach is separate from last-cycle meal delivery.</p>'+(satisfaction.last?'<p>Last satisfaction cycle: '+number(satisfaction.last.opening)+' → '+number(satisfaction.last.closing)+' (applied target '+number(satisfaction.last.target)+', change '+number(satisfaction.last.change)+'). Feasts and festivals can provide immediate happiness bonuses.</p>':'<p>Waiting for the first satisfaction cycle.</p>')+
+   panel.innerHTML=steward+summary+economy+'<h3 id="scPlanSectionSatisfaction" tabindex="-1">Citizen satisfaction '+number(satisfaction.score)+' / 100</h3><p>Target '+number(satisfaction.target)+' · approaches by at most 2 points per five-second cycle. Migration needs happiness 45+, vacant serviced housing and 15 seconds of stability. Existing residents stay through service gaps; shortages and lost housing capacity can cause departures.</p><table aria-label="Citizen satisfaction factors"><tr><th>Factor</th><th>Points</th><th>Explanation</th></tr>'+satisfaction.factors.map(f=>'<tr><th>'+f.label+'</th><td>'+number(f.points)+' / '+f.max+'</td><td>'+f.reason+'</td></tr>').join('')+row(satisfaction.modifier.label,(satisfaction.modifier.points>=0?'+':'')+number(satisfaction.modifier.points))+'</table><p>'+satisfaction.modifier.reason+' Target is clamped to 0–100. Keep residents have basic services; vacant homes do not count as citizens. Current service reach is separate from last-cycle meal delivery.</p>'+(satisfaction.last?'<p>Last satisfaction cycle: '+number(satisfaction.last.opening)+' → '+number(satisfaction.last.closing)+' (applied target '+number(satisfaction.last.target)+', change '+number(satisfaction.last.change)+'). Feasts and festivals can provide immediate happiness bonuses.</p>':'<p>Waiting for the first satisfaction cycle.</p>')+
    '<h3 id="scPlanSectionHousing" tabindex="-1">Residents & housing</h3><p>'+s.population+' / '+s.housing.capacity+' civilian residents · '+s.housing.keepResidents+' in the Keep · '+s.housing.displaced+' displaced</p><p>'+s.growth.reason+' Progress: '+s.growth.progress+'/15 seconds.</p>'+growthPanel+houses+
    '<h3 id="scPlanSectionFood" tabindex="-1">Food reserve & distribution</h3><p>'+number(s.food.stock)+' / '+s.food.capacity+' food stored · '+s.food.reserveSeconds+' seconds of household reserve (before new production).</p><p>Harvest at current staffing: '+number(s.food.production)+' · Household demand before distribution: '+s.food.demand+' / 5 seconds.</p><p>Markets serve '+s.food.markets.served+'/'+s.food.markets.total+' homes; '+s.food.markets.savings+' food saved last cycle.</p>'+
    (last?'<table aria-label="Last five-second food cycle">'+row('Opening reserve',number(last.opening))+row('Farm/fishery harvest','+'+number(last.harvest))+row('Supply logistics','+'+number(last.logistics))+row('Bakery conversion (net)','+'+number(last.bakeryNet))+row('Bread exports','−'+number(last.exports))+row('Household delivery','−'+number(last.delivered))+row('Storage overflow','−'+number(last.overflow))+row('Closing reserve',number(last.closing))+row('Unmet household demand',number(last.shortfall))+'</table>':'<p>Waiting for the first five-second economy cycle.</p>')+
@@ -6739,16 +6780,16 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
    '<h3 id="scPlanSectionEmployment" tabindex="-1">Employment & production</h3><p>'+s.workforce.filled+' staffed + '+s.workforce.idle+' idle + '+s.workforce.reserved+' essential duties = '+s.population+' civilian residents. '+s.workforce.jobs+' open job slots · '+s.workforce.pausedJobs+' paused job slots.</p><p>Map workers and soldiers are separately recruited units. Food producers receive civilian staff first among open workplaces. Pause surplus production to free residents for other jobs; pausing food producers can cause shortages. Granaries retain physical storage. Last-cycle figures may precede a workplace change.</p><table aria-label="Workplace staffing"><tr><th>Workplace</th><th>Staff</th><th>Forecast base output / 5 sec</th><th>Operation</th></tr>'+s.workforce.sites.map(b=>'<tr><td>'+b.type+' #'+b.id+(b.paused?' · paused':' · open')+'</td><td>'+b.filled+'/'+b.need+'</td><td>'+number(b.output)+(b.type==='farm'||b.type==='fishery'?' food':b.type==='lumberyard'?' wood':' service/conversion')+'</td><td><button type="button" data-workplace="'+b.id+'" data-open="'+b.paused+'">'+(b.paused?'Open ':'Pause ')+b.type+' #'+b.id+'</button></td></tr>').join('')+'</table>'+
    '<h3>Prosperity '+number(s.prosperity.score)+' / 100</h3><progress max="100" value="'+s.prosperity.score+'" aria-label="City prosperity"></progress><p>Target '+s.prosperity.target+'/100 · changes by at most 2 points per five-second cycle.</p><table aria-label="Prosperity contributions">'+s.prosperity.factors.map(f=>row(f.label,number(f.points)+' / '+f.max)).join('')+'</table><p>'+(s.peace.scenario==='city'?s.peace.description:s.peace.difficulty+' difficulty: <span id="scCityGraceRemaining">'+Math.ceil(s.peace.remaining)+'</span> seconds of settlement grace remain before offensive raids; later raids are spaced at least '+s.peace.raidInterval+' seconds apart. Enemy territory still defends itself.')+'</p><h3>Next steps</h3>'+s.advice.map(a=>'<p>• '+a+'</p>').join('');
    const actionFocus=focusSteward?panel.querySelector(focusResource?'[data-steward-resource="'+focusResource+'"]':'[data-steward="idle"]'):focusNeed?panel.querySelector('[data-village-section="'+focusNeed+'"]'):null;
-   const focusTarget=focusWorkplace?panel.querySelector('[data-workplace="'+focusWorkplace+'"]'):focusSection?panel.querySelector('#'+focusSection):focusLocate?panel.querySelector('[data-locate="'+focusLocate+'"]'):focusHouse?panel.querySelector('details[data-house="'+focusHouse+'"] summary'):actionFocus;
+   const focusTarget=focusPolicy?panel.querySelector(focusPolicy):focusEconomy?panel.querySelector('[data-economy-section="'+focusEconomy+'"]'):focusWorkplace?panel.querySelector('[data-workplace="'+focusWorkplace+'"]'):focusSection?panel.querySelector('#'+focusSection):focusLocate?panel.querySelector((focusHouse?'details[data-house="'+focusHouse+'"] ':'')+'[data-locate="'+focusLocate+'"]'):focusHouse?panel.querySelector('details[data-house="'+focusHouse+'"] summary'):actionFocus;
    if(focusTarget&&!focusTarget.disabled)focusTarget.focus({preventScroll:true});
    else if(focusSteward||focusNeed){const heading=panel.querySelector('#scPlanSectionVillage');heading?.focus({preventScroll:true});heading?.scrollIntoView({block:'nearest'});}
   else if(focusWorkplace||focusLocate||focusHouse){
    locationStatus.textContent='That building is no longer available. Choose a current building.';
-   const fallback=panel.querySelector('#scPlanSection'+(focusWorkplace||focusHouse?.startsWith('site')?'Employment':'Housing'));
+   const fallback=panel.querySelector('#scPlanSection'+(focusHouse?.startsWith('trade')?'Economy':focusWorkplace||focusHouse?.startsWith('site')?'Employment':'Housing'));
    fallback?.focus({preventScroll:true});fallback?.scrollIntoView({block:'nearest'});
   }
  }
- button.addEventListener('click',()=>setTimeout(refresh,0));window.addEventListener('sc:built',refresh);window.addEventListener('sc-workplace-changed',refresh);setInterval(refresh,500);
+ button.addEventListener('click',()=>setTimeout(refresh,0));window.addEventListener('sc:built',refresh);window.addEventListener('sc-workplace-changed',refresh);window.addEventListener('sc-trade-policy-changed',refresh);setInterval(refresh,500);
 })();
 </script>
 

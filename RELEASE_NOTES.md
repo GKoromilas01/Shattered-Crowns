@@ -1,5 +1,14 @@
 # Release notes
 
+## v0.14.0 — City Economy & Quality of Life
+
+- Manage existing food-priority/export and reserve policies from City Life → Economy, synchronized with legacy controls and saves.
+- Diagnose bakery export blockers with the same eligibility checks used by production; separate current readiness from measured output.
+- Connect production decisions to resident growth and the existing prosperity factors through direct planning links.
+- Preserve economic rates, controls, roads, graphics, approved audio, peaceful/classic gameplay and save schemas1/2/3; no new save fields or dependencies.
+
+See [Milestone14](docs/MILESTONE14.md) and [verification](docs/validation/m14-verification.md). Draft review only; no merge or deployment authorized.
+
 ## v0.13.0 — Gameplay Usability & Polish
 
 - Show both real starting homes as keyboard-accessible radio cards; label current regions and future previews honestly.
