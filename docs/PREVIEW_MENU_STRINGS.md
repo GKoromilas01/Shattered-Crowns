@@ -4,7 +4,7 @@ Experimental follow-up branch based on PR #22's exact tested head `7559f743e57bd
 
 ## City Life
 
-The owner's possible overlap was investigated at 390×844, 1366×606 and 1440×900, across all six planning sections and expanded details using a genuine existing city. No overlap of genuinely focusable controls was reproduced. Early diagnostics included hidden descendants of closed details; those were excluded rather than treated as bugs. New regression coverage verifies each focusable control is inside the panel and receives its own hit test, and that inspection leaves the paused city unchanged. The layout has not been changed speculatively. An owner screenshot/device configuration can narrow any remaining occurrence.
+The owner's possible overlap was investigated at 390×844, 1366×606 and 1440×900, across all six planning sections and expanded details using a genuine existing city. No overlap of genuinely focusable controls was reproduced. Early diagnostics included hidden descendants of closed details; those were excluded rather than treated as bugs. New regression coverage verifies each focusable control center is inside the panel and receives its own hit test, and that inspection leaves the paused city unchanged. The layout has not been changed speculatively. An owner screenshot/device configuration can narrow any remaining occurrence.
 
 ## Music
 
@@ -15,3 +15,5 @@ The strings are synthesized, not a recording of a live violin. Musical appeal, p
 Two 24-second MP3 excerpts are in `docs/audio-preview/`: `approved-city.mp3` and `bowed-strings.mp3`. Both were rendered through the real audio graph at the same default 35% volume, with the same one-second ending fade. No separate normalization was applied. Compare at a comfortable device volume.
 
 Thirty focused browser/audio tests passed before publishing this preview, including real offline signal checks, safe headroom, silence at zero, note cleanup/style switching and title-to-city continuity. The final branch's standard comprehensive CI and packaged smoke results are tracked in GitHub Actions. No merge or deployment is authorized or performed. No new dependencies or paid services.
+
+Fresh read-only review found no Critical/Important issues. Two coverage limits remain: center-point hit tests do not rule out partial edge clipping, and the new bowed envelope has no separate fallback-stop regression (existing stop tests use flute). Attack/hold/release math and cancellation were reviewed by inspection. Owner visual/listening feedback remains necessary.
