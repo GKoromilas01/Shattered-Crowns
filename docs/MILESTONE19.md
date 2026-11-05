@@ -24,7 +24,7 @@ These are observed reference routes, not promises that every build order succeed
 
 An extended unattended home shortage exposed a save defect: after population reached its minimum of four, an unused departure timer grew beyond the existing validator's 15-second bound. The timer now saturates at 15. Population departure behavior and the minimum population remain unchanged; validation remains strict. No new save field or schema is introduced. Existing accepted schema 1–4 saves remain compatible. Already-invalid older starvation captures with an out-of-range timer are not silently normalized.
 
-UI controls use stable nodes to preserve held-Space/pointer activation, focus and scrolling. Inspection validates owned living targets without issuing unit orders or moving the camera; explicit Locate actions may pan. Stale targets are invalidated on restart/load/destruction. New panels share the existing camera-hover protection.
+UI controls use stable nodes to preserve held-Space/pointer activation, focus and scrolling. Inspection validates owned living targets without issuing unit orders or moving the camera; explicit Locate actions may pan. Stale targets are invalidated on restart/load/destruction; pending actions from before a restart/load are cancelled even when building IDs match. Advisor navigation transfers keyboard focus to the visible inspector. New panels share the existing camera-hover protection.
 
 ## Review and limitations
 
