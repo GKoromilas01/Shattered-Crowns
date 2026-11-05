@@ -7,7 +7,7 @@ test('World identity catalogue contains exactly sixteen kingdoms and 128 distinc
  for(const list of [a.continents,a.kingdoms,a.settlements]){assert.equal(new Set(list.map(x=>x.id)).size,list.length);assert.equal(new Set(list.map(x=>x.name)).size,list.length);}
  assert.deepEqual(a.settlements.filter(x=>x.playable).map(x=>x.id).sort(),['brookstead','home']);
  const banners=new Set();for(const k of a.kingdoms){assert.ok(a.continents.some(c=>c.id===k.continentId));assert.equal(a.settlements.filter(s=>s.kingdomId===k.id).length,8);for(const key of ['motto','history','mythology','government','ruler','description'])assert.ok(k[key]?.length>12,k.id+' '+key);assert.equal(k.heroes.length,2);assert.ok(k.heroes.every(h=>h.name&&h.deed.length>20));for(const rel of k.relationships)assert.ok(a.kingdoms.some(x=>x.id===rel.kingdomId));banners.add(JSON.stringify(k.banner));}assert.equal(banners.size,16);
- for(const s of a.settlements){assert.ok(a.kingdoms.some(k=>k.id===s.kingdomId));assert.ok(s.history.length>30&&s.description.length>30&&s.location.length>12);}
+ for(const s of a.settlements){assert.notEqual(s.ruler,'You','Catalogue identity must be neutral across player origins');assert.ok(a.kingdoms.some(k=>k.id===s.kingdomId));assert.ok(s.history.length>30&&s.description.length>30&&s.location.length>12);}
  for(const id of ['home','ironmere','ashford','valewatch','brookstead'])assert.equal(a.settlements.find(s=>s.id===id).kingdomId,'marches');
  assert.equal(await p.evaluate(()=>{const frozen=x=>!x||typeof x!=='object'||Object.isFrozen(x)&&Object.values(x).every(frozen);return frozen(scWorldAtlas)}),true);
 });
@@ -36,4 +36,12 @@ test('All six world continent controls remain separate and within the phone map'
 });
 test('Kingdom banner and availability are visible in the playable atlas',async t=>{
  const p=await game(t);await p.evaluate(()=>scKingdomUI.openWorld());await p.locator('#scAtlasIdentity').click();assert.equal(await p.locator('#scIdentityBanner svg').isVisible(),true);assert.equal(await p.locator('.scIdentityHero h3').isVisible(),true);assert.match(await p.locator('.scIdentityHero').innerText(),/existing city starts/i);
+});
+test('Dossier steward identifies only the active home for both supported origins',async t=>{
+ const p=await game(t);
+ for(const origin of ['home','brookstead']){
+  await p.evaluate(origin=>scCampaign.start('city',origin),origin);await p.locator('#sc154Pause').click();await p.evaluate(()=>scKingdomUI.openWorld());await p.locator('#scAtlasIdentity').click();
+  for(const id of ['home','brookstead']){await p.locator('[data-world-place="'+id+'"]').click();const text=await p.locator('#scSettlementIdentity').innerText();assert.equal(/Local steward: You/.test(text),id===origin,'Only '+origin+' belongs to the current governor');}
+  await p.keyboard.press('Escape');
+ }
 });
