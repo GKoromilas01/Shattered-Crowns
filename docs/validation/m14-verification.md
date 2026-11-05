@@ -1,0 +1,15 @@
+# Milestone14 verification
+
+Source baseline: PR18 merge82cbef6c79345d37e5c7a80022e1128aca7a8104. The merged tree is byte-identical to approvedM13head08e16cdc240110b4b34d2258b1d71d208e6c4e97, whose full237-case and packaged5-case checks passed. [Post-merge CI](https://github.com/GKoromilas01/Shattered-Crowns/actions/runs/41958730010) completed successfully with all required jobs green; no duplicate baseline suite is run locally.
+
+Branchfeat/m14-city-economy in the existing isolated worktree; no other openPR or activeM14work found. See the scoped plan and milestone notes. Exact final head, completed CI results and verified candidate download are recorded in the draftPR as the final execution record.
+
+Eleven new focused browser cases first failed against unchangedM13 for the missing policy API and Economy section. Seven engine and four UI/save cases then passed; expanded controls cases cover classic mode, armed-road preservation and held native pointer presses. Tests use the real engine and DOM, with private fixture adapters confined to the test server. The genuinev0.13paused-workplace/export-policy fixture was captured before runtime edits.
+
+Coverage: strict validation and atomic rejection; old-control synchronization; unchanged stocks, selection, orders, camera and Pause; physical paused-granary behavior; half-staffed baking; strict190/220distances and80goods limit; conserved food ledger; current reserve readiness versus actual after-baking eligibility; existing-goods sales while new exports are off; restored policies; native Space/pointer activation and live-refresh focus;390/1440layouts and progression links.
+
+Comprehensive gate: the complete regression/browser/release suite runs on the final committed source in the existing branch andPRGitHubCI jobs. Local new-feature tests use Chromium154/Playwright1.57/Node24; CI uses the Playwright-pinned Chromium. Exact-source package build/checksum/Git-source validation and five packaged smoke journeys are also required. No third full-platform repetition is added locally; no required job, test, publishing guard or approval boundary is removed.
+
+A separate normal-resource playthrough gathers wood, stone and gold with recruited workers, constructs the granary/roads/market/bakery through existing tools, and exercises both policies. Only time is accelerated; stocks and population are not injected. Recorded outcome:8→12residents, prosperity0→24, four baskets sold, zero new exports under Food priority. Screenshots show this actual city.
+
+Existing game/audio/artwork bytes outside the scoped engine/presentation changes remain preserved. The approved audio controller and embedded title art are compared byte-for-byte to the baseline. Physical Windows listening remains a human check. Regional geography, future-region availability and defense range retain their M13 limits.
