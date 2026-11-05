@@ -8507,4 +8507,52 @@ prev.addEventListener('click',()=>move(-1));next.addEventListener('click',()=>mo
  setInterval(refresh,500);refresh();
  }if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();})();
 </script>
+<style id="sc19BuildingStyles">
+#scCityInspection.sc19Expanded{box-sizing:border-box;width:min(399px,calc(100vw - 24px));max-height:min(520px,calc(100dvh - 220px))!important;background:#18212b;border-color:#c49a54;border-radius:12px;padding:14px}
+#sc19BuildingControls{background:#263439;padding:13px;border-radius:10px;margin-top:10px}
+#sc19BuildingControls p{margin:8px 0;white-space:normal}#sc19BuildingControls ul{padding-left:18px;margin:8px 0}
+#sc19BuildingControls .sc19Operations{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+#sc19BuildingControls button[aria-pressed=true]{border-color:#e8d9b9!important;background:#6c5939!important}
+#sc19BuildingControls .sc19Policies{padding:10px;background:#314238;border-radius:9px;margin-top:10px}
+</style>
+<script id="sc19BuildingController">
+(()=>{'use strict';function ready(){
+ const engine=window.scCityEconomy,panel=document.getElementById('scCityInspection');if(!engine||!panel)return;
+ const make=(tag,parent,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;parent?.append(e);return e;};
+ const controls=make('section',panel);controls.id='sc19BuildingControls';controls.hidden=true;controls.setAttribute('aria-label','Workplace controls');
+ make('h4',controls,'Selected workplace');const title=make('h3',controls);title.id='sc19BuildingTitle';const staff=make('p',controls);staff.id='sc19Staff';
+ const operations=make('div',controls);operations.className='sc19Operations';
+ function button(parent,id,text){const b=make('button',parent,text);b.type='button';b.id=id;return b;}
+ const open=button(operations,'sc19Workplace','Pause workplace'),priority=button(operations,'sc19Priority','Prioritize workplace'),locate=button(operations,'sc19Locate','Locate');
+ make('h4',controls,'Current production & service');const measured=make('p',controls),context=make('p',controls),blockers=make('ul',controls),next=make('p',controls),risk=make('p',controls);risk.id='sc19Risk';
+ const policies=make('div',controls);policies.className='sc19Policies';make('h4',policies,'City-wide export policy');make('p',policies,'These choices apply to every bakery, not only this building. Existing trade baskets may still sell under Food priority.');
+ const food=button(policies,'sc19FoodPriority','Food priority'),exportButton=button(policies,'sc19Export','Export surplus');const reserves=make('div',policies);reserves.className='sc19Operations';const reserveButtons=[];
+ for(const n of [0,1,2,4]){const b=button(reserves,'sc19Reserve'+n,'Reserve '+n+' cycles');b.dataset.reserve=String(n);reserveButtons.push(b);}
+ const policyStatus=make('p',policies),status=make('p',controls);status.setAttribute('role','status');let activeId=null;
+ const number=n=>Number(n||0).toFixed(1).replace(/\.0$/,'');
+ function current(){const b=window.scRTSInspectedBuilding;if(!b||b.hp<=0)return null;const s=engine.snapshot(),detail=s.buildings.find(x=>x.id===b.id&&x.type===b.type);return detail?{b,detail,s,site:s.workforce.sites.find(x=>x.id===b.id)}:null;}
+ function refresh(force=false){if(window.scGovernorUI?.held()&&!force)return;const info=current(),supported=!!info&&['farm','fishery','granary','bakery','market'].includes(info.b.type);controls.hidden=!supported;panel.classList.toggle('sc19Expanded',supported);document.getElementById('buildingInspector').hidden=supported;if(!supported){activeId=null;return;}
+  const {b,detail:d,s,site}=info;if(activeId!==b.id){status.textContent='';activeId=b.id;controls.scrollTop=0;}
+  title.textContent=b.type[0].toUpperCase()+b.type.slice(1)+' #'+b.id;staff.textContent=site.filled+' / '+site.need+' civilian workers · '+(site.paused?'Paused':'Open')+' · '+(site.priority?'High priority':'Normal priority');
+  open.textContent=site.paused?'Open workplace':'Pause workplace';open.setAttribute('aria-pressed',String(!site.paused));priority.textContent=site.priority?'Restore normal priority':'Prioritize workplace';priority.setAttribute('aria-pressed',String(site.priority));open.disabled=false;priority.disabled=!s.workforce.priorities.canManage;
+  const f=d.last;
+  measured.textContent=f?'Last cycle: harvest '+number(f.harvest)+' · logistics '+number(f.logistics)+' · food input '+number(f.consumed)+' · food produced '+number(f.produced)+' · food packed '+number(f.exported)+'.':s.food.last?'No producer conversion is recorded for this building; inspect its actual service below.':'Waiting for first cycle. Output has not been measured.';
+  if(d.supply)context.textContent='Harvest links now: road group '+(d.supply.road?'ready':'missing')+' · staffed connected granary '+(d.supply.depot?'ready':'missing')+'. Staffing and links determine the next cycle.';
+  else if(d.storage)context.textContent='Allocated food '+number(d.storage.stock)+' / '+d.storage.capacity+' capacity. This is a share of the shared city reserve, not an independent inventory. Physical capacity remains when paused. Logistics road '+(d.connected?'ready':'missing')+'.';
+  else if(b.type==='market')context.textContent='Household reach '+d.coverage.nearby+' homes · current supplied coverage '+d.coverage.supplied+' homes. '+(d.service?.message||'')+' City-wide measured market savings: '+number(s.food.markets.savings)+' food last cycle; '+s.trade.goodsSold+' trade baskets sold since city start (all markets).';
+  else context.textContent='Shared food reserve '+number(s.food.stock)+' / '+s.food.capacity+'. Baking and packing use existing staffing, nearby storage and reserve rules.';
+  blockers.replaceChildren();const reasons=d.blockers.slice();if(b.type==='bakery'){const ready=s.trade.sites.find(x=>x.id===b.id);for(const c of ready?.checks||[])if(!c.met&&!reasons.includes(c.label))reasons.push(c.label);}
+  for(const reason of reasons)make('li',blockers,reason);next.textContent='Next action: '+d.nextAction;
+  const warnings=s.workforce.priorities.warnings.map(w=>w.message);risk.textContent=warnings.length?warnings.join(' '):'Food & service safeguard: default staffing is food-first. Prioritizing this workplace may reduce food production or essential services elsewhere; review actual assignments in City Life → Employment.';
+  policies.hidden=b.type!=='bakery';food.setAttribute('aria-pressed',String(!s.trade.enabled));exportButton.setAttribute('aria-pressed',String(s.trade.enabled));for(const rb of reserveButtons){rb.setAttribute('aria-pressed',String(Number(rb.dataset.reserve)===s.trade.reserveCycles));rb.disabled=!s.trade.canManage;}food.disabled=exportButton.disabled=!s.trade.canManage;
+  policyStatus.textContent=(s.trade.enabled?'Export surplus':'Food priority')+' · reserve '+s.trade.reserveCycles+' demand cycles ('+(s.trade.reserveCycles*5)+' simulation seconds), minimum '+number(s.trade.reserveFloor)+' food after packing. '+(window.scCitySave.status().paused?'Game paused; production waits for Resume.':'Production rechecks each five-second cycle.');
+ }
+ controls.addEventListener('click',e=>{const target=e.target.closest('button');if(!target)return;const info=current();if(!info||info.b.id!==activeId){status.textContent='That workplace is no longer available.';refresh(true);return;}const {b,site,s}=info;let ok=false;
+  if(target===open)ok=engine.setWorkplaceOpen(b.id,site.paused);else if(target===priority)ok=engine.setWorkplacePriority(b.id,!site.priority);else if(target===locate)ok=engine.locate(b.id);else if(target===food||target===exportButton)ok=engine.setTradePolicy(target===exportButton,s.trade.reserveCycles);else if(target.dataset.reserve!==undefined)ok=engine.setTradePolicy(s.trade.enabled,Number(target.dataset.reserve));
+  status.textContent=ok?'Choice applied. Staffing updates immediately; measured results update on the next cycle.':'That action is unavailable in the current city.';refresh(true);
+ });
+ for(const event of ['sc-building-inspected','sc-selection-changed','sc-city-restored','sc-city-started','sc-workplace-changed','sc-workplace-priority-changed','sc-trade-policy-changed','sc19-controls-released'])window.addEventListener(event,()=>refresh());
+ setInterval(refresh,250);refresh();
+ }if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();})();
+</script>
 </body></html>
