@@ -4345,6 +4345,8 @@ document.addEventListener('keydown',e=>{if(e.key==='F4'&&!e.ctrlKey&&!e.altKey){
  if(!canvas||!vp)return;
  // Set initial camera to the friendly Royal Keep; do not run a continuous camera correction.
  function home(){
+   // Brookstead's engine initializer already positions its own village view.
+   if(window.scCampaign?.status().originId==='brookstead')return true;
    const keep=(window.scHoverBuildings||[]).find(b=>b&&b.team===0&&b.type==='keep'&&b.hp>0);
    if(!keep)return false;
    const r=canvas.getBoundingClientRect(),scale=r.width/canvas.width;
@@ -4352,11 +4354,12 @@ document.addEventListener('keydown',e=>{if(e.key==='F4'&&!e.ctrlKey&&!e.altKey){
    vp.scrollTop=Math.max(0,keep.y*r.height/canvas.height-vp.clientHeight*.5);
    return true;
  }
+ const initialCityId=window.scCitySave?.status().cityId;
  let retries=0;
- function start(){if(!home()&&retries++<8)setTimeout(start,250)}
+ function start(){if(window.scCitySave?.status().cityId!==initialCityId)return;if(!home()&&retries++<8)setTimeout(start,250)}
  setTimeout(start,300);
  // On an explicit restart, re-center once after the engine resets the world.
- document.getElementById('restart')?.addEventListener('click',()=>setTimeout(home,300));
+ document.getElementById('restart')?.addEventListener('click',()=>{const cityId=window.scCitySave?.status().cityId;setTimeout(()=>{if(window.scCitySave?.status().cityId===cityId)home();},300);});
  const life=document.getElementById('sc159Pulse');
  if(life){life.classList.add('collapsed');life.querySelector('#sc159Arrow')?.replaceChildren(document.createTextNode('▸'))}
  // Selecting a new construction command must dismiss the previous building inspector.

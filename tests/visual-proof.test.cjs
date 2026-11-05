@@ -2,7 +2,7 @@ const {test,before,after}=require('node:test');
 const assert=require('node:assert/strict'),fs=require('node:fs'),http=require('node:http');
 const {launchBrowser,browserPage}=require('./support/browser.cjs');
 let browser,server,url;
-before(async()=>{server=http.createServer((q,r)=>{r.setHeader('Content-Type','text/html');const source=fs.readFileSync('index.html','utf8');r.end(source.replace('const alive=o=>',`window.__visualProof={ground:typeof sc16PaintGround==='function'?sc16PaintGround:null,tree:typeof sc16PaintTree==='function'?sc16PaintTree:null,house:typeof sc16PaintHouseDepth==='function'?sc16PaintHouseDepth:null,unit:typeof sc16PaintUnitDetails==='function'?sc16PaintUnitDetails:null};const alive=o=>`));});await new Promise(r=>server.listen(0,'127.0.0.1',r));url='http://127.0.0.1:'+server.address().port;browser=await launchBrowser();});
+before(async()=>{server=http.createServer((q,r)=>{r.setHeader('Content-Type','text/html');const source=fs.readFileSync('index.html','utf8');r.end(source.replace('setTimeout(start,300);','window.__visualProofInitialCamera=start;').replace('const alive=o=>',`window.__visualProof={ground:typeof sc16PaintGround==='function'?sc16PaintGround:null,tree:typeof sc16PaintTree==='function'?sc16PaintTree:null,house:typeof sc16PaintHouseDepth==='function'?sc16PaintHouseDepth:null,unit:typeof sc16PaintUnitDetails==='function'?sc16PaintUnitDetails:null};const alive=o=>`));});await new Promise(r=>server.listen(0,'127.0.0.1',r));url='http://127.0.0.1:'+server.address().port;browser=await launchBrowser();});
 after(async()=>{await browser?.close();server?.close()});
 test('Playable visual painters are deterministic and preserve inputs and canvas state',async t=>{
  const {page:p}=await browserPage(t,browser);await p.goto(url);await p.waitForFunction(()=>window.__visualProof);
@@ -26,4 +26,12 @@ for(const width of [390,1440])test('Visual proof preserves old city state during
  const before=await p.evaluate(()=>scCitySave.capture().state);await p.waitForTimeout(700);assert.deepEqual(await p.evaluate(()=>scCitySave.capture().state),before,'Rendering must not modify saves, resource stocks, units or economy');
  await p.locator('#sc154Pause').click();await p.waitForTimeout(250);assert.equal(await p.evaluate(()=>scCitySave.status().paused),false);await p.locator('#sc154Pause').click();
  assert.equal(await p.locator('#field').evaluate(c=>c.width>0&&c.height>0),true);
+});
+
+for(const action of ['new village','restored save'])test('Delayed startup camera cannot replace '+action+' view',async t=>{
+ const {page:p}=await browserPage(t,browser,{viewport:{width:1440,height:900}});await p.goto(url);await p.waitForFunction(()=>window.__visualProofInitialCamera);
+ if(action==='new village')await p.evaluate(()=>scCampaign.start('city','brookstead'));
+ else {const save=JSON.parse(fs.readFileSync('tests/fixtures/city-v0140.json'));assert.equal((await p.evaluate(s=>scCitySave.restore(s),save)).ok,true);}
+ const before=await p.evaluate(()=>({state:scCitySave.capture().state,view:scCitySave.capture().view}));await p.evaluate(()=>window.__visualProofInitialCamera());await p.waitForTimeout(400);
+ assert.deepEqual(await p.evaluate(()=>({state:scCitySave.capture().state,view:scCitySave.capture().view})),before,'A timer for the original city must not take over another city camera');
 });

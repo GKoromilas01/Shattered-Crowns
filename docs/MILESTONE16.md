@@ -7,6 +7,8 @@ This is the first bounded playable visual proof, not a finished art overhaul. Th
 - Existing housing tiers gain shaded return walls, roof planes and timber braces within the existing drawing bounds. Tier requirements and footprints are unchanged.
 - Workers have readable aprons and pouches; military units retain team colors and equipment with restrained cloth/belt details. Selection and orders are unchanged.
 
+Faster rendering exposed a legacy delayed-camera race: startup/restart callbacks could overwrite a freshly chosen village or loaded save view. Delayed actions now belong to their original city identity, and Brookstead retains its engine-defined initial camera.
+
 No new gameplay, settings menu, renderer dependency or external asset downloads. New art consists of original Canvas drawing code. Approved title artwork and audio are preserved. Save schemas and fields are unchanged; new captures identify v0.16.0, and earlier fixtures load normally.
 
 ## Acceptance
