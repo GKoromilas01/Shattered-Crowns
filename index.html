@@ -3517,6 +3517,10 @@ window.scCityEconomy={snapshot:citySnapshot,setTradePolicy:(enabled,reserveCycle
  if(!scVillageActionReady()||!scVillageResources.some(([name])=>name===resource))return false;
  const site=cityVillageSnapshot().deposits.find(d=>d.resource===resource)?.nearest;if(!site)return false;
  scVillageCenter(site);msg('Located '+resource+' nearest your Keep. Select workers and right-click the deposit to gather.');return true;
+},inspect:id=>{
+ if(!scVillageActionReady()||!Number.isSafeInteger(id))return false;
+ const b=buildings.find(b=>b.id===id&&b.team===0&&alive(b));if(!b)return false;
+ inspectedBuilding=b;window.scRTSInspectedBuilding=b;updateUI();window.dispatchEvent(new Event('sc-building-inspected'));return true;
 },locate:id=>{
  if(!Number.isSafeInteger(id)||scOverview)return false;
  const b=buildings.find(b=>b.id===id&&b.team===0&&alive(b));if(!b)return false;
@@ -7329,7 +7333,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  const heading=document.createElement('strong');heading.textContent='Selected building';panel.append(close,heading,text);document.body.append(panel);
  let dismissed=null;
  close.addEventListener('click',()=>{dismissed=window.scRTSInspectedBuilding?.id;panel.hidden=true});
- window.addEventListener('sc-selection-changed',()=>{dismissed=null;refresh()});
+ window.addEventListener('sc-selection-changed',()=>{dismissed=null;refresh()});window.addEventListener('sc-building-inspected',()=>{dismissed=null;refresh()});
  function refresh(){const b=window.scRTSInspectedBuilding;const another=['sc159Pulse','sc1310AdvisorPanel','sc190ChroniclePanel','sc189HelpPanel'].some(id=>{const n=document.getElementById(id);return n&&!n.hidden&&getComputedStyle(n).display!=='none'});panel.hidden=!b||b.hp<=0||dismissed===b.id||another;}
  setInterval(refresh,150);
 })();
@@ -8442,4 +8446,65 @@ prev.addEventListener('click',()=>move(-1));next.addEventListener('click',()=>mo
  for(const id of ['scStartChoose','sc1310Skip','sc1310Try'])document.getElementById(id).disabled=false;
  status.textContent='Choose your starting place, or enter your city directly.';document.getElementById('scStartChoose').focus({preventScroll:true});
  }if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();})();
-</script></body></html>
+</script><style id="sc19CityStyles">
+#scGovernorOverview,#sc19BuildingControls{--sl-night:#18212b;--sl-surface:#263439;--sl-text:#e8d9b9;--sl-brass:#c49a54;--sl-forest:#314238;color:var(--sl-text);font:12px/1.5 system-ui;overflow-wrap:anywhere}
+#scGovernorOverview{margin:10px;padding:14px;background:var(--sl-night);border-radius:12px}
+#scGovernorOverview h3,#sc19BuildingControls h3{margin:0 0 9px;font-size:19px;color:var(--sl-text)}
+#scGovernorOverview .sc19Cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+#scGovernorOverview .sc19Card{background:var(--sl-surface);border-radius:10px;padding:10px;min-width:0}
+#scGovernorOverview .sc19Card span{display:block;color:var(--sl-brass);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+#scGovernorOverview .sc19Card strong{display:block;font:700 25px/1.4 system-ui;color:var(--sl-text)}
+#scGovernorOverview p{margin:8px 0}#scGovernorOverview .sc19Summary{background:var(--sl-surface);border-radius:10px;padding:10px;margin-top:10px}
+#scGovernorOverview .sc19Advisor{background:var(--sl-forest);border-radius:10px;padding:10px;margin-top:10px}
+#scGovernorOverview h4,#sc19BuildingControls h4{font-size:12px;color:var(--sl-brass);margin:0 0 6px;text-transform:uppercase}
+#scGovernorOverview ol{margin:4px 0;padding-left:18px}#scGovernorOverview li{margin-bottom:9px}
+#scGovernorOverview button,#sc19BuildingControls button{float:none!important;font:600 12px system-ui!important;color:var(--sl-text)!important;background:#526d5b!important;border:1px solid #71886b!important;border-radius:8px!important;padding:8px 10px!important;white-space:normal;scroll-margin-block:48px;cursor:pointer}
+#scGovernorOverview button:focus-visible,#sc19BuildingControls button:focus-visible{outline:2px solid #ffe1a0;outline-offset:2px}
+#scGovernorOverview button:disabled,#sc19BuildingControls button:disabled{opacity:.55;cursor:default}
+@media(max-width:350px){#scGovernorOverview .sc19Cards{grid-template-columns:1fr}}
+</style>
+<script id="sc19GovernorController">
+(()=>{'use strict';function ready(){
+ const root=document.getElementById('sc159Pulse'),nav=document.getElementById('scCityPlanningNav'),engine=window.scCityEconomy;if(!root||!nav||!engine)return;
+ const make=(tag,parent,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;parent?.append(e);return e;};
+ const overview=make('section',null,undefined);overview.id='scGovernorOverview';overview.setAttribute('aria-label','Governor overview');nav.before(overview);
+ make('h3',overview,"Governor's Hall");const cards=make('div',overview,undefined,'sc19Cards'),values={};
+ for(const [key,label] of [['population','Population'],['food','Food'],['happiness','Happiness'],['gold','Treasury']]){const card=make('div',cards,undefined,'sc19Card');card.dataset.govCard=key;make('span',card,label);values[key]=make('strong',card,'—');}
+ const reserve=make('p',overview);reserve.id='scGovernorReserve';const summary=make('div',overview,undefined,'sc19Summary');make('h4',summary,'City overview');const city=make('p',summary),foodDetail=make('p',summary);foodDetail.id='scGovernorFoodDetail';
+ const actions=make('div',summary);for(const [section,label] of [['Food','Inspect food chain'],['Employment','Manage workplaces'],['Housing','Plan housing'],['Satisfaction','Prosperity & services']]){const b=make('button',actions,label);b.type='button';b.dataset.govSection=section;}
+ const advisor=make('div',overview,undefined,'sc19Advisor');make('h4',advisor,'Advisor report');const list=make('ol',advisor),reportNodes=[];
+ for(let i=0;i<3;i++){const li=make('li',list),text=make('p',li),button=make('button',li,'Review');button.type='button';button.dataset.govReport=String(i);reportNodes.push({li,text,button});}
+ const status=make('p',overview);status.setAttribute('role','status');
+ let held=false;const interactive='#scGovernorOverview button,#scCityInspection button';
+ window.addEventListener('keydown',e=>{if(!e.target.closest?.(interactive))return;if(e.code==='Space'){held=true;e.stopImmediatePropagation();}else if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','PageUp','PageDown','Home','End'].includes(e.key))e.stopImmediatePropagation();},true);
+ const release=()=>setTimeout(()=>{held=false;refresh();window.dispatchEvent(new Event('sc19-controls-released'));},0);
+ window.addEventListener('keyup',e=>{if(e.code==='Space'&&held)release();},true);window.addEventListener('pointerdown',e=>{if(e.button===0&&e.target.closest?.(interactive))held=true;},true);window.addEventListener('pointerup',()=>{if(held)release();},true);window.addEventListener('pointercancel',release,true);window.addEventListener('blur',()=>{held=false;});
+ function model(){const s=engine.snapshot(),f=s.food.last,reports=[];
+  const add=(kind,text,section,id=null)=>reports.push({kind,text,section,id});
+  if(f?.shortfall>0)add('food',f.shortfall.toFixed(1)+' food unmet last cycle. Restore staffed food production before expanding.','Food',s.buildings.find(b=>['farm','fishery'].includes(b.type))?.id);
+  else if(f&&f.harvest+f.logistics+f.bakeryNet-f.exports<f.demand)add('food','New food supply was below demand last cycle. Reserves are supporting the city.','Food');
+  if(s.housing.displaced)add('housing',s.housing.displaced+' residents need housing.','Housing');
+  const staff=s.buildings.find(b=>b.staff&&!b.workplace?.paused&&b.staff.filled<b.staff.need);if(staff)add('staffing',staff.type+' #'+staff.id+': '+staff.staff.filled+'/'+staff.staff.need+' civilian staff. Review priorities and serviced housing.','Employment',staff.id);
+  const home=s.housing.houses.find(h=>h.occupancy>0&&h.nextRequirements.some(r=>!r.met));if(home)add('services','House #'+home.id+': '+home.nextRequirements.filter(r=>!r.met).map(r=>r.label).join('; '),'Housing',home.id);
+  if(f?.overflow>0)add('storage',f.overflow.toFixed(1)+' food overflow lost last cycle. Review storage before adding production.','Food',s.food.granaries[0]?.id);
+  if(!reports.length){const check=s.growth.readiness?.checks.find(c=>!c.met);add('growth',check?check.detail:'No immediate shortage detected. Maintain services and monitor the next cycle.','Housing');}
+  return {population:s.population,food:s.food.stock,gold:s.village.resources.gold,happiness:s.happiness,prosperity:s.prosperity.score,reports:reports.slice(0,3),snapshot:s};
+ }
+ let current;
+ function refresh(){if(root.hidden||held)return;current=model();const m=current,s=m.snapshot,f=s.food.last;
+  values.population.textContent=m.population;values.food.textContent=number(m.food);values.happiness.textContent=m.happiness+' / 100';values.gold.textContent=number(m.gold);
+  reserve.textContent='Reserve estimate: '+s.food.reserveSeconds+' simulation seconds with no new production, at current base household demand ('+s.food.demand+' food / 5 seconds), before market savings.';
+  city.textContent='Homes '+(s.population-s.housing.keepResidents)+' occupied residents / '+s.housing.capacity+' total places (including Keep). Civilian jobs '+s.workforce.filled+'/'+s.workforce.jobs+' filled · '+s.workforce.idle+' available. Prosperity '+number(m.prosperity)+' / 100.';
+  foodDetail.textContent=f?'Last cycle: harvest '+number(f.harvest)+' · logistics '+number(f.logistics)+' · baking net '+number(f.bakeryNet)+' · delivered '+number(f.delivered)+' · exports '+number(f.exports)+' · overflow '+number(f.overflow)+'.':'Waiting for first cycle. Actual production and delivery have not been measured.';
+  reportNodes.forEach((n,i)=>{const r=m.reports[i];n.li.hidden=!r;if(r){n.text.textContent=r.text;n.button.textContent=r.id?'Locate '+buildingName(r.id,s):'Review '+r.section;}});
+ }
+ function number(n){return Number(n||0).toFixed(1).replace(/\.0$/,'');}function buildingName(id,s){const b=s.buildings.find(b=>b.id===id);return b?b.type+' #'+id:'building';}
+ function section(name){const h=document.getElementById('scPlanSection'+name);if(h){h.focus({preventScroll:true});h.scrollIntoView({block:'start'});}}
+ overview.addEventListener('click',e=>{const direct=e.target.closest('[data-gov-section]');if(direct){section(direct.dataset.govSection);return;}const b=e.target.closest('[data-gov-report]');if(!b)return;const r=current?.reports[Number(b.dataset.govReport)];if(!r)return;if(r.id&&engine.inspect(r.id)&&engine.locate(r.id)){root.hidden=true;document.getElementById('sc1312CityLifeBtn').setAttribute('aria-expanded','false');status.textContent='';}else{section(r.section);status.textContent=r.id?'That target is no longer available. Showing its planning section.':'';}});
+ window.scGovernorUI={refresh,model,held:()=>held};
+ document.getElementById('sc1312CityLifeBtn').addEventListener('click',()=>setTimeout(refresh,0));
+ for(const event of ['sc-city-started','sc-city-restored','sc-workplace-changed','sc-workplace-priority-changed','sc-trade-policy-changed'])window.addEventListener(event,refresh);
+ setInterval(refresh,500);refresh();
+ }if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();})();
+</script>
+</body></html>
