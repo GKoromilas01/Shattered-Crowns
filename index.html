@@ -971,7 +971,7 @@ function cityGrow(homes){
  const context={owned:cityOwned(),network:getRoadNetwork()},occupancy=cityReconcileOccupancy(context),readiness=cityMigrationReadiness(homes,context,occupancy);
  const cap=readiness.capacity,eligible=readiness.eligibleVacancies>0;
  cityGrowth.reason=cityLedger.shortfall>0?'Food shortage: restore farm or fishery production.':occupancy.displaced>0?'Residents are displaced: rebuild serviced housing.':population>=cap?'Housing is full: build another house.':!eligible?'Migration needs vacant housing with a food reserve, nearby water and connected roads.':happiness<45?'Improve food and services until happiness reaches 45.':'A new resident can arrive after 15 seconds of stable services.';
- if(cityLedger.shortfall>0||occupancy.displaced>0){cityGrowth.progress=0;cityGrowth.departure+=5;if(cityGrowth.departure>=15&&population>4){population--;cityGrowth.departure=0;}return;}
+ if(cityLedger.shortfall>0||occupancy.displaced>0){cityGrowth.progress=0;cityGrowth.departure=Math.min(15,cityGrowth.departure+5);if(cityGrowth.departure>=15&&population>4){population--;cityGrowth.departure=0;}return;}
  cityGrowth.departure=0;
  if(readiness.ready){cityGrowth.progress+=5;if(cityGrowth.progress>=15){population++;cityGrowth.progress=0;}}
  else cityGrowth.progress=0;
