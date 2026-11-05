@@ -238,7 +238,427 @@ return b};// V13.51: Festivals are real city actions, not advisory estimates.
 let scFestivalCooldown=0;let scEventFoodReserve=30;
 let cityFlows=[],cityHouseholds=[],citySatisfactionLast=null;
 let scCityIdentity='',scCitySequence=0,scOriginId='home';
-const scCityOrigins=Object.freeze([Object.freeze({id:'home',name:'Marches home',description:'An open starting site with the original resources and six units. Build your first neighborhood.',gold:240,wood:100,stone:30,food:90}),Object.freeze({id:'brookstead',name:'Brookstead village',description:'A farm, house, well and three road tiles beside your keep. Nearby deposits are arranged for the village; start with 200 gold, 90 wood, 30 stone and 110 food.',gold:200,wood:90,stone:30,food:110})]);
+const scFreezeOrigins=value=>{if(value&&typeof value==='object'){Object.values(value).forEach(scFreezeOrigins);Object.freeze(value);}return value;};
+const scCityOrigins=scFreezeOrigins([
+ {
+  "id": "home",
+  "settlementId": "home",
+  "kingdomId": "marches",
+  "biome": "meadow",
+  "name": "Marches home",
+  "description": "An open starting site with the original resources and six units. Build your first neighborhood.",
+  "gold": 240,
+  "wood": 100,
+  "stone": 30,
+  "food": 90,
+  "population": 8
+ },
+ {
+  "id": "brookstead",
+  "settlementId": "brookstead",
+  "kingdomId": "marches",
+  "biome": "meadow",
+  "name": "Brookstead village",
+  "description": "A farm, house, well and three road tiles beside your keep. Nearby deposits are arranged for the village; start with 200 gold, 90 wood, 30 stone and 110 food.",
+  "gold": 200,
+  "wood": 90,
+  "stone": 30,
+  "food": 110,
+  "population": 8
+ },
+ {
+  "id": "briar-3",
+  "settlementId": "briar-3",
+  "kingdomId": "briar",
+  "biome": "woodland",
+  "name": "Thornmere village",
+  "description": "Briarwatch woodland village: 10 residents, a farm, house, well, lumberyard and connected road. Abundant nearby timber; expand food and housing carefully.",
+  "gold": 180,
+  "wood": 140,
+  "stone": 45,
+  "food": 110,
+  "population": 10,
+  "center": [
+   1000,
+   380
+  ],
+  "buildings": [
+   [
+    "farm",
+    850,
+    360
+   ],
+   [
+    "house",
+    900,
+    520
+   ],
+   [
+    "well",
+    820,
+    470
+   ],
+   [
+    "lumberyard",
+    1070,
+    520
+   ],
+   [
+    "road",
+    868,
+    440
+   ],
+   [
+    "road",
+    912,
+    440
+   ],
+   [
+    "road",
+    956,
+    440
+   ],
+   [
+    "road",
+    1000,
+    440
+   ],
+   [
+    "road",
+    1044,
+    440
+   ]
+  ],
+  "deposits": [
+   [
+    "tree",
+    1180,
+    280,
+    900
+   ],
+   [
+    "tree",
+    1240,
+    290,
+    900
+   ],
+   [
+    "tree",
+    1210,
+    350,
+    900
+   ],
+   [
+    "tree",
+    1190,
+    420,
+    900
+   ],
+   [
+    "tree",
+    750,
+    220,
+    900
+   ],
+   [
+    "tree",
+    810,
+    210,
+    900
+   ],
+   [
+    "stone",
+    1320,
+    450,
+    550
+   ],
+   [
+    "stone",
+    1380,
+    470,
+    550
+   ],
+   [
+    "stone",
+    730,
+    620,
+    550
+   ],
+   [
+    "gold",
+    1180,
+    600,
+    650
+   ],
+   [
+    "gold",
+    1280,
+    630,
+    650
+   ]
+  ]
+ },
+ {
+  "id": "saffron-3",
+  "settlementId": "saffron-3",
+  "kingdomId": "saffron",
+  "biome": "dryland",
+  "name": "Datehaven village",
+  "description": "Saffron Expanse dryland village: 8 residents, a farm, house, well and roads. Sparse date groves, plentiful stone and a limited timber reserve encourage careful construction.",
+  "gold": 210,
+  "wood": 80,
+  "stone": 80,
+  "food": 100,
+  "population": 8,
+  "center": [
+   1200,
+   390
+  ],
+  "buildings": [
+   [
+    "farm",
+    1060,
+    390
+   ],
+   [
+    "house",
+    1110,
+    540
+   ],
+   [
+    "well",
+    1060,
+    470
+   ],
+   [
+    "road",
+    1100,
+    460
+   ],
+   [
+    "road",
+    1144,
+    460
+   ],
+   [
+    "road",
+    1188,
+    460
+   ],
+   [
+    "road",
+    1232,
+    460
+   ]
+  ],
+  "deposits": [
+   [
+    "tree",
+    1360,
+    270,
+    320
+   ],
+   [
+    "tree",
+    1430,
+    280,
+    320
+   ],
+   [
+    "tree",
+    1390,
+    330,
+    320
+   ],
+   [
+    "stone",
+    1550,
+    490,
+    950
+   ],
+   [
+    "stone",
+    1590,
+    550,
+    950
+   ],
+   [
+    "stone",
+    1460,
+    600,
+    950
+   ],
+   [
+    "gold",
+    1370,
+    630,
+    800
+   ],
+   [
+    "gold",
+    1540,
+    310,
+    800
+   ]
+  ]
+ },
+ {
+  "id": "stormhaven-2",
+  "settlementId": "stormhaven-2",
+  "kingdomId": "stormhaven",
+  "biome": "coastal",
+  "name": "Bell Shoal town",
+  "description": "Stormhaven coastal town: 14 residents, two houses, a well, fishery, granary, market and roads. Feed a larger population with coastal fishing, then diversify production.",
+  "gold": 190,
+  "wood": 120,
+  "stone": 45,
+  "food": 140,
+  "population": 14,
+  "center": [
+   1100,
+   578
+  ],
+  "buildings": [
+   [
+    "house",
+    940,
+    650
+   ],
+   [
+    "house",
+    1020,
+    740
+   ],
+   [
+    "well",
+    1000,
+    670
+   ],
+   [
+    "market",
+    1112,
+    728
+   ],
+   [
+    "granary",
+    1310,
+    680
+   ],
+   [
+    "fishery",
+    1242,
+    764
+   ],
+   [
+    "road",
+    1000,
+    590
+   ],
+   [
+    "road",
+    1044,
+    590
+   ],
+   [
+    "road",
+    1044,
+    634
+   ],
+   [
+    "road",
+    1088,
+    634
+   ],
+   [
+    "road",
+    1132,
+    634
+   ],
+   [
+    "road",
+    1176,
+    634
+   ],
+   [
+    "road",
+    1132,
+    678
+   ],
+   [
+    "road",
+    1176,
+    678
+   ],
+   [
+    "road",
+    1220,
+    678
+   ],
+   [
+    "road",
+    1264,
+    678
+   ],
+   [
+    "road",
+    1264,
+    722
+   ]
+  ],
+  "deposits": [
+   [
+    "tree",
+    900,
+    360,
+    700
+   ],
+   [
+    "tree",
+    960,
+    350,
+    700
+   ],
+   [
+    "tree",
+    1000,
+    310,
+    700
+   ],
+   [
+    "tree",
+    1400,
+    440,
+    700
+   ],
+   [
+    "stone",
+    1460,
+    580,
+    600
+   ],
+   [
+    "stone",
+    1510,
+    630,
+    600
+   ],
+   [
+    "gold",
+    780,
+    550,
+    650
+   ],
+   [
+    "gold",
+    1360,
+    310,
+    650
+   ]
+  ]
+ }
+]);
+const scNewOriginIds=scCityOrigins.slice(2).map(p=>p.id);
+const scOriginProfile=()=>scCityOrigins.find(p=>p.id===scOriginId)||scCityOrigins[0];
 let scScenario=new URLSearchParams(location.search).get('scenario')==='skirmish'?'skirmish':'city',scReadyCycles=0,scSelectedLocation='home',scOverview=false;
 const scKingdomLocations=['home','ironmere','ashford','valewatch','brookstead'];
 let cityCycleNumber=0,cityLedger=null,cityGrowth={progress:0,departure:0,reason:"Build serviced housing to welcome residents."};
@@ -317,7 +737,7 @@ function sc16PaintUnitDetails(g,x,y,type,color){
  g.fillStyle='#634b32';g.fillRect(x-6,y+6,12,2);g.fillStyle='#e3c581';g.fillRect(x-1,y+6,3,2);g.restore();
 }
 
-const alive=o=>o&&o.hp>0;function init(){scReadyCycles=0;scSelectedLocation=scOriginId==='brookstead'?'brookstead':'home';scOverview=false;scCityIdentity=Date.now().toString(36)+'-'+(++scCitySequence);stats={spawned:[0,0],lost:[0,0],kills:[0,0],damage:[0,0],gathered:[0,0],raids:0};aiRally=null;units=[];buildings=[];nodes=[];effects=[];projectiles=[];combatTexts=[];gold=240;wood=100;stone=30;food=90;population=8;happiness=70;cityTimer=0;cityCycleNumber=0;cityLedger=null;cityFlows=[];cityHouseholds=[];citySatisfactionLast=null;cityGrowth={progress:0,departure:0,reason:"Build serviced housing to welcome residents."};tradeGoods=0;goodsSold=0;window.sc1411LogisticsSnapshot=null;window.sc1412MarketDistributionSnapshot=null;scFestivalCooldown=0;scEventFoodReserve=30;cityProsperity=0;wellCoverage=0;roadMarkets=0;healerCoverage=0;granaryCount=0;employment={jobs:0,filled:0,available:0,byId:new Map()};aiGold=240;aiWood=100;trainQueue=[];aiQueue=[];trainTimer=0;aiTrainTimer=0;aiDecision=0;aiAttackTimer=0;difficulty=el("difficulty").value;selected=[];inspectedBuilding=null;window.scRTSSelected=[];window.scRTSInspectedBuilding=null;drag=null;mode=null;paused=false;ended=false;elapsed=0;aiTimer=0;resourceTimer=0;nextId=1;uiRefresh=0;scUndoStack.length=0;addBuilding(0,'keep',120,310);if(scScenario==='skirmish')addBuilding(1,'keep',1170,440);for(let i=0;i<3;i++)addUnit(0,'worker',170,255+i*40);for(let i=0;i<3;i++)addUnit(0,'soldier',205,290+i*30);if(scScenario==='skirmish'){for(let i=0;i<3;i++)addUnit(1,'soldier',1090,400+i*40);for(let i=0;i<3;i++)addUnit(1,'worker',1125,340+i*42);}for(let i=0;i<7;i++)nodes.push({x:280+(i%3)*50,y:110+Math.floor(i/3)*65,type:'tree',amount:600,radius:18,renew:0});for(let i=0;i<5;i++)nodes.push({x:430+(i%2)*70,y:430+Math.floor(i/2)*55,type:'gold',amount:800,radius:19,renew:0});for(let i=0;i<5;i++)nodes.push({x:330+(i%2)*75,y:280+Math.floor(i/2)*43,type:'stone',amount:700,radius:19,renew:0});// Additional deposits support a larger settlement without replacing the original start.
+const alive=o=>o&&o.hp>0;function init(){scReadyCycles=0;scSelectedLocation=scOriginId;scOverview=false;scCityIdentity=Date.now().toString(36)+'-'+(++scCitySequence);stats={spawned:[0,0],lost:[0,0],kills:[0,0],damage:[0,0],gathered:[0,0],raids:0};aiRally=null;units=[];buildings=[];nodes=[];effects=[];projectiles=[];combatTexts=[];gold=240;wood=100;stone=30;food=90;population=8;happiness=70;cityTimer=0;cityCycleNumber=0;cityLedger=null;cityFlows=[];cityHouseholds=[];citySatisfactionLast=null;cityGrowth={progress:0,departure:0,reason:"Build serviced housing to welcome residents."};tradeGoods=0;goodsSold=0;window.sc1411LogisticsSnapshot=null;window.sc1412MarketDistributionSnapshot=null;scFestivalCooldown=0;scEventFoodReserve=30;cityProsperity=0;wellCoverage=0;roadMarkets=0;healerCoverage=0;granaryCount=0;employment={jobs:0,filled:0,available:0,byId:new Map()};aiGold=240;aiWood=100;trainQueue=[];aiQueue=[];trainTimer=0;aiTrainTimer=0;aiDecision=0;aiAttackTimer=0;difficulty=el("difficulty").value;selected=[];inspectedBuilding=null;window.scRTSSelected=[];window.scRTSInspectedBuilding=null;drag=null;mode=null;paused=false;ended=false;elapsed=0;aiTimer=0;resourceTimer=0;nextId=1;uiRefresh=0;scUndoStack.length=0;addBuilding(0,'keep',120,310);if(scScenario==='skirmish')addBuilding(1,'keep',1170,440);for(let i=0;i<3;i++)addUnit(0,'worker',170,255+i*40);for(let i=0;i<3;i++)addUnit(0,'soldier',205,290+i*30);if(scScenario==='skirmish'){for(let i=0;i<3;i++)addUnit(1,'soldier',1090,400+i*40);for(let i=0;i<3;i++)addUnit(1,'worker',1125,340+i*42);}for(let i=0;i<7;i++)nodes.push({x:280+(i%3)*50,y:110+Math.floor(i/3)*65,type:'tree',amount:600,radius:18,renew:0});for(let i=0;i<5;i++)nodes.push({x:430+(i%2)*70,y:430+Math.floor(i/2)*55,type:'gold',amount:800,radius:19,renew:0});for(let i=0;i<5;i++)nodes.push({x:330+(i%2)*75,y:280+Math.floor(i/2)*43,type:'stone',amount:700,radius:19,renew:0});// Additional deposits support a larger settlement without replacing the original start.
 for(let i=0;i<10;i++)nodes.push({x:1390+(i%5)*70,y:120+Math.floor(i/5)*120,type:i%3===0?'stone':'tree',amount:650,radius:18,renew:0});
 
 for(let i=0;i<5;i++)nodes.push({x:130+i*118,y:680+(i%2)*95,type:'tree',amount:600,radius:18,renew:0});
@@ -332,6 +752,15 @@ if(scScenario==='city'&&scOriginId==='brookstead'){
  nodes=nodes.filter(n=>!buildings.some(b=>Math.hypot(n.x-b.x,n.y-b.y)<n.radius+b.radius+16));const spaced=[];for(const n of nodes)if(spaced.every(other=>Math.hypot(n.x-other.x,n.y-other.y)>=n.radius+other.radius+8))spaced.push(n);nodes=spaced;
  gold=200;wood=90;stone=30;food=110;const viewRect=c.getBoundingClientRect();mapViewport.scrollLeft=1060*(viewRect.width/c.width||1)-mapViewport.clientWidth/2;mapViewport.scrollTop=530*(viewRect.height/c.height||1)-mapViewport.clientHeight/2;
 }
+if(scScenario==='city'&&scNewOriginIds.includes(scOriginId)){
+ const p=scOriginProfile(),[cx,cy]=p.center;
+ for(const item of [...buildings,...units]){item.x+=cx-620;item.y+=cy-310;}
+ for(const [type,x,y] of p.buildings)addBuilding(0,type,x,y);
+ nodes=p.deposits.map(([type,x,y,amount])=>({type,x,y,amount,radius:18,renew:0}));
+ gold=p.gold;wood=p.wood;stone=p.stone;food=p.food;population=p.population;
+ const r=c.getBoundingClientRect();mapViewport.scrollLeft=cx*(r.width/c.width||1)-mapViewport.clientWidth/2;mapViewport.scrollTop=cy*(r.height/c.height||1)-mapViewport.clientHeight/2;
+}
+
 el('pause').textContent='Pause';el('liveOverview').textContent=scScenario==='city'?'A peaceful settlement begins.':'Battle beginning...';el('report').textContent='Battle in progress. Depleted resource sites recover after 45 seconds.';msg(scScenario==='city'?'A peaceful home city: build food, housing, roads and services. Discover the surrounding realm in Menu → Kingdom map.':'Build your town: assign workers, construct houses and farms, then add wells, markets, granaries, healers, roads and lumberyards. Defend against occasional raids.');if(scScenario==='city')el('report').textContent='Peaceful city campaign. Rival castles belong to the kingdom overview; no attacks are scheduled.';updateUI();window.dispatchEvent(new Event('sc-city-started'))};// Citizens staff production and services. The default is food-first; explicit
 // governor priorities can override it with visible food/service trade-offs.
 const cityJobSlots=Object.freeze({fishery:2,farm:3,lumberyard:2,market:2,clinic:2,granary:1,bakery:2});
@@ -2945,6 +3374,7 @@ window.scCampaign={
  status:()=>({scenario:scScenario,originId:scOriginId,stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,overview:scOverview}),
  snapshot:()=>{const city=citySnapshot(),criteria=scReadiness(city),ready=scScenario==='city'&&criteria.every(r=>r.met)&&scReadyCycles>=12;return {scenario:scScenario,criteria,stableCycles:scReadyCycles,requiredCycles:12,ready,phase:ready?'prosperous':'settling',description:'Readiness never starts an attack. This campaign remains peaceful; warfare is a later milestone.'};},
  origins:()=>scCityOrigins,
+ governor:()=>{const p=scOriginProfile();return {originId:p.id,settlementId:p.settlementId,kingdomId:p.kingdomId,name:p.name,biome:p.biome,role:scScenario==='city'?'Governor':'Commander'};},
  start:(scenario,originId='home')=>{if(!['city','skirmish'].includes(scenario)||!scCityOrigins.some(p=>p.id===originId)||scenario==='skirmish'&&originId!=='home')return {ok:false};scScenario=scenario;scOriginId=originId;el('restart').click();return {ok:true};},
  selectLocation:id=>{if(!scKingdomLocations.includes(id))return false;scSelectedLocation=id;return true;},
  setOverview:open=>{if(typeof open!=='boolean')return false;scOverview=open;return true;}
@@ -2971,7 +3401,7 @@ function scCaptureCity(){
  });
   const buildingRows=liveBuildings.map(b=>({...Object.fromEntries(scBuildingNumbers.map(k=>[k,k==='cityTier'?(b[k]||1):(b[k]??0)])),type:b.type,scLastNotifiedTier:b.scLastNotifiedTier??null,...(typeof b.cityWorkPaused==='boolean'?{cityWorkPaused:b.cityWorkPaused}:{}),...(typeof b.cityWorkPriority==='boolean'?{cityWorkPriority:b.cityWorkPriority}:{})}));
  const zoom=window.scMapZoom?.get()||1;
- return {format:scSaveFormat,schema:scScenario==='city'?(scOriginId==='brookstead'?3:2):1,...(scScenario==='city'?{campaign:{mode:'city',stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,...(scOriginId==='brookstead'?{originId:scOriginId}:{})}}:{}),createdWith:'0.17.0',cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
+ return {format:scSaveFormat,schema:scScenario==='city'?(scNewOriginIds.includes(scOriginId)?4:scOriginId==='brookstead'?3:2):1,...(scScenario==='city'?{campaign:{mode:'city',stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,...(scOriginId!=='home'?{originId:scOriginId}:{})}}:{}),createdWith:'0.17.0',cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
   resources:{gold,wood,stone,food,tradeGoods,goodsSold,aiGold,aiWood},people:{population,happiness,prosperity:cityProsperity},
   clock:{elapsed,cityTimer,cityCycleNumber,aiTimer,resourceTimer,aiDecision,aiAttackTimer,aiTrainTimer,trainTimer,scFestivalCooldown},
   options:{difficulty,formation,eventFoodReserve:scEventFoodReserve,showLabels,showMinimap,serviceOverlay,ration:window.scRationPolicy?.capture()||{mode:el('sc1303Mode')?.value||'normal',emergency:window.scRationFactor===.75},breadExport:window.scBreadExportEnabled!==false,breadReserveCycles:window.scBreadReserveCycles??2},
@@ -2995,11 +3425,11 @@ function scPrepareCity(input){
  function list(v,max=5000){if(!Array.isArray(v)||v.length>max)fail();}
  const id=v=>number(v,1,1e9,true);
  keys(data,['format','schema','createdWith','cityId','savedAt','world','view','state',...(data.schema>=2?['campaign']:[])]);
- if(data.format!==scSaveFormat||![1,2,3].includes(data.schema))throw new Error('Unsupported save format or version. Your current city has not changed.');
+ if(data.format!==scSaveFormat||![1,2,3,4].includes(data.schema))throw new Error('Unsupported save format or version. Your current city has not changed.');
  if(typeof data.createdWith!=='string'||!/^\d+\.\d+\.\d+$/.test(data.createdWith)||typeof data.cityId!=='string'||!/^[a-zA-Z0-9-]{1,64}$/.test(data.cityId))fail();number(data.savedAt,0,1e15,true);
  keys(data.world,['version','width','height']);if(data.world.version!==1||data.world.width!==W||data.world.height!==H)throw new Error('This save belongs to an unsupported world layout.');
  keys(data.view,['zoom','centerX','centerY']);number(data.view.zoom,.55,1.55);number(data.view.centerX,0,W);number(data.view.centerY,0,H);
- if(data.schema>=2){keys(data.campaign,['mode','stableCycles','selectedLocation',...(data.schema===3?['originId']:[])]);if(data.schema===3)choice(data.campaign.originId,['brookstead']);choice(data.campaign.mode,['city']);number(data.campaign.stableCycles,0,12,true);choice(data.campaign.selectedLocation,scKingdomLocations);}
+ if(data.schema>=2){keys(data.campaign,['mode','stableCycles','selectedLocation',...(data.schema>=3?['originId']:[])]);if(data.schema===3)choice(data.campaign.originId,['brookstead']);if(data.schema===4)choice(data.campaign.originId,scNewOriginIds);choice(data.campaign.mode,['city']);number(data.campaign.stableCycles,0,12,true);choice(data.campaign.selectedLocation,data.schema===4?[...scKingdomLocations,...scNewOriginIds]:scKingdomLocations);}
  const s=data.state;keys(s,['resources','people','clock','options','units','buildings','nodes','selected','inspected','squads','nextId','stats','growth','ledger','flows','households','satisfactionLast','measurements','undo','trainQueue','aiQueue','ended']);
  keys(s.resources,['gold','wood','stone','food','tradeGoods','goodsSold','aiGold','aiWood']);for(const k of ['gold','wood','stone','food','tradeGoods','goodsSold','aiGold','aiWood'])number(s.resources[k]);
  number(s.resources.tradeGoods,0,80);number(s.resources.goodsSold,0,1e12,true);
@@ -3034,7 +3464,7 @@ function scPrepareCity(input){
 }
 function scRestoreCity(input){
  let p;try{p=scPrepareCity(input);}catch(e){return {ok:false,message:e instanceof Error?e.message:'Invalid save. Your current city has not changed.'};}
- const {state:s,view}=p.data;window.scKingdomUI?.close();scScenario=p.data.schema>=2?'city':'skirmish';scOriginId=p.data.schema===3?p.data.campaign.originId:'home';scReadyCycles=p.data.campaign?.stableCycles||0;scSelectedLocation=p.data.campaign?.selectedLocation||'home';scOverview=false;
+ const {state:s,view}=p.data;window.scKingdomUI?.close();scScenario=p.data.schema>=2?'city':'skirmish';scOriginId=p.data.schema>=3?p.data.campaign.originId:'home';scReadyCycles=p.data.campaign?.stableCycles||0;scSelectedLocation=p.data.campaign?.selectedLocation||'home';scOverview=false;
  window.scCancelConstruction?.();window.sc140UI?.showKeep(true);
  units=p.units;buildings=p.buildings;nodes=p.nodes;selected=p.selected;inspectedBuilding=p.inspected;nextId=s.nextId;scCityIdentity=p.data.cityId;
  ({gold,wood,stone,food,tradeGoods,goodsSold,aiGold,aiWood}=s.resources);population=s.people.population;happiness=s.people.happiness;cityProsperity=s.people.prosperity;
@@ -4346,7 +4776,7 @@ document.addEventListener('keydown',e=>{if(e.key==='F4'&&!e.ctrlKey&&!e.altKey){
  // Set initial camera to the friendly Royal Keep; do not run a continuous camera correction.
  function home(){
    // Brookstead's engine initializer already positions its own village view.
-   if(window.scCampaign?.status().originId==='brookstead')return true;
+   if(window.scCampaign?.status().originId!=='home')return true;
    const keep=(window.scHoverBuildings||[]).find(b=>b&&b.team===0&&b.type==='keep'&&b.hp>0);
    if(!keep)return false;
    const r=canvas.getBoundingClientRect(),scale=r.width/canvas.width;
