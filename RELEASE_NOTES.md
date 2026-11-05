@@ -1,5 +1,9 @@
 # Release notes
 
+## v0.17.0 — World Expansion & Kingdom Identity
+
+Explore six geographical regions, 16 kingdoms and 128 selectable world locations. Original banners, mottos, mythology, history, heroes and read-only Politics accompany kingdom/settlement dossiers. Only Marches home and Brookstead are available city starts; other locations are inspection-only. Existing regional terrain, city saves and gameplay remain intact. Live woodland now uses one consistent ground shadow per tree. See [Milestone 17](docs/MILESTONE17.md).
+
 ## v0.16.0 — Playable 2.5D Visual Improvements
 
 A small playable visual proof: softer cached meadow terrain, layered broadleaf trees, dimensional cottage details and clearer unit clothing. Also fixes delayed startup/restart camera actions overriding a new village or loaded city view. Existing simulation, roads, controls, save fields and audio remain unchanged. This is a first art pass, not a complete replacement of all buildings. See [Milestone 16](docs/MILESTONE16.md).
