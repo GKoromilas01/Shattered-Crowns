@@ -31,9 +31,19 @@ for(const width of [390,1440])test('Visual proof preserves old city state during
 for(const action of ['new village','restored save'])test('Delayed startup camera cannot replace '+action+' view',async t=>{
  const {page:p}=await browserPage(t,browser,{viewport:{width:1440,height:900}});await p.goto(url);await p.waitForFunction(()=>window.__visualProofInitialCamera);
  if(action==='new village')await p.evaluate(()=>scCampaign.start('city','brookstead'));
- else {const save=JSON.parse(fs.readFileSync('tests/fixtures/city-v0140.json'));assert.equal((await p.evaluate(s=>scCitySave.restore(s),save)).ok,true);}
- const before=await p.evaluate(()=>({state:scCitySave.capture().state,view:scCitySave.capture().view}));await p.evaluate(()=>window.__visualProofInitialCamera());await p.waitForTimeout(400);
- assert.deepEqual(await p.evaluate(()=>({state:scCitySave.capture().state,view:scCitySave.capture().view})),before,'A timer for the original city must not take over another city camera');
+ // A home-origin fixture exercises the identity guard; Brookstead also has a separate home() skip.
+ else {const save=JSON.parse(fs.readFileSync('tests/fixtures/city-v070.json'));assert.equal((await p.evaluate(s=>scCitySave.restore(s),save)).ok,true);assert.equal(await p.evaluate(()=>scCampaign.status().originId),'home');}
+ // Settle restore-driven layout before taking the camera baseline. The startup
+ // callback is intercepted by this fixture, so it cannot run during these frames.
+ await p.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ const before=await p.evaluate(()=>{const s=scCitySave.capture();return {state:s.state,view:s.view};});
+ const geometry=await p.evaluate(()=>{const v=document.querySelector('#field').parentElement;return {width:v.clientWidth,height:v.clientHeight,x:v.scrollLeft,y:v.scrollTop};});
+ const immediate=await p.evaluate(()=>{window.__visualProofInitialCamera();const s=scCitySave.capture();return {state:s.state,view:s.view};});
+ assert.deepEqual(immediate,before,'An obsolete startup callback must not move the restored camera even for one frame');
+ await p.waitForTimeout(400);
+ const after=await p.evaluate(()=>{const s=scCitySave.capture();return {state:s.state,view:s.view};});
+ const finalGeometry=await p.evaluate(()=>{const v=document.querySelector('#field').parentElement;return {width:v.clientWidth,height:v.clientHeight,x:v.scrollLeft,y:v.scrollTop};});
+ assert.deepEqual(after,before,'A timer for the original city must not take over another city camera; layout '+JSON.stringify({before:geometry,after:finalGeometry}));
 });
 
 test('Living woodland uses one ground shadow per harvestable tree',async t=>{
