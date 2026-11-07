@@ -20,3 +20,10 @@ Visual inspection found the existing global Pause card obscuring enlarged workpl
 Screenshots use actual running Datehaven state after a real production cycle, paused through the UI: docs/screenshots/integration-governor-{390,1440}.png and integration-workplace-{390,1440}.png. No mock statistics or screenshot compositing.
 
 Node24.19.0, Playwright1.57.0, explicit system Chromium154.0.8037.57 locally. Full regression, exact-source package smoke and CI results are recorded in the associated integration PR after completion. Real device/audio preference feedback and exhaustive balancing remain owner playtesting.
+
+
+## Camera-test integration follow-up
+
+Initial exact-head CI run42423330362 passed352/353 cases; one existing delayed-camera assertion differed by half a pixel in derived centreY (508→507.5), with city state unchanged. Local diagnostics demonstrate that changing viewport height by one pixel changes the captured centre by half a pixel without a scroll command. The test captured its baseline immediately after restore, before the browser could settle the restored layout.
+
+The restored fixture was also Brookstead, which has a separate initial-camera skip and did not actually exercise the city-identity guard. The test now uses a genuine home-origin v0.7 checkpoint, settles two animation frames while the startup callback remains intercepted, captures state/view atomically, and asserts exact equality both immediately after callback invocation and after400ms. Layout/scroll metrics are included on failure. No tolerance or skipped assertion was added. A negative control serving the unchanged game with only the identity guard removed now fails with an80-unit horizontal camera jump; the guarded production game retains the view. This follow-up changes tests/documentation only; game/release bytes remain identical to eecf920.
