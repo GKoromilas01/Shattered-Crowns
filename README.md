@@ -23,6 +23,8 @@ SMOKE_BASE_URL=https://gkoromilas01.github.io/Shattered-Crowns/ npm run test:smo
 
 Live smoke gathers actual resources for road tests and never replaces the served game or modifies server data. Read the [testing/release runbook](docs/RELEASE_PIPELINE.md) for artifact smoke, clean setup, required checks, protection activation and rollback.
 
+The current development branch adds a [measured city advisor](docs/MILESTONE18.md) on top of v0.17.0: ranked bottlenecks with simulation evidence and direct City Life review actions. Release metadata remains v0.17.0 pending release preparation.
+
 ## Releases and owner approval
 
 PR/main CI verifies game behavior, release integrity and staged/deployed smoke. `required-ci` is the required status check to configure in main's ruleset. It does not enable protection automatically.
