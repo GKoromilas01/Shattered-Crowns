@@ -25,5 +25,5 @@ No dependencies, save/balance changes, automatic actions, merge or deployment. P
 ## Task 2: Advisor interface
 - [x] Add failing browser coverage for measured evidence, section navigation/state preservation, paused-site advice, live refresh and native activation at phone/desktop widths.
 - [x] Replace old priorities/outlook with persistent cards and Review buttons; use current snapshot, omit obsolete advice from displayed output, retain other tools.
-- [ ] Run focused browser tests, full `npm test`, and release build/verify.
-- [ ] Document behavior and actual verification; inspect whole diff and leave branch ready for review without deployment.
+- [x] Run focused browser tests, full `npm test`, and release build/verify.
+- [x] Document behavior and actual verification; inspect whole diff and leave branch ready for review without deployment.
