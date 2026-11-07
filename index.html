@@ -181,7 +181,7 @@ window.addEventListener('keydown',e=>{
   if(!allowed)e.preventDefault();e.stopImmediatePropagation();return;
  }
  if(!document.getElementById('scKingdomPanel')?.open)return;
- if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();window.scKingdomUI?.close();}else if(!['Tab','Enter',' '].includes(e.key)){e.preventDefault();e.stopImmediatePropagation();}
+ if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();window.scKingdomUI?.close();}else if(!['Tab','Enter',' '].includes(e.key)){const mapScroll=e.target instanceof Element&&e.target.closest('#scContinentMap')&&['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','PageUp','PageDown'].includes(e.key);if(!mapScroll)e.preventDefault();e.stopImmediatePropagation();}
 },true);
 </script>
 <script>
@@ -238,7 +238,427 @@ return b};// V13.51: Festivals are real city actions, not advisory estimates.
 let scFestivalCooldown=0;let scEventFoodReserve=30;
 let cityFlows=[],cityHouseholds=[],citySatisfactionLast=null;
 let scCityIdentity='',scCitySequence=0,scOriginId='home';
-const scCityOrigins=Object.freeze([Object.freeze({id:'home',name:'Marches home',description:'An open starting site with the original resources and six units. Build your first neighborhood.',gold:240,wood:100,stone:30,food:90}),Object.freeze({id:'brookstead',name:'Brookstead village',description:'A farm, house, well and three road tiles beside your keep. Nearby deposits are arranged for the village; start with 200 gold, 90 wood, 30 stone and 110 food.',gold:200,wood:90,stone:30,food:110})]);
+const scFreezeOrigins=value=>{if(value&&typeof value==='object'){Object.values(value).forEach(scFreezeOrigins);Object.freeze(value);}return value;};
+const scCityOrigins=scFreezeOrigins([
+ {
+  "id": "home",
+  "settlementId": "home",
+  "kingdomId": "marches",
+  "biome": "meadow",
+  "name": "Marches home",
+  "description": "An open starting site with the original resources and six units. Build your first neighborhood.",
+  "gold": 240,
+  "wood": 100,
+  "stone": 30,
+  "food": 90,
+  "population": 8
+ },
+ {
+  "id": "brookstead",
+  "settlementId": "brookstead",
+  "kingdomId": "marches",
+  "biome": "meadow",
+  "name": "Brookstead village",
+  "description": "A farm, house, well and three road tiles beside your keep. Nearby deposits are arranged for the village; start with 200 gold, 90 wood, 30 stone and 110 food.",
+  "gold": 200,
+  "wood": 90,
+  "stone": 30,
+  "food": 110,
+  "population": 8
+ },
+ {
+  "id": "briar-3",
+  "settlementId": "briar-3",
+  "kingdomId": "briar",
+  "biome": "woodland",
+  "name": "Thornmere village",
+  "description": "Briarwatch woodland village: 10 residents, a farm, house, well, lumberyard and connected road. Abundant nearby timber; expand food and housing carefully.",
+  "gold": 180,
+  "wood": 140,
+  "stone": 45,
+  "food": 110,
+  "population": 10,
+  "center": [
+   1000,
+   380
+  ],
+  "buildings": [
+   [
+    "farm",
+    850,
+    360
+   ],
+   [
+    "house",
+    900,
+    520
+   ],
+   [
+    "well",
+    820,
+    470
+   ],
+   [
+    "lumberyard",
+    1070,
+    520
+   ],
+   [
+    "road",
+    868,
+    440
+   ],
+   [
+    "road",
+    912,
+    440
+   ],
+   [
+    "road",
+    956,
+    440
+   ],
+   [
+    "road",
+    1000,
+    440
+   ],
+   [
+    "road",
+    1044,
+    440
+   ]
+  ],
+  "deposits": [
+   [
+    "tree",
+    1180,
+    280,
+    900
+   ],
+   [
+    "tree",
+    1240,
+    290,
+    900
+   ],
+   [
+    "tree",
+    1210,
+    350,
+    900
+   ],
+   [
+    "tree",
+    1190,
+    420,
+    900
+   ],
+   [
+    "tree",
+    750,
+    220,
+    900
+   ],
+   [
+    "tree",
+    810,
+    210,
+    900
+   ],
+   [
+    "stone",
+    1320,
+    450,
+    550
+   ],
+   [
+    "stone",
+    1380,
+    470,
+    550
+   ],
+   [
+    "stone",
+    730,
+    620,
+    550
+   ],
+   [
+    "gold",
+    1180,
+    600,
+    650
+   ],
+   [
+    "gold",
+    1280,
+    630,
+    650
+   ]
+  ]
+ },
+ {
+  "id": "saffron-3",
+  "settlementId": "saffron-3",
+  "kingdomId": "saffron",
+  "biome": "dryland",
+  "name": "Datehaven village",
+  "description": "Saffron Expanse dryland village: 8 residents, a farm, house, well and roads. Sparse date groves, plentiful stone and a limited timber reserve encourage careful construction.",
+  "gold": 210,
+  "wood": 80,
+  "stone": 80,
+  "food": 100,
+  "population": 8,
+  "center": [
+   1200,
+   390
+  ],
+  "buildings": [
+   [
+    "farm",
+    1060,
+    390
+   ],
+   [
+    "house",
+    1110,
+    540
+   ],
+   [
+    "well",
+    1060,
+    470
+   ],
+   [
+    "road",
+    1100,
+    460
+   ],
+   [
+    "road",
+    1144,
+    460
+   ],
+   [
+    "road",
+    1188,
+    460
+   ],
+   [
+    "road",
+    1232,
+    460
+   ]
+  ],
+  "deposits": [
+   [
+    "tree",
+    1360,
+    270,
+    320
+   ],
+   [
+    "tree",
+    1430,
+    280,
+    320
+   ],
+   [
+    "tree",
+    1390,
+    330,
+    320
+   ],
+   [
+    "stone",
+    1550,
+    490,
+    950
+   ],
+   [
+    "stone",
+    1590,
+    550,
+    950
+   ],
+   [
+    "stone",
+    1460,
+    600,
+    950
+   ],
+   [
+    "gold",
+    1370,
+    630,
+    800
+   ],
+   [
+    "gold",
+    1540,
+    310,
+    800
+   ]
+  ]
+ },
+ {
+  "id": "stormhaven-2",
+  "settlementId": "stormhaven-2",
+  "kingdomId": "stormhaven",
+  "biome": "coastal",
+  "name": "Bell Shoal town",
+  "description": "Stormhaven coastal town: 14 residents, two houses, a well, fishery, granary, market and roads. Feed a larger population with coastal fishing, then diversify production.",
+  "gold": 190,
+  "wood": 120,
+  "stone": 45,
+  "food": 140,
+  "population": 14,
+  "center": [
+   1100,
+   578
+  ],
+  "buildings": [
+   [
+    "house",
+    940,
+    650
+   ],
+   [
+    "house",
+    1020,
+    740
+   ],
+   [
+    "well",
+    1000,
+    670
+   ],
+   [
+    "market",
+    1112,
+    728
+   ],
+   [
+    "granary",
+    1310,
+    680
+   ],
+   [
+    "fishery",
+    1242,
+    764
+   ],
+   [
+    "road",
+    1000,
+    590
+   ],
+   [
+    "road",
+    1044,
+    590
+   ],
+   [
+    "road",
+    1044,
+    634
+   ],
+   [
+    "road",
+    1088,
+    634
+   ],
+   [
+    "road",
+    1132,
+    634
+   ],
+   [
+    "road",
+    1176,
+    634
+   ],
+   [
+    "road",
+    1132,
+    678
+   ],
+   [
+    "road",
+    1176,
+    678
+   ],
+   [
+    "road",
+    1220,
+    678
+   ],
+   [
+    "road",
+    1264,
+    678
+   ],
+   [
+    "road",
+    1264,
+    722
+   ]
+  ],
+  "deposits": [
+   [
+    "tree",
+    900,
+    360,
+    700
+   ],
+   [
+    "tree",
+    960,
+    350,
+    700
+   ],
+   [
+    "tree",
+    1000,
+    310,
+    700
+   ],
+   [
+    "tree",
+    1400,
+    440,
+    700
+   ],
+   [
+    "stone",
+    1460,
+    580,
+    600
+   ],
+   [
+    "stone",
+    1510,
+    630,
+    600
+   ],
+   [
+    "gold",
+    780,
+    550,
+    650
+   ],
+   [
+    "gold",
+    1360,
+    310,
+    650
+   ]
+  ]
+ }
+]);
+const scNewOriginIds=scCityOrigins.slice(2).map(p=>p.id);
+const scOriginProfile=()=>scCityOrigins.find(p=>p.id===scOriginId)||scCityOrigins[0];
 let scScenario=new URLSearchParams(location.search).get('scenario')==='skirmish'?'skirmish':'city',scReadyCycles=0,scSelectedLocation='home',scOverview=false;
 const scKingdomLocations=['home','ironmere','ashford','valewatch','brookstead'];
 let cityCycleNumber=0,cityLedger=null,cityGrowth={progress:0,departure:0,reason:"Build serviced housing to welcome residents."};
@@ -269,9 +689,10 @@ function scUndo(){
 }
 window.scUndo={undo:scUndo,canUndo:()=>scUndoStack.length>0,peek:()=>scUndoStack[scUndoStack.length-1]?.label||''};
 // M16 playable visual proof: presentation only; world geometry and simulation are unchanged.
-function sc16PaintGround(g,width,height){
+function sc16PaintGround(g,width,height,biome='meadow'){
  g.save();
- const base=g.createLinearGradient(0,0,width,height);base.addColorStop(0,'#718156');base.addColorStop(.5,'#647b4e');base.addColorStop(1,'#485f43');g.fillStyle=base;g.fillRect(0,0,width,height);
+ const palette=({woodland:['#62724e','#526c47','#3f583d'],dryland:['#b9a776','#a89463','#82734f'],coastal:['#89916b','#74835c','#536d55']})[biome]||['#718156','#647b4e','#485f43'];
+ const base=g.createLinearGradient(0,0,width,height);base.addColorStop(0,palette[0]);base.addColorStop(.5,palette[1]);base.addColorStop(1,palette[2]);g.fillStyle=base;g.fillRect(0,0,width,height);
  // Broad meadow washes replace the repeated diamond grid. Coordinate-seeded, never random.
  for(let i=0;i<110;i++){
   const x=(i*179.43)%width,y=(i*127.83)%height,r=35+(i%7)*12;
@@ -282,7 +703,7 @@ function sc16PaintGround(g,width,height){
  }
  g.restore();
 }
-let sc16GroundSurface=null;
+let sc16GroundSurface=null,sc16GroundBiome=null;
 function sc16PaintTree(g,n){
  const x=n.x,y=n.y,variant=Math.abs(Math.round(x*13+y*7))%3;
  g.save();g.fillStyle='rgba(17,35,21,.27)';g.beginPath();g.ellipse(x+13,y+13,34,13,-.2,0,Math.PI*2);g.fill();
@@ -317,7 +738,7 @@ function sc16PaintUnitDetails(g,x,y,type,color){
  g.fillStyle='#634b32';g.fillRect(x-6,y+6,12,2);g.fillStyle='#e3c581';g.fillRect(x-1,y+6,3,2);g.restore();
 }
 
-const alive=o=>o&&o.hp>0;function init(){scReadyCycles=0;scSelectedLocation=scOriginId==='brookstead'?'brookstead':'home';scOverview=false;scCityIdentity=Date.now().toString(36)+'-'+(++scCitySequence);stats={spawned:[0,0],lost:[0,0],kills:[0,0],damage:[0,0],gathered:[0,0],raids:0};aiRally=null;units=[];buildings=[];nodes=[];effects=[];projectiles=[];combatTexts=[];gold=240;wood=100;stone=30;food=90;population=8;happiness=70;cityTimer=0;cityCycleNumber=0;cityLedger=null;cityFlows=[];cityHouseholds=[];citySatisfactionLast=null;cityGrowth={progress:0,departure:0,reason:"Build serviced housing to welcome residents."};tradeGoods=0;goodsSold=0;window.sc1411LogisticsSnapshot=null;window.sc1412MarketDistributionSnapshot=null;scFestivalCooldown=0;scEventFoodReserve=30;cityProsperity=0;wellCoverage=0;roadMarkets=0;healerCoverage=0;granaryCount=0;employment={jobs:0,filled:0,available:0,byId:new Map()};aiGold=240;aiWood=100;trainQueue=[];aiQueue=[];trainTimer=0;aiTrainTimer=0;aiDecision=0;aiAttackTimer=0;difficulty=el("difficulty").value;selected=[];inspectedBuilding=null;window.scRTSSelected=[];window.scRTSInspectedBuilding=null;drag=null;mode=null;paused=false;ended=false;elapsed=0;aiTimer=0;resourceTimer=0;nextId=1;uiRefresh=0;scUndoStack.length=0;addBuilding(0,'keep',120,310);if(scScenario==='skirmish')addBuilding(1,'keep',1170,440);for(let i=0;i<3;i++)addUnit(0,'worker',170,255+i*40);for(let i=0;i<3;i++)addUnit(0,'soldier',205,290+i*30);if(scScenario==='skirmish'){for(let i=0;i<3;i++)addUnit(1,'soldier',1090,400+i*40);for(let i=0;i<3;i++)addUnit(1,'worker',1125,340+i*42);}for(let i=0;i<7;i++)nodes.push({x:280+(i%3)*50,y:110+Math.floor(i/3)*65,type:'tree',amount:600,radius:18,renew:0});for(let i=0;i<5;i++)nodes.push({x:430+(i%2)*70,y:430+Math.floor(i/2)*55,type:'gold',amount:800,radius:19,renew:0});for(let i=0;i<5;i++)nodes.push({x:330+(i%2)*75,y:280+Math.floor(i/2)*43,type:'stone',amount:700,radius:19,renew:0});// Additional deposits support a larger settlement without replacing the original start.
+const alive=o=>o&&o.hp>0;function init(){scReadyCycles=0;scSelectedLocation=scOriginId;scOverview=false;scCityIdentity=Date.now().toString(36)+'-'+(++scCitySequence);stats={spawned:[0,0],lost:[0,0],kills:[0,0],damage:[0,0],gathered:[0,0],raids:0};aiRally=null;units=[];buildings=[];nodes=[];effects=[];projectiles=[];combatTexts=[];gold=240;wood=100;stone=30;food=90;population=8;happiness=70;cityTimer=0;cityCycleNumber=0;cityLedger=null;cityFlows=[];cityHouseholds=[];citySatisfactionLast=null;cityGrowth={progress:0,departure:0,reason:"Build serviced housing to welcome residents."};tradeGoods=0;goodsSold=0;window.sc1411LogisticsSnapshot=null;window.sc1412MarketDistributionSnapshot=null;scFestivalCooldown=0;scEventFoodReserve=30;cityProsperity=0;wellCoverage=0;roadMarkets=0;healerCoverage=0;granaryCount=0;employment={jobs:0,filled:0,available:0,byId:new Map()};aiGold=240;aiWood=100;trainQueue=[];aiQueue=[];trainTimer=0;aiTrainTimer=0;aiDecision=0;aiAttackTimer=0;difficulty=el("difficulty").value;selected=[];inspectedBuilding=null;window.scRTSSelected=[];window.scRTSInspectedBuilding=null;drag=null;mode=null;paused=false;ended=false;elapsed=0;aiTimer=0;resourceTimer=0;nextId=1;uiRefresh=0;scUndoStack.length=0;addBuilding(0,'keep',120,310);if(scScenario==='skirmish')addBuilding(1,'keep',1170,440);for(let i=0;i<3;i++)addUnit(0,'worker',170,255+i*40);for(let i=0;i<3;i++)addUnit(0,'soldier',205,290+i*30);if(scScenario==='skirmish'){for(let i=0;i<3;i++)addUnit(1,'soldier',1090,400+i*40);for(let i=0;i<3;i++)addUnit(1,'worker',1125,340+i*42);}for(let i=0;i<7;i++)nodes.push({x:280+(i%3)*50,y:110+Math.floor(i/3)*65,type:'tree',amount:600,radius:18,renew:0});for(let i=0;i<5;i++)nodes.push({x:430+(i%2)*70,y:430+Math.floor(i/2)*55,type:'gold',amount:800,radius:19,renew:0});for(let i=0;i<5;i++)nodes.push({x:330+(i%2)*75,y:280+Math.floor(i/2)*43,type:'stone',amount:700,radius:19,renew:0});// Additional deposits support a larger settlement without replacing the original start.
 for(let i=0;i<10;i++)nodes.push({x:1390+(i%5)*70,y:120+Math.floor(i/5)*120,type:i%3===0?'stone':'tree',amount:650,radius:18,renew:0});
 
 for(let i=0;i<5;i++)nodes.push({x:130+i*118,y:680+(i%2)*95,type:'tree',amount:600,radius:18,renew:0});
@@ -332,6 +753,15 @@ if(scScenario==='city'&&scOriginId==='brookstead'){
  nodes=nodes.filter(n=>!buildings.some(b=>Math.hypot(n.x-b.x,n.y-b.y)<n.radius+b.radius+16));const spaced=[];for(const n of nodes)if(spaced.every(other=>Math.hypot(n.x-other.x,n.y-other.y)>=n.radius+other.radius+8))spaced.push(n);nodes=spaced;
  gold=200;wood=90;stone=30;food=110;const viewRect=c.getBoundingClientRect();mapViewport.scrollLeft=1060*(viewRect.width/c.width||1)-mapViewport.clientWidth/2;mapViewport.scrollTop=530*(viewRect.height/c.height||1)-mapViewport.clientHeight/2;
 }
+if(scScenario==='city'&&scNewOriginIds.includes(scOriginId)){
+ const p=scOriginProfile(),[cx,cy]=p.center;
+ for(const item of [...buildings,...units]){item.x+=cx-620;item.y+=cy-310;}
+ for(const [type,x,y] of p.buildings)addBuilding(0,type,x,y);
+ nodes=p.deposits.map(([type,x,y,amount])=>({type,x,y,amount,radius:18,renew:0}));
+ gold=p.gold;wood=p.wood;stone=p.stone;food=p.food;population=p.population;
+ const r=c.getBoundingClientRect();mapViewport.scrollLeft=cx*(r.width/c.width||1)-mapViewport.clientWidth/2;mapViewport.scrollTop=cy*(r.height/c.height||1)-mapViewport.clientHeight/2;
+}
+
 el('pause').textContent='Pause';el('liveOverview').textContent=scScenario==='city'?'A peaceful settlement begins.':'Battle beginning...';el('report').textContent='Battle in progress. Depleted resource sites recover after 45 seconds.';msg(scScenario==='city'?'A peaceful home city: build food, housing, roads and services. Discover the surrounding realm in Menu → Kingdom map.':'Build your town: assign workers, construct houses and farms, then add wells, markets, granaries, healers, roads and lumberyards. Defend against occasional raids.');if(scScenario==='city')el('report').textContent='Peaceful city campaign. Rival castles belong to the kingdom overview; no attacks are scheduled.';updateUI();window.dispatchEvent(new Event('sc-city-started'))};// Citizens staff production and services. The default is food-first; explicit
 // governor priorities can override it with visible food/service trade-offs.
 const cityJobSlots=Object.freeze({fishery:2,farm:3,lumberyard:2,market:2,clinic:2,granary:1,bakery:2});
@@ -1185,7 +1615,8 @@ const circle=(x,y,r,fill,stroke)=>{ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ct
 const line=(x,y,xx,yy,color,width=2)=>{ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(xx,yy);ctx.stroke()};
 const label=(t,x,y,size=11,color='#f6edd6')=>{ctx.textAlign='center';ctx.font=`bold ${size}px system-ui`;ctx.fillStyle='#152029';ctx.fillText(t,x+1,y+1);ctx.fillStyle=color;ctx.fillText(t,x,y)};
 // Static meadow is cached once; water, units and construction remain live.
-if(!sc16GroundSurface){sc16GroundSurface=document.createElement('canvas');sc16GroundSurface.width=W;sc16GroundSurface.height=H;sc16PaintGround(sc16GroundSurface.getContext('2d'),W,H);}
+const groundBiome=scOriginProfile().biome;
+if(!sc16GroundSurface||sc16GroundBiome!==groundBiome){sc16GroundSurface=document.createElement('canvas');sc16GroundSurface.width=W;sc16GroundSurface.height=H;sc16PaintGround(sc16GroundSurface.getContext('2d'),W,H,groundBiome);sc16GroundBiome=groundBiome;}
 ctx.drawImage(sc16GroundSurface,0,0);
 // Distant ridgelines and ground details give the scene more depth.
 ctx.save();ctx.globalAlpha=.26;ctx.fillStyle='#263e35';ctx.beginPath();ctx.moveTo(0,0);for(let x=0;x<=W;x+=25){let ridge=25+11*Math.sin(x*.018)+8*Math.cos(x*.043);ctx.lineTo(x,ridge)}ctx.lineTo(W,0);ctx.closePath();ctx.fill();ctx.globalAlpha=.18;ctx.fillStyle='#a3b487';for(let i=0;i<55;i++){let x=(i*181.17)%W,y=65+(i*113.7)%(H-110);if(x>455&&x<545)continue;ctx.beginPath();ctx.ellipse(x,y,9+(i%4)*3,2.5,((i%7)-3)*.13,0,Math.PI*2);ctx.fill()}ctx.restore();
@@ -2945,6 +3376,7 @@ window.scCampaign={
  status:()=>({scenario:scScenario,originId:scOriginId,stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,overview:scOverview}),
  snapshot:()=>{const city=citySnapshot(),criteria=scReadiness(city),ready=scScenario==='city'&&criteria.every(r=>r.met)&&scReadyCycles>=12;return {scenario:scScenario,criteria,stableCycles:scReadyCycles,requiredCycles:12,ready,phase:ready?'prosperous':'settling',description:'Readiness never starts an attack. This campaign remains peaceful; warfare is a later milestone.'};},
  origins:()=>scCityOrigins,
+ governor:()=>{const p=scOriginProfile();return {originId:p.id,settlementId:p.settlementId,kingdomId:p.kingdomId,name:p.name,biome:p.biome,role:scScenario==='city'?'Governor':'Commander'};},
  start:(scenario,originId='home')=>{if(!['city','skirmish'].includes(scenario)||!scCityOrigins.some(p=>p.id===originId)||scenario==='skirmish'&&originId!=='home')return {ok:false};scScenario=scenario;scOriginId=originId;el('restart').click();return {ok:true};},
  selectLocation:id=>{if(!scKingdomLocations.includes(id))return false;scSelectedLocation=id;return true;},
  setOverview:open=>{if(typeof open!=='boolean')return false;scOverview=open;return true;}
@@ -2971,7 +3403,7 @@ function scCaptureCity(){
  });
   const buildingRows=liveBuildings.map(b=>({...Object.fromEntries(scBuildingNumbers.map(k=>[k,k==='cityTier'?(b[k]||1):(b[k]??0)])),type:b.type,scLastNotifiedTier:b.scLastNotifiedTier??null,...(typeof b.cityWorkPaused==='boolean'?{cityWorkPaused:b.cityWorkPaused}:{}),...(typeof b.cityWorkPriority==='boolean'?{cityWorkPriority:b.cityWorkPriority}:{})}));
  const zoom=window.scMapZoom?.get()||1;
- return {format:scSaveFormat,schema:scScenario==='city'?(scOriginId==='brookstead'?3:2):1,...(scScenario==='city'?{campaign:{mode:'city',stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,...(scOriginId==='brookstead'?{originId:scOriginId}:{})}}:{}),createdWith:'0.17.0',cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
+ return {format:scSaveFormat,schema:scScenario==='city'?(scNewOriginIds.includes(scOriginId)?4:scOriginId==='brookstead'?3:2):1,...(scScenario==='city'?{campaign:{mode:'city',stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,...(scOriginId!=='home'?{originId:scOriginId}:{})}}:{}),createdWith:'0.18.0',cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
   resources:{gold,wood,stone,food,tradeGoods,goodsSold,aiGold,aiWood},people:{population,happiness,prosperity:cityProsperity},
   clock:{elapsed,cityTimer,cityCycleNumber,aiTimer,resourceTimer,aiDecision,aiAttackTimer,aiTrainTimer,trainTimer,scFestivalCooldown},
   options:{difficulty,formation,eventFoodReserve:scEventFoodReserve,showLabels,showMinimap,serviceOverlay,ration:window.scRationPolicy?.capture()||{mode:el('sc1303Mode')?.value||'normal',emergency:window.scRationFactor===.75},breadExport:window.scBreadExportEnabled!==false,breadReserveCycles:window.scBreadReserveCycles??2},
@@ -2995,11 +3427,11 @@ function scPrepareCity(input){
  function list(v,max=5000){if(!Array.isArray(v)||v.length>max)fail();}
  const id=v=>number(v,1,1e9,true);
  keys(data,['format','schema','createdWith','cityId','savedAt','world','view','state',...(data.schema>=2?['campaign']:[])]);
- if(data.format!==scSaveFormat||![1,2,3].includes(data.schema))throw new Error('Unsupported save format or version. Your current city has not changed.');
+ if(data.format!==scSaveFormat||![1,2,3,4].includes(data.schema))throw new Error('Unsupported save format or version. Your current city has not changed.');
  if(typeof data.createdWith!=='string'||!/^\d+\.\d+\.\d+$/.test(data.createdWith)||typeof data.cityId!=='string'||!/^[a-zA-Z0-9-]{1,64}$/.test(data.cityId))fail();number(data.savedAt,0,1e15,true);
  keys(data.world,['version','width','height']);if(data.world.version!==1||data.world.width!==W||data.world.height!==H)throw new Error('This save belongs to an unsupported world layout.');
  keys(data.view,['zoom','centerX','centerY']);number(data.view.zoom,.55,1.55);number(data.view.centerX,0,W);number(data.view.centerY,0,H);
- if(data.schema>=2){keys(data.campaign,['mode','stableCycles','selectedLocation',...(data.schema===3?['originId']:[])]);if(data.schema===3)choice(data.campaign.originId,['brookstead']);choice(data.campaign.mode,['city']);number(data.campaign.stableCycles,0,12,true);choice(data.campaign.selectedLocation,scKingdomLocations);}
+ if(data.schema>=2){keys(data.campaign,['mode','stableCycles','selectedLocation',...(data.schema>=3?['originId']:[])]);if(data.schema===3)choice(data.campaign.originId,['brookstead']);if(data.schema===4)choice(data.campaign.originId,scNewOriginIds);choice(data.campaign.mode,['city']);number(data.campaign.stableCycles,0,12,true);choice(data.campaign.selectedLocation,data.schema===4?[...scKingdomLocations,...scNewOriginIds]:scKingdomLocations);}
  const s=data.state;keys(s,['resources','people','clock','options','units','buildings','nodes','selected','inspected','squads','nextId','stats','growth','ledger','flows','households','satisfactionLast','measurements','undo','trainQueue','aiQueue','ended']);
  keys(s.resources,['gold','wood','stone','food','tradeGoods','goodsSold','aiGold','aiWood']);for(const k of ['gold','wood','stone','food','tradeGoods','goodsSold','aiGold','aiWood'])number(s.resources[k]);
  number(s.resources.tradeGoods,0,80);number(s.resources.goodsSold,0,1e12,true);
@@ -3034,7 +3466,7 @@ function scPrepareCity(input){
 }
 function scRestoreCity(input){
  let p;try{p=scPrepareCity(input);}catch(e){return {ok:false,message:e instanceof Error?e.message:'Invalid save. Your current city has not changed.'};}
- const {state:s,view}=p.data;window.scKingdomUI?.close();scScenario=p.data.schema>=2?'city':'skirmish';scOriginId=p.data.schema===3?p.data.campaign.originId:'home';scReadyCycles=p.data.campaign?.stableCycles||0;scSelectedLocation=p.data.campaign?.selectedLocation||'home';scOverview=false;
+ const {state:s,view}=p.data;window.scKingdomUI?.close();scScenario=p.data.schema>=2?'city':'skirmish';scOriginId=p.data.schema>=3?p.data.campaign.originId:'home';scReadyCycles=p.data.campaign?.stableCycles||0;scSelectedLocation=p.data.campaign?.selectedLocation||'home';scOverview=false;
  window.scCancelConstruction?.();window.sc140UI?.showKeep(true);
  units=p.units;buildings=p.buildings;nodes=p.nodes;selected=p.selected;inspectedBuilding=p.inspected;nextId=s.nextId;scCityIdentity=p.data.cityId;
  ({gold,wood,stone,food,tradeGoods,goodsSold,aiGold,aiWood}=s.resources);population=s.people.population;happiness=s.people.happiness;cityProsperity=s.people.prosperity;
@@ -4346,7 +4778,7 @@ document.addEventListener('keydown',e=>{if(e.key==='F4'&&!e.ctrlKey&&!e.altKey){
  // Set initial camera to the friendly Royal Keep; do not run a continuous camera correction.
  function home(){
    // Brookstead's engine initializer already positions its own village view.
-   if(window.scCampaign?.status().originId==='brookstead')return true;
+   if(window.scCampaign?.status().originId!=='home')return true;
    const keep=(window.scHoverBuildings||[]).find(b=>b&&b.team===0&&b.type==='keep'&&b.hp>0);
    if(!keep)return false;
    const r=canvas.getBoundingClientRect(),scale=r.width/canvas.width;
@@ -6741,7 +7173,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  root.setAttribute('role','dialog');root.setAttribute('aria-label','City Life and Economy');
  // Let focused panel controls keep native Space activation before game shortcuts.
   let nativeSpacePress=false,nativePointerPress=false;
-  window.addEventListener('keydown',e=>{if(!root.hidden&&e.code==='Space'&&e.target.closest?.('#scCityPlanningNav button,#scCityEconomyPanel button,#scCityEconomyPanel summary')){nativeSpacePress=true;e.stopImmediatePropagation();}},true);
+  window.addEventListener('keydown',e=>{if(!root.hidden&&e.code==='Space'&&e.target.closest?.('#scGovernorCard,#scCityPlanningNav button,#scCityEconomyPanel button,#scCityEconomyPanel summary')){nativeSpacePress=true;e.stopImmediatePropagation();}},true);
   // Native button activation occurs after keyup. Keep the pressed node alive
   // until its click completes; restored focus alone cannot preserve that click.
   window.addEventListener('keyup',e=>{if(e.code==='Space'&&nativeSpacePress)setTimeout(()=>{nativeSpacePress=false;refresh();},0);},true);
@@ -7022,7 +7454,23 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 @media(max-width:700px){#scKingdomPanel .kingdomColumns{display:flex}#scKingdomTerrain,#scWorldTerrain{height:360px;flex-shrink:0}#scKingdomTerrain .scAtlasSettlement{min-width:62px;max-width:90px;padding:4px}#scKingdomTerrain .scAtlasSettlement span{font-size:11px}#scKingdomTerrain .scAtlasSettlement small{font-size:9px}#scKingdomTerrain .scPlaceSymbol{height:25px;width:29px;margin-top:-17px}.scAtlasEdition{width:100%;order:3}.scAtlasNav button{font-size:12px;padding:8px}#scWorldTerrain button{font-size:12px;padding:8px}.scAtlasLandmarks{gap:5px}.scAtlasLandmarks button{font-size:11px}.scAtlasLegend{margin:8px 0}#scWorldDetails h3{font-size:21px}}
 
 </style>
+<style id="scGovernorStyle">
+#scStartBanner svg{width:48px;height:58px;display:block;margin:0 auto 8px}
+#scGovernorCard{display:flex;align-items:center;gap:10px;width:calc(100% - 24px);margin:6px 12px!important;padding:7px!important;text-align:left;border:1px solid #8c9a70!important;border-radius:5px;background:#254337!important;scroll-margin-top:44px}
+#scGovernorCard svg{width:30px;height:38px;flex:0 0 30px}#scGovernorCard span{min-width:0}#scGovernorCard strong,#scGovernorCard small{display:block;white-space:normal;overflow-wrap:anywhere}#scGovernorCard small{color:#d3d5b8;font-size:11px}
+#scIdentityStart{border:1px solid #e1bd71!important;background:#655330!important;padding:10px!important}
+</style>
 <style id="scWorldIdentityStyle">
+.scIdentityMap{height:470px!important}
+#scWorldIdentity .scIdentityMap>button{width:68px!important;max-width:22%!important;height:68px!important;min-height:0!important;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important;gap:0!important;border-radius:35%;font-size:10px!important}
+#scWorldIdentity .scIdentityMap>button .sc18TownGlyph{position:static;width:68px;height:38px;flex:0 0 38px;max-width:100%}#scWorldIdentity .scIdentityMap>button span{line-height:11px;text-shadow:0 1px 3px #18362a,1px 0 3px #18362a}#scWorldIdentity .scIdentityMap>button small{line-height:10px;font-size:9px!important;margin:0!important}
+#scWorldIdentity .scIdentityMap>button[aria-pressed=true]{outline:0!important;background:transparent!important}#scWorldIdentity .scIdentityMap>button[aria-pressed=true] .sc18TownGlyph{filter:drop-shadow(0 0 3px #ffe09b)}
+#scWorldIdentity .scIdentityMap>button:focus-visible{outline:2px solid #ffe09b!important;outline-offset:2px}
+.scIdentityMap>.sc18TerrainArt{position:absolute;inset:0;width:100%;height:100%}
+#scContinentMap{height:440px;max-width:100%;overflow:auto;border:1px solid #a9a17b;border-radius:7px;overscroll-behavior:contain;background:#315a65;scroll-behavior:auto}
+#scContinentMap:focus-visible{outline:2px solid #ffe0a1;outline-offset:2px}.sc18ContinentSurface{position:relative;width:1100px;height:740px}.sc18ContinentSurface>.sc18TerrainArt{position:absolute;inset:0;width:100%;height:100%}
+.sc18ContinentSurface>button{position:absolute;transform:translate(-50%,-50%);width:48px;height:44px;min-width:0;padding:0!important;margin:0!important;border:0!important;background:transparent!important;box-shadow:none!important;border-radius:50%}.sc18ContinentSurface>button svg{width:48px;height:44px}.sc18ContinentSurface>button:hover svg,.sc18ContinentSurface>button:focus-visible svg{filter:drop-shadow(0 0 3px #ffe09b)}
+#scContinentSelection{min-height:2.5em;font:12px/1.5 system-ui;color:#e4d8b4}#scContinentTitle{font:24px Georgia,serif;color:#eed69b}
 #scWorldIdentity{color:#ede5ce;min-width:0;text-align:left;font:14px/1.65 system-ui}
 #scWorldIdentity button{white-space:normal;overflow-wrap:anywhere}
 .scIdentityCrumbs{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:10px 0;border-bottom:1px solid #68795d}
@@ -7664,17 +8112,77 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   for(let i=0;i<8;i++){
    const legacy=k.id==='marches'&&i<5?locations[i]:null;
    const id=legacy?.id||k.id+'-'+String(i+1);
-   allSettlements.push({...legacy,id,name:identity.placeNames[i],kingdomId:k.id,kind:legacy?.kind||["City", "Town", "Village", "Town", "Village", "Town", "Village", "Village"][i],playable:!!legacy?.playable,x:legacy?.x||([24,75][i%2]),y:legacy?.y||(15+Math.floor(i/2)*22),
+   allSettlements.push({...legacy,id,name:identity.placeNames[i],kingdomId:k.id,kind:legacy?.kind||["City", "Town", "Village", "Town", "Village", "Town", "Village", "Village"][i],playable:engine.origins().some(p=>p.settlementId===id),x:legacy?.x||([24,75][i%2]),y:legacy?.y||(15+Math.floor(i/2)*22),
     location:identity.placeNames[i]+' lies '+["at the meeting of the old roads", "beside the sheltered trade crossing", "among the cultivated lower slopes", "above the inland travel road", "around the shared well and common land", "beside the kingdom\u2019s supply route", "near the protected outer woodland", "on the edge of the settled country"][i]+', within '+k.name+'.',
     description:identity.placeNames[i]+' is the '+["administrative seat and public market", "craft and river exchange center", "food-growing rural community", "road and caravan junction", "water and pasture settlement", "storehouse and artisan quarter", "woodland and garden community", "coastal or border watch village"][i]+' of '+k.name+'. Its map identity is available for inspection; local production outside your active city is not simulated.',
     history:identity.placeNames[i]+' grew as a '+["administrative seat and public market", "craft and river exchange center", "food-growing rural community", "road and caravan junction", "water and pasture settlement", "storehouse and artisan quarter", "woodland and garden community", "coastal or border watch village"][i]+' after the founding agreement remembered in '+k.name+'. '+k.history,
     ruler:(legacy?.id==='home'?'Marches Landing council':legacy?.ruler)||['Charter steward','Market speaker','Village elder','Road warden','Well keeper','Guild steward','Garden custodian','Watch captain'][i]+' of '+identity.placeNames[i]});
   }
+  k.playable=engine.origins().some(p=>p.kingdomId===k.id);
   delete k.placeNames;
  }
- window.scWorldAtlas=freeze({version:2,continents,kingdoms,settlements:allSettlements,landmarks});
+ // Stable cartographic geometry. Percent coordinates belong to the atlas, not the city simulation.
+ const geography=[
+  {id:'aurelia',land:[[[6,5],[75,3],[92,19],[88,41],[96,58],[80,79],[60,77],[41,94],[18,83],[4,61]]],river:[[49,0],[18,30],[81,53],[39,100]],color:'#7f9364',forest:'#375c43'},
+  {id:'emberreach',land:[[[20,5],[62,8],[86,22],[92,51],[81,82],[60,94],[29,85],[9,62],[6,31]]],river:[[40,4],[80,29],[22,51],[61,95]],color:'#ae945e',forest:'#697447'},
+  {id:'frostward',land:[[[12,18],[22,8],[35,18],[47,4],[66,10],[73,28],[89,19],[91,45],[76,57],[84,75],[63,86],[49,75],[27,87],[12,62],[18,43],[7,34]]],river:[[57,4],[38,30],[80,53],[30,94]],color:'#91a695',forest:'#36594d'},
+  {id:'verdance',land:[[[8,15],[34,5],[54,14],[76,10],[94,36],[84,54],[94,77],[66,91],[47,81],[20,92],[6,70],[14,48]]],river:[[32,6],[82,24],[20,68],[65,99]],color:'#6e935b',forest:'#285c3d'},
+  {id:'stormisles',land:[[[13,14],[35,8],[49,20],[53,42],[44,55],[25,59],[9,41]],[[57,52],[76,45],[91,61],[87,82],[65,91],[52,74]],[[68,10],[81,14],[85,31],[71,37],[61,24]]],river:[[26,12],[45,23],[21,41],[37,59]],color:'#7d9b71',forest:'#355f48'},
+  {id:'southveil',land:[[[17,24],[32,12],[50,16],[67,8],[87,29],[84,57],[72,73],[58,66],[38,83],[22,67],[9,47]],[[3,94],[36,88],[68,94],[97,87],[100,100],[0,100]]],river:[[49,12],[24,27],[75,48],[38,86]],color:'#91a18a',forest:'#466857'}
+ ];
+ const anchors={marches:[30,62],'cinder-coast':[34,26],'winter-crown':[62,34],veyrn:[32,59],duskmoor:[65,61],lyran:[58,25],briar:[31,28],solen:[67,65],ember:[65,30],caldris:[37,62],saffron:[57,47],greenwater:[69,48],vaskor:[41,73],stormhaven:[31,34],mistmere:[49,47],sable:[72,69]};
+ const geoHash=id=>[...id].reduce((n,c)=>(n*31+c.charCodeAt(0))>>>0,17);
+ const landContains=(p,polys)=>polys.some(poly=>{let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a[1]>p.y)!==(b[1]>p.y)&&p.x<(b[0]-a[0])*(p.y-a[1])/(b[1]-a[1])+a[0])inside=!inside;}return inside;});
+ const roundGeo=n=>Math.round(n*10)/10;
+ const sitePattern=[[22,20],[67,16],[40,39],[79,43],[20,59],[59,63],[35,82],[80,83]];
+ for(const [ki,k] of kingdoms.entries()){
+  const g=geography.find(g=>g.id===k.continentId),island=g.land[k.id==='sable'?1:0],xs=island.map(p=>p[0]),ys=island.map(p=>p[1]),xmin=Math.min(...xs),ymin=Math.min(...ys),xrange=Math.max(...xs)-xmin,yrange=Math.max(...ys)-ymin,seed=geoHash(k.id);
+  const land=island.map(([x,y],i)=>[roundGeo(Math.max(3,Math.min(97,6+(x-xmin)/xrange*88+Math.sin(seed+i*2.1)*3+ki*.03))),roundGeo(Math.max(3,Math.min(97,6+(y-ymin)/yrange*88+Math.cos(seed+i*1.7)*3)))]);
+  k.map={land:[land],river:[[44+seed%14,0],[22+seed%17,31],[65-seed%19,63],[43+seed%12,100]],color:g.color,forest:g.forest,seed};
+  const sites=allSettlements.filter(s=>s.kingdomId===k.id),pool=[];
+  for(let row=0;row<3;row++)for(let col=0;col<3;col++){const x=24+col*26+Math.sin(seed+row)*2,y=24+row*22;const p={x:roundGeo(x+Math.sin(seed+col*7)*.6),y:roundGeo(y+Math.cos(seed+row+col*2)*2)};if(landContains(p,k.map.land))pool.push(p);}
+  const natural=[];
+  for(let i=0;i<8;i++)for(let n=0;n<6;n++){const p={x:roundGeo(sitePattern[i][0]+Math.sin(seed+i*17+n*2.1)*5),y:roundGeo(sitePattern[i][1]+Math.cos(seed+i*11+n*1.8)*5)};if(p.x>=14&&p.x<=86&&p.y>=13&&p.y<=87&&landContains(p,k.map.land))natural.push(p);}
+  const chosen=[];let attempts=0,candidates=[];
+  function arrange(i){if(i===sites.length)return true;if(++attempts>5000)return false;for(const p of candidates[i]){if(chosen.every(q=>Math.abs(p.x-q.x)>=24||Math.abs(p.y-q.y)>=15.5)){chosen.push(p);if(arrange(i+1))return true;chosen.pop();}}return false;}
+  const rank=points=>sites.map((s,i)=>points.slice().sort((a,b)=>Math.hypot(a.x-sitePattern[i][0],a.y-sitePattern[i][1])-Math.hypot(b.x-sitePattern[i][0],b.y-sitePattern[i][1])));
+  candidates=rank(natural.concat(pool));if(!arrange(0)){chosen.length=0;attempts=0;candidates=rank(pool);if(!arrange(0))throw new Error('Atlas site layout failed: '+k.id);}
+  sites.forEach((s,i)=>{s.atlasPosition={...chosen[i]};});
+
+ }
+ // Continent positions spread villages around their kingdom's terrain, without changing on refresh.
+ for(const g of geography){const chosen=[];for(const k of kingdoms.filter(k=>k.continentId===g.id))for(const [i,s] of allSettlements.filter(s=>s.kingdomId===k.id).entries()){
+  const anchor=anchors[k.id];let found=null;for(let attempt=0;attempt<600&&!found;attempt++){
+   const p={x:roundGeo(anchor[0]+(s.atlasPosition.x-50)*.27+Math.sin(geoHash(s.id)+attempt*2.1)*attempt*.035),y:roundGeo(anchor[1]+(s.atlasPosition.y-50)*.27+Math.cos(geoHash(s.id)+attempt*1.7)*attempt*.035)};
+   if(p.x>5&&p.x<95&&p.y>7&&p.y<93&&landContains(p,g.land)&&chosen.every(q=>Math.abs(p.x-q.x)>=4.6||Math.abs(p.y-q.y)>=6.3))found=p;
+  }if(!found)throw new Error('Continent site layout failed: '+s.id);s.continentPosition=found;chosen.push(found);
+ }}
+ function settlementArt(kind,color){
+  const house=(x,y,scale)=>'<g transform="translate('+x+' '+y+') scale('+scale+')"><path d="M-12 0L0-6 12 0V13L0 19-12 13Z" fill="#d7c298" stroke="#514b3a" stroke-width="1"/><path d="M0 1L12-5V13L0 19Z" fill="#9c8762"/><path d="M-15 0L-3-13 12-6 16 0 1 7Z" fill="'+color+'" stroke="#e5cb91" stroke-width="1"/><path d="M-4 16V9L1 11V18M6 5V9" stroke="#4b4937" stroke-width="2"/></g>';
+  let art='<svg class="sc18TownGlyph" viewBox="0 0 100 78" aria-hidden="true"><path d="M5 49L48 26 96 49 52 75Z" fill="#718454" stroke="#c6b989" stroke-width="1"/><path d="M9 52L48 34 88 54M49 34L53 71" fill="none" stroke="#d1bc8c" stroke-width="4"/>';
+  art+='<path d="M11 40V27M87 43V29" stroke="#6d5336" stroke-width="3"/><g fill="#3d6845"><ellipse cx="11" cy="25" rx="8" ry="10"/><ellipse cx="87" cy="27" rx="8" ry="10"/></g>';
+  const town=kind==='Town'||kind==='City'||kind==='Castle';
+  if(kind==='Village')art+='<path d="M13 58L28 50 41 57 27 65Z" fill="#b19b50" stroke="#d7c475"/><path d="M18 57L29 63M23 54L34 60" stroke="#ece0a6"/>';
+  if(town)art+=house(48,25,.85)+house(24,42,.7);
+  if(kind==='City')art+=house(73,37,.8)+house(34,18,.65);
+  art+=house(38,41,.8)+house(65,50,.85)+house(68,28,.65);
+  if(kind==='City'||kind==='Castle')art+='<path d="M17 52V42L24 38V46L32 50M73 54L84 48V37L78 33V41L73 44" fill="#b6b79e" stroke="#48574b" stroke-width="2"/>';
+  if(kind==='Castle')art+='<path d="M40 29V6H46V12H53V6H59V32L49 38Z" fill="#c5c4aa" stroke="#566255" stroke-width="2"/><path d="M47 22V30" stroke="#374942" stroke-width="3"/>';
+  return art+'</svg>';
+ }
+ function terrainArt(g,id,sites=[]){
+  const path=poly=>'M'+poly.map(([x,y])=>roundGeo(x*7)+','+roundGeo(y*4.6)).join('L')+'Z',land=g.land.map(path).join(' '),r=g.river.map(([x,y])=>roundGeo(x*7)+','+roundGeo(y*4.6));
+  let art='<svg class="sc18TerrainArt" viewBox="0 0 700 460" preserveAspectRatio="none" aria-hidden="true"><defs><clipPath id="sc18-land-'+id+'"><path d="'+land+'"/></clipPath></defs><rect width="700" height="460" fill="#315a65"/><g fill="none" stroke="#88b1aa" opacity=".25"><path d="M0 82Q180 55 340 88T700 70M0 250Q150 220 350 257T700 240M0 420Q180 390 350 425T700 410"/></g><path d="'+land+'" fill="'+g.color+'" stroke="#c8bd8d" stroke-width="7" stroke-linejoin="round"/><g clip-path="url(#sc18-land-'+id+')">';
+  art+='<path d="M'+r[0]+'C'+r.slice(1).join(' ')+'" fill="none" stroke="#477d88" stroke-width="12"/><path d="M'+r[0]+'C'+r.slice(1).join(' ')+'" fill="none" stroke="#a0c2b3" stroke-width="2"/>';
+  const seed=g.seed||geoHash(id);
+  for(let i=0;i<7;i++){const x=80+((seed+i*83)%520),y=28+(i%3)*27;art+='<g transform="translate('+x+' '+y+')"><path d="M-28 32L0-17 31 32Z" fill="#65756b" stroke="#bcc1a0"/><path d="M0-17L31 32H2Z" fill="#425b55"/><path d="M-9-1L0-17 12 1 2-3-2 3Z" fill="#d7d9c4"/></g>';}
+  for(let i=0;i<34;i++){const x=26+((seed+i*139)%650),y=120+((seed+i*73)%310);art+='<g transform="translate('+x+' '+y+')"><path d="M0 10V-5" stroke="#776247" stroke-width="3"/><ellipse cy="-6" rx="12" ry="15" fill="'+g.forest+'"/><ellipse cx="-3" cy="-11" rx="8" ry="10" fill="#7c975e" opacity=".6"/></g>';}
+  for(let i=1;i<sites.length;i++){const a=sites[i].atlasPosition;let best=sites[0].atlasPosition;for(let j=1;j<i;j++){const b=sites[j].atlasPosition;if(Math.hypot(a.x-b.x,a.y-b.y)<Math.hypot(a.x-best.x,a.y-best.y))best=b;}art+='<path d="M'+a.x*7+','+a.y*4.6+'Q'+((a.x+best.x)*3.5+12)+','+((a.y+best.y)*2.3-6)+' '+best.x*7+','+best.y*4.6+'" fill="none" stroke="#d0bb88" stroke-width="3" opacity=".65"/>';}
+  return art+'</g></svg>';
+ }
+ window.scWorldAtlas=freeze({version:2,continents,kingdoms,settlements:allSettlements,landmarks,geography});
  let scope='region',continentId='aurelia',landmarkId=null,detailKey='',worldKey='';
- function displayPlace(place){const homeId=engine.status().originId==='brookstead'?'brookstead':'home';if(place.id===homeId)return {...place,ruler:'You',relations:'Your home settlement',description:homeId==='brookstead'?'Your playable Brookstead village. Return to city to manage its real farm, homes, services and roads.':place.description};if(place.id==='home')return {...place,name:'Marches Landing',ruler:'Local stewards',relations:'Neighboring settlement',strength:'An informational neighboring settlement',trade:'Potential future exchange; no active contract.',description:'The original landing in the Marches. Your active home is Brookstead; this location is informational.'};return place;}
+ function displayPlace(place){const homeId=engine.governor().settlementId;if(place.id===homeId)return {...place,ruler:'You',relations:'Your home settlement',description:homeId==='brookstead'?'Your playable Brookstead village. Return to city to manage its real farm, homes, services and roads.':place.description};if(place.id==='home')return {...place,name:'Marches Landing',ruler:'Local stewards',relations:'Neighboring settlement',strength:'An informational neighboring settlement',trade:'Potential future exchange; no active contract.',description:'The original landing in the Marches. Your active home is elsewhere; this location is informational.'};return place;}
  const regionArt=`<svg class="scAtlasArt" viewBox="0 0 700 460" preserveAspectRatio="none" aria-hidden="true">
  <defs><linearGradient id="scLand" x2=".3" y2="1"><stop stop-color="#849566"/><stop offset="1" stop-color="#536f50"/></linearGradient><linearGradient id="scSea" x2=".8" y2="1"><stop stop-color="#244e5b"/><stop offset="1" stop-color="#163541"/></linearGradient><g id="scPine"><path d="M0 5L-9 23H-5L-12 33H12L5 23H9Z" fill="#294e40" stroke="#73906a" stroke-width="1"/><path d="M0 32V38" stroke="#53523b" stroke-width="3"/></g><g id="scPeak"><path d="M-34 30L0-29 39 30Z" fill="#526760" stroke="#aab397" stroke-width="1.4"/><path d="M0-29L2 30H39Z" fill="#344d49"/><path d="M-12-8L0-29 15-7 4-12-2-5-7-11Z" fill="#d5d4b9"/></g></defs>
  <rect width="700" height="460" fill="url(#scSea)"/><g fill="none" stroke="#82a9a1" opacity=".23"><path d="M15 422Q150 390 290 430T680 405M0 438Q160 405 300 446T700 426M530 380Q600 350 700 370"/></g>
@@ -7710,7 +8218,10 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  const legend=document.createElement('p');legend.className='scAtlasLegend';legend.textContent='Village · small homes   /   Town · clustered roofs   /   Castle · battlements   /   ◇ Landmark';landmarkList.after(legend);
  const regionNote=dialog.querySelector('.kingdomColumns>div:first-child>.kingdomNote');regionNote.textContent='Inspect a settlement or landmark. This regional geography illustrates the realm; gatherable deposits are in your city. Dashed paths are not active trade routes.';
  const worldMap=document.createElement('div');worldMap.id='scWorldTerrain';worldMap.hidden=true;worldMap.setAttribute('role','group');worldMap.setAttribute('aria-label','World continents');worldMap.innerHTML=worldArt;worldMap.querySelector('svg').insertAdjacentHTML('beforeend','<g fill="#69835c" stroke="#c9c396" stroke-width="2"><path d="M55 292L104 270 142 286 179 311 189 351 163 388 120 405 83 377 62 334Z"/><path d="M335 270L361 255 386 277 373 308 348 298ZM389 320L418 308 432 328 411 348 388 343Z"/><path d="M251 426L296 408 343 418 391 405 434 432 410 457H260Z" fill="#afc0b8"/></g>');terrain.before(worldMap);
- for(const c of continents){const b=document.createElement('button');b.type='button';b.dataset.continent=c.id;b.style.left=c.x+'%';b.style.top=c.y+'%';b.textContent=c.name;b.addEventListener('click',()=>{continentId=c.id;worldKey='';render()});worldMap.append(b);}
+ for(const c of continents){const b=document.createElement('button');b.type='button';b.dataset.continent=c.id;b.style.left=c.x+'%';b.style.top=c.y+'%';b.textContent=c.name;b.addEventListener('click',()=>openContinent(c.id));worldMap.append(b);}
+ const continentTerrain=document.createElement('section');continentTerrain.id='scContinentTerrain';continentTerrain.hidden=true;continentTerrain.innerHTML='<h3 id="scContinentTitle" tabindex="-1"></h3><p class="scIdentityNote">Pan this map to explore. Settlement miniatures open their kingdom dossier; only marked starts can create a city.</p><div id="scContinentMap" tabindex="0" aria-label="Pan continent map"><div class="sc18ContinentSurface"></div></div><p id="scContinentSelection" role="status"></p>';terrain.before(continentTerrain);let continentKey='';
+ function openContinent(id){if(!continents.some(c=>c.id===id))return false;continentId=id;scope='continent';worldKey='';render();continentTerrain.querySelector('h3').focus({preventScroll:true});return true;}
+ function renderContinent(){if(continentKey===continentId)return;continentKey=continentId;const c=continents.find(c=>c.id===continentId),g=geography.find(g=>g.id===continentId);continentTerrain.querySelector('h3').textContent=c.name+' · living continent map';const surface=continentTerrain.querySelector('.sc18ContinentSurface');surface.innerHTML=terrainArt(g,'continent-'+c.id);for(const s of allSettlements.filter(s=>kingdoms.find(k=>k.id===s.kingdomId).continentId===c.id)){const k=kingdoms.find(k=>k.id===s.kingdomId),b=document.createElement('button');b.type='button';b.dataset.continentPlace=s.id;b.style.left=s.continentPosition.x+'%';b.style.top=s.continentPosition.y+'%';b.innerHTML=settlementArt(s.kind,k.banner.field);b.setAttribute('aria-label',s.name+' · '+s.kind+' · '+k.name+(s.playable?' · governor start':''));b.title=b.getAttribute('aria-label');const explain=()=>{document.getElementById('scContinentSelection').textContent=b.title;};b.addEventListener('focus',explain);b.addEventListener('pointerenter',explain);b.addEventListener('click',()=>{showIdentity(k.id);identityPlace=s.id;identityKey='';renderIdentity();dossier.querySelector('#scSettlementIdentity').scrollIntoView({block:'nearest'});});surface.append(b);}const viewport=continentTerrain.querySelector('#scContinentMap');viewport.scrollLeft=(1100-viewport.clientWidth)/2;viewport.scrollTop=90;document.getElementById('scContinentSelection').textContent=c.name+' · '+surface.querySelectorAll('button').length+' mapped settlements';}
  const worldDetails=document.createElement('article');worldDetails.id='scWorldDetails';worldDetails.hidden=true;worldDetails.setAttribute('aria-live','polite');dialog.querySelector('#scKingdomDetails').before(worldDetails);
  const limits=dialog.querySelector('#scKingdomDetails').nextElementSibling;limits.id='scAtlasLimits';
  const navWorld=dialog.querySelector('#scAtlasWorldBtn'),navRegion=dialog.querySelector('#scAtlasRegionBtn'),resources=dialog.querySelector('#scAtlasResources'),scopeNote=dialog.querySelector('#scAtlasScopeNote');
@@ -7733,7 +8244,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  function showIdentity(id){if(!kingdoms.some(k=>k.id===id))return false;identityKingdom=id;identityPlace=null;identityKey='';scope='identity';landmarkId=null;render();dossier.querySelector('h3')?.focus({preventScroll:true});return true;}
  identityButton.addEventListener('click',()=>showIdentity(identityKingdom));
  dossier.querySelector('#scIdentityWorld').addEventListener('click',()=>{scope='world';worldKey='';render();worldMap.querySelector('[data-continent="'+continentId+'"]')?.focus({preventScroll:true});});
- dossier.querySelector('#scIdentityContinent').addEventListener('click',()=>{continentId=kingdoms.find(k=>k.id===identityKingdom).continentId;scope='world';worldKey='';render();worldDetails.querySelector('[data-identity="'+identityKingdom+'"]')?.focus({preventScroll:true});});
+ dossier.querySelector('#scIdentityContinent').addEventListener('click',()=>openContinent(kingdoms.find(k=>k.id===identityKingdom).continentId));
  dossier.querySelector('#scIdentityKingdom').addEventListener('click',()=>{identityPlace=null;identityKey='';renderIdentity();dossier.querySelector('h3')?.focus({preventScroll:true});});
  function renderIdentity(){
   const k=kingdoms.find(k=>k.id===identityKingdom),c=continents.find(c=>c.id===k.continentId),key=k.id+'|'+(identityPlace||'')+'|'+document.getElementById('sc1310Welcome').hidden;
@@ -7742,12 +8253,12 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   if(!sameKingdom){
    dossier.dataset.kingdom=k.id;const host=dossier.querySelector('#scIdentityContent');host.replaceChildren();
    const hero=node('div',null,host,'scIdentityHero'),flag=node('div',null,hero);flag.id='scIdentityBanner';flag.innerHTML=banner(k);
-   const introduction=node('div',null,hero);node('p',c.name+' · '+(k.playable?'Two existing city starts':'Inspection only · not playable yet'),introduction,'scIdentityEyebrow');const title=node('h3',k.name,introduction);title.tabIndex=-1;node('p','“'+k.motto+'”',introduction,'scIdentityMotto');
+   const introduction=node('div',null,hero);node('p',c.name+' · '+(k.id==='marches'?'Two existing city starts':k.playable?'Supported governor start':'Inspection only · not playable yet'),introduction,'scIdentityEyebrow');const title=node('h3',k.name,introduction);title.tabIndex=-1;node('p','“'+k.motto+'”',introduction,'scIdentityMotto');
    const columns=node('div',null,host,'scIdentityColumns'),mapSide=node('section',null,columns);node('h4','Explore eight settlements',mapSide);
    const map=node('div',null,mapSide,'scIdentityMap');map.setAttribute('aria-label',k.name+' settlement map');
-   map.innerHTML='<svg viewBox="0 0 400 390" preserveAspectRatio="none" aria-hidden="true"><rect width="400" height="390" fill="#284c53"/><path d="M0 0H400V329Q350 304 308 347T210 357Q130 324 83 365T0 339Z" fill="#647c56" stroke="#b8ae7f" stroke-width="4"/><path d="M42 20L67 66 91 18 125 72M255 13L280 61 308 20 341 78" fill="#425e54" stroke="#a7b39a" stroke-width="2"/><path d="M210 0Q160 84 215 142T203 240Q168 310 227 390" fill="none" stroke="#3b717b" stroke-width="12"/><path d="M210 0Q160 84 215 142T203 240Q168 310 227 390" fill="none" stroke="#9ebca6" stroke-width="2"/><path d="M60 82L302 82 98 169 300 169 96 255 302 255 90 331 302 331" fill="none" stroke="#d0ba82" stroke-width="2" stroke-dasharray="5 7"/></svg>';
+   map.innerHTML=terrainArt(k.map,k.id,allSettlements.filter(s=>s.kingdomId===k.id));
    for(const [i,s] of allSettlements.filter(s=>s.kingdomId===k.id).entries()){
-    const b=node('button',null,map);b.type='button';b.dataset.worldPlace=s.id;b.style.left=(i%2?75:25)+'%';b.style.top=(15+Math.floor(i/2)*22)+'%';node('span',s.kind==='City'?'♜':s.kind==='Castle'?'♖':s.kind==='Town'?'⌂':'♧',b,'scIdentityPlaceIcon');node('span',s.name,b);node('small',s.kind+(s.playable?' · existing start':''),b);b.addEventListener('click',()=>{identityPlace=s.id;renderIdentity();dossier.querySelector('#scSettlementIdentity').scrollIntoView({block:'nearest'});});
+    const b=node('button',null,map);b.type='button';b.dataset.worldPlace=s.id;b.style.left=s.atlasPosition.x+'%';b.style.top=s.atlasPosition.y+'%';b.innerHTML=settlementArt(s.kind,k.banner.field);node('span',s.name,b);node('small',s.kind+(s.playable?' · existing start':''),b);b.addEventListener('click',()=>{identityPlace=s.id;renderIdentity();dossier.querySelector('#scSettlementIdentity').scrollIntoView({block:'nearest'});});
    }
    node('p','Relative positions are illustrative. These locations do not simulate travel, production or armies.',mapSide,'scIdentityNote');
    const info=node('div',null,columns);const lore=node('article',null,info);lore.id='scIdentityLore';node('h4','Lore & legacy',lore);node('p','Motto: '+k.motto,lore);node('h5','History',lore);node('p',k.history,lore);node('h5','Mythology',lore);node('p',k.mythology,lore);node('h5','Notable heroes',lore);const heroes=node('ul',null,lore);for(const h of k.heroes)node('li',h.name+' — '+h.deed,heroes);
@@ -7756,10 +8267,26 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   }
   for(const b of dossier.querySelectorAll('[data-world-place]'))b.setAttribute('aria-pressed',String(b.dataset.worldPlace===identityPlace));
   const detail=dossier.querySelector('#scSettlementIdentity');detail.replaceChildren();const place=allSettlements.find(s=>s.id===identityPlace);
-  if(place){node('h4',place.name+' · '+place.kind,detail);node('p',c.name+' → '+k.name+' → '+place.name,detail,'scIdentityEyebrow');node('p',place.location,detail);node('p',place.description,detail);node('h5','Local history',detail);node('p',place.history,detail);node('p','Local steward: '+(place.id===(engine.status().originId==='brookstead'?'brookstead':'home')?'You · governor of this city':place.ruler),detail);node('p',place.playable?'Available in the existing starting choices: '+(place.id==='home'?'Marches home':'Brookstead village')+'. Exploring this dossier does not replace your city.':'Inspection only — this settlement is not an available city start. No local economy, garrison or governor is being simulated.',detail,'scIdentityAvailability');}
-  else {node('h4','Choose a settlement on the map',detail);node('p','All eight locations can be inspected. Only Marches home and Brookstead village are available in the existing starting choices.',detail);}
+  if(place){node('h4',place.name+' · '+place.kind,detail);node('p',c.name+' → '+k.name+' → '+place.name,detail,'scIdentityEyebrow');node('p',place.location,detail);node('p',place.description,detail);node('h5','Local history',detail);node('p',place.history,detail);node('p','Local steward: '+(place.id===(engine.governor().settlementId)?'You · governor of this city':place.ruler),detail);node('p',place.playable?'Available in the existing starting choices: '+(engine.origins().find(p=>p.settlementId===place.id)?.name||place.name)+'. Exploring this dossier does not replace your city.':'Inspection only — this settlement is not an available city start. No local economy, garrison or governor is being simulated.',detail,'scIdentityAvailability');}
+  else {node('h4','Choose a settlement on the map',detail);node('p','All eight locations can be inspected. Five supported homes are available in the starting choices. Other locations remain inspection only.',detail);}
+  if(place?.playable){const profile=engine.origins().find(p=>p.settlementId===place.id);node('p',profile.description,detail);node('p','Initial residents: '+profile.population+' · '+profile.gold+' gold · '+profile.wood+' wood · '+profile.stone+' stone · '+profile.food+' food',detail);const start=node('button',document.getElementById('sc1310Welcome').hidden?(engine.status().originId===profile.id?'Return to your city':'Begin as governor here…'):'Choose this starting settlement',detail);start.type='button';start.id='scIdentityStart';start.addEventListener('click',()=>chooseStart(profile.id));}
   if(!document.getElementById('sc1310Welcome').hidden){const b=node('button','Back to existing starting choices',detail);b.type='button';b.addEventListener('click',()=>{close();document.getElementById('scStartChoose').click();});}
  }
+ function openIdentity(id){if(!kingdoms.some(k=>k.id===id))return false;if(!dialog.open)open();return showIdentity(id);}
+ function chooseStart(id){
+  const p=engine.origins().find(p=>p.id===id);if(!p)return false;
+  if(document.getElementById('sc1310Welcome').hidden){
+   if(engine.status().scenario==='city'&&engine.status().originId===id){close();return true;}
+   if(!window.confirm('Become governor of '+p.name+'? Current unsaved city progress will be replaced. Existing checkpoints remain available under Save & resume.'))return false;
+   close();return engine.start('city',id).ok;
+  }
+  close();document.getElementById('scStartChoose').click();const radio=document.getElementById('scStartOrigin-'+id);if(!radio)return false;radio.checked=true;radio.dispatchEvent(new Event('change',{bubbles:true}));radio.focus();return true;
+ }
+ const governorCard=document.createElement('button');governorCard.type='button';governorCard.id='scGovernorCard';document.getElementById('sc159PulseHeader').after(governorCard);
+ const governorMenu=node('p',null,section);governorMenu.id='scGovernorMenu';section.querySelector('#scScenarioCurrent').after(governorMenu);
+ governorCard.addEventListener('click',()=>openIdentity(engine.governor().kingdomId));
+ function refreshGovernor(){const g=engine.governor(),k=kingdoms.find(k=>k.id===g.kingdomId);governorCard.innerHTML=banner(k);const text=node('span',null,governorCard);node('strong',g.name,text);node('small',g.role+' · '+k.name,text);governorMenu.textContent=g.role+' of '+g.name+' · '+k.name;}
+ window.addEventListener('sc-city-started',refreshGovernor);window.addEventListener('sc-city-restored',refreshGovernor);refreshGovernor();
  function setScope(value){scope=value;if(value==='region'){identityKingdom='marches';identityPlace=null;identityKey='';}render();(scope==='world'?navWorld:navRegion).focus();}
  navWorld.addEventListener('click',()=>setScope('world'));navRegion.addEventListener('click',()=>setScope('region'));worldButton.addEventListener('click',()=>openWorld());
  function renderWorld(){
@@ -7776,17 +8303,17 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
  const back=dialog.querySelector('#scKingdomReturn'),choice=section.querySelector('#scScenarioChoice');let lastFocus=null;
  function render(){const state=engine.status(),place=displayPlace(locations.find(p=>p.id===state.selectedLocation)||locations[0]);section.querySelector('#scScenarioCurrent').textContent=state.scenario==='city'?'Peaceful city campaign':'Classic skirmish';if(!dialog.open)return;
-  const identityView=scope==='identity';dossier.hidden=!identityView;dialog.querySelector('.kingdomColumns').hidden=identityView;if(identityView){scopeNote.textContent='World → Continent → Kingdom → Settlement · 16 kingdoms · 128 locations';renderIdentity();return;}
+  const identityView=scope==='identity';dossier.hidden=!identityView;dialog.querySelector('.kingdomColumns').hidden=identityView;if(identityView){navWorld.setAttribute('aria-pressed','false');navRegion.setAttribute('aria-pressed','false');scopeNote.textContent='World → Continent → Kingdom → Settlement · 16 kingdoms · 128 locations';renderIdentity();return;}
   dialog.querySelector('#scKingdomMode').textContent=state.scenario==='city'?'Your peaceful home city belongs to a wider realm. Rival castles are beyond its borders.':'Classic skirmish: the local enemy and raid rules still apply when you return. This overview does not change the battle.';
-  const isWorld=scope==='world';resources.hidden=!document.getElementById('sc1310Welcome').hidden;
-  const scopeText=isWorld?'World overview: choose a continent, then Explore detailed terrain for the playable Marches. Future regions are previews only.':'Regional terrain: mountains, valleys, rivers, forests and coastlines. Inspect settlements and landmarks here; Find city resources opens your village deposit and worker guide.';
+  const isWorld=scope==='world'||scope==='continent';resources.hidden=!document.getElementById('sc1310Welcome').hidden;
+  const scopeText=scope==='continent'?'Continent geography: pan to explore its kingdoms and illustrated settlements.':isWorld?'World overview: choose a continent, then Explore detailed terrain for the playable Marches. Future regions are previews only.':'Regional terrain: mountains, valleys, rivers, forests and coastlines. Inspect settlements and landmarks here; Find city resources opens your village deposit and worker guide.';
   if(scopeNote.textContent!==scopeText)scopeNote.textContent=scopeText;
-  worldMap.hidden=!isWorld;terrain.hidden=isWorld;landmarkList.hidden=isWorld;legend.hidden=isWorld;regionNote.hidden=isWorld;worldDetails.hidden=!isWorld;dialog.querySelector('#scKingdomDetails').hidden=isWorld;dialog.querySelector('#scKingdomReadiness').hidden=isWorld;
-  navWorld.setAttribute('aria-pressed',String(isWorld));navRegion.setAttribute('aria-pressed',String(!isWorld));dialog.querySelector('#scKingdomTitle').textContent=isWorld?'The Shattered World':'The Shattered Marches';limits.textContent=isWorld?'Explore continents and inspect their kingdoms. Only the Marches is playable. Choosing a future region never replaces your city.':'Settlements and landmarks describe this region. Rival-city simulation, trade contracts and wars are not active. Your city campaign remains peaceful.';
+  worldMap.hidden=scope!=='world';continentTerrain.hidden=scope!=='continent';if(scope==='continent')renderContinent();terrain.hidden=isWorld;landmarkList.hidden=isWorld;legend.hidden=isWorld;regionNote.hidden=isWorld;worldDetails.hidden=!isWorld;dialog.querySelector('#scKingdomDetails').hidden=isWorld;dialog.querySelector('#scKingdomReadiness').hidden=isWorld;
+  navWorld.setAttribute('aria-pressed',String(isWorld));navRegion.setAttribute('aria-pressed',String(!isWorld));dialog.querySelector('#scKingdomTitle').textContent=scope==='continent'?continents.find(c=>c.id===continentId).name:isWorld?'The Shattered World':'The Shattered Marches';limits.textContent=isWorld?'Explore all kingdoms and settlements. Five governor starts are available; inspect a marked settlement to begin. Inspection never replaces your city.':'Settlements and landmarks describe this region. Rival-city simulation, trade contracts and wars are not active. Your city campaign remains peaceful.';
   if(isWorld){renderWorld();return;}
   const landmark=landmarks.find(p=>p.id===landmarkId),key=(landmark?'landmark:'+landmark.id:'settlement:'+place.id)+':'+state.originId;
   if(detailKey!==key){detailKey=key;const details=dialog.querySelector('#scKingdomDetails');details.replaceChildren();const heading=document.createElement('h3');heading.textContent=landmark?landmark.name:place.name;details.append(heading);const lines=landmark?['Landmark · The Shattered Marches',landmark.description]:[place.kind+' · The Shattered Marches','Ruler: '+place.ruler,'Relations: '+place.relations,'Strength: '+place.strength,place.description,'Trade prospects: '+place.trade];for(const text of lines){const p=document.createElement('p');p.textContent=text;details.append(p);}}
-  for(const button of terrain.querySelectorAll('[data-settlement]')){const shown=displayPlace(locations.find(p=>p.id===button.dataset.settlement)),owned=shown.id===(state.originId==='brookstead'?'brookstead':'home');button.dataset.home=String(owned);button.querySelector('span').textContent=shown.name;button.querySelector('small').textContent=(owned?'Your home · ':'')+shown.kind;button.setAttribute('aria-label',shown.name+' · '+(owned?'Your home · ':'')+shown.kind);button.setAttribute('aria-pressed',String(!landmark&&button.dataset.settlement===place.id));}for(const button of dialog.querySelectorAll('[data-landmark]'))button.setAttribute('aria-pressed',String(button.dataset.landmark===landmarkId));
+  for(const button of terrain.querySelectorAll('[data-settlement]')){const shown=displayPlace(locations.find(p=>p.id===button.dataset.settlement)),owned=shown.id===(state.originId);button.dataset.home=String(owned);button.querySelector('span').textContent=shown.name;button.querySelector('small').textContent=(owned?'Your home · ':'')+shown.kind;button.setAttribute('aria-label',shown.name+' · '+(owned?'Your home · ':'')+shown.kind);button.setAttribute('aria-pressed',String(!landmark&&button.dataset.settlement===place.id));}for(const button of dialog.querySelectorAll('[data-landmark]'))button.setAttribute('aria-pressed',String(button.dataset.landmark===landmarkId));
   const progress=engine.snapshot();dialog.querySelector('#scKingdomPhase').textContent=state.scenario==='skirmish'?'Classic battle — campaign readiness inactive':progress.ready?'Prosperous city — prepared for the future':'Build a prosperous city';dialog.querySelector('#scKingdomSustain').textContent=progress.stableCycles+' / 12 healthy five-second cycles. Meet all five conditions together; shortages reset the streak. Readiness never schedules an attack.';dialog.querySelector('#scKingdomProgress').value=progress.stableCycles;
   const list=dialog.querySelector('#scKingdomCriteria');list.replaceChildren();for(const row of progress.criteria){const li=document.createElement('li'),label=document.createElement('strong'),detail=document.createElement('span');label.textContent=(row.met?'✓ ':'○ ')+row.label;detail.textContent=row.detail;li.append(label,detail);list.append(li);}
  }
@@ -7798,7 +8325,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  section.querySelector('#scScenarioStart').addEventListener('click',()=>{if(!window.confirm('Start a new '+(choice.value==='city'?'peaceful city campaign':'classic skirmish')+'? Current unsaved progress will be replaced. Your saved checkpoints will remain.'))return;close();engine.start(choice.value);menu.classList.remove('open');render();});
  function synchronize(){close();identityKingdom='marches';identityPlace=null;identityKey='';dossier.dataset.kingdom='';scope='region';continentId='aurelia';landmarkId=null;detailKey='';worldKey='';choice.value=engine.status().scenario;render();}
  window.addEventListener('sc-city-started',synchronize);window.addEventListener('sc-city-restored',synchronize);
- window.scKingdomUI={open,close,openWorld};choice.value=engine.status().scenario;render();setInterval(()=>{if(dialog.open)render()},1000);
+ window.scKingdomUI={open,close,openWorld,openIdentity,chooseStart,bannerFor:id=>{const k=kingdoms.find(k=>k.id===id);return k?banner(k):'';}};choice.value=engine.status().scenario;render();setInterval(()=>{if(dialog.open)render()},1000);
 })();
 </script>
 
@@ -7813,11 +8340,11 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  let settings={...defaults},storageAvailable=true;
  try{const saved=localStorage.getItem(KEY);if(saved!==null){const value=JSON.parse(saved);if(valid(value))settings={...value};}}catch(_){storageAvailable=false;}
  const Audio=window.AudioContext||window.webkitAudioContext,supported=typeof Audio==='function';
- let musicStyle='city';try{const saved=localStorage.getItem('shattered-crowns-music-style-v1');if(['city','ambient'].includes(saved))musicStyle=saved;}catch(_){storageAvailable=false;}
+ let musicStyle='city';try{const saved=localStorage.getItem('shattered-crowns-music-style-v1');if(['city','ambient','strings'].includes(saved))musicStyle=saved;}catch(_){storageAvailable=false;}
  let cityBar=0,nextCityBar=0,entered=false,restoredBeforeEntry=false,openingActivated=false;
  let context=null,master=null,music=null,effects=null,analyser=null,unlocked=false,error='',effectsPlayed=0,lastEffect=null,lastCue=-Infinity,lastCanvas=-Infinity,chord=0,nextChord=0;
  const voices=new Set(),wave=new Float32Array(256);
- const section=document.createElement('section');section.id='scAudioSection';section.setAttribute('aria-label','Sound settings');section.innerHTML='<strong>Sound</strong><label for="scMusicStyle">Music style <select id="scMusicStyle"><option value="city">City theme · melody &amp; strings</option><option value="ambient">Original gentle ambience</option></select></label><label><input id="scAudioMusic" type="checkbox">Gentle ambient music</label><label><input id="scAudioEffects" type="checkbox">Worker and army selection sounds</label><label><input id="scAudioMuted" type="checkbox">Mute all sound</label><label for="scAudioVolume">Volume <input id="scAudioVolume" type="range" min="0" max="100" step="1"><output id="scAudioVolumeValue"></output></label><button id="scAudioTest" type="button">Enable sound &amp; test</button><p>Turns on music and selection sounds at 50% volume or your current higher level.</p><p id="scAudioStatus" aria-live="polite"></p><p>Original synthesized sounds. Audio starts after interaction. Preferences belong to this browser, not the city save.</p>';menu.append(section);
+ const section=document.createElement('section');section.id='scAudioSection';section.setAttribute('aria-label','Sound settings');section.innerHTML='<strong>Sound</strong><label for="scMusicStyle">Music style <select id="scMusicStyle"><option value="city">City theme · melody &amp; strings</option><option value="ambient">Original gentle ambience</option><option value="strings">City theme · bowed strings</option></select></label><label><input id="scAudioMusic" type="checkbox">Gentle ambient music</label><label><input id="scAudioEffects" type="checkbox">Worker and army selection sounds</label><label><input id="scAudioMuted" type="checkbox">Mute all sound</label><label for="scAudioVolume">Volume <input id="scAudioVolume" type="range" min="0" max="100" step="1"><output id="scAudioVolumeValue"></output></label><button id="scAudioTest" type="button">Enable sound &amp; test</button><p>Turns on music and selection sounds at 50% volume or your current higher level.</p><p id="scAudioStatus" aria-live="polite"></p><p>Original synthesized sounds. Audio starts after interaction. Preferences belong to this browser, not the city save.</p>';menu.append(section);
  const musicQuick=document.createElement('button');musicQuick.id='scMusicQuick';musicQuick.type='button';musicQuick.setAttribute('aria-label','Music off');const toolbar=document.getElementById('sc149Status');if(toolbar)toolbar.insertBefore(musicQuick,document.getElementById('scWorldQuick')?.nextSibling||toolbar.firstChild);
  const testInput=section.querySelector('#scAudioTest'),styleInput=section.querySelector('#scMusicStyle'),musicInput=section.querySelector('#scAudioMusic'),effectInput=section.querySelector('#scAudioEffects'),muteInput=section.querySelector('#scAudioMuted'),volumeInput=section.querySelector('#scAudioVolume');
  function status(){let level=0;if(analyser&&context?.state==='running'){analyser.getFloatTimeDomainData(wave);level=Math.sqrt(wave.reduce((n,v)=>n+v*v,0)/wave.length);}return {supported,unlocked,musicStyle,contextState:context?.state||'idle',settings:{...settings},storageAvailable,musicVoices:[...voices].filter(v=>v.kind==='music').length,activeVoices:voices.size,effectsPlayed,lastEffect,level,error};}
@@ -7831,19 +8358,37 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  const cityBeat=60/72;
  const cityChords=[[57,60,64],[53,57,60],[48,55,60],[55,59,62],[50,57,62],[57,60,64],[53,57,60],[55,59,62],[57,60,64],[53,57,60],[48,55,60],[55,59,62],[50,57,62],[53,57,60],[52,55,59],[57,60,64]];
  const cityMelody=[[[0,69,1],[1,72,1],[2,76,1.6]],[[.5,74,1],[1.5,72,1],[3,69,.8]],[[0,67,1.5],[2,72,1],[3,71,.8]],[[0,67,1],[1.5,69,.8],[2.5,71,1.2]],[[0,74,1.5],[2,72,1],[3,69,.8]],[[0,72,1],[1,71,1],[2,69,1.7]],[[.5,69,1],[1.5,67,1],[3,65,.8]],[[0,67,2],[2.5,71,1.2]],[[0,76,1],[1,74,1],[2,72,1.6]],[[.5,72,1],[1.5,77,1],[3,76,.8]],[[0,76,1],[1,79,1],[2.5,76,1.2]],[[0,74,1.5],[2,71,1],[3,67,.8]],[[0,69,1],[1,74,1],[2,72,1.6]],[[.5,69,1],[1.5,72,1],[3,69,.8]],[[0,71,1],[1,67,1],[2,64,1.6]],[[0,69,3.4]]];
+ const cityStrings=[64,60,60,62,62,64,60,62,64,65,67,62,62,60,59,57];
  const noteFrequency=midi=>440*Math.pow(2,(midi-69)/12);
- function scheduleCityBar(index,at,emit){const i=index%cityChords.length,chord=cityChords[i];for(const n of chord)emit(noteFrequency(n),at,cityBeat*4+.16,'music',.105,'pad');emit(noteFrequency(chord[0]-12),at,cityBeat*3.1,'music',.17,'bass');const pattern=[chord[0],chord[2],chord[1],chord[2],chord[0]+12,chord[2],chord[1],chord[2]];pattern.forEach((n,j)=>emit(noteFrequency(n),at+j*cityBeat/2,cityBeat*.9,'music',j%2?.15:.21,'pluck'));for(const [beat,n,length] of cityMelody[i])emit(noteFrequency(n),at+beat*cityBeat,length*cityBeat*.95,'music',.27,'flute');}
- function createAudioVoice(ctx,destination,frequency,at,duration,kind,amplitude,flavor='pad'){const osc=ctx.createOscillator(),gain=ctx.createGain(),voice={osc,gain,kind};osc.type=kind==='music'?(flavor==='pluck'?'triangle':'sine'):'triangle';osc.frequency.value=frequency;const attack=Math.min(kind!=='music'?.015:flavor==='pluck'?.012:flavor==='flute'?.12:flavor==='bass'?.16:1.8,duration*.4);voice.startsAt=at;voice.levelAt=when=>{const age=when-at;if(age<=0)return .0001;if(age<attack)return .0001+(amplitude-.0001)*age/attack;if(age>=duration)return .0001;return amplitude*Math.pow(.0001/amplitude,(age-attack)/(duration-attack));};gain.gain.setValueAtTime(.0001,at);gain.gain.linearRampToValueAtTime(amplitude,at+attack);gain.gain.exponentialRampToValueAtTime(.0001,at+duration);osc.connect(gain);gain.connect(destination);osc.start(at);osc.stop(at+duration+.01);return voice;}
+ function scheduleCityBar(index,at,emit){const i=index%cityChords.length,chord=cityChords[i];for(const n of chord)emit(noteFrequency(n),at,cityBeat*4+.16,'music',musicStyle==='strings'?.095:.105,'pad');emit(noteFrequency(chord[0]-12),at,cityBeat*3.1,'music',.17,'bass');const pattern=[chord[0],chord[2],chord[1],chord[2],chord[0]+12,chord[2],chord[1],chord[2]];pattern.forEach((n,j)=>emit(noteFrequency(n),at+j*cityBeat/2,cityBeat*.9,'music',j%2?.15:.21,'pluck'));for(const [beat,n,length] of cityMelody[i])emit(noteFrequency(n),at+beat*cityBeat,length*cityBeat*.95,'music',.27,'flute');if(musicStyle==='strings')emit(noteFrequency(cityStrings[i]),at+.08,cityBeat*3.6,'music',.045,'strings');}
+ const stringWaves=new WeakMap();
+ function createAudioVoice(ctx,destination,frequency,at,duration,kind,amplitude,flavor='pad'){
+  const osc=ctx.createOscillator(),gain=ctx.createGain(),voice={osc,gain,kind};
+  const bowed=kind==='music'&&flavor==='strings';
+  osc.type=kind==='music'?(flavor==='pluck'?'triangle':'sine'):'triangle';
+  if(bowed){let wave=stringWaves.get(ctx);if(!wave){wave=ctx.createPeriodicWave(new Float32Array(7),new Float32Array([0,1,.3,.18,.12,.06,.03]));stringWaves.set(ctx,wave);}osc.setPeriodicWave(wave);}
+  osc.frequency.value=frequency;
+  const attack=Math.min(kind!=='music'?.015:bowed?.45:flavor==='pluck'?.012:flavor==='flute'?.12:flavor==='bass'?.16:1.8,duration*.4);
+  const releaseStart=Math.max(attack,duration-Math.min(.65,duration*.25));
+  voice.startsAt=at;voice.levelAt=when=>{
+   const age=when-at;if(age<=0)return .0001;if(age<attack)return .0001+(amplitude-.0001)*age/attack;if(age>=duration)return .0001;
+   if(bowed){if(age<releaseStart)return amplitude*(1-.15*(age-attack)/(releaseStart-attack));return amplitude*.85*Math.pow(.0001/(amplitude*.85),(age-releaseStart)/(duration-releaseStart));}
+   return amplitude*Math.pow(.0001/amplitude,(age-attack)/(duration-attack));
+  };
+  gain.gain.setValueAtTime(.0001,at);gain.gain.linearRampToValueAtTime(amplitude,at+attack);
+  if(bowed)gain.gain.linearRampToValueAtTime(amplitude*.85,at+releaseStart);
+  gain.gain.exponentialRampToValueAtTime(.0001,at+duration);osc.connect(gain);gain.connect(destination);osc.start(at);osc.stop(at+duration+.01);return voice;
+ }
 
  function tone(frequency,at,duration,kind,amplitude,flavor){if(!context||voices.size>=32)return;const voice=createAudioVoice(context,kind==='music'?music:effects,frequency,at,duration,kind,amplitude,flavor);voices.add(voice);voice.osc.onended=()=>{voices.delete(voice);voice.osc.disconnect();voice.gain.disconnect();};}
  function ambient(){if(document.getElementById('sc1310Welcome')?.hidden===false&&!openingActivated||!context||context.state!=='running'||document.hidden||!settings.music||settings.muted||settings.volume===0)return;const now=context.currentTime;if([...voices].some(v=>v.kind==='music'&&v.stopping))return;
-  if(musicStyle==='city'){if(nextCityBar<now-.1)nextCityBar=now+.03;while(nextCityBar<now+.5){scheduleCityBar(cityBar++,nextCityBar,tone);nextCityBar+=cityBeat*4;}return;}
+  if(musicStyle==='city'||musicStyle==='strings'){if(nextCityBar<now-.1)nextCityBar=now+.03;while(nextCityBar<now+.5){scheduleCityBar(cityBar++,nextCityBar,tone);nextCityBar+=cityBeat*4;}return;}
   if(now<nextChord)return;const chords=[[220,261.6256,329.6276],[174.6141,220,261.6256],[130.8128,164.8138,195.9977],[195.9977,246.9417,293.6648]],at=now+.03;for(const f of chords[chord%chords.length])tone(f,at,11.5,'music',.25);chord++;nextChord=at+12;
  }
- function setMusicStyle(value){if(!['city','ambient'].includes(value))return {ok:false};if(value===musicStyle)return {ok:true};stop('music');cityBar=0;chord=0;musicStyle=value;try{localStorage.setItem('shattered-crowns-music-style-v1',value);}catch(_){storageAvailable=false;}apply();if(supported&&!document.hidden)void unlock();return {ok:true};}
+ function setMusicStyle(value){if(!['city','ambient','strings'].includes(value))return {ok:false};if(value===musicStyle)return {ok:true};stop('music');cityBar=0;chord=0;musicStyle=value;try{localStorage.setItem('shattered-crowns-music-style-v1',value);}catch(_){storageAvailable=false;}apply();if(supported&&!document.hidden)void unlock();return {ok:true};}
  function apply(){if(context&&master){music.gain.setTargetAtTime(musicMix(musicStyle),context.currentTime,.04);master.gain.setTargetAtTime(settings.muted?0:settings.volume/100,context.currentTime,.025);if(!settings.music||settings.muted||settings.volume===0)stop('music');if(!settings.effects||settings.muted||settings.volume===0)stop('effect');ambient();}render();}
  // Calibrated above the old near-silent mix; retain master preferences and limit peaks.
- const musicMix=style=>style==='city'?1.2:.32;
+ const musicMix=style=>style==='city'||style==='strings'?1.2:.32;
  function createAudioGraph(ctx){
   const master=ctx.createGain(),music=ctx.createGain(),effects=ctx.createGain(),limiter=ctx.createDynamicsCompressor(),analyser=ctx.createAnalyser();
   music.gain.value=musicMix(musicStyle);effects.gain.value=2.2;master.gain.value=0;analyser.fftSize=256;
@@ -7891,7 +8436,7 @@ prev.addEventListener('click',()=>move(-1));next.addEventListener('click',()=>mo
  const start=document.getElementById('sc1310Welcome'),status=document.getElementById('scStartReady');
  if(!window.scCityEconomy||!window.sc140UI||!window.scAudio){status.textContent='Your city could not finish loading. Please reload the page.';return;}
  start.dataset.ready='true';const settlement=document.getElementById('scStartSettlement'),description=document.createElement('p');description.id='scStartOriginDescription';description.setAttribute('aria-live','polite');settlement.after(description);
- const profiles=window.scCampaign.origins(),explain=()=>{description.textContent=profiles.find(p=>p.id===settlement.querySelector('input:checked')?.value)?.description||'';};
+ const profiles=window.scCampaign.origins(),explain=()=>{const p=profiles.find(p=>p.id===settlement.querySelector('input:checked')?.value)||profiles[0],k=window.scWorldAtlas.kingdoms.find(k=>k.id===p.kingdomId),c=window.scWorldAtlas.continents.find(c=>c.id===k.continentId);description.textContent=p.description;document.getElementById('scStartKingdom').textContent=k.name;document.getElementById('scStartContinent').textContent=c.name;let flag=document.getElementById('scStartBanner');if(!flag){flag=document.createElement('div');flag.id='scStartBanner';document.querySelector('.scStartRegion').before(flag);}flag.innerHTML=window.scKingdomUI.bannerFor(k.id);document.getElementById('scStartAvailability').textContent='Five playable homes. Marches home and Brookstead retain their existing starts; three additional governors are available. Other locations are inspection only, not playable yet.';};
  for(const profile of profiles){const label=document.createElement('label');label.className='scHomeCard';const input=document.createElement('input');input.type='radio';input.name='scStartOrigin';input.id='scStartOrigin-'+profile.id;input.value=profile.id;input.checked=profile.id==='home';const caption=document.createElement('span'),name=document.createElement('strong'),stock=document.createElement('small');name.textContent=profile.name;stock.textContent=profile.gold+' gold · '+profile.wood+' wood · '+profile.stone+' stone · '+profile.food+' food';caption.append(name,stock);label.append(input,caption);settlement.append(label);}
  settlement.addEventListener('change',explain);explain();
  for(const id of ['scStartChoose','sc1310Skip','sc1310Try'])document.getElementById(id).disabled=false;

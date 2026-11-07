@@ -41,3 +41,9 @@ test('Living woodland uses one ground shadow per harvestable tree',async t=>{
  const counts=await p.evaluate(()=>{const g=document.querySelector('#field').getContext('2d'),ellipse=g.ellipse,seen=[];g.ellipse=function(...args){if(args[2]===34&&(args[3]===12||args[3]===13))seen.push(args);return ellipse.apply(this,args);};try{window.__renderVisualOnce();}finally{g.ellipse=ellipse;}return scRTSNodes.filter(n=>n.type==='tree'&&n.amount>0).map(n=>seen.filter(a=>Math.abs(a[0]-n.x)<=14&&a[1]-n.y>=12&&a[1]-n.y<=15).length);});
  assert.ok(counts.length>0);assert.ok(counts.every(n=>n===1),'One consistent contact shadow avoids doubled dark woodland patches');
 });
+
+test('New governor biomes render distinct ground and restore the original palette',async t=>{
+ const {page:p}=await browserPage(t,browser);await p.goto(url);await p.waitForFunction(()=>window.__visualProof);
+ const result=await p.evaluate(()=>{const c=document.createElement('canvas');c.width=240;c.height=200;const g=c.getContext('2d'),draw=biome=>{g.clearRect(0,0,240,200);__visualProof.ground(g,240,200,biome);return c.toDataURL()};return {plain:draw(),meadow:draw('meadow'),woodland:draw('woodland'),dryland:draw('dryland'),coast:draw('coastal'),again:draw()};});
+ assert.equal(result.plain,result.meadow);assert.equal(result.again,result.plain);assert.equal(new Set([result.plain,result.woodland,result.dryland,result.coast]).size,4);
+});
