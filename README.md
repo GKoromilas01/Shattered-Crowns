@@ -2,7 +2,7 @@
 
 Browser-first medieval city-building RTS with a peaceful city campaign, kingdom overview and classic skirmish mode. Serve this directory with `python3 -m http.server 8000` and open http://localhost:8000.
 
-Current development: [Milestone 18 — Governors & Living World Maps](docs/MILESTONE18.md). Five governor starts, illustrated natural atlas maps and optional bowed strings.
+Current development: [Milestone 19 — A Living, Prosperous City](docs/MILESTONE19.md). A real-data Governor overview, direct workplace panels and five-start economic/save verification.
 
 ## Automated testing
 
