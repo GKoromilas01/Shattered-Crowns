@@ -5062,6 +5062,32 @@ body input, body textarea, body [contenteditable="true"] {
 #sc1310Welcome button{margin:8px 6px 0 0}
 @media(max-width:650px){#sc1310AdvisorBtn{font-size:10px!important;padding:4px!important}}
 </style>
+<script id="cityAdvisorAssessment">
+(()=>{'use strict';
+ const number=x=>Number(x).toFixed(1).replace(/\.0$/,'');
+ function assess(s){
+  const issues=[],last=s.food.last;
+  const add=(id,title,evidence,action,section)=>issues.push({id,title,evidence,action,section});
+  const balance=last?last.harvest+last.logistics+last.bakeryNet-last.exports-last.demand:null;
+  if(last?.shortfall>0)add('meals','Restore meal supply',number(last.shortfall)+' unmet meals in the last five-second cycle.','Review food delivery, farm/fishery staffing and exports before expanding.','Food');
+  else if(balance!==null&&balance<0)add('balance','Food use exceeds supply',number(balance)+' food per measured five-second cycle before storage overflow.','Review Food for harvest, logistics, baking and exports; restore supply before adding demand.','Food');
+  if(s.food.production===0)add('production','Establish staffed food production','No base harvest from staffed farms or fisheries. '+number(s.food.stock)+' food stored.','Build a farm or fishery, or review existing workplaces and civilian staffing. Paused sites stay paused until you reopen them.','Employment');
+  if(s.housing.displaced>0)add('displaced','House displaced residents',s.housing.displaced+' residents without housing space.','Rebuild or expand serviced housing before expecting new residents.','Housing');
+  else if(s.population>=s.housing.capacity)add('housing','Make room for residents',s.population+' / '+s.housing.capacity+' residents; housing is full.','Add a house with nearby water and connected roads, then review the growth checks.','Housing');
+  const unfilled=s.workforce.sites.filter(b=>!b.paused).reduce((n,b)=>n+Math.max(0,b.need-b.filled),0);
+  if(unfilled>0)add('staffing','Review civilian staffing',unfilled+' open workplace jobs unfilled; voluntarily paused jobs excluded.','Review priorities and growth requirements. Map workers cannot fill civilian jobs; changing priorities can reduce food or services elsewhere.','Employment');
+  for(const check of s.growth.readiness.checks){
+   if(check.met||check.id==='meals'||check.id==='housing'||check.id==='settled')continue;
+   add('growth-'+check.id,check.label,check.detail,check.id==='services'?'Provide a vacant home with nearby water and connected roads. Review the exact requirements in Housing.':check.id==='reserve'?'Rebuild the food reserve; review production and export choices.':'Review satisfaction factors and household services before expanding.',check.id==='reserve'?'Food':check.id==='happiness'?'Satisfaction':'Housing');
+  }
+  if(!last)add('measurement','Waiting for food measurement','No completed five-second food cycle yet.','Resume when ready and let one simulation cycle finish; reserves alone do not prove meals are supplied.','Food');
+  if(!issues.length&&s.growth.readiness.ready)add('steady','Growth conditions currently met',s.growth.readiness.nextResidentSeconds+' more stable simulation seconds until the next resident.','Keep food, housing and services stable; this is a current assessment, not a growth guarantee.','Housing');
+  if(!issues.length)add('growth','Review resident requirements','Growth conditions are not all met.','Review the current checks before expanding.','Housing');
+  return {measured:!!last,issues:issues.slice(0,3)};
+ }
+ window.scCityAdvisor=Object.freeze({assess});
+})();
+</script>
 <script id="sc1310OptionalAdvisor">
 (()=>{'use strict';
  const bar=document.getElementById('sc149Status');if(!bar)return;
@@ -5117,20 +5143,9 @@ body input, body textarea, body [contenteditable="true"] {
  const realPause=document.getElementById('pause');if(realPause){new MutationObserver(sync).observe(realPause,{childList:true,characterData:true,subtree:true});}sync();
  const panel=document.getElementById('sc1310AdvisorPanel');const advice=document.getElementById('sc1310AdvisorAdvice');if(!panel||!advice)return;
  const summary=document.createElement('div');summary.id='sc1311AdvisorSummary';panel.insertBefore(summary,advice);
- const get=id=>{const n=Number((document.getElementById(id)?.textContent||'').replace(/,/g,'').match(/-?\d+(?:\.\d+)?/)?.[0]);return Number.isFinite(n)?n:0};
  function refresh(){if(panel.hidden)return;
-  const buildings=(window.scHoverBuildings||[]).filter(b=>b&&b.team===0&&(b.hp===undefined||b.hp>0));
-  const count=t=>buildings.filter(b=>b.type===t).length;
-  const food=get('resFood'),pop=get('population'),happiness=get('happiness');
-  const perCycle=Math.max(1,Math.ceil(pop*.45));const cycles=Math.floor(food/perCycle);
-  const policy=document.getElementById('sc1303Mode')?.value||'normal';
-  const exportEnabled=document.getElementById('sc1307BreadExport')?.checked!==false;
-  let state='Stable';let tip='Expand housing and services while maintaining food production.';
-  if(food<perCycle*2){state='Critical food reserve';tip='Build or staff farms, select Conserve or Automatic rationing, and consider disabling bakery exports.';}
-  else if(food<perCycle*5){state='Food reserve running low';tip='Increase food production and monitor consumption in Chronicle → Economy.';}
-  else if(happiness<40){state='Low happiness';tip='Review food rationing, wells, markets, and neighborhood services.';}
-  else if(count('farm')+count('fishery')===0){state='No food production';tip='Build a farm or fishery before reserves run out.';}
-  summary.textContent=`City outlook: ${state} · Food ${food} (${cycles} cycles at baseline consumption) · Population ${pop} · Happiness ${happiness}% · Rations: ${policy} · Bakery exports: ${exportEnabled?'on':'off'}. ${tip}`;
+  const s=window.scCityEconomy.snapshot();
+  summary.textContent='Current city: '+s.population+' residents · Happiness '+s.happiness+' / 100 · Food '+s.food.stock.toFixed(1).replace(/\.0$/,'')+' stored. '+(window.scCitySave.status().paused?'Paused: production and resident progress wait for Resume.':'Simulation running: advice updates as conditions change.');
  }
  document.getElementById('sc1310AdvisorBtn')?.addEventListener('click',()=>setTimeout(refresh,0));
  document.addEventListener('sc:built',()=>setTimeout(refresh,0));
@@ -5425,36 +5440,44 @@ body input, body textarea, body [contenteditable="true"] {
 </style>
 <script id="sc1321AdvisorPriorities">
 (()=>{'use strict';
- const panel=document.getElementById('sc1310AdvisorPanel');
- if(!panel)return;
- // The old checklist is obsolete. Remove it rather than merely hiding it.
+ const panel=document.getElementById('sc1310AdvisorPanel');if(!panel)return;
  document.getElementById('sc1312Tests')?.remove();
- const block=document.createElement('section');block.id='sc1321Priorities';
- block.innerHTML='<h3>🏛 Settlement priorities</h3><p id="sc1321Advice">Reviewing your settlement...</p><button type="button" id="sc1321Refresh">Refresh advice</button>';
- panel.prepend(block);
- const output=block.querySelector('#sc1321Advice');
+ const block=document.createElement('section');block.id='sc1321Priorities';block.setAttribute('aria-label','Measured settlement priorities');
+ block.innerHTML='<h3>Settlement priorities</h3><p id="scAdvisorMeasurement"></p><div id="scAdvisorIssues"></div><button type="button" id="sc1321Refresh">Refresh advice</button>';
+ panel.insertBefore(block,document.getElementById('sc1311AdvisorSummary'));
+ const output=block.querySelector('#scAdvisorIssues'),measurement=block.querySelector('#scAdvisorMeasurement'),cards=new Map();
+ let heldKey=false,heldPointer=false;
  function update(){
-  const own=Array.isArray(window.scHoverBuildings)?window.scHoverBuildings.filter(b=>b&&b.team===0&&(b.hp===undefined||b.hp>0)):[];
-  const count=t=>own.filter(b=>b.type===t).length;
-  const food=Number((document.getElementById('resFood')?.textContent||'').replace(/[^0-9.-]/g,''));
-  const homes=count('house'),farms=count('farm')+count('fishery');
-  let advice;
-  if(!homes)advice='Your settlement needs housing. Build a house to establish a residential neighborhood.';
-  else if(!farms)advice='Food production is the priority. Add a farm or fishery to support your residents.';
-  else if(Number.isFinite(food)&&food<25)advice='Food reserves are low ('+food+'). Check staffing, rationing and farm output in Chronicle → Economy.';
-  else if(!count('well'))advice='Add a well near your homes to improve neighborhood services.';
-  else if(!count('granary'))advice='A granary will expand food storage and support your growing settlement.';
-  else if(!count('market'))advice='Consider a market near your homes to develop trade and services.';
-  else advice='Your settlement has its essential foundations. Improve neighborhood coverage or expand housing and production as needed.';
-  output.textContent=advice;
+  if(panel.hidden||heldKey||heldPointer)return;
+  const assessment=window.scCityAdvisor.assess(window.scCityEconomy.snapshot());
+  measurement.textContent=assessment.measured?'Food evidence: last completed five-second cycle. Other checks reflect current conditions.':'Food evidence: waiting for the first completed five-second cycle.';
+  const active=document.activeElement,hadFocus=output.contains(active),ids=new Set(assessment.issues.map(i=>i.id));
+  for(const [id,card] of cards)if(!ids.has(id)){card.remove();cards.delete(id);}
+  assessment.issues.forEach((issue,index)=>{
+   let card=cards.get(issue.id);
+   if(!card){card=document.createElement('article');card.dataset.advisorId=issue.id;card.className='sc1310Task';card.innerHTML='<strong></strong><p></p><p></p><button type="button"></button>';cards.set(issue.id,card);}
+   card.querySelector('strong').textContent=issue.title;
+   const paragraphs=card.querySelectorAll('p');paragraphs[0].textContent=issue.evidence;paragraphs[1].textContent=issue.action;
+   const review=card.querySelector('button');review.dataset.advisorSection=issue.section;review.textContent='Review '+issue.section;
+   if(output.children[index]!==card)output.insertBefore(card,output.children[index]||null);
+  });
+  if(hadFocus&&!active.isConnected)output.querySelector('button')?.focus({preventScroll:true});
  }
- block.querySelector('button').addEventListener('click',update);
+ block.addEventListener('click',e=>{
+  const section=e.target.closest('[data-advisor-section]')?.dataset.advisorSection;if(!section)return;
+  window.scCityPlanning.openSection(section);
+ });
+ window.addEventListener('keydown',e=>{if(!panel.hidden&&block.contains(e.target)&&e.code==='Space'){heldKey=true;e.stopImmediatePropagation();}},true);
+ window.addEventListener('keyup',e=>{if(e.code==='Space'&&heldKey)setTimeout(()=>{heldKey=false;update();},0);},true);
+ block.addEventListener('pointerdown',e=>{if(e.button===0)heldPointer=true;});
+ window.addEventListener('pointerup',()=>{if(heldPointer)setTimeout(()=>{heldPointer=false;update();},0);},true);
+ window.addEventListener('pointercancel',()=>{heldPointer=false;update();},true);
+ window.addEventListener('blur',()=>{heldKey=false;heldPointer=false;});
+ block.querySelector('#sc1321Refresh').addEventListener('click',update);
  document.getElementById('sc1310AdvisorBtn')?.addEventListener('click',()=>setTimeout(update,0));
- document.addEventListener('sc:built',update);
- update();
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='V14.01';
- document.title='Shattered Crowns — v14.01';
- const small=document.querySelector('header h1 small');if(small)small.textContent='RTS v14.01.0';
+ document.getElementById('sc1310Try')?.addEventListener('click',()=>setTimeout(update,0));
+ document.addEventListener('sc:built',()=>setTimeout(update,0));
+ setInterval(update,500);
 })();
 </script>
 
@@ -6875,6 +6898,12 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
    fallback?.focus({preventScroll:true});fallback?.scrollIntoView({block:'nearest'});
   }
  }
+ window.scCityPlanning=Object.freeze({openSection(name){
+  const control=[...nav.querySelectorAll('[data-section]')].find(b=>b.dataset.section===name);
+  if(!control)return false;
+  if(root.hidden)button.click();
+  refresh();control.click();return true;
+ }});
  button.addEventListener('click',()=>setTimeout(refresh,0));window.addEventListener('sc:built',refresh);window.addEventListener('sc-workplace-priority-changed',refresh);window.addEventListener('sc-workplace-changed',refresh);window.addEventListener('sc-trade-policy-changed',refresh);setInterval(refresh,500);
 })();
 </script>
