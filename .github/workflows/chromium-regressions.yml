@@ -13,7 +13,9 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # The full Playwright regression suite is intentionally exhaustive and can
+    # exceed twenty minutes on a cold GitHub runner.
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
