@@ -1034,6 +1034,7 @@ function canPlace(type,p,worker){
  !nodes.some(n=>dist(n,p)<n.radius+(small?6:type==='road'?15:24))&&
  !(p.x>445&&p.x<550&&Math.abs(p.y-315)>30);
 }
+window.scCanPlace=canPlace;
 
 
 const scDefenseCosts={tower:{gold:100,wood:100,stone:0},fortress:{gold:180,wood:150,stone:120},wall:{gold:0,wood:30,stone:60}};

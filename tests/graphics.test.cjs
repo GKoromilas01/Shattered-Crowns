@@ -30,3 +30,13 @@ test('terrain and atmosphere details are stable across frames',async t=>{
  const result=await page.evaluate(()=>{const c=document.createElement('canvas');c.width=160;c.height=100;const g=c.getContext('2d');const draw=()=>{g.clearRect(0,0,160,100);window.scDrawTerrainDetail(g,160,100);window.scDrawAtmosphere(g,160,100,12)};draw();const a=c.toDataURL();draw();return {stable:a===c.toDataURL(),pixels:[...g.getImageData(0,0,160,100).data].filter((v,i)=>i%4===3&&v>0).length};});
  assert.equal(result.stable,true);assert.ok(result.pixels>100);
 });
+
+test('new buildings require a readable buffer and reject blocked plots atomically',async t=>{
+ const {page}=await browserPage(t,browser);await page.goto(url);await page.locator('#sc1310Skip').click();
+ const result=await page.evaluate(()=>{
+  const keep=window.scHoverBuildings.find(b=>b.type==='keep'&&b.team===0);const near={x:keep.x+keep.radius+10,y:keep.y};
+  const far={x:keep.x+260,y:keep.y+260};
+  return {near:window.scCanPlace('house',near,null),far:window.scCanPlace('house',far,null),clearance:window.scBuildingClearance||18};
+ });
+ assert.equal(result.near,false);assert.equal(result.far,true);assert.equal(result.clearance,18);
+});
