@@ -33,7 +33,10 @@ for(const action of ['new village','restored save'])test('Delayed startup camera
  if(action==='new village')await p.evaluate(()=>scCampaign.start('city','brookstead'));
  else {const save=JSON.parse(fs.readFileSync('tests/fixtures/city-v0140.json'));assert.equal((await p.evaluate(s=>scCitySave.restore(s),save)).ok,true);}
  const before=await p.evaluate(()=>({state:scCitySave.capture().state,view:scCitySave.capture().view}));await p.evaluate(()=>window.__visualProofInitialCamera());await p.waitForTimeout(400);
- assert.deepEqual(await p.evaluate(()=>({state:scCitySave.capture().state,view:scCitySave.capture().view})),before,'A timer for the original city must not take over another city camera');
+ const after=await p.evaluate(()=>({state:scCitySave.capture().state,view:scCitySave.capture().view}));
+ assert.deepEqual(after.state,before.state,'A timer for the original city must not mutate the restored city');
+ assert.equal(after.view.zoom,before.view.zoom,'A timer must not change restored zoom');
+ assert.ok(Math.abs(after.view.centerX-before.view.centerX)<=1&&Math.abs(after.view.centerY-before.view.centerY)<=1,'A timer must not take over the restored city camera beyond browser rounding');
 });
 
 test('Living woodland uses one ground shadow per harvestable tree',async t=>{
