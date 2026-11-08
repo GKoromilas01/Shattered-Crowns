@@ -1,5 +1,9 @@
 # Release notes
 
+## v0.18.0 — Governors & Living World Maps
+
+Three additional governor starts, natural continent/kingdom maps, illustrated settlements and governor identity connect the atlas to the playable city. Five starts are available across four kingdoms; all 128 locations remain inspectable. New origins use validated schema-four saves; existing schemas and gameplay remain compatible. An original bowed-strings music style is optional, with the approved default preserved. See [Milestone 18](docs/MILESTONE18.md).
+
 ## v0.17.0 — World Expansion & Kingdom Identity
 
 Explore six geographical regions, 16 kingdoms and 128 selectable world locations. Original banners, mottos, mythology, history, heroes and read-only Politics accompany kingdom/settlement dossiers. Only Marches home and Brookstead are available city starts; other locations are inspection-only. Existing regional terrain, city saves and gameplay remain intact. Live woodland now uses one consistent ground shadow per tree. See [Milestone 17](docs/MILESTONE17.md).
