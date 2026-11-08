@@ -21,6 +21,15 @@ test('Advisor refreshes measured shortages and keeps keyboard and held pointer a
  const button=p.locator('[data-advisor-id="meals"] button');await button.focus();await p.keyboard.down('Space');await p.evaluate(()=>window.__advisorTest.advance());await p.waitForTimeout(750);assert.equal(await button.evaluate(e=>document.activeElement===e),true);await p.keyboard.up('Space');assert.equal(await p.locator('#sc159Pulse').isVisible(),true);
  await p.locator('#scCityLifeClose').click();await p.locator('#sc1310AdvisorBtn').click();const at=await button.boundingBox();await p.mouse.move(at.x+at.width/2,at.y+at.height/2);await p.mouse.down();await p.evaluate(()=>window.__advisorTest.advance());await p.waitForTimeout(750);await p.mouse.up();assert.equal(await p.locator('#sc159Pulse').isVisible(),true);assert.equal(await p.locator('#scPlanSectionFood').evaluate(e=>document.activeElement===e),true);
 });
+test('Advisor detailed advice refreshes after city changes while panel stays open',async t=>{
+ const p=await game(t);
+ const advice=p.locator('#sc1310AdvisorAdvice');
+ await p.waitForFunction(()=>document.querySelector('#sc1310AdvisorAdvice')?.textContent.includes('Food forecast'));
+ await p.evaluate(()=>{window.__advisorTest.empty();window.__advisorTest.advance();});
+ await p.waitForFunction(()=>document.querySelector('#sc1310AdvisorAdvice')?.textContent.includes('Food shortage'));
+ assert.match(await advice.innerText(),/Food shortage/);
+ assert.doesNotMatch(await advice.innerText(),/Food forecast/);
+});
 test('Advisor preserves a focused review control through changing evidence and ignores paused vacancies',async t=>{
  const p=await game(t);await p.evaluate(()=>{window.__advisorTest.seed('farm',1100,100);window.__advisorTest.seed('market',1150,100);window.__advisorTest.seed('bakery',1200,100);});
  await p.waitForFunction(()=>document.querySelector('[data-advisor-id="staffing"]'));const button=p.locator('[data-advisor-id="staffing"] button');await button.focus();await p.evaluate(()=>window.__advisorTest.advance());await p.waitForTimeout(750);assert.equal(await button.evaluate(e=>document.activeElement===e),true);

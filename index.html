@@ -5113,6 +5113,7 @@ body input, body textarea, body [contenteditable="true"] {
  document.getElementById('sc190ChronicleBtn')?.addEventListener('click',()=>show(false));document.getElementById('sc189HelpButton')?.addEventListener('click',()=>show(false));
  window.addEventListener('keydown',e=>{if(e.key==='Escape')show(false)});
  document.addEventListener('sc:built',()=>{if(!panel.hidden)refresh()});
+ setInterval(refresh,500);
  const welcome=document.getElementById('sc1310Welcome');
   welcome.querySelector('#scStartChoose').addEventListener('click',()=>{welcome.querySelector('.scStartCard').classList.add('scChoosingHome');welcome.querySelector('#scStartLocation').hidden=false;welcome.querySelector('#scStartChoose').setAttribute('aria-expanded','true');welcome.querySelector('input[name="scStartOrigin"]:checked').focus();});
  welcome.querySelector('#scStartBack').addEventListener('click',()=>{welcome.querySelector('.scStartCard').classList.remove('scChoosingHome');welcome.querySelector('#scStartLocation').hidden=true;welcome.querySelector('#scStartChoose').setAttribute('aria-expanded','false');welcome.querySelector('#scStartChoose').focus();});
