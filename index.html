@@ -738,6 +738,40 @@ function sc16PaintUnitDetails(g,x,y,type,color){
  g.fillStyle='#634b32';g.fillRect(x-6,y+6,12,2);g.fillStyle='#e3c581';g.fillRect(x-1,y+6,3,2);g.restore();
 }
 
+// Deterministic, footprint-safe civic silhouette used by the graphics pass.
+function scDrawBuildingSilhouette(g,b){
+ const x=b.x,y=b.y,kind=b.type||'house',enemy=b.team===1;
+ g.save();g.fillStyle='rgba(17,25,19,.28)';g.beginPath();g.ellipse(x+3,y+14,24,8,0,0,Math.PI*2);g.fill();
+ g.fillStyle=enemy?'#9d625c':'#b78b62';g.fillRect(x-18,y-13,36,25);
+ g.fillStyle=enemy?'#e0a28b':'#e3c99b';g.beginPath();g.moveTo(x-22,y-13);g.lineTo(x,y-29);g.lineTo(x+22,y-13);g.closePath();g.fill();
+ g.strokeStyle=enemy?'#d47b6d':'#6f523c';g.lineWidth=1.5;g.stroke();
+ g.fillStyle=kind==='market'?'#d9b36f':'#5a4235';g.fillRect(x-4,y-1,8,13);
+ g.fillStyle=kind==='clinic'?'#f2e7c3':'#f4d98f';g.fillRect(x-13,y-8,6,5);g.fillRect(x+7,y-8,6,5);
+ if(kind==='market'){g.fillStyle='#bd725e';g.fillRect(x-19,y-16,38,5)}
+ if(kind==='granary'){g.fillStyle='#806040';g.fillRect(x-20,y+7,40,4)}
+ g.restore();
+}
+window.scDrawBuildingSilhouette=scDrawBuildingSilhouette;
+function scDrawUnit(g,u){
+ const x=u.x,y=u.y,type=u.type||'worker',color=u.team===1?'#b85c54':'#4b95bd';
+ g.save();g.fillStyle='rgba(6,22,17,.36)';g.beginPath();g.ellipse(x+2,y+9,11,4,0,0,Math.PI*2);g.fill();
+ g.fillStyle=color;g.beginPath();g.moveTo(x-8,y-7);g.lineTo(x+8,y-7);g.lineTo(x+6,y+7);g.lineTo(x-6,y+7);g.closePath();g.fill();
+ g.fillStyle='#d8b88d';g.beginPath();g.arc(x,y-12,5,0,Math.PI*2);g.fill();
+ g.strokeStyle='#e1c88e';g.lineWidth=1.2;g.stroke();
+ if(type==='soldier'){g.fillStyle='#a9b9c2';g.fillRect(x-6,y-16,12,4);g.strokeStyle='#dfc99d';g.beginPath();g.moveTo(x+9,y+5);g.lineTo(x+14,y-17);g.stroke();}
+ else if(type==='archer'){g.strokeStyle='#dfc28d';g.beginPath();g.arc(x+8,y-1,11,-1.3,1.3);g.stroke();}
+ else {g.fillStyle='#9e7950';g.fillRect(x-7,y-20,14,4);g.strokeStyle='#c9a56b';g.beginPath();g.moveTo(x+8,y+7);g.lineTo(x+14,y-16);g.stroke();}
+ g.restore();
+}
+window.scDrawUnit=scDrawUnit;
+function scDrawTerrainDetail(g,width,height){
+ g.save();for(let i=0;i<28;i++){const x=(i*73.17)%width,y=18+(i*47.31)%(height-36);g.strokeStyle=i%3?'rgba(61,105,61,.42)':'rgba(221,216,137,.5)';g.lineWidth=1;g.beginPath();g.moveTo(x-3,y+3);g.lineTo(x,y-4);g.lineTo(x+3,y+3);g.stroke()}g.restore();
+}
+function scDrawAtmosphere(g,width,height,time){
+ g.save();const v=g.createRadialGradient(width/2,height/2,Math.min(width,height)*.15,width/2,height/2,Math.max(width,height)*.72);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(9,24,18,.24)');g.fillStyle=v;g.fillRect(0,0,width,height);for(let i=0;i<12;i++){const x=(i*137.71+Math.sin(time*.42+i)*14)%width,y=(i*97.31+Math.cos(time*.35+i*2)*10)%height;g.globalAlpha=.12+.08*(.5+.5*Math.sin(time*1.6+i));g.fillStyle=i%3?'#c9dca1':'#e8cf8d';g.beginPath();g.arc(x,y,i%4===0?1.8:1,0,Math.PI*2);g.fill()}g.restore();
+}
+window.scDrawTerrainDetail=scDrawTerrainDetail;window.scDrawAtmosphere=scDrawAtmosphere;
+
 const alive=o=>o&&o.hp>0;function init(){scReadyCycles=0;scSelectedLocation=scOriginId;scOverview=false;scCityIdentity=Date.now().toString(36)+'-'+(++scCitySequence);stats={spawned:[0,0],lost:[0,0],kills:[0,0],damage:[0,0],gathered:[0,0],raids:0};aiRally=null;scConstructionSites=[];units=[];buildings=[];nodes=[];effects=[];projectiles=[];combatTexts=[];gold=240;wood=100;stone=30;food=90;population=8;happiness=70;cityTimer=0;cityCycleNumber=0;cityLedger=null;cityFlows=[];cityHouseholds=[];citySatisfactionLast=null;cityGrowth={progress:0,departure:0,reason:"Build serviced housing to welcome residents."};tradeGoods=0;goodsSold=0;window.sc1411LogisticsSnapshot=null;window.sc1412MarketDistributionSnapshot=null;scFestivalCooldown=0;scEventFoodReserve=30;cityProsperity=0;wellCoverage=0;roadMarkets=0;healerCoverage=0;granaryCount=0;employment={jobs:0,filled:0,available:0,byId:new Map()};aiGold=240;aiWood=100;trainQueue=[];aiQueue=[];trainTimer=0;aiTrainTimer=0;aiDecision=0;aiAttackTimer=0;difficulty=el("difficulty").value;selected=[];inspectedBuilding=null;window.scRTSSelected=[];window.scRTSInspectedBuilding=null;drag=null;mode=null;paused=false;ended=false;elapsed=0;aiTimer=0;resourceTimer=0;nextId=1;uiRefresh=0;scUndoStack.length=0;addBuilding(0,'keep',120,310);if(scScenario==='skirmish')addBuilding(1,'keep',1170,440);for(let i=0;i<3;i++)addUnit(0,'worker',170,255+i*40);for(let i=0;i<3;i++)addUnit(0,'soldier',205,290+i*30);if(scScenario==='skirmish'){for(let i=0;i<3;i++)addUnit(1,'soldier',1090,400+i*40);for(let i=0;i<3;i++)addUnit(1,'worker',1125,340+i*42);}for(let i=0;i<7;i++)nodes.push({x:280+(i%3)*50,y:110+Math.floor(i/3)*65,type:'tree',amount:600,radius:18,renew:0});for(let i=0;i<5;i++)nodes.push({x:430+(i%2)*70,y:430+Math.floor(i/2)*55,type:'gold',amount:800,radius:19,renew:0});for(let i=0;i<5;i++)nodes.push({x:330+(i%2)*75,y:280+Math.floor(i/2)*43,type:'stone',amount:700,radius:19,renew:0});// Additional deposits support a larger settlement without replacing the original start.
 for(let i=0;i<10;i++)nodes.push({x:1390+(i%5)*70,y:120+Math.floor(i/5)*120,type:i%3===0?'stone':'tree',amount:650,radius:18,renew:0});
 
@@ -1439,8 +1473,10 @@ function fisheryPoint(p){
  }
  return candidates.find(q=>canPlace('fishery',q,null))||{x:baseX,y:755};
 }
-// Small amenities use a road-sized footprint; other buildings retain their spacing.
+// Small amenities use a road-sized footprint; other buildings retain a readable
+// planning buffer so their silhouettes and labels do not collapse together.
 const compactAmenity=t=>t==='well'||t==='garden'||t==='plaza'||t==='clinic';
+const scBuildingClearance=8;
 // Compact civic structures align to a 22px planning grid, while retaining
 // free placement as a fallback where snapping would block a valid site.
 function civicGridPoint(type,p){
@@ -1461,13 +1497,14 @@ function canPlace(type,p,worker){
  (civicCosts[type]||dist(worker,p)<180)&&
  ! [...buildings,...scConstructionSites].some(b=>{
   const min=type==='road'&&b.type==='road'?32:
-    (small||type==='road')?(radius+b.radius+(small?0:3)):
-    b.radius*(b.type==='road'?1:.83)+(type==='house'?13:24);
+    (small||type==='road')?(radius+b.radius+(small?scBuildingClearance:3)):
+    b.radius*(b.type==='road'?1:.83)+(type==='house'?13:24)+(type==='granary'?0:scBuildingClearance);
   return dist(b,p)<min;
  })&&
  !nodes.some(n=>dist(n,p)<n.radius+(small?6:type==='road'?15:24))&&
  !(p.x>445&&p.x<550&&Math.abs(p.y-315)>30);
 }
+window.scCanPlace=canPlace;
 
 
 const scDefenseCosts={tower:{gold:100,wood:100,stone:0},fortress:{gold:180,wood:150,stone:120},wall:{gold:0,wood:30,stone:60}};
@@ -1483,7 +1520,7 @@ function scDefenseReason(type,p){
  if(!worker)return 'No living workers are available. Recruit a worker to build a '+type+'.';
  if(gold<cost.gold||wood<cost.wood||stone<cost.stone)return type[0].toUpperCase()+type.slice(1)+' requires '+[cost.gold&&cost.gold+' gold',cost.wood&&cost.wood+' wood',cost.stone&&cost.stone+' stone'].filter(Boolean).join(' and ')+'. Available: '+Math.floor(gold)+' gold, '+Math.floor(wood)+' wood, '+Math.floor(stone)+' stone. Nothing spent.';
  if(p&&dist(worker,p)>=180)return 'Move a worker closer: place the '+type+' within 180 map units of a friendly worker, inside the blue circle. Nothing spent.';
- if(p&&!canPlace(type,p,worker))return 'This '+type+' plot is blocked. Choose clear ground away from buildings, resources, river and map edges. Nothing spent.';
+ if(p&&!canPlace(type,p,worker))return 'This '+type+' plot is blocked. Choose clear ground with at least '+scBuildingClearance+' map units between structures. Nothing spent.';
  return '';
 }
 
@@ -1658,6 +1695,8 @@ const label=(t,x,y,size=11,color='#f6edd6')=>{ctx.textAlign='center';ctx.font=`b
 const groundBiome=scOriginProfile().biome;
 if(!sc16GroundSurface||sc16GroundBiome!==groundBiome){sc16GroundSurface=document.createElement('canvas');sc16GroundSurface.width=W;sc16GroundSurface.height=H;sc16PaintGround(sc16GroundSurface.getContext('2d'),W,H,groundBiome);sc16GroundBiome=groundBiome;}
 ctx.drawImage(sc16GroundSurface,0,0);
+if(window.scGraphicsTerrainDetails!==false)scDrawTerrainDetail(ctx,W,H);
+if(window.scGraphicsAtmosphere!==false)scDrawAtmosphere(ctx,W,H,visualTime);
 // Distant ridgelines and ground details give the scene more depth.
 ctx.save();ctx.globalAlpha=.26;ctx.fillStyle='#263e35';ctx.beginPath();ctx.moveTo(0,0);for(let x=0;x<=W;x+=25){let ridge=25+11*Math.sin(x*.018)+8*Math.cos(x*.043);ctx.lineTo(x,ridge)}ctx.lineTo(W,0);ctx.closePath();ctx.fill();ctx.globalAlpha=.18;ctx.fillStyle='#a3b487';for(let i=0;i<55;i++){let x=(i*181.17)%W,y=65+(i*113.7)%(H-110);if(x>455&&x<545)continue;ctx.beginPath();ctx.ellipse(x,y,9+(i%4)*3,2.5,((i%7)-3)*.13,0,Math.PI*2);ctx.fill()}ctx.restore();
 // Southern sea: only coastal settlements can operate fisheries.
@@ -1886,6 +1925,7 @@ for(const b of buildings){if(!alive(b)||b.type==='road')continue;
  ctx.fillStyle=shade;ctx.beginPath();ctx.arc(0,0,r*1.65,0,Math.PI*2);ctx.fill();ctx.restore();
 }
 for(let b of buildings){if(!['house','farm','fishery','market','well','lumberyard','road','clinic','granary','garden','plaza','bakery','theater'].includes(b.type))continue;let x=b.x,y=b.y;
+if(window.scGraphicsBuildingSilhouette!==false&&['house','market','clinic','granary'].includes(b.type)){ctx.globalAlpha=.18;scDrawBuildingSilhouette(ctx,b);ctx.globalAlpha=1;}
 // Compact civic objects use dedicated LOW-PROFILE drawings. Do not pass them
 // through the generic building/tower roof renderer or its later overlays.
 if(['garden','plaza','clinic','granary','bakery','theater'].includes(b.type)){
@@ -2309,6 +2349,8 @@ function drawLivingNeighborhood(){
  }
 }
 // Small readable character silhouettes, each with class-specific equipment.
+// The compact silhouette pass adds a clear class read before the detailed pass.
+for(const u of units){if(window.scGraphicsUnitSilhouette!==false){ctx.globalAlpha=.16;scDrawUnit(ctx,u);ctx.globalAlpha=1}}
 drawTerrainFinish();
 drawRoadSurfaceFinish();
 drawStreetDetails();
