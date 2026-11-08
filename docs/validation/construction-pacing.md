@@ -26,7 +26,7 @@ The new rate is a first playable candidate. This does not prove the whole town t
 - Schema 5 records pending projects and validates references and refund costs atomically. No-project saves use existing schemas; old files remain readable.
 - Roads and defenses remain instant in this slice. Assigned repairs and road speed bonuses remain future work.
 
-## Evidence
+## Prototype evidence
 
 - 15/15 new construction browser scenarios passed: actual paid placement, no-worker waiting/no premature food, travel and faster multiple builders, gathering interruption, current rate versus unchanged skirmish, same-unit right-click assignment, refund/Undo/restart, malformed saves, all five origin identities, native controls and Pause at 390/1440 pixels.
 - Existing economy/save/steward batch: 42/43 passed. The sole failure (`housing develops gradually, shows occupancy and requires food, water and roads for migration`) was `page.goto: Timeout 6000ms exceeded` before entering the game under concurrent browser load. Its isolated rerun passed. No assertion tolerance or test skip was introduced.
@@ -37,3 +37,12 @@ The new rate is a first playable candidate. This does not prove the whole town t
 ## Owner demonstration
 
 The package contains the entire standalone HTML game, not a mockup. A recorded opening shows the same workers gathering wood/stone/gold, constructing a farm and house, returning to gathering, then adding a well and three roads. The recording explicitly labels 4× simulation speed; no resources were fabricated. The playable HTML has normal speed and no demonstration hooks or captions. Keep preview saves separate from the older live game because schema 5 is not supported there.
+
+
+## Continuation after owner playtest
+
+The owner played the downloadable prototype, preferred it strongly, and authorized continuing. Retain the tested 2.5 resource gathering rate and shared map-worker construction model. Corrected the review's remaining placement-guidance wording: city civic sites describe builder assignment; roads and skirmish civic buildings describe instant placement. This changes instructions only.
+
+The source push started the full GitHub suite automatically. One status inspection found run 42430159543 still in progress; it was not polled. Final-head CI remains required before merge. This branch includes the independent Chronicle fix from PR #30; PR #29's Governor Hall integration remains separate. No merge/publication authorization is inferred from approval of the playable direction.
+
+Final wording revision: `CHROMIUM_PATH=/usr/bin/chromium node --test tests/construction.test.cjs` passed 15/15 in the continuation. Full final-head verification is still required; focused local checks do not replace it.

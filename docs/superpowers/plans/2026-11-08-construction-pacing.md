@@ -27,17 +27,19 @@
 **Files:** index.html, tests/construction.test.cjs
 **Interfaces:** scConstruction.snapshot(), assign(id), release(id), cancel(id), locate(id); all mutations validate current site and selection.
 
-- [ ] Write tests of actual placement and simulation, income and project roundtrip; run to confirm missing behaviour.
-- [ ] Add sites, assignment, movement/work/completion, resource rate, cancellation, footprint and undo handling.
-- [ ] Extend snapshot validation/rebuild atomically for schema 5 and references.
-- [ ] Run construction tests and affected save/steward/economy suites; commit.
+- [x] Write tests of actual placement and simulation, income and project roundtrip; run to confirm missing behaviour.
+- [x] Add sites, assignment, movement/work/completion, resource rate, cancellation, footprint and undo handling.
+- [x] Extend snapshot validation/rebuild atomically for schema 5 and references.
+- [x] Run construction tests and affected save/steward/economy suites; commit.
 
 ### Task 2: Native controls and validation
 
 **Files:** index.html, tests/construction.test.cjs, docs/validation/construction-pacing.md
 **Interfaces:** UI calls Task 1 engine APIs; no duplicated simulation state.
 
-- [ ] Add failing phone/desktop panel interaction tests.
-- [ ] Add Worksites panel with stable controls, canvas site artwork, right-click assignment and accurate placement guidance.
-- [ ] Run focused tests; repeat opening measurements; record results and limitations.
+- [x] Add failing phone/desktop panel interaction tests.
+- [x] Add Worksites panel with stable controls, canvas site artwork, right-click assignment and accurate placement guidance.
+- [x] Run focused tests; repeat opening measurements; record results and limitations.
 - [ ] Run full repository suite once, resolve regressions, obtain one fresh whole-branch review, commit and create draft PR. Do not poll CI.
+
+Full CI remains a merge gate; owner playtest accepted the direction and authorized finishing the draft. No CI polling.
