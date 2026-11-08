@@ -18,3 +18,9 @@ test('building silhouettes are deterministic and preserve the caller canvas stat
  });
  assert.equal(result.stable,true);assert.ok(result.painted>100);assert.deepEqual(result.state,['#123456','#654321',7,.8]);
 });
+
+test('unit silhouettes distinguish worker, soldier, and archer states',async t=>{
+ const {page}=await browserPage(t,browser);await page.goto(url);await page.waitForFunction(()=>window.scDrawUnit);
+ const result=await page.evaluate(()=>{const out={};for(const type of ['worker','soldier','archer']){const c=document.createElement('canvas');c.width=120;c.height=100;const g=c.getContext('2d');window.scDrawUnit(g,{x:60,y:58,type,team:0});out[type]=c.toDataURL();}return out;});
+ assert.notEqual(result.worker,result.soldier);assert.notEqual(result.soldier,result.archer);assert.notEqual(result.worker,result.archer);
+});
