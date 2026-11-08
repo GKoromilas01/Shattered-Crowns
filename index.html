@@ -317,6 +317,21 @@ function sc16PaintUnitDetails(g,x,y,type,color){
  g.fillStyle='#634b32';g.fillRect(x-6,y+6,12,2);g.fillStyle='#e3c581';g.fillRect(x-1,y+6,3,2);g.restore();
 }
 
+// Deterministic, footprint-safe civic silhouette used by the graphics pass.
+function scDrawBuildingSilhouette(g,b){
+ const x=b.x,y=b.y,kind=b.type||'house',enemy=b.team===1;
+ g.save();g.fillStyle='rgba(17,25,19,.28)';g.beginPath();g.ellipse(x+3,y+14,24,8,0,0,Math.PI*2);g.fill();
+ g.fillStyle=enemy?'#9d625c':'#b78b62';g.fillRect(x-18,y-13,36,25);
+ g.fillStyle=enemy?'#e0a28b':'#e3c99b';g.beginPath();g.moveTo(x-22,y-13);g.lineTo(x,y-29);g.lineTo(x+22,y-13);g.closePath();g.fill();
+ g.strokeStyle=enemy?'#d47b6d':'#6f523c';g.lineWidth=1.5;g.stroke();
+ g.fillStyle=kind==='market'?'#d9b36f':'#5a4235';g.fillRect(x-4,y-1,8,13);
+ g.fillStyle=kind==='clinic'?'#f2e7c3':'#f4d98f';g.fillRect(x-13,y-8,6,5);g.fillRect(x+7,y-8,6,5);
+ if(kind==='market'){g.fillStyle='#bd725e';g.fillRect(x-19,y-16,38,5)}
+ if(kind==='granary'){g.fillStyle='#806040';g.fillRect(x-20,y+7,40,4)}
+ g.restore();
+}
+window.scDrawBuildingSilhouette=scDrawBuildingSilhouette;
+
 const alive=o=>o&&o.hp>0;function init(){scReadyCycles=0;scSelectedLocation=scOriginId==='brookstead'?'brookstead':'home';scOverview=false;scCityIdentity=Date.now().toString(36)+'-'+(++scCitySequence);stats={spawned:[0,0],lost:[0,0],kills:[0,0],damage:[0,0],gathered:[0,0],raids:0};aiRally=null;units=[];buildings=[];nodes=[];effects=[];projectiles=[];combatTexts=[];gold=240;wood=100;stone=30;food=90;population=8;happiness=70;cityTimer=0;cityCycleNumber=0;cityLedger=null;cityFlows=[];cityHouseholds=[];citySatisfactionLast=null;cityGrowth={progress:0,departure:0,reason:"Build serviced housing to welcome residents."};tradeGoods=0;goodsSold=0;window.sc1411LogisticsSnapshot=null;window.sc1412MarketDistributionSnapshot=null;scFestivalCooldown=0;scEventFoodReserve=30;cityProsperity=0;wellCoverage=0;roadMarkets=0;healerCoverage=0;granaryCount=0;employment={jobs:0,filled:0,available:0,byId:new Map()};aiGold=240;aiWood=100;trainQueue=[];aiQueue=[];trainTimer=0;aiTrainTimer=0;aiDecision=0;aiAttackTimer=0;difficulty=el("difficulty").value;selected=[];inspectedBuilding=null;window.scRTSSelected=[];window.scRTSInspectedBuilding=null;drag=null;mode=null;paused=false;ended=false;elapsed=0;aiTimer=0;resourceTimer=0;nextId=1;uiRefresh=0;scUndoStack.length=0;addBuilding(0,'keep',120,310);if(scScenario==='skirmish')addBuilding(1,'keep',1170,440);for(let i=0;i<3;i++)addUnit(0,'worker',170,255+i*40);for(let i=0;i<3;i++)addUnit(0,'soldier',205,290+i*30);if(scScenario==='skirmish'){for(let i=0;i<3;i++)addUnit(1,'soldier',1090,400+i*40);for(let i=0;i<3;i++)addUnit(1,'worker',1125,340+i*42);}for(let i=0;i<7;i++)nodes.push({x:280+(i%3)*50,y:110+Math.floor(i/3)*65,type:'tree',amount:600,radius:18,renew:0});for(let i=0;i<5;i++)nodes.push({x:430+(i%2)*70,y:430+Math.floor(i/2)*55,type:'gold',amount:800,radius:19,renew:0});for(let i=0;i<5;i++)nodes.push({x:330+(i%2)*75,y:280+Math.floor(i/2)*43,type:'stone',amount:700,radius:19,renew:0});// Additional deposits support a larger settlement without replacing the original start.
 for(let i=0;i<10;i++)nodes.push({x:1390+(i%5)*70,y:120+Math.floor(i/5)*120,type:i%3===0?'stone':'tree',amount:650,radius:18,renew:0});
 
@@ -1412,6 +1427,7 @@ for(const b of buildings){if(!alive(b)||b.type==='road')continue;
  ctx.fillStyle=shade;ctx.beginPath();ctx.arc(0,0,r*1.65,0,Math.PI*2);ctx.fill();ctx.restore();
 }
 for(let b of buildings){if(!['house','farm','fishery','market','well','lumberyard','road','clinic','granary','garden','plaza','bakery','theater'].includes(b.type))continue;let x=b.x,y=b.y;
+if(window.scGraphicsBuildingSilhouette!==false&&['house','market','clinic','granary'].includes(b.type)){ctx.globalAlpha=.18;scDrawBuildingSilhouette(ctx,b);ctx.globalAlpha=1;}
 // Compact civic objects use dedicated LOW-PROFILE drawings. Do not pass them
 // through the generic building/tower roof renderer or its later overlays.
 if(['garden','plaza','clinic','granary','bakery','theater'].includes(b.type)){
