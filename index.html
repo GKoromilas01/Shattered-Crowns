@@ -1003,8 +1003,10 @@ function fisheryPoint(p){
  }
  return candidates.find(q=>canPlace('fishery',q,null))||{x:baseX,y:755};
 }
-// Small amenities use a road-sized footprint; other buildings retain their spacing.
+// Small amenities use a road-sized footprint; other buildings retain a readable
+// planning buffer so their silhouettes and labels do not collapse together.
 const compactAmenity=t=>t==='well'||t==='garden'||t==='plaza'||t==='clinic';
+const scBuildingClearance=18;
 // Compact civic structures align to a 22px planning grid, while retaining
 // free placement as a fallback where snapping would block a valid site.
 function civicGridPoint(type,p){
@@ -1025,8 +1027,8 @@ function canPlace(type,p,worker){
  (civicCosts[type]||dist(worker,p)<180)&&
  !buildings.some(b=>{
   const min=type==='road'&&b.type==='road'?32:
-    (small||type==='road')?(radius+b.radius+(small?0:3)):
-    b.radius*(b.type==='road'?1:.83)+(type==='house'?13:24);
+    (small||type==='road')?(radius+b.radius+(small?scBuildingClearance:3)):
+    b.radius*(b.type==='road'?1:.83)+(type==='house'?13:24)+scBuildingClearance;
   return dist(b,p)<min;
  })&&
  !nodes.some(n=>dist(n,p)<n.radius+(small?6:type==='road'?15:24))&&
@@ -1047,7 +1049,7 @@ function scDefenseReason(type,p){
  if(!worker)return 'No living workers are available. Recruit a worker to build a '+type+'.';
  if(gold<cost.gold||wood<cost.wood||stone<cost.stone)return type[0].toUpperCase()+type.slice(1)+' requires '+[cost.gold&&cost.gold+' gold',cost.wood&&cost.wood+' wood',cost.stone&&cost.stone+' stone'].filter(Boolean).join(' and ')+'. Available: '+Math.floor(gold)+' gold, '+Math.floor(wood)+' wood, '+Math.floor(stone)+' stone. Nothing spent.';
  if(p&&dist(worker,p)>=180)return 'Move a worker closer: place the '+type+' within 180 map units of a friendly worker, inside the blue circle. Nothing spent.';
- if(p&&!canPlace(type,p,worker))return 'This '+type+' plot is blocked. Choose clear ground away from buildings, resources, river and map edges. Nothing spent.';
+ if(p&&!canPlace(type,p,worker))return 'This '+type+' plot is blocked. Choose clear ground with at least '+scBuildingClearance+' map units between structures. Nothing spent.';
  return '';
 }
 
