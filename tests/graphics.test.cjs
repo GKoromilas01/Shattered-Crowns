@@ -24,3 +24,9 @@ test('unit silhouettes distinguish worker, soldier, and archer states',async t=>
  const result=await page.evaluate(()=>{const out={};for(const type of ['worker','soldier','archer']){const c=document.createElement('canvas');c.width=120;c.height=100;const g=c.getContext('2d');window.scDrawUnit(g,{x:60,y:58,type,team:0});out[type]=c.toDataURL();}return out;});
  assert.notEqual(result.worker,result.soldier);assert.notEqual(result.soldier,result.archer);assert.notEqual(result.worker,result.archer);
 });
+
+test('terrain and atmosphere details are stable across frames',async t=>{
+ const {page}=await browserPage(t,browser);await page.goto(url);await page.waitForFunction(()=>window.scDrawTerrainDetail&&window.scDrawAtmosphere);
+ const result=await page.evaluate(()=>{const c=document.createElement('canvas');c.width=160;c.height=100;const g=c.getContext('2d');const draw=()=>{g.clearRect(0,0,160,100);window.scDrawTerrainDetail(g,160,100);window.scDrawAtmosphere(g,160,100,12)};draw();const a=c.toDataURL();draw();return {stable:a===c.toDataURL(),pixels:[...g.getImageData(0,0,160,100).data].filter((v,i)=>i%4===3&&v>0).length};});
+ assert.equal(result.stable,true);assert.ok(result.pixels>100);
+});
