@@ -1476,7 +1476,7 @@ function fisheryPoint(p){
 // Small amenities use a road-sized footprint; other buildings retain a readable
 // planning buffer so their silhouettes and labels do not collapse together.
 const compactAmenity=t=>t==='well'||t==='garden'||t==='plaza'||t==='clinic';
-const scBuildingClearance=18;
+const scBuildingClearance=8;
 // Compact civic structures align to a 22px planning grid, while retaining
 // free placement as a fallback where snapping would block a valid site.
 function civicGridPoint(type,p){
@@ -1498,7 +1498,7 @@ function canPlace(type,p,worker){
  ! [...buildings,...scConstructionSites].some(b=>{
   const min=type==='road'&&b.type==='road'?32:
     (small||type==='road')?(radius+b.radius+(small?scBuildingClearance:3)):
-    b.radius*(b.type==='road'?1:.83)+(type==='house'?13:24)+scBuildingClearance;
+    b.radius*(b.type==='road'?1:.83)+(type==='house'?13:24)+(type==='granary'?0:scBuildingClearance);
   return dist(b,p)<min;
  })&&
  !nodes.some(n=>dist(n,p)<n.radius+(small?6:type==='road'?15:24))&&
