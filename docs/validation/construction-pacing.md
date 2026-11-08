@@ -46,3 +46,6 @@ The owner played the downloadable prototype, preferred it strongly, and authoriz
 The source push started the full GitHub suite automatically. One status inspection found run 42430159543 still in progress; it was not polled. Final-head CI remains required before merge. This branch includes the independent Chronicle fix from PR #30; PR #29's Governor Hall integration remains separate. No merge/publication authorization is inferred from approval of the playable direction.
 
 Final wording revision: `CHROMIUM_PATH=/usr/bin/chromium node --test tests/construction.test.cjs` passed 15/15 in the continuation. Full final-head verification is still required; focused local checks do not replace it.
+
+
+The packaged smoke run exposed an outdated setup assumption: the road test waited for 500 stone in 60 wall-clock seconds before testing a largest plan costing only 288 stone. At the accepted 2.5 rate, that setup timed out. Updated the setup to gather the largest tested plan's actual cost (24 sections × 12 stone), keeping the 60-second bound and all exact road geometry, spending and Undo assertions. No production balance or test resource injection changed.
