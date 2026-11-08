@@ -49,3 +49,11 @@ Final wording revision: `CHROMIUM_PATH=/usr/bin/chromium node --test tests/const
 
 
 The packaged smoke run exposed an outdated setup assumption: the road test waited for 500 stone in 60 wall-clock seconds before testing a largest plan costing only 288 stone. At the accepted 2.5 rate, that setup timed out. Updated the setup to gather the largest tested plan's actual cost (24 sections × 12 stone), keeping the 60-second bound and all exact road geometry, spending and Undo assertions. No production balance or test resource injection changed.
+
+## Full-CI regression updates
+
+The first full push run 42430960445 completed 333 scenarios: 328 passed, 5 failed. Failure logs identify outdated pre-feature expectations, not navigation failures: the four native-scrollbar scenarios expected sixteen cards despite the new Worksites command, and the resource-funded Brookstead scenario expected ten seconds of gathering plus instant operational buildings.
+
+Updated all four palette scenarios to require seventeen cards, including exactly one Worksites entry, while retaining the native-scrollbar clipping, whole-column pagination, final-card reachability, Pause and no-spending assertions. The Brookstead scenario now gathers the actual four-project wood budget through the current simulation, checks exact material deduction and non-operational foundations, assigns the same workers, and waits for completion. Residents can migrate during construction; pausing an operating yard is checked to release its jobs without reducing healthcare staff, and the final occupied Townhouse, serviced housing, food, prosperity and conservation assertions remain.
+
+The five reported scenarios pass locally with Chromium 154 using `node --test --test-concurrency=1 --test-name-pattern='Resource-funded Brookstead|Native-scrollbar palette' tests/growth.test.cjs tests/presentation.test.cjs`. No production game bytes, gathering rate, prices, construction timing, timeout, skip or injected resource grants changed. Final full-CI verification remains a merge gate and is left to finish independently.
