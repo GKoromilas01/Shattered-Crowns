@@ -55,14 +55,16 @@ test('Chronicle offers attributed literature and a skippable scene that preserve
  await literature.locator('summary').click();assert.match(await literature.innerText(),/Shakespeare/);assert.match(await literature.innerText(),/Sonnet 18/);assert.match(await literature.innerText(),/Original settlement saying/);
  const before=await p.evaluate(()=>({state:scCitySave.capture().state,paused:scCitySave.status().paused,view:scCitySave.capture().view}));
  await p.locator('#sc22SceneOpen').click();await p.locator('#sc22Vignette').waitFor({state:'visible'});assert.equal(await p.evaluate(()=>scCampaign.status().overview),true);
+ assert.equal(await p.locator('#scResponsiveHud').isVisible(),false);
  await p.keyboard.press('F3');assert.equal(await p.evaluate(()=>scCitySave.status().paused),before.paused,'Game hotkeys must not change the city under the scene');
  await p.waitForTimeout(300);assert.deepEqual(await p.evaluate(()=>scCitySave.capture().state),before.state);
- await p.keyboard.press('Escape');await p.locator('#sc22Vignette').waitFor({state:'hidden'});assert.equal(await p.evaluate(()=>scCampaign.status().overview),false);assert.equal(await p.evaluate(()=>scCitySave.status().paused),before.paused);assert.deepEqual(await p.evaluate(()=>scCitySave.capture().view),before.view);
+ await p.keyboard.press('Escape');await p.locator('#sc22Vignette').waitFor({state:'hidden'});assert.equal(await p.locator('#scResponsiveHud').isVisible(),true);assert.equal(await p.evaluate(()=>scCampaign.status().overview),false);assert.equal(await p.evaluate(()=>scCitySave.status().paused),before.paused);assert.deepEqual(await p.evaluate(()=>scCitySave.capture().view),before.view);
 });
 test('Scene restores running state, respects reduced motion and cleans up on city changes',async t=>{
  const p=await game(t);await p.emulateMedia({reducedMotion:'reduce'});assert.equal(await p.evaluate(()=>typeof scVignette),'object');
  await p.locator('#sc154Pause').click();assert.equal(await p.evaluate(()=>scVignette.open()),true);assert.equal(await p.evaluate(()=>scVignette.open()),false);
  assert.equal(await p.locator('#sc22Vignette').getAttribute('data-motion'),'still');await p.locator('#sc22SceneSkip').click();assert.equal(await p.evaluate(()=>scCitySave.status().paused),false);
+ assert.equal(await p.evaluate(()=>{scVignette.open();scVignette.close();return scVignette.open();}),true);await p.waitForTimeout(100);assert.equal(await p.locator('#sc22Vignette').isVisible(),true,'An earlier close event must not dismiss a newly opened scene');await p.keyboard.press('Escape');
  await p.locator('#sc154Pause').click();const save=await p.evaluate(()=>scCitySave.capture());await p.evaluate(()=>scVignette.open());assert.equal((await p.evaluate(s=>scCitySave.restore(s),save)).ok,true);assert.equal(await p.locator('#sc22Vignette').isVisible(),false);assert.deepEqual(await p.evaluate(()=>scCitySave.capture().state),save.state);
  await p.evaluate(()=>scVignette.open());await p.evaluate(()=>scCampaign.start('city','brookstead'));assert.equal(await p.locator('#sc22Vignette').isVisible(),false);assert.equal(await p.evaluate(()=>scCampaign.status().overview),false);
 });
