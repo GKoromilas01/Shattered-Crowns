@@ -16,14 +16,14 @@ Stale report targets after restore; held Space/pointer across refresh; storage f
 ### Task 1: Opening hierarchy and workplace discovery
 **Files:** index.html Governor controller and cityEconomyPresentation; tests/city-clarity.test.cjs.
 **Interfaces:** scGovernorUI.model/refresh, scConstruction.snapshot/scConstructionUI.open, scCityEconomy.inspect and existing section navigation.
-- [ ] Add browser regressions for urgent food/housing/construction order, unmeasured state, unchanged orders/Pause, stable held action, stale target and workplace inspection from Employment; watch new requirements fail.
-- [ ] Put report before statistics, compact cards, add status and secondary disclosure, add construction review and validated Employment Inspect; preserve existing controls and focus/scroll.
-- [ ] Run new and Governor/workplace/construction/Advisor/layout/planning regressions; inspect phone/desktop.
+- [x] Add browser regressions for urgent food/housing/construction order, unmeasured state, unchanged orders/Pause, stable held action, stale target and workplace inspection from Employment; watch new requirements fail.
+- [x] Put report before statistics, compact cards, add status and secondary disclosure, add construction review and validated Employment Inspect; preserve existing controls and focus/scroll.
+- [x] Run new and Governor/workplace/construction/Advisor/layout/planning regressions; inspect phone/desktop.
 
 ### Task 2: Unmistakable saves and restrained visual polish
 **Files:** existing save controller/render and UI styles, tests/city-clarity.test.cjs, release.json, README and release notes.
 **Interfaces:** scSavedCity.save/info/exportText and new status events, existing checkpoint keys unchanged.
-- [ ] Test visible manual success/failed storage, unchanged browser time on export, actual download event, load/unfinished assignments and held-input safety at390/1440. Run failing new tests first.
-- [ ] Add City Life browser-save status/actions and visible feedback from existing save events; clarify export labels and actual outcome. Style report/surfaces/focus; no renderer change.
-- [ ] Record v0.20 metadata and backlog/research applications. Run affected save/audio/UI regressions, full npm test and screenshot inspection.
-- [ ] Obtain one independent whole-branch review, fix important reproduced issues, commit exact source, build/verify package and five packaged smokes. Push feature branch and open draft PR with evidence/limits. Keep main/production unchanged.
+- [x] Test visible manual success/failed storage, unchanged browser time on export, actual download event, load/unfinished assignments and held-input safety at390/1440. Run failing new tests first.
+- [x] Add City Life browser-save status/actions and visible feedback from existing save events; clarify export labels and actual outcome. Style report/surfaces/focus; no renderer change.
+- [x] Record v0.20 metadata and backlog/research applications. Run affected save/audio/UI regressions, full npm test and screenshot inspection.
+- [x] Obtain one independent whole-branch review, fix important reproduced issues, commit exact source, build/verify package and five packaged smokes. Push/PR completion is recorded in the execution ledger and PR; keep main/production unchanged.
