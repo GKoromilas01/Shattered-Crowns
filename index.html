@@ -703,7 +703,12 @@ function sc16PaintGround(g,width,height,biome='meadow'){
  }
  g.restore();
 }
-let sc16GroundSurface=null,sc16GroundBiome=null;
+let sc16GroundSurface=null,sc16GroundBiome=null,sc22ContactSurface=null;
+function sc22PaintContact(g,b){
+ if(b.type==='road'||b.hp<=0)return;
+ if(!sc22ContactSurface){const c=document.createElement('canvas');c.width=128;c.height=64;const p=c.getContext('2d');p.scale(1,.5);const shade=p.createRadialGradient(64,64,10,64,64,60);shade.addColorStop(0,'rgba(24,28,20,.38)');shade.addColorStop(.55,'rgba(35,32,21,.17)');shade.addColorStop(1,'rgba(35,32,21,0)');p.fillStyle=shade;p.fillRect(0,0,128,128);sc22ContactSurface=c;}
+ const size=Math.max(24,b.radius||20);g.save();g.drawImage(sc22ContactSurface,b.x-size*1.7+6,b.y-size*.6+10,size*3.4,size*1.7);g.restore();
+}
 function sc16PaintTree(g,n){
  const x=n.x,y=n.y,variant=Math.abs(Math.round(x*13+y*7))%3;
  g.save();g.fillStyle='rgba(17,35,21,.27)';g.beginPath();g.ellipse(x+13,y+13,34,13,-.2,0,Math.PI*2);g.fill();
@@ -725,7 +730,7 @@ function sc16PaintHouseDepth(g,x,y,w,h,level){
  g.fillStyle='#45514b';g.fillRect(right-7,top+14,6,10);g.strokeStyle='#d2b47e';g.lineWidth=1;g.strokeRect(right-7,top+14,6,10);
  const peak=top-(level===1?19:level===2?25:level===3?31:39);
  g.fillStyle=level>=4?'#536a75':level>=3?'#a17359':'#b48255';g.beginPath();g.moveTo(x,peak);g.lineTo(right+9,top+3);g.lineTo(right-8,top+10);g.lineTo(x-8,peak+6);g.fill();
- g.strokeStyle='rgba(247,218,165,.6)';g.lineWidth=1;g.beginPath();g.moveTo(x,peak);g.lineTo(right+9,top+3);g.stroke();
+ g.strokeStyle='rgba(255,221,166,.8)';g.lineWidth=1.25;g.beginPath();g.moveTo(x,peak);g.lineTo(right+9,top+3);g.stroke();
  g.strokeStyle='rgba(64,43,31,.35)';for(let k=1;k<5;k++){const f=k/5;g.beginPath();g.moveTo(x+(w/2+9)*f,peak+(top+3-peak)*f);g.lineTo(x-8+(w/2)*f,peak+6+(top+4-peak)*f);g.stroke();}
  // Timber braces read at normal zoom, without adding collision or decorative structures.
  if(level<3){g.strokeStyle='#77543b';g.lineWidth=2;g.beginPath();g.moveTo(x-w/2+7,y-h+9);g.lineTo(x-9,y+7);g.moveTo(x-w/2+7,y+7);g.lineTo(x-9,y-h+9);g.stroke();}
@@ -1194,7 +1199,17 @@ function scConstructionTick(dt){
  for(const site of [...scConstructionSites]){
   const workers=units.filter(u=>alive(u)&&u.order?.type==='build'&&u.order.target===site&&dist(u,site)<=site.radius+13);
   site.progress=Math.min(site.required,site.progress+([0,1,1.6,2.1,2.5][Math.min(4,workers.length)])*dt);
-  if(site.progress>=site.required){scConstructionSites=scConstructionSites.filter(b=>b!==site);for(const u of units)if(u.order?.type==='build'&&u.order.target===site)u.order=null;addBuilding(0,site.type,site.x,site.y,site.id);msg(site.type.toUpperCase()+' completed. Builders are available for new orders.');window.dispatchEvent(new Event('sc-construction-changed'));}
+  if(site.progress>=site.required){
+   const builders=units.filter(u=>alive(u)&&u.team===0&&u.type==='worker'&&u.order?.type==='build'&&u.order.target===site).sort((a,b)=>a.id-b.id);
+   scConstructionSites=scConstructionSites.filter(b=>b!==site);for(const u of units)if(u.order?.type==='build'&&u.order.target===site)u.order=null;
+   addBuilding(0,site.type,site.x,site.y,site.id);let continuing=0;
+   if(scScenario==='city')for(const u of builders){
+    const next=scConstructionSites.filter(s=>units.filter(w=>alive(w)&&w.team===0&&w.type==='worker'&&w.order?.type==='build'&&w.order.target===s).length<4).sort((a,b)=>dist(u,a)-dist(u,b)||a.id-b.id)[0];
+    if(next){u.order={type:'build',target:next};u.target=null;continuing++;}
+   }
+   msg(site.type.toUpperCase()+' completed. '+(continuing?continuing+' builder(s) moving to the next worksite.':'Builders are available for new orders.'));
+   window.dispatchEvent(new CustomEvent('sc-construction-completed',{detail:{id:site.id,type:site.type,continuing}}));window.dispatchEvent(new Event('sc-construction-changed'));
+  }
  }
 }
 window.scConstruction={
@@ -1539,7 +1554,7 @@ c.addEventListener('pointerup',e=>{
 },true);
 c.addEventListener('contextmenu',e=>e.preventDefault());c.addEventListener('pointerleave',()=>wallPointer=null);c.addEventListener('pointerdown',e=>{if(e.button!==0||ended||drag)return;let p=mouse(e);const startUnit=units.some(u=>u.team===0&&alive(u)&&dist(u,p)<Math.max(43,u.radius+32));
 const panTerrain=false; // AoE II: left-drag selects, never pans. // Drag from empty terrain pans; drag starting on friendly unit selects a group.
-drag={x:p.x,y:p.y,xx:p.x,yy:p.y,rectangle:true,id:e.pointerId,pan:panTerrain,clientX:e.clientX,clientY:e.clientY,scrollX:mapViewport.scrollLeft,scrollY:mapViewport.scrollTop,moved:false};c.setPointerCapture(e.pointerId)});c.addEventListener('pointermove',e=>{wallPointer=mouse(e);if(drag){if(drag.pan){if(Math.hypot(e.clientX-drag.clientX,e.clientY-drag.clientY)>6)drag.moved=true;if(drag.moved){mapViewport.scrollLeft=drag.scrollX-(e.clientX-drag.clientX);mapViewport.scrollTop=drag.scrollY-(e.clientY-drag.clientY);c.classList.add('panning')}}else{let p=mouse(e);drag.xx=p.x;drag.yy=p.y}}});c.addEventListener('pointerup',e=>{if(e.button!==0||!drag||ended||e.pointerId!==drag.id)return;if(drag.pan&&drag.moved){drag=null;c.classList.remove('panning');panTested=true;updateUI();return}let p=mouse(e);if(['tower','fortress','wall','house','farm','fishery','market','well','lumberyard','road','granary','clinic','garden','plaza','bakery','theater'].includes(mode)){e.scConstructionHandled=true;let buildingType=mode;let worker=scDefenseCosts[buildingType]?scDefenseWorker(p):selected.find(u=>u.type==='worker'&&alive(u));if(scDefenseCosts[buildingType]){const reason=scDefenseReason(buildingType,p);if(reason){scDefenseMessage(reason);mode=null;drag=null;wallPointer=null;updateUI();return;}}if(buildingType==='road'){buildRoadLine({x:drag.x,y:drag.y},p,drag.rectangle);drag=null;wallPointer=null;updateUI();return}if(buildingType==='fishery')p=fisheryPoint(p);if(compactAmenity(buildingType))p=civicGridPoint(buildingType,p);if(canPlace(buildingType,p,worker)){const scBefore={gold,wood,stone};if(civicCosts[buildingType]){let cost=civicCosts[buildingType];if(gold<(cost.gold||0)||wood<(cost.wood||0)||stone<(cost.stone||0)){msg('Not enough resources: construction cancelled.');mode=null;drag=null;wallPointer=null;updateUI();return}gold-=cost.gold||0;wood-=cost.wood||0;stone-=cost.stone||0}else if(buildingType==='tower'){gold-=100;wood-=100}else if(buildingType==='wall'){stone-=60;wood-=30}else{gold-=180;wood-=150;stone-=120}if(scDefenseCosts[buildingType])scDefenseMessage(buildingType[0].toUpperCase()+buildingType.slice(1)+' constructed.');const placed=scScenario==='city'&&civicCosts[buildingType]?scStartConstruction(buildingType,p):addBuilding(0,buildingType,p.x,p.y);scRecordUndo({kind:'build',ids:[placed.id],gold:scBefore.gold-gold,wood:scBefore.wood-wood,stone:scBefore.stone-stone,label:buildingType});msg(civicCosts[buildingType]?(scScenario==='city'?buildingType.toUpperCase()+' worksite placed. Select workers and right-click the site, or open Worksites.':buildingType.toUpperCase()+' constructed! Your town is growing.'):buildingType==='tower'?'Defense tower constructed.':buildingType==='wall'?'Stone wall constructed!':'Fortress constructed! Stronger defense with longer range.')}else msg(buildingType==='fishery'?'Fishery needs an open shoreline plot. Click the blue sea; the game will find an available shore location.':(buildingType==='garden'||buildingType==='plaza')?'Choose a clear grass plot inside your settlement. Red preview means the location is blocked.':'Invalid location: use empty ground away from resources, buildings, river and edges. Only defenses require a nearby friendly worker.');mode=null;drag=null;wallPointer=null;updateUI();return}const clickedSite=scConstructionSites.find(b=>dist(b,p)<b.radius+12);if(clickedSite){drag=null;window.scConstructionUI?.open(clickedSite.id);return;}let x1=Math.min(drag.x,p.x),x2=Math.max(drag.x,p.x),y1=Math.min(drag.y,p.y),y2=Math.max(drag.y,p.y);if(Math.hypot(drag.x-p.x,drag.y-p.y)<18){let u=units.filter(u=>u.team===0&&alive(u)&&dist(u,p)<Math.max(43,u.radius+32)).sort((a,b)=>dist(a,p)-dist(b,p)||((a.type==='soldier'||a.type==='archer')?-1:1))[0];selected=u?[u]:[];
+drag={x:p.x,y:p.y,xx:p.x,yy:p.y,rectangle:true,id:e.pointerId,pan:panTerrain,clientX:e.clientX,clientY:e.clientY,scrollX:mapViewport.scrollLeft,scrollY:mapViewport.scrollTop,moved:false};c.setPointerCapture(e.pointerId)});c.addEventListener('pointermove',e=>{wallPointer=mouse(e);if(drag){if(drag.pan){if(Math.hypot(e.clientX-drag.clientX,e.clientY-drag.clientY)>6)drag.moved=true;if(drag.moved){mapViewport.scrollLeft=drag.scrollX-(e.clientX-drag.clientX);mapViewport.scrollTop=drag.scrollY-(e.clientY-drag.clientY);c.classList.add('panning')}}else{let p=mouse(e);drag.xx=p.x;drag.yy=p.y}}});c.addEventListener('pointerup',e=>{if(e.button!==0||!drag||ended||e.pointerId!==drag.id)return;if(drag.pan&&drag.moved){drag=null;c.classList.remove('panning');panTested=true;updateUI();return}let p=mouse(e);if(['tower','fortress','wall','house','farm','fishery','market','well','lumberyard','road','granary','clinic','garden','plaza','bakery','theater'].includes(mode)){e.scConstructionHandled=true;let buildingType=mode;let worker=scDefenseCosts[buildingType]?scDefenseWorker(p):selected.find(u=>u.type==='worker'&&alive(u));if(scDefenseCosts[buildingType]){const reason=scDefenseReason(buildingType,p);if(reason){scDefenseMessage(reason);mode=null;drag=null;wallPointer=null;updateUI();return;}}if(buildingType==='road'){buildRoadLine({x:drag.x,y:drag.y},p,drag.rectangle);drag=null;wallPointer=null;updateUI();return}if(buildingType==='fishery')p=fisheryPoint(p);if(compactAmenity(buildingType))p=civicGridPoint(buildingType,p);if(canPlace(buildingType,p,worker)){const scBefore={gold,wood,stone};if(civicCosts[buildingType]){let cost=civicCosts[buildingType];if(gold<(cost.gold||0)||wood<(cost.wood||0)||stone<(cost.stone||0)){msg('Not enough resources: construction cancelled.');mode=null;drag=null;wallPointer=null;updateUI();return}gold-=cost.gold||0;wood-=cost.wood||0;stone-=cost.stone||0}else if(buildingType==='tower'){gold-=100;wood-=100}else if(buildingType==='wall'){stone-=60;wood-=30}else{gold-=180;wood-=150;stone-=120}if(scDefenseCosts[buildingType])scDefenseMessage(buildingType[0].toUpperCase()+buildingType.slice(1)+' constructed.');const placed=scScenario==='city'&&civicCosts[buildingType]?scStartConstruction(buildingType,p):addBuilding(0,buildingType,p.x,p.y);scRecordUndo({kind:'build',ids:[placed.id],gold:scBefore.gold-gold,wood:scBefore.wood-wood,stone:scBefore.stone-stone,label:buildingType});msg(civicCosts[buildingType]?(scScenario==='city'?buildingType.toUpperCase()+' worksite placed. Select workers and right-click the site, or open Worksites.':buildingType.toUpperCase()+' constructed! Your town is growing.'):buildingType==='tower'?'Defense tower constructed.':buildingType==='wall'?'Stone wall constructed!':'Fortress constructed! Stronger defense with longer range.')}else msg(buildingType==='fishery'?'Fishery needs an open shoreline plot. Click the blue sea; the game will find an available shore location.':(buildingType==='garden'||buildingType==='plaza')?'Choose a clear grass plot inside your settlement. Red preview means the location is blocked.':'Invalid location: use empty ground away from resources, buildings, river and edges. Only defenses require a nearby friendly worker.');mode=null;drag=null;wallPointer=null;window.dispatchEvent(new Event('sc-placement-cancelled'));updateUI();return}const clickedSite=scConstructionSites.find(b=>dist(b,p)<b.radius+12);if(clickedSite){drag=null;window.scConstructionUI?.open(clickedSite.id);return;}let x1=Math.min(drag.x,p.x),x2=Math.max(drag.x,p.x),y1=Math.min(drag.y,p.y),y2=Math.max(drag.y,p.y);if(Math.hypot(drag.x-p.x,drag.y-p.y)<18){let u=units.filter(u=>u.team===0&&alive(u)&&dist(u,p)<Math.max(43,u.radius+32)).sort((a,b)=>dist(a,p)-dist(b,p)||((a.type==='soldier'||a.type==='archer')?-1:1))[0];selected=u?[u]:[];
 // V12.16.1: detect consecutive pointer clicks (pointerup.detail is unreliable).
 // V12.16: double-click a friendly unit to select all visible units of that type.
 if(u&&scLastUnitClick&&scLastUnitClick.id===u.id&&performance.now()-scLastUnitClick.time<420){
@@ -1605,7 +1620,7 @@ function scEdgeScroll(dt){
 }
 c.addEventListener('pointerup',e=>{if(e.button!==2||ended||window.scRightDragDistance>7)return;
 
-let p=mouse(e);const site=scConstructionSites.find(b=>dist(b,p)<b.radius+12);if(site&&scConstructionAssign(site.id)){return;}let enemy=[...units,...buildings].find(o=>o.team===1&&alive(o)&&dist(o,p)<o.radius+12);let node=nodes.find(n=>n.amount>0&&dist(n,p)<n.radius+12);selected.forEach((u,i)=>{if(!alive(u))return;u.scHoldPosition=false;if(enemy){u.order={type:'attack',target:enemy};u.target=enemy}else if(node&&u.type==='worker'){u.order={type:'gather',target:node};u.target=null}else{let fighters=selected.filter(v=>v.type!=='worker'&&alive(v));let same=fighters.filter(v=>v.type===u.type);let rank=same.indexOf(u);let cols=Math.max(1,Math.ceil(Math.sqrt(same.length)));let row=Math.floor(rank/cols),col=rank%cols;let x,y;if(u.type==='worker'){let angle=i*2.4,r=Math.sqrt(i)*15;x=p.x+Math.cos(angle)*r;y=p.y+Math.sin(angle)*r}else if(formation==='line'){let lane=u.type==='soldier'?0:1;x=p.x+(lane===0?18:-65)-row*19;y=p.y+(col-(cols-1)/2)*34}else{x=p.x-row*32-(u.type==='archer'?40:0);y=p.y+(col-(cols-1)/2)*28}u.order={type:'move',x:clamp(x,15,W-15),y:clamp(y,15,H-15)};u.target=null}});if(selected.length){msg('Order issued to '+selected.length+' unit(s).');window.dispatchEvent(new CustomEvent('sc-order-issued',{detail:{count:selected.length,x:p.x,y:p.y}}));}});function move(u,p,dt,stop=0){let d=dist(u,p);if(d<=stop+1)return true;let step=Math.min(u.speed*(u.scShieldWall?0.8:1)*(u.scCharge?1.25:1)*dt,d-stop);u.x=clamp(u.x+(p.x-u.x)/d*step,12,W-12);u.y=clamp(u.y+(p.y-u.y)/d*step,12,H-12);return false};function attack(u,t,dt){if(!alive(t)){u.target=null;return}let range=u.range+(t.radius||0);if(dist(u,t)>range){move(u,t,dt,range-2);return}if(u.type==='archer'&&t.type==='soldier'&&dist(u,t)<58&&u.cool>0){let away={x:clamp(u.x+(u.x-t.x)*1.4,12,W-12),y:clamp(u.y+(u.y-t.y)*1.4,12,H-12)};move(u,away,dt);return}if(u.cool<=0){let hit=u.damage*(t.scShieldWall&&t.type==='soldier'?0.75:1)*(t.scCharge&&t.type==='soldier'?1.2:1)*(u.type==='archer'&&t.type==='worker'?1.5:1)*(u.type==='soldier'&&t.type==='archer'?1.2:1);t.hp-=hit;stats.damage[u.team]+=hit;if(t.hp<=0&&t.team!==undefined)stats.kills[u.team]++;u.cool=u.type==='archer'?1.25:0.75;effects.push({x:t.x,y:t.y,life:.35,maxLife:.35,kind:u.type==='archer'?'arrow':'slash',team:u.team});if(u.type==='archer')projectiles.push({x:u.x,y:u.y-17,tx:t.x,ty:t.y-9,life:.23,maxLife:.23,team:u.team});combatTexts.push({x:t.x,y:t.y-24,text:'-'+Math.round(hit),life:.72,maxLife:.72,team:t.team});if(t.hp<=0){u.target=null;if(u.order?.type==='attack')u.order=null}}};function tick(dt){if(scOverview)return;scConstructionTick(dt);uiRefresh+=dt;if(uiRefresh>=1){uiRefresh=0;let friendly=units.filter(u=>u.team===0),enemy=units.filter(u=>u.team===1);let f=friendly.filter(u=>u.type!=='worker').length,e=enemy.filter(u=>u.type!=='worker').length;el('liveOverview').textContent='Time: '+Math.floor(elapsed/60)+':'+String(Math.floor(elapsed%60)).padStart(2,'0')+' | Your army: '+f+' | Enemy army: '+e+' | Your workers: '+friendly.filter(u=>u.type==='worker').length+' | Enemy workers: '+enemy.filter(u=>u.type==='worker').length+' | Formation: '+formation+'.';}elapsed+=dt;cityTimer+=dt;if(cityTimer>=5){cityTimer-=5;cityCycleNumber++;const cityOpening=food;let houses=buildings.filter(b=>b.team===0&&b.type==='house').length,farms=buildings.filter(b=>b.team===0&&b.type==='farm').length,markets=buildings.filter(b=>b.team===0&&b.type==='market').length;let owned=buildings.filter(b=>b.team===0);let homes=owned.filter(b=>b.type==='house'),wells=owned.filter(b=>b.type==='well'),roads=owned.filter(b=>b.type==='road'),yards=owned.filter(b=>b.type==='lumberyard');wellCoverage=homes.filter(h=>wells.some(w=>dist(h,w)<190)).length;roadMarkets=owned.filter(b=>b.type==='market'&&marketHasTradeAccess(b)).length;let clinics=owned.filter(b=>b.type==='clinic'),granaries=owned.filter(b=>b.type==='granary');granaryCount=granaries.length;healerCoverage=homes.filter(h=>clinics.some(c=>dist(h,c)<190)).length;assignEmployment();let cap=8+owned.filter(b=>b.type==='house').reduce((n,h)=>n+8+(houseTier(h).level-1)*2,0);let farmOutput=owned.filter(b=>b.type==='farm').reduce((v,b)=>v+13*(employment.byId.get(b.id)?.efficiency||0),0)+owned.filter(b=>b.type==='fishery').reduce((v,b)=>v+9*(employment.byId.get(b.id)?.efficiency||0),0);// V14.11: supply logistics — farms/fisheries with a nearby granary and road deliver 25% more food.
+let p=mouse(e);const site=scConstructionSites.find(b=>dist(b,p)<b.radius+12);if(site&&scConstructionAssign(site.id)){return;}let enemy=[...units,...buildings].find(o=>o.team===1&&alive(o)&&dist(o,p)<o.radius+12);let node=nodes.filter(n=>n.amount>0&&dist(n,p)<n.radius+20).sort((a,b)=>dist(a,p)-dist(b,p))[0];selected.forEach((u,i)=>{if(!alive(u))return;u.scHoldPosition=false;if(enemy){u.order={type:'attack',target:enemy};u.target=enemy}else if(node&&u.type==='worker'){u.order={type:'gather',target:node};u.target=null}else{let fighters=selected.filter(v=>v.type!=='worker'&&alive(v));let same=fighters.filter(v=>v.type===u.type);let rank=same.indexOf(u);let cols=Math.max(1,Math.ceil(Math.sqrt(same.length)));let row=Math.floor(rank/cols),col=rank%cols;let x,y;if(u.type==='worker'){let angle=i*2.4,r=Math.sqrt(i)*15;x=p.x+Math.cos(angle)*r;y=p.y+Math.sin(angle)*r}else if(formation==='line'){let lane=u.type==='soldier'?0:1;x=p.x+(lane===0?18:-65)-row*19;y=p.y+(col-(cols-1)/2)*34}else{x=p.x-row*32-(u.type==='archer'?40:0);y=p.y+(col-(cols-1)/2)*28}u.order={type:'move',x:clamp(x,15,W-15),y:clamp(y,15,H-15)};u.target=null}});if(selected.length){msg('Order issued to '+selected.length+' unit(s).');window.dispatchEvent(new CustomEvent('sc-order-issued',{detail:{count:selected.length,x:p.x,y:p.y}}));}});function move(u,p,dt,stop=0){let d=dist(u,p);if(d<=stop+1)return true;let step=Math.min(u.speed*(u.scShieldWall?0.8:1)*(u.scCharge?1.25:1)*dt,d-stop);u.x=clamp(u.x+(p.x-u.x)/d*step,12,W-12);u.y=clamp(u.y+(p.y-u.y)/d*step,12,H-12);return false};function attack(u,t,dt){if(!alive(t)){u.target=null;return}let range=u.range+(t.radius||0);if(dist(u,t)>range){move(u,t,dt,range-2);return}if(u.type==='archer'&&t.type==='soldier'&&dist(u,t)<58&&u.cool>0){let away={x:clamp(u.x+(u.x-t.x)*1.4,12,W-12),y:clamp(u.y+(u.y-t.y)*1.4,12,H-12)};move(u,away,dt);return}if(u.cool<=0){let hit=u.damage*(t.scShieldWall&&t.type==='soldier'?0.75:1)*(t.scCharge&&t.type==='soldier'?1.2:1)*(u.type==='archer'&&t.type==='worker'?1.5:1)*(u.type==='soldier'&&t.type==='archer'?1.2:1);t.hp-=hit;stats.damage[u.team]+=hit;if(t.hp<=0&&t.team!==undefined)stats.kills[u.team]++;u.cool=u.type==='archer'?1.25:0.75;effects.push({x:t.x,y:t.y,life:.35,maxLife:.35,kind:u.type==='archer'?'arrow':'slash',team:u.team});if(u.type==='archer')projectiles.push({x:u.x,y:u.y-17,tx:t.x,ty:t.y-9,life:.23,maxLife:.23,team:u.team});combatTexts.push({x:t.x,y:t.y-24,text:'-'+Math.round(hit),life:.72,maxLife:.72,team:t.team});if(t.hp<=0){u.target=null;if(u.order?.type==='attack')u.order=null}}};function tick(dt){if(scOverview)return;scConstructionTick(dt);uiRefresh+=dt;if(uiRefresh>=1){uiRefresh=0;let friendly=units.filter(u=>u.team===0),enemy=units.filter(u=>u.team===1);let f=friendly.filter(u=>u.type!=='worker').length,e=enemy.filter(u=>u.type!=='worker').length;el('liveOverview').textContent='Time: '+Math.floor(elapsed/60)+':'+String(Math.floor(elapsed%60)).padStart(2,'0')+' | Your army: '+f+' | Enemy army: '+e+' | Your workers: '+friendly.filter(u=>u.type==='worker').length+' | Enemy workers: '+enemy.filter(u=>u.type==='worker').length+' | Formation: '+formation+'.';}elapsed+=dt;cityTimer+=dt;if(cityTimer>=5){cityTimer-=5;cityCycleNumber++;const cityOpening=food;let houses=buildings.filter(b=>b.team===0&&b.type==='house').length,farms=buildings.filter(b=>b.team===0&&b.type==='farm').length,markets=buildings.filter(b=>b.team===0&&b.type==='market').length;let owned=buildings.filter(b=>b.team===0);let homes=owned.filter(b=>b.type==='house'),wells=owned.filter(b=>b.type==='well'),roads=owned.filter(b=>b.type==='road'),yards=owned.filter(b=>b.type==='lumberyard');wellCoverage=homes.filter(h=>wells.some(w=>dist(h,w)<190)).length;roadMarkets=owned.filter(b=>b.type==='market'&&marketHasTradeAccess(b)).length;let clinics=owned.filter(b=>b.type==='clinic'),granaries=owned.filter(b=>b.type==='granary');granaryCount=granaries.length;healerCoverage=homes.filter(h=>clinics.some(c=>dist(h,c)<190)).length;assignEmployment();let cap=8+owned.filter(b=>b.type==='house').reduce((n,h)=>n+8+(houseTier(h).level-1)*2,0);let farmOutput=owned.filter(b=>b.type==='farm').reduce((v,b)=>v+13*(employment.byId.get(b.id)?.efficiency||0),0)+owned.filter(b=>b.type==='fishery').reduce((v,b)=>v+9*(employment.byId.get(b.id)?.efficiency||0),0);// V14.11: supply logistics — farms/fisheries with a nearby granary and road deliver 25% more food.
 let logisticsBonus=0,connectedProducers=0;const citySupplyContext={owned,network:getRoadNetwork()};
 for(const producer of owned.filter(b=>b.type==='farm'||b.type==='fishery')){
  const efficiency=employment.byId.get(producer.id)?.efficiency||0;
@@ -1907,6 +1922,7 @@ function detailFacade(x,y,w,h,kind){
 // V10.3: distinct compact paving and planting pads make the buildings readable at a glance.
 for(const b of buildings){
  if(!alive(b)||b.team!==0||b.type==='road')continue;
+ sc22PaintContact(ctx,b);
  const x=b.x,y=b.y,small=['well','garden','plaza','clinic'].includes(b.type);
  const rx=b.type==='house'?17:small?15:27,ry=b.type==='house'?11:small?10:14;
  ctx.save();ctx.fillStyle=b.type==='garden'?'#62844d':b.type==='farm'?'#92744a':b.type==='plaza'?'#c2b39a':'#b6a38a';
@@ -2444,46 +2460,7 @@ for(const bakery of bakeryServices){
  ctx.restore();
 }
 // Compact information panel anchored above the selected building.
-if(inspectedBuilding&&alive(inspectedBuilding)){
- const b=inspectedBuilding,staff=employment.byId.get(b.id);
- const title=b.type==='clinic'?'HEALER':b.type.toUpperCase();
- const rows=[];
- if(b.type==='house'){const t=houseTier(b);rows.push(cityTierNames[t.level]+' · '+(b.cityResidents||0)+'/'+cityHouseCapacity(b)+' residents');rows.push('Beauty '+homeBeauty(b).score+'/100 · Water '+(t.water?'✓':'✗')+' · Health '+(t.health?'✓':'✗'));const delivery=cityHouseholds.find(h=>h.id===b.id);rows.push(delivery?'Food last cycle: '+delivery.delivered.toFixed(1)+'/'+delivery.demand.toFixed(1)+' · unmet '+delivery.shortfall.toFixed(1):'Food: waiting for the next economy cycle');}
-
- else if(b.type==='bakery'){
-  const hasGranary=buildings.some(g=>g.team===0&&alive(g)&&g.type==='granary'&&dist(g,b)<190);
-  const staffed=(staff?.efficiency||0)>=.5;
-  const served=buildings.filter(h=>h.team===0&&alive(h)&&h.type==='house'&&dist(h,b)<210).length;
-  rows.push('Bread: 3 grain → up to 5 food / 5 sec');
-  rows.push('Granary '+(hasGranary?'✓':'✗')+' · Bakers '+(staffed?'✓':'✗')+' · Food '+(food>=3?'✓':'✗'));
-  rows.push('Homes in delivery area: '+served);
-  rows.push('Nearby supplying granaries: '+buildings.filter(g=>g.team===0&&alive(g)&&g.type==='granary'&&dist(g,b)<190).length);
-  rows.push('Grain courier: '+(hasGranary&&staffed&&food>=3?'DELIVERING SACKS':!hasGranary?'NEEDS NEARBY GRANARY':!staffed?'NEEDS BAKERS':'WAITING FOR FOOD'));
- }
- else if(b.type==='granary')rows.push('Food '+Math.floor(food)+' / '+(90+buildings.filter(v=>v.team===0&&alive(v)&&v.type==='granary').length*160)+' stored');
- else if(b.type==='market'){
-  const road=marketHasTradeAccess(b),staffed=(staff?.efficiency||0)>=.5;
-  const homes=buildings.filter(h=>h.team===0&&alive(h)&&h.type==='house'&&dist(h,b)<200).length;
-  rows.push('Road trade '+(road?'ACTIVE':'INACTIVE')+' · Traders '+(staffed?'READY':'NEED WORKERS'));
-  rows.push('Nearby houses (planning radius): '+homes);
-  rows.push('Market activity: '+(road&&staffed?'TRADING':'WAITING FOR ROAD / STAFF'));
- }
- else if(b.type==='farm'||b.type==='fishery')rows.push('Food +'+Math.round((b.type==='farm'?13:9)*(staff?.efficiency||0)*10)/10+' / 5 sec');
- else if(b.type==='lumberyard')rows.push('Wood +'+Math.round(5*(staff?.efficiency||0)*10)/10+' / 5 sec');
- else if(b.type==='well'||b.type==='clinic')rows.push('Road access '+(civicHasRoadAccess(b)?'YES':'NO'));
- else if(b.type==='garden'||b.type==='plaza')rows.push('Neighborhood beauty +'+(b.type==='garden'?25:40));
- if(staff)rows.push('Workers '+staff.count+'/'+staff.need);
- rows.push('Condition '+Math.ceil(b.hp)+' / '+b.max);
- const width=320,height=39+rows.length*23;
- const px=Math.max(8,Math.min(W-width-8,b.x-width/2));
- const py=Math.max(8,b.y-height-44);
- ctx.save();ctx.fillStyle='rgba(15,30,35,.95)';ctx.strokeStyle='#e0c388';ctx.lineWidth=1.5;
- ctx.beginPath();ctx.roundRect(px,py,width,height,7);ctx.fill();ctx.stroke();
- ctx.fillStyle='#f7d99b';ctx.font='bold 19px system-ui';ctx.textAlign='left';ctx.fillText(title,px+14,py+26);
- ctx.fillStyle='#e3e9dd';ctx.font='bold 15px system-ui';
- rows.forEach((line,i)=>ctx.fillText(line,px+14,py+53+i*23));
- ctx.restore();
-}
+// Building information lives in the screen-space inspector; the selection ring stays on the map.
 if(inspectedBuilding&&alive(inspectedBuilding)){let b=inspectedBuilding;ctx.save();ctx.strokeStyle='#ffe2a0';ctx.lineWidth=3;ctx.setLineDash([6,5]);ctx.beginPath();ctx.ellipse(b.x,b.y+10,b.radius+13,b.radius*.65+10,0,0,Math.PI*2);ctx.stroke();ctx.restore()}
 // Road-network view distinguishes the largest connected network from isolated road groups.
 if(serviceOverlay==='roads'){
@@ -3462,7 +3439,7 @@ const updatePolitics=()=>{const select=document.getElementById('politicsRealm');
 
 })();
 
-window.scCancelConstruction=()=>{mode=null;drag=null;wallPointer=null;updateUI()};
+window.scCancelConstruction=()=>{mode=null;drag=null;wallPointer=null;window.dispatchEvent(new Event('sc-placement-cancelled'));updateUI()};
 // Versioned session snapshots. Transient pointer/visual effects are deliberately not replayed.
 function scReadiness(s){
  const homes=s.housing.houses.filter(h=>h.occupancy>0),f=s.food.last;
@@ -3505,7 +3482,7 @@ function scCaptureCity(){
  });
   const buildingRows=liveBuildings.map(b=>({...Object.fromEntries(scBuildingNumbers.map(k=>[k,k==='cityTier'?(b[k]||1):(b[k]??0)])),type:b.type,scLastNotifiedTier:b.scLastNotifiedTier??null,...(typeof b.cityWorkPaused==='boolean'?{cityWorkPaused:b.cityWorkPaused}:{}),...(typeof b.cityWorkPriority==='boolean'?{cityWorkPriority:b.cityWorkPriority}:{})}));
  const zoom=window.scMapZoom?.get()||1;
- return {format:scSaveFormat,schema:scScenario==='city'?(scConstructionSites.length?5:scNewOriginIds.includes(scOriginId)?4:scOriginId==='brookstead'?3:2):1,...(scScenario==='city'?{campaign:{mode:'city',stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,...(scOriginId!=='home'?{originId:scOriginId}:{})}}:{}),createdWith:'0.21.0',cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
+ return {format:scSaveFormat,schema:scScenario==='city'?(scConstructionSites.length?5:scNewOriginIds.includes(scOriginId)?4:scOriginId==='brookstead'?3:2):1,...(scScenario==='city'?{campaign:{mode:'city',stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,...(scOriginId!=='home'?{originId:scOriginId}:{})}}:{}),createdWith:'0.22.0',cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
   resources:{gold,wood,stone,food,tradeGoods,goodsSold,aiGold,aiWood},people:{population,happiness,prosperity:cityProsperity},
   clock:{elapsed,cityTimer,cityCycleNumber,aiTimer,resourceTimer,aiDecision,aiAttackTimer,aiTrainTimer,trainTimer,scFestivalCooldown},
   options:{difficulty,formation,eventFoodReserve:scEventFoodReserve,showLabels,showMinimap,serviceOverlay,ration:window.scRationPolicy?.capture()||{mode:el('sc1303Mode')?.value||'normal',emergency:window.scRationFactor===.75},breadExport:window.scBreadExportEnabled!==false,breadReserveCycles:window.scBreadReserveCycles??2},
@@ -6253,7 +6230,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 (()=>{'use strict';
 const card=document.getElementById('sc1345TheaterCard');
 const cost='🎭 THEATER — 80 wood · 90 gold · 25 stone';
-let armed=false;
+let armed=false,noticeEpoch=0;
+function clear(){armed=false;noticeEpoch++;card.classList.remove('visible');card.textContent='';}
+for(const event of ['sc-placement-cancelled','sc-selection-changed','sc-building-inspected','sc-city-started','sc-city-restored'])window.addEventListener(event,clear);
 function set(text){card.textContent=text;card.classList.add('visible')}
 function money(){return {wood:Number(document.getElementById('resWood')?.textContent||0),gold:Number(document.getElementById('resGold')?.textContent||0),stone:Number(document.getElementById('resStone')?.textContent||0)}}
 function arm(){
@@ -6272,13 +6251,14 @@ document.addEventListener('click',e=>{
  const b=e.target.closest?.('button');
  if(b?.textContent?.includes('Theater')&&(b.closest('#sc140Commands')||b.closest('#quickDock'))){
   arm();
-  setTimeout(arm,0);
- }else if(b?.id==='sc140Build'){card.classList.remove('visible');armed=false;}
+  const epoch=noticeEpoch;setTimeout(()=>{if(epoch===noticeEpoch)arm();},0);
+ }else if(b?.closest('#sc140Commands,#quickDock')||b?.id==='sc140Build'){clear();}
 },true);
 const canvas=document.getElementById('field');
 canvas?.addEventListener('pointerup',e=>{
  if(e.button!==0||!armed)return;
- setTimeout(()=>{
+ const epoch=noticeEpoch;setTimeout(()=>{
+  if(epoch!==noticeEpoch||!armed)return;
   const status=document.getElementById('status')?.textContent||'';
   if(status.includes('THEATER constructed')){set('✓ Theater constructed successfully. '+cost);armed=false;setTimeout(()=>card.classList.remove('visible'),3500)}
   else if(status.includes('Invalid location'))set(cost+' · BLOCKED LOCATION — choose clear ground away from buildings, trees and river');
@@ -6286,7 +6266,7 @@ canvas?.addEventListener('pointerup',e=>{
   else set(cost+' · Select a clear plot away from existing structures');
  },100);
 },true);
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){armed=false;card.classList.remove('visible')}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')clear();});
 })();
 </script><script id="sc1347CultureReport">
 (()=>{'use strict';
@@ -7472,7 +7452,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  let dismissed=null;
  close.addEventListener('click',()=>{dismissed=window.scRTSInspectedBuilding?.id;panel.hidden=true});
  window.addEventListener('sc-selection-changed',()=>{dismissed=null;refresh()});window.addEventListener('sc-building-inspected',()=>{dismissed=null;refresh()});
- function refresh(){const b=window.scRTSInspectedBuilding;const another=['sc159Pulse','sc1310AdvisorPanel','sc190ChroniclePanel','sc189HelpPanel'].some(id=>{const n=document.getElementById(id);return n&&!n.hidden&&getComputedStyle(n).display!=='none'});panel.hidden=!b||b.hp<=0||dismissed===b.id||another;}
+ function refresh(){const b=window.scRTSInspectedBuilding;const another=['sc159Pulse','sc1310AdvisorPanel','sc190ChroniclePanel','sc189HelpPanel','scConstructionPanel'].some(id=>{const n=document.getElementById(id);return n&&!n.hidden&&getComputedStyle(n).display!=='none'});panel.hidden=!b||b.hp<=0||dismissed===b.id||another;}
  setInterval(refresh,150);
 })();
 </script>
@@ -8485,9 +8465,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  const Audio=window.AudioContext||window.webkitAudioContext,supported=typeof Audio==='function';
  let musicStyle='city';try{const saved=localStorage.getItem('shattered-crowns-music-style-v1');if(['city','ambient','strings'].includes(saved))musicStyle=saved;}catch(_){storageAvailable=false;}
  let cityBar=0,nextCityBar=0,entered=false,restoredBeforeEntry=false,openingActivated=false;
- let context=null,master=null,music=null,effects=null,analyser=null,unlocked=false,error='',effectsPlayed=0,lastEffect=null,lastCue=-Infinity,lastCanvas=-Infinity,chord=0,nextChord=0;
+ let context=null,master=null,music=null,effects=null,analyser=null,unlocked=false,error='',effectsPlayed=0,lastEffect=null,lastCompletionCue=-Infinity,lastCue=-Infinity,lastCanvas=-Infinity,chord=0,nextChord=0;
  const voices=new Set(),wave=new Float32Array(256);
- const section=document.createElement('section');section.id='scAudioSection';section.setAttribute('aria-label','Sound settings');section.innerHTML='<strong>Sound</strong><label for="scMusicStyle">Music style <select id="scMusicStyle"><option value="city">City theme · melody &amp; strings</option><option value="ambient">Original gentle ambience</option><option value="strings">City theme · bowed strings</option></select></label><label><input id="scAudioMusic" type="checkbox">Gentle ambient music</label><label><input id="scAudioEffects" type="checkbox">Worker and army selection sounds</label><label><input id="scAudioMuted" type="checkbox">Mute all sound</label><label for="scAudioVolume">Volume <input id="scAudioVolume" type="range" min="0" max="100" step="1"><output id="scAudioVolumeValue"></output></label><button id="scAudioTest" type="button">Enable sound &amp; test</button><p>Turns on music and selection sounds at 50% volume or your current higher level.</p><p id="scAudioStatus" aria-live="polite"></p><p>Original synthesized sounds. Audio starts after interaction. Preferences belong to this browser, not the city save.</p>';menu.append(section);
+ const section=document.createElement('section');section.id='scAudioSection';section.setAttribute('aria-label','Sound settings');section.innerHTML='<strong>Sound</strong><label for="scMusicStyle">Music style <select id="scMusicStyle"><option value="city">City theme · melody &amp; strings</option><option value="ambient">Original gentle ambience</option><option value="strings">City theme · bowed strings</option></select></label><label><input id="scAudioMusic" type="checkbox">Gentle ambient music</label><label><input id="scAudioEffects" type="checkbox">Selection and construction sounds</label><label><input id="scAudioMuted" type="checkbox">Mute all sound</label><label for="scAudioVolume">Volume <input id="scAudioVolume" type="range" min="0" max="100" step="1"><output id="scAudioVolumeValue"></output></label><button id="scAudioTest" type="button">Enable sound &amp; test</button><p>Turns on music and selection sounds at 50% volume or your current higher level.</p><p id="scAudioStatus" aria-live="polite"></p><p>Original synthesized sounds. Audio starts after interaction. Preferences belong to this browser, not the city save.</p>';menu.append(section);
  const musicQuick=document.createElement('button');musicQuick.id='scMusicQuick';musicQuick.type='button';musicQuick.setAttribute('aria-label','Music off');const toolbar=document.getElementById('sc149Status');if(toolbar)toolbar.insertBefore(musicQuick,document.getElementById('scWorldQuick')?.nextSibling||toolbar.firstChild);
  const testInput=section.querySelector('#scAudioTest'),styleInput=section.querySelector('#scMusicStyle'),musicInput=section.querySelector('#scAudioMusic'),effectInput=section.querySelector('#scAudioEffects'),muteInput=section.querySelector('#scAudioMuted'),volumeInput=section.querySelector('#scAudioVolume');
  function status(){let level=0;if(analyser&&context?.state==='running'){analyser.getFloatTimeDomainData(wave);level=Math.sqrt(wave.reduce((n,v)=>n+v*v,0)/wave.length);}return {supported,unlocked,musicStyle,contextState:context?.state||'idle',settings:{...settings},storageAvailable,musicVoices:[...voices].filter(v=>v.kind==='music').length,activeVoices:voices.size,effectsPlayed,lastEffect,level,error};}
@@ -8542,6 +8522,12 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  async function unlock(){if(document.getElementById('sc1310Welcome')?.hidden===false&&!openingActivated||!supported||document.hidden||settings.muted||settings.volume===0||!settings.music&&!settings.effects)return false;try{if(!context){context=new Audio();const graph=createAudioGraph(context);master=graph.master;music=graph.music;effects=graph.effects;analyser=graph.analyser;}if(context.state==='suspended'||context.state==='interrupted')await context.resume();unlocked=context.state==='running';error='';apply();return unlocked;}catch(_){error='Sound could not start. Try a sound control after clicking the game.';render();return false;}}
  function configure(options){if(!options||typeof options!=='object'||Array.isArray(options)||Object.keys(options).some(k=>!Object.hasOwn(defaults,k)))return {ok:false};const next={...settings,...options};if(!valid(next))return {ok:false};settings=next;try{localStorage.setItem(KEY,JSON.stringify(settings));storageAvailable=true;}catch(_){storageAvailable=false;}apply();if(supported&&!document.hidden)void unlock();return {ok:true};}
  function cue(kind){if(!['worker','army'].includes(kind)||!unlocked||context?.state!=='running'||document.hidden||!settings.effects||settings.muted||settings.volume===0||window.scCampaign?.status().overview||performance.now()-lastCue<100)return;lastCue=performance.now();lastEffect=kind;effectsPlayed++;const at=context.currentTime+.005;if(kind==='worker'){tone(440,at,.12,'effect',.4);tone(660,at+.06,.14,'effect',.3);}else{tone(146.8324,at,.25,'effect',.4);tone(220,at+.06,.25,'effect',.32);tone(293.6648,at+.12,.28,'effect',.25);}}
+ function completionCue(){
+  if(!unlocked||context?.state!=='running'||document.hidden||!settings.effects||settings.muted||settings.volume===0||window.scCampaign?.status().overview||performance.now()-lastCompletionCue<900)return;
+  lastCompletionCue=performance.now();lastEffect='complete';effectsPlayed++;const at=context.currentTime+.005;
+  for(const [i,f] of [261.6256,329.6276,391.9954].entries())tone(f,at+i*.09,.38,'effect',.12);
+ }
+ window.addEventListener('sc-construction-completed',completionCue);
  musicQuick.addEventListener('click',()=>{const enabled=settings.music&&!settings.muted&&settings.volume>0;configure(enabled?{music:false}:{music:true,muted:false,volume:settings.volume||35});});
  testInput.addEventListener('click',async()=>{configure({music:true,effects:true,muted:false,volume:Math.max(50,settings.volume)});if(await unlock())cue('army');});
  styleInput.addEventListener('change',()=>setMusicStyle(styleInput.value));
@@ -8606,12 +8592,13 @@ prev.addEventListener('click',()=>move(-1));next.addEventListener('click',()=>mo
   panel.querySelector('#scConstructionAssign').disabled=!site||!model.selectedWorkers;panel.querySelector('#scConstructionRelease').disabled=!site||!site.assigned;for(const id of ['Locate','Cancel'])panel.querySelector('#scConstruction'+id).disabled=!site;
   panel.querySelector('#scConstructionRefund').textContent=site?'Cancel returns '+Math.round((1-site.progress/site.required)*100)+'% of its original materials; completed work is spent. Roads and defenses retain their current placement rules in this version.':'';
  }
- function show(id){returnFocus=document.activeElement;window.scCancelConstruction?.();menu.classList.remove('open');panel.hidden=false;open.setAttribute('aria-expanded','true');refresh();if(id!==undefined)siteSelect.value=String(id);refresh();panel.querySelector('h2').focus();}
+ function show(id){returnFocus=document.activeElement;window.scCancelConstruction?.();for(const [id,button] of [['sc159Pulse','sc1312CityLifeBtn'],['sc1310AdvisorPanel','sc1310AdvisorBtn'],['sc190ChroniclePanel','sc190ChronicleBtn'],['sc189HelpPanel','sc189HelpButton']]){document.getElementById(id)?.setAttribute('hidden','');document.getElementById(button)?.setAttribute('aria-expanded','false');}menu.classList.remove('open');panel.hidden=false;open.setAttribute('aria-expanded','true');refresh();if(id!==undefined)siteSelect.value=String(id);refresh();panel.querySelector('h2').focus();}
  open.addEventListener('click',()=>show());panel.querySelector('#scConstructionClose').addEventListener('click',close);siteSelect.addEventListener('change',refresh);
  for(const [name,action] of [['Assign','assign'],['Release','release'],['Cancel','cancel'],['Locate','locate']])panel.querySelector('#scConstruction'+name).addEventListener('click',()=>{if(engine.snapshot().cityId!==cityId){close();return;}const id=Number(siteSelect.value);if(!Number.isSafeInteger(id))return;engine[action](id);refresh();if(action==='locate')close();});
  window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden){close();e.stopPropagation();}});
  for(const event of ['sc-city-started','sc-city-restored'])window.addEventListener(event,()=>{panel.hidden=true;open.setAttribute('aria-expanded','false');signature='';cityId=null;});
  document.addEventListener('click',e=>{if(e.target.closest('#sc1312CityLifeBtn,#sc1310AdvisorBtn,#sc190ChronicleBtn,#sc189HelpButton')){panel.hidden=true;open.setAttribute('aria-expanded','false');}},true);
+ window.addEventListener('sc-building-inspected',()=>{panel.hidden=true;open.setAttribute('aria-expanded','false');});window.addEventListener('sc-building-selected',()=>{panel.hidden=true;open.setAttribute('aria-expanded','false');});
  window.scConstructionUI={open:show,close};setInterval(refresh,200);
 })();
 </script>
@@ -8816,4 +8803,66 @@ main>div:first-child{height:100%!important;max-height:100%!important;min-height:
 }if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup,{once:true});else setup();
 })();
 </script>
+<style id="sc22SettlementStyle">
+#scHudNotices{pointer-events:none}#scHudNotices>*{pointer-events:auto}
+#scCityInspection,#scCityInspection.sc19Expanded{top:calc(var(--sc-hud-height,115px) + 8px)!important;max-height:calc(100dvh - var(--sc-hud-height,115px) - 112px)!important;overflow:auto}
+#sc22Literature{margin:12px 0;padding:12px;background:#1c302d;border:1px solid #8d805c;border-radius:8px;font:13px/1.65 system-ui;color:#e8dfc7}
+#sc22Literature h3{margin:0 0 4px;color:#ebcf94}#sc22Literature p{margin:5px 0 10px}#sc22Literature summary{padding:8px 0;cursor:pointer;color:#ebcf94;font-weight:600}
+#sc22Literature blockquote{margin:12px 0;padding-left:12px;border-left:2px solid #b89b61;font:italic 17px/1.55 Georgia,serif}
+#sc22Literature cite{display:block;font:12px/1.6 system-ui;color:#c3c9b6;margin-top:5px}#sc22Literature a{color:#ead39d}
+#sc190ChroniclePanel #sc22SceneOpen{float:none;display:block;margin:8px 0}#sc22Literature details{clear:both}#sc22Literature summary{scroll-margin-top:70px}
+#sc22SceneOpen,#sc22SceneSkip{font:600 13px system-ui;padding:10px 16px;border:1px solid #c4a873;border-radius:6px;background:#29483f;color:#fff0cd;cursor:pointer}
+#sc22Vignette{position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;box-sizing:border-box;margin:0;padding:0;border:0;background:transparent;color:#f2e4c4;overflow:hidden}
+#sc22Vignette::backdrop{background:rgba(10,20,17,.22)}#sc22Vignette .sc22Frame{position:absolute;left:0;right:0;background:#101b1b;box-sizing:border-box;padding:18px clamp(16px,5vw,80px)}
+#sc22Vignette .sc22Top{top:0;min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:12px}#sc22Vignette .sc22Top span{font:12px system-ui;letter-spacing:.18em;text-transform:uppercase;color:#d6bd88}
+#sc22Vignette .sc22Bottom{bottom:0;min-height:150px;border-top:1px solid #77694a}#sc22SceneTitle{font:26px/1.2 Georgia,serif;margin:0 0 8px}#sc22SceneText{font:italic 19px/1.5 Georgia,serif;margin:0;max-width:720px}#sc22SceneCredit{font:12px/1.6 system-ui;color:#b9c4b3;margin:7px 0 0}
+@media(max-width:760px){#scCityInspection,#scCityInspection.sc19Expanded{top:calc(var(--sc-hud-height,115px) + 99px)!important;max-height:calc(100dvh - var(--sc-hud-height,115px) - 203px)!important}}
+@media(prefers-reduced-motion:no-preference){#sc22SceneText{animation:sc22Arrive .6s ease-out}@keyframes sc22Arrive{from{opacity:0}to{opacity:1}}}
+</style>
+<script id="sc22SettlementPresentation">
+(()=>{'use strict';function ready(){
+ const field=document.getElementById('field'),viewport=field?.parentElement;if(!viewport)return;
+ // Empty notice containers and overlays must not summon browser commands over gameplay.
+ document.addEventListener('contextmenu',e=>{if(e.target.closest?.('main,#scHudNotices,#sc140Bar,#scFloatingMinimap,#scCityInspection,#scConstructionPanel'))e.preventDefault();},true);
+ function clearFeedback(){for(const id of ['sc143Tip','sc151OrderToast','sc196CostStrip']){const el=document.getElementById(id);if(el){el.style.opacity='0';el.textContent='';}}}
+ function selectionChanged(){window.scCancelConstruction?.();clearFeedback();}
+ for(const event of ['sc-selection-changed','sc-building-inspected'])window.addEventListener(event,selectionChanged);
+ window.addEventListener('sc-placement-cancelled',clearFeedback);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!e.target.closest?.('input,select,textarea,[contenteditable=true]'))selectionChanged();});
+ const chronicle=document.getElementById('sc190ChroniclePanel');if(!chronicle)return;
+ const literature=document.createElement('section');literature.id='sc22Literature';literature.setAttribute('aria-label','Words for the road');
+ literature.innerHTML='<h3>Words for the road</h3><p>A quiet moment in the life of your settlement.</p><button type="button" id="sc22SceneOpen">Watch settlement interlude</button><details><summary>Poetry &amp; settlement sayings</summary><blockquote>Rough winds do shake the darling buds of May,<cite>William Shakespeare · Sonnet 18 (1609)</cite></blockquote><blockquote>Like as the waves make towards the pebbled shore,<br>So do our minutes hasten to their end;<cite>William Shakespeare · Sonnet 60 (1609)</cite></blockquote><blockquote>Can I see another&apos;s grief,<br>And not seek for kind relief?<cite>William Blake · On Another’s Sorrow, Songs of Innocence (1789)</cite></blockquote><p><a href="https://www.gutenberg.org/ebooks/574" target="_blank" rel="noopener noreferrer">Read Blake’s poems · Project Gutenberg</a></p><p><a href="https://www.gutenberg.org/ebooks/1041" target="_blank" rel="noopener noreferrer">Read the public-domain Sonnets · Project Gutenberg</a></p><blockquote>A town grows twice: first in its foundations, then in the care its people give one another.<cite>Original settlement saying · Shattered Crowns</cite></blockquote><blockquote>Leave room beside the road; tomorrow may bring a neighbour.<cite>Original settlement saying · Shattered Crowns</cite></blockquote></details>';
+ chronicle.insertBefore(literature,document.getElementById('sc199Tabs')?.nextSibling||chronicle.firstChild);
+ const dialog=document.createElement('dialog');dialog.id='sc22Vignette';dialog.setAttribute('aria-labelledby','sc22SceneTitle');dialog.setAttribute('aria-describedby','sc22SceneText');
+ dialog.innerHTML='<div class="sc22Frame sc22Top"><span>Shattered Crowns · a settlement interlude</span><button type="button" id="sc22SceneSkip">Return to city</button></div><div class="sc22Frame sc22Bottom"><h2 id="sc22SceneTitle"></h2><p id="sc22SceneText"></p><p id="sc22SceneCredit"></p></div>';
+ document.body.append(dialog);let session=null,frame=0,timer=0;
+ // Interludes own keyboard input; gameplay shortcuts must not alter orders or Pause behind a modal.
+ window.addEventListener('keydown',e=>{if(!session||e.key==='Tab')return;e.stopImmediatePropagation();e.preventDefault();if(e.key==='Escape'||((e.key==='Enter'||e.key===' ')&&e.target.closest?.('#sc22SceneSkip')))finish();},true);
+ function finish(restore=true){
+  if(!session)return;const old=session;session=null;cancelAnimationFrame(frame);clearTimeout(timer);
+  if(restore){window.scCampaign.setOverview(old.overview);viewport.scrollLeft=old.left;viewport.scrollTop=old.top;}
+  window.sc148Camera?.suspend(false);if(dialog.open)dialog.close();
+  if(restore&&old.focus?.isConnected&&old.focus.getClientRects().length)old.focus.focus({preventScroll:true});
+ }
+ function open(){
+  if(session||window.scCampaign.status().overview||window.scCampaign.status().scenario!=='city'||document.getElementById('sc1310Welcome')?.hidden===false)return false;
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  session={left:viewport.scrollLeft,top:viewport.scrollTop,overview:window.scCampaign.status().overview,focus:document.activeElement,start:performance.now(),step:-1};
+  window.scCancelConstruction?.();window.scCampaign.setOverview(true);window.sc148Camera?.suspend(true);
+  dialog.dataset.motion=reduced?'still':'gentle';dialog.showModal();dialog.querySelector('button').focus();
+  const scenes=[['A place to begin','A town grows twice: first in its foundations, then in the care its people give one another.','Original settlement saying · Shattered Crowns'],['Through wind and weather','Rough winds do shake the darling buds of May,','William Shakespeare · Sonnet 18 (1609)'],['Room for tomorrow','Leave room beside the road; tomorrow may bring a neighbour.','Original settlement saying · Shattered Crowns']];
+  function paint(now){if(!session)return;const age=Math.max(0,now-session.start),step=Math.min(2,Math.floor(age/4000));if(step!==session.step){session.step=step;const [title,text,credit]=scenes[step];document.getElementById('sc22SceneTitle').textContent=title;document.getElementById('sc22SceneText').textContent=text;document.getElementById('sc22SceneCredit').textContent=credit;}
+   if(!reduced){viewport.scrollLeft=session.left+Math.sin(Math.min(age/12000,1)*Math.PI)*24;viewport.scrollTop=session.top;}
+   frame=requestAnimationFrame(paint);
+  }
+  paint(performance.now());timer=setTimeout(()=>finish(),12000);return true;
+ }
+ dialog.addEventListener('cancel',e=>{e.preventDefault();finish();});dialog.addEventListener('close',()=>finish());document.getElementById('sc22SceneSkip').addEventListener('click',()=>finish());document.getElementById('sc22SceneOpen').addEventListener('click',open);
+ for(const event of ['sc-city-started','sc-city-restored'])window.addEventListener(event,()=>finish(false));
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)finish();});
+ window.scVignette={open,close:()=>finish()};
+ const badge=document.getElementById('sc179Version');if(badge)badge.textContent='v0.22';document.title='Shattered Crowns — v0.22 · A Living Settlement';
+ }if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();})();
+</script>
+
 </body></html>
