@@ -8826,7 +8826,11 @@ body.sc22Interlude :is(#sc1311PauseOverlay,#scResponsiveHud,#scHudNotices,#sc140
  // Empty notice containers and overlays must not summon browser commands over gameplay.
  document.addEventListener('contextmenu',e=>{if(e.target.closest?.('main,#scHudNotices,#sc140Bar,#scFloatingMinimap,#scCityInspection,#scConstructionPanel'))e.preventDefault();},true);
  function clearFeedback(){for(const id of ['sc143Tip','sc151OrderToast','sc196CostStrip']){const el=document.getElementById(id);if(el){el.style.opacity='0';el.textContent='';}}}
- function selectionChanged(){window.scCancelConstruction?.();clearFeedback();}
+ function selectionChanged(event){
+  // Choosing builders is part of placement; inspecting a building or Escape cancels it.
+  if(event?.type!=='sc-selection-changed'||event.detail?.building)window.scCancelConstruction?.();
+  clearFeedback();
+ }
  for(const event of ['sc-selection-changed','sc-building-inspected'])window.addEventListener(event,selectionChanged);
  window.addEventListener('sc-placement-cancelled',clearFeedback);
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!e.target.closest?.('input,select,textarea,[contenteditable=true]'))selectionChanged();});
