@@ -2,7 +2,7 @@
 
 Browser-first medieval city-building RTS with a peaceful city campaign, kingdom overview and classic skirmish mode. Serve this directory with `python3 -m http.server 8000` and open http://localhost:8000.
 
-Current development: [Milestone 21 — Room to Build](docs/MILESTONE21.md). Quieter HUD, readable civic spacing and map-boundary guidance.
+Current development: [Milestone 22 — A Living Settlement](docs/MILESTONE22.md). Automatic builder follow-up, clearer desktop controls, gentle visual and sound polish, and optional literary interludes.
 
 ## Automated testing
 

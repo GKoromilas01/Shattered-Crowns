@@ -77,3 +77,9 @@ test('A slightly missed resource click still gives the selected worker a gatheri
  await p.evaluate(()=>__flow.resource());const at=await p.evaluate(()=>{const c=document.getElementById('field'),v=c.parentElement;v.scrollLeft=600;v.scrollTop=200;const r=c.getBoundingClientRect();return {x:r.x+836*r.width/c.width,y:r.y+400*r.height/c.height};});
  await p.mouse.click(at.x,at.y,{button:'right'});assert.equal(await p.evaluate(()=>scRTSUnits.find(u=>u.type==='worker').order?.type),'gather');
 });
+test('A manual gathering order survives completion of the workers previous construction job',async t=>{
+ const p=await game(t);await p.evaluate(()=>__flow.setup());const [first,next]=await p.evaluate(()=>__flow.sites());await p.evaluate(id=>__flow.assign(id),first);await p.evaluate(()=>__flow.resource());
+ const at=await p.evaluate(()=>{const c=document.getElementById('field'),v=c.parentElement;v.scrollLeft=600;v.scrollTop=200;const r=c.getBoundingClientRect();return {x:r.x+800*r.width/c.width,y:r.y+400*r.height/c.height};});
+ await p.mouse.click(at.x,at.y,{button:'right'});await p.evaluate(id=>__flow.finish(id),first);
+ assert.equal(await p.evaluate(()=>scRTSUnits.find(u=>u.type==='worker').order?.type),'gather');assert.equal((await p.evaluate(()=>scConstruction.snapshot())).sites.find(s=>s.id===next).assigned,2);
+});

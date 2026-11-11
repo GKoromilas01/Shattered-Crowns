@@ -1,5 +1,11 @@
 # Release notes
 
+## v0.22.0 — A Living Settlement
+
+City builders continue to the nearest unfinished project with room for builders, while manual orders and release remain in control. Building information stays in one inspector, Worksites replaces conflicting panels, and changing selection clears stale placement messages. Right-click keeps its game orders and panning without opening the browser menu over the game; small resource near-misses are easier to target.
+
+Soft contact shadows and warmer roof highlights gently improve the existing artwork. A restrained completion chime follows the existing sound preferences. Chronicle offers attributed public-domain Shakespeare and Blake excerpts, labelled original settlement sayings, and an optional skippable twelve-second view of the current city. The scene suspends simulation and restores the view; it adds no new campaign rules. Existing saves, prices, production, roads and defenses remain compatible. See [Milestone 22](docs/MILESTONE22.md).
+
 ## v0.21.0 — Room to Build
 
 Supply and market diagnostics move from the permanent HUD into City Life’s optional figures. New civic buildings reserve at least ten map units between physical footprints, with construction-only guides showing neighbouring space. Existing towns and saves remain unchanged; road, economy and movement rules are preserved. A whole-map hint explains why edge scrolling has no effect when the entire city fits the display. See [Milestone 21](docs/MILESTONE21.md).
