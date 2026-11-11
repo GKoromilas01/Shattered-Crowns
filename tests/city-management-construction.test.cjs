@@ -1,0 +1,50 @@
+const {test,before,after}=require('node:test');
+const assert=require('node:assert/strict');
+const {setup,game,snapshot,capture,advance,point}=require('./support/living-city.cjs');
+let env;
+before(async()=>env=await setup());
+after(async()=>env?.close());
+
+for(const width of [390,1440])test('Governor preserves unfinished construction and manages the completed farm at '+width,async t=>{
+ const p=await game(t,env,'home',width),initial=await capture(p);
+ const plot=await p.evaluate(()=>__livingCityTest.plot('farm',300,310));
+ assert.ok(plot);
+ await p.locator('#sc140Build').click();
+ await p.locator('#sc140Commands').getByRole('button',{name:/Farm/i}).click();
+ const at=await point(p,plot.x,plot.y);await p.mouse.click(at.x,at.y);
+ await p.evaluate(()=>sc153UI.exitConstruction());
+ let saved=await capture(p),site=saved.state.construction[0];
+ assert.ok(site,'Paid placement creates a foundation');
+ assert.equal(saved.state.resources.wood,initial.state.resources.wood-75);
+ assert.equal(saved.state.resources.gold,initial.state.resources.gold-30);
+ assert.equal(saved.schema,5);
+ assert.equal(await p.evaluate(id=>scCityEconomy.inspect(id),site.id),false,'A foundation is not an operational workplace');
+ assert.equal((await snapshot(p)).workforce.sites.some(b=>b.id===site.id),false);
+ await advance(p,5);
+ assert.equal((await snapshot(p)).food.last.harvest,0);
+ await p.locator('#sc1312CityLifeBtn').click();
+ await p.locator('#scGovernorOverview').waitFor({state:'visible'});
+ saved=await capture(p);
+ for(const section of ['Food','Employment','Housing']){
+  await p.locator('#scGovernorOverview [data-gov-section="'+section+'"]').click();
+  assert.deepEqual((await capture(p)).state,saved.state,'Reviewing '+section+' must not assign or advance construction');
+ }
+ await p.locator('#scCityLifeClose').click();
+ assert.equal((await p.evaluate(s=>scCitySave.restore(s),saved)).ok,true);
+ assert.deepEqual((await capture(p)).state,saved.state,'Schema-five foundation survives restore');
+ assert.equal(await p.evaluate(()=>scCityEconomy.selectIdleWorkers()),true);
+ assert.equal(await p.evaluate(id=>scConstruction.assign(id),site.id),true);
+ for(let seconds=0;seconds<180&&(await p.evaluate(()=>scConstruction.snapshot().sites.length));seconds+=2)await advance(p,2);
+ const completed=await capture(p);
+ assert.equal(completed.state.construction,undefined);
+ assert.ok(completed.state.buildings.some(b=>b.id===site.id&&b.type==='farm'));
+ assert.ok(completed.state.units.filter(u=>u.type==='worker').every(u=>u.order?.type!=='build'));
+ assert.equal(await p.evaluate(id=>scCityEconomy.inspect(id),site.id),true,'Completed project becomes inspectable');
+ await p.locator('#sc19Workplace').waitFor({state:'visible'});
+ await p.locator('#sc19Workplace').click();
+ assert.equal((await snapshot(p)).workforce.sites.find(b=>b.id===site.id).paused,true);
+ await p.locator('#sc19Workplace').click();
+ await advance(p,5);
+ assert.ok((await snapshot(p)).food.last.harvest>0,'Reopened finished farm produces measured food');
+ assert.equal(await p.evaluate(()=>scCitySave.status().paused),true);
+});

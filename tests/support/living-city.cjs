@@ -1,0 +1,35 @@
+const fs=require('node:fs'),http=require('node:http'),assert=require('node:assert/strict');
+const {launchBrowser,browserPage}=require('./browser.cjs');
+const adapter=`window.__livingCityTest={
+ costs:civicCosts,
+ advance(seconds){const rows=[];for(let left=seconds;left>1e-8;left-=.25){const cycle=cityCycleNumber;tick(Math.min(.25,left));if(cityCycleNumber!==cycle){const s=citySnapshot();rows.push({at:elapsed,food:s.food.last,population:s.population,happiness:s.happiness,housing:s.housing,workforce:s.workforce,prosperity:s.prosperity});}}return rows;},
+ roadLine(x,y){for(const vertical of [false,true])for(const side of [-1,1])for(const delta of [0,-24,24]){const ps=[-44,0,44].map(n=>({x:x+(vertical?side*76:n+delta),y:y+(vertical?n+delta:side*76)}));const plan=roadPlan(ps[0],ps[2],false);if(plan.length>=3&&plan.every(p=>Math.hypot(p.x-x,p.y-y)<115&&(scRoadExists(p)||canPlace('road',p,null))))return {start:ps[0],end:ps[2]};}return null;},
+ plot(type,x,y){for(let r=0;r<=320;r+=24)for(let dx=-r;dx<=r;dx+=24)for(let dy=-r;dy<=r;dy+=24){const p={x:x+dx,y:y+dy};if(canPlace(type,p,null))return p;}return null;}
+};`;
+async function setup(){const server=http.createServer((q,r)=>{r.setHeader('Content-Type','text/html');r.end(fs.readFileSync('index.html','utf8').replace('window.scHoverBuildings=buildings;function frame',adapter+'window.scHoverBuildings=buildings;function frame'))});await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await launchBrowser();return {browser,url:'http://127.0.0.1:'+server.address().port,close:async()=>{await browser.close();server.close()}};}
+async function game(t,env,id='home',width=1440){const {page:p}=await browserPage(t,env.browser,{viewport:{width,height:width===390?844:width===1366?606:900},reducedMotion:'reduce'});p.setDefaultTimeout(7000);p.setDefaultNavigationTimeout(30000);await p.goto(env.url);await p.locator('#sc1310Skip').click();await p.evaluate(id=>scCampaign.start('city',id),id);await p.locator('#sc154Pause').click();return p;}
+const snapshot=p=>p.evaluate(()=>scCityEconomy.snapshot()),capture=p=>p.evaluate(()=>scCitySave.capture()),advance=(p,n)=>p.evaluate(n=>__livingCityTest.advance(n),n);
+function conserved(s){assert.equal(s.workforce.filled+s.workforce.idle+s.workforce.reserved,s.population);const f=s.food?.last??s.food;if(f)assert.ok(Math.abs(f.opening+f.harvest+f.logistics+f.bakeryNet-f.exports-f.delivered-f.overflow-f.closing)<1e-6,'Food ledger conserves its shared reserve');}
+async function point(p,x,y){return p.evaluate(async({x,y})=>{const c=document.querySelector('#field'),v=c.parentElement;let r=c.getBoundingClientRect();v.scrollLeft=x*r.width/c.width-v.clientWidth/2;v.scrollTop=y*r.height/c.height-v.clientHeight/2;await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));r=c.getBoundingClientRect();return {x:r.x+x*r.width/c.width,y:r.y+y*r.height/c.height};},{x,y});}
+async function build(p,type,x,y){
+ const cost=await p.evaluate(type=>__livingCityTest.costs[type],type);
+ for(const resource of ['wood','stone','gold']){
+  for(let seconds=0;(await snapshot(p)).village.resources[resource]<(cost[resource]||0)&&seconds<180;seconds+=5)await gather(p,resource,5);
+  assert.ok((await snapshot(p)).village.resources[resource]>=(cost[resource]||0),'Real gathering funds '+type+' '+resource);
+ }
+ await p.evaluate(()=>sc153UI.exitConstruction());await p.keyboard.press('w');await p.evaluate(()=>sc153UI.exitConstruction());
+ const before=await capture(p),plot=await p.evaluate(({type,x,y})=>__livingCityTest.plot(type,x,y),{type,x,y});assert.ok(plot,'Route has a legal '+type+' plot');
+ await p.locator('#sc140Build').click();const labels={house:'House',farm:'Farm',well:'Well',clinic:'Healer',garden:'Garden',road:'Road',granary:'Granary',bakery:'Bakery',market:'Market',fishery:'Fishery'};
+ await p.locator('#sc140Commands').getByRole('button',{name:new RegExp(labels[type]||type,'i')}).first().click();const q=await point(p,plot.x,plot.y);await p.mouse.click(q.x,q.y);
+ const placed=await capture(p),site=placed.state.construction?.find(b=>!before.state.construction?.some(old=>old.id===b.id)&&b.type===type);
+ assert.ok(site,'Paid placement creates an unfinished '+type+' project');
+ assert.equal(placed.state.buildings.filter(b=>b.type===type).length,before.state.buildings.filter(b=>b.type===type).length,'An unfinished '+type+' is not operational');
+ for(const resource of ['wood','stone','gold'])assert.equal(placed.state.resources[resource],before.state.resources[resource]-(cost[resource]||0),'Materials charged exactly once');
+ assert.equal(await p.evaluate(id=>scConstruction.assign(id),site.id),true,'The same selected map workers construct the building');
+ for(let seconds=0;seconds<240&&(await p.evaluate(id=>scConstruction.snapshot().sites.some(s=>s.id===id),site.id));seconds+=2)await advance(p,2);
+ const after=await capture(p);assert.equal(after.state.buildings.filter(b=>b.type===type).length,before.state.buildings.filter(b=>b.type===type).length+1,'Workers complete '+type);
+ const completed=after.state.buildings.find(b=>b.id===site.id);assert.ok(completed);return completed;
+}
+async function gather(p,resource,seconds=20){const s=await snapshot(p),site=s.village.deposits.find(d=>d.resource===resource)?.nearest;assert.ok(site,'Route has an active '+resource+' deposit');await p.evaluate(()=>sc153UI.exitConstruction());await p.keyboard.press('w');await p.evaluate(()=>sc153UI.exitConstruction());const q=await point(p,site.x,site.y);await p.mouse.click(q.x,q.y,{button:'right'});const rows=await advance(p,seconds);await p.keyboard.press('x');return rows;}
+async function roads(p,line){const before=await capture(p);await p.locator('#sc140Build').click();await p.locator('#sc140Commands').getByRole('button',{name:/Road/i}).click();const a=await point(p,line.start.x,line.start.y);await p.mouse.move(a.x,a.y);await p.mouse.down();const b=await point(p,line.end.x,line.end.y);await p.mouse.move(b.x,b.y,{steps:5});await p.mouse.up();assert.ok((await capture(p)).state.buildings.length>before.state.buildings.length,'Road gesture adds legitimate connected sections');}
+module.exports={setup,game,snapshot,capture,advance,conserved,point,build,gather,roads};
