@@ -2,7 +2,7 @@
 
 Browser-first medieval city-building RTS with a peaceful city campaign, kingdom overview and classic skirmish mode. Serve this directory with `python3 -m http.server 8000` and open http://localhost:8000.
 
-Current development: v0.20 — City Clarity. Governor’s Hall leads with urgent needs and next steps, Employment links to workplace inspection, and browser saves and downloadable files have distinct visible feedback. See [scope](docs/superpowers/specs/2026-11-11-v020-city-clarity-design.md) and [verification](docs/validation/v020-city-clarity.md).
+Current development: [Milestone 21 — Room to Build](docs/MILESTONE21.md). Quieter HUD, readable civic spacing and map-boundary guidance.
 
 ## Automated testing
 

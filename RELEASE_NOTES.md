@@ -1,5 +1,9 @@
 # Release notes
 
+## v0.21.0 — Room to Build
+
+Supply and market diagnostics move from the permanent HUD into City Life’s optional figures. New civic buildings reserve at least ten map units between physical footprints, with construction-only guides showing neighbouring space. Existing towns and saves remain unchanged; road, economy and movement rules are preserved. A whole-map hint explains why edge scrolling has no effect when the entire city fits the display. See [Milestone 21](docs/MILESTONE21.md).
+
 ## v0.20.0 — City Clarity
 
 Governor’s Hall puts measured food problems, housing and worksites waiting for builders before secondary figures. Detailed city figures use a labelled disclosure, while existing section navigation remains available. Employment links directly to the five workplace inspectors. Browser saves show checkpoint time and visible results; downloadable files remain distinct from browser storage. Restrained dark/forest/brass styling improves hierarchy without adding renderer work or external assets. Existing saves, assignments, rates, maps, audio and peaceful campaign rules remain compatible. See [verification](docs/validation/v020-city-clarity.md). Draft only; merge and publication remain owner decisions.

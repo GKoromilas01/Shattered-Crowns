@@ -1488,18 +1488,22 @@ function civicGridPoint(type,p){
  for(const [dx,dy] of offsets){const q={x:snapped.x+dx,y:snapped.y+dy};if(dist(q,p)<36&&canPlace(type,q,null))return q;}
  return canPlace(type,p,null)?p:snapped;
 }
+function scBuildingSpacing(type,b){
+ const small=compactAmenity(type),radius=type==='road'?15:small?14:type==='house'?12:24;
+ const previous=type==='road'&&b.type==='road'?32:
+  (small||type==='road')?(radius+b.radius+(small?scBuildingClearance:3)):
+  b.radius*(b.type==='road'?1:.83)+(type==='house'?13:24)+(type==='granary'?0:scBuildingClearance);
+ // Only new civic plots change; roads, defenses and saved towns retain their rules.
+ return type!=='road'&&b.type!=='road'&&Object.hasOwn(scConstructionRadii,type)?Math.max(previous,scConstructionRadii[type]+b.radius+10):previous;
+}
 function canPlace(type,p,worker){
  if(type==='fishery'&&!(p.y>=720&&p.y<=780))return false;
  if(type!=='fishery'&&p.y>=785)return false;
  const small=compactAmenity(type);
- const radius=type==='road'?15:small?14:type==='house'?12:24;
  return (civicCosts[type]||worker)&&p.x>60&&p.x<W-90&&p.y>50&&p.y<H-50&&
  (civicCosts[type]||dist(worker,p)<180)&&
  ! [...buildings,...scConstructionSites].some(b=>{
-  const min=type==='road'&&b.type==='road'?32:
-    (small||type==='road')?(radius+b.radius+(small?scBuildingClearance:3)):
-    b.radius*(b.type==='road'?1:.83)+(type==='house'?13:24)+(type==='granary'?0:scBuildingClearance);
-  return dist(b,p)<min;
+  return dist(b,p)<scBuildingSpacing(type,b);
  })&&
  !nodes.some(n=>dist(n,p)<n.radius+(small?6:type==='road'?15:24))&&
  !(p.x>445&&p.x<550&&Math.abs(p.y-315)>30);
@@ -2805,6 +2809,19 @@ if(mode==='road'&&drag){
  ctx.fillText(statusText,labelX,labelY);
  ctx.restore();
 }
+// Construction-only reservation guides use the same distances as placement.
+if(mode!=='road'&&Object.hasOwn(scConstructionRadii,mode)){
+ ctx.save();ctx.lineWidth=1.5;ctx.setLineDash([4,5]);
+ for(const b of [...buildings,...scConstructionSites]){
+  if(b.type==='road'||!alive(b)&&!scConstructionSites.includes(b))continue;
+  const radius=scBuildingSpacing(mode,b),distance=dist(b,preview);if(distance>radius+55)continue;
+  const blocked=distance<radius;ctx.strokeStyle=blocked?'rgba(247,153,122,.8)':'rgba(221,202,154,.5)';
+  ctx.fillStyle=blocked?'rgba(174,76,53,.08)':'rgba(213,195,147,.035)';
+  ctx.beginPath();ctx.arc(b.x,b.y,radius,0,Math.PI*2);ctx.fill();ctx.stroke();
+ }
+ ctx.setLineDash([]);ctx.strokeStyle=valid?'rgba(213,249,183,.8)':'rgba(255,179,168,.8)';
+ ctx.beginPath();ctx.ellipse(preview.x,preview.y+6,scConstructionRadii[mode],scConstructionRadii[mode]*.55,0,0,Math.PI*2);ctx.stroke();ctx.restore();
+}
 if(!(mode==='road'&&drag)){ctx.save();ctx.globalAlpha=.7;const [previewW,previewH]=sc1328PreviewSize(mode);ctx.fillStyle=valid?'#b7c8b5':'#da6b64';ctx.fillRect(preview.x-previewW/2,preview.y-previewH/2,previewW,previewH);ctx.strokeStyle=valid?'#d5f9b7':'#ffb3a8';ctx.lineWidth=3;ctx.strokeRect(preview.x-previewW/2,preview.y-previewH/2,previewW,previewH);ctx.globalAlpha=1;ctx.font='bold 13px system-ui';ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(valid?(mode==='fishery'?'✓ FISHERY — CLICK TO BUILD':mode==='road'?'DRAG TO DRAW ROAD':'CLICK TO BUILD'):(mode==='fishery'?'NO FREE COASTAL SPACE':'✕ BLOCKED'),preview.x,preview.y-36);
 if(mode==='fishery'){ctx.strokeStyle=valid?'#b5f9a7':'#ffb3a8';ctx.lineWidth=2;ctx.setLineDash([5,5]);ctx.beginPath();ctx.moveTo(wallPointer.x,wallPointer.y);ctx.lineTo(preview.x,preview.y);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#e5fff0';ctx.font='bold 13px system-ui';ctx.fillText('FISHING DOCK',preview.x,preview.y+30)}ctx.restore()}}
 if(false && showMinimap){
@@ -3488,7 +3505,7 @@ function scCaptureCity(){
  });
   const buildingRows=liveBuildings.map(b=>({...Object.fromEntries(scBuildingNumbers.map(k=>[k,k==='cityTier'?(b[k]||1):(b[k]??0)])),type:b.type,scLastNotifiedTier:b.scLastNotifiedTier??null,...(typeof b.cityWorkPaused==='boolean'?{cityWorkPaused:b.cityWorkPaused}:{}),...(typeof b.cityWorkPriority==='boolean'?{cityWorkPriority:b.cityWorkPriority}:{})}));
  const zoom=window.scMapZoom?.get()||1;
- return {format:scSaveFormat,schema:scScenario==='city'?(scConstructionSites.length?5:scNewOriginIds.includes(scOriginId)?4:scOriginId==='brookstead'?3:2):1,...(scScenario==='city'?{campaign:{mode:'city',stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,...(scOriginId!=='home'?{originId:scOriginId}:{})}}:{}),createdWith:'0.20.0',cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
+ return {format:scSaveFormat,schema:scScenario==='city'?(scConstructionSites.length?5:scNewOriginIds.includes(scOriginId)?4:scOriginId==='brookstead'?3:2):1,...(scScenario==='city'?{campaign:{mode:'city',stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,...(scOriginId!=='home'?{originId:scOriginId}:{})}}:{}),createdWith:'0.21.0',cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
   resources:{gold,wood,stone,food,tradeGoods,goodsSold,aiGold,aiWood},people:{population,happiness,prosperity:cityProsperity},
   clock:{elapsed,cityTimer,cityCycleNumber,aiTimer,resourceTimer,aiDecision,aiAttackTimer,aiTrainTimer,trainTimer,scFestivalCooldown},
   options:{difficulty,formation,eventFoodReserve:scEventFoodReserve,showLabels,showMinimap,serviceOverlay,ration:window.scRationPolicy?.capture()||{mode:el('sc1303Mode')?.value||'normal',emergency:window.scRationFactor===.75},breadExport:window.scBreadExportEnabled!==false,breadReserveCycles:window.scBreadReserveCycles??2},
@@ -8747,6 +8764,24 @@ prev.addEventListener('click',()=>move(-1));next.addEventListener('click',()=>mo
  function refresh(){const i=api.info(),next=JSON.stringify([i.savedAt,i.cityId,i.available,i.storageAvailable,i.writeProblem]);if(next===key)return;key=next;checkpoint.replaceChildren();checkpoint.append(i.writeProblem?'Browser saving failed. ':!i.storageAvailable?'Browser saving unavailable. ':'');if(i.available){checkpoint.append('Browser checkpoint: ');const time=make('time',checkpoint,new Date(i.savedAt).toLocaleString());time.dateTime=new Date(i.savedAt).toISOString();}else checkpoint.append('No browser checkpoint.');}
  window.addEventListener('sc-save-feedback',e=>{refresh();if(e.detail.quiet)return;if(!feedback.contains(document.activeElement))returnFocus=document.activeElement;clearTimeout(timer);message.textContent=e.detail.message;feedback.dataset.warning=String(e.detail.warning);feedback.hidden=false;if(!e.detail.warning)timer=setTimeout(()=>{if(!feedback.contains(document.activeElement))feedback.hidden=true},8000);});
  setInterval(refresh,1000);refresh();
+}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();})();
+</script>
+<style id="sc21TownLayoutStyle">
+#sc21FoodLinks{margin-top:10px;padding-top:9px;border-top:1px solid #52685d}
+#sc21FoodLinks h4{margin-bottom:6px}#sc21FoodLinks #sc1411Logistics,#sc21FoodLinks #sc1412MarketDistribution{display:block;white-space:normal;margin:6px 0;padding:7px;font-size:12px;line-height:1.5}
+#sc21FoodLinks p{font-size:11px;color:#d4d5bb}
+#sc21PanHint{font:11px/1.3 system-ui;color:#f2deb0;margin-left:6px;max-width:165px;white-space:normal}
+#sc21PanHint[hidden]{display:none}
+</style>
+<script id="sc21TownLayoutPresentation">
+(()=>{'use strict';function ready(){
+ const detail=document.getElementById('sc20CityDetails');
+ if(detail){const links=document.createElement('section');links.id='sc21FoodLinks';links.setAttribute('aria-label','Supply and market details');const heading=document.createElement('h4');heading.textContent='Supply and market details';links.append(heading);for(const id of ['sc1411Logistics','sc1412MarketDistribution']){const node=document.getElementById(id);if(node)links.append(node);}const note=document.createElement('p');note.textContent='Road links support granary logistics and market services. Open Food for the full measured ledger. Roads do not currently increase unit travel speed.';links.append(note);detail.append(links);}
+ const zoom=document.getElementById('sc1380Zoom'),viewport=document.getElementById('field')?.parentElement;if(!zoom||!viewport)return;
+ const hint=document.createElement('span');hint.id='sc21PanHint';hint.hidden=true;hint.textContent='Whole city map visible · zoom + to pan';zoom.append(hint);
+ zoom.title='Move the pointer near an exposed city-map edge to scroll. At the map boundary there is no terrain beyond it. Use + to zoom in, or open World map for the separate atlas.';
+ function refresh(){hint.hidden=viewport.scrollWidth>viewport.clientWidth+1||viewport.scrollHeight>viewport.clientHeight+1;}
+ window.addEventListener('resize',refresh);document.addEventListener('fullscreenchange',refresh);setInterval(refresh,500);refresh();
 }if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();})();
 </script>
 </body></html>
