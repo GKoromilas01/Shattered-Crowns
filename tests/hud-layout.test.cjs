@@ -9,6 +9,7 @@ for(const [width,height] of [[390,844],[320,740],[430,932],[844,390],[1366,768],
   for(const e of items){const r=e.getBoundingClientRect();if(r.left<0||r.right>innerWidth||r.top<0||r.bottom>innerHeight)out.push(e.id+' outside viewport');for(const other of items){if(e===other)continue;const b=other.getBoundingClientRect();if(Math.min(r.right,b.right)-Math.max(r.left,b.left)>1&&Math.min(r.bottom,b.bottom)-Math.max(r.top,b.top)>1)out.push((e.id||e.textContent)+' overlaps '+(other.id||other.textContent));}}
   return out;
  });assert.deepEqual(problems,[]);
+ assert.ok(await page.locator('#field').evaluate(e=>e.parentElement.getBoundingClientRect().top>=document.getElementById('scResponsiveHud').getBoundingClientRect().bottom),'Playable viewport must begin below HUD');
  await page.locator('#sc146MenuButton').click();
  assert.ok(await page.locator('#sc146Menu').evaluate(e=>e.getBoundingClientRect().top>=document.getElementById('scResponsiveHud').getBoundingClientRect().bottom),'Menu must open below HUD');
  await page.locator('#sc146MenuButton').click();
