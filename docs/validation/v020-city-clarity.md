@@ -17,3 +17,7 @@ Results and exact-source/package evidence are recorded below after execution. No
 Research/application and deferred owner direction: ../V020_RESEARCH_AND_BACKLOG.md. No renderer loops, asset loading, economy or save-format changes; polish is original restrained CSS within existing panels.
 
 The complete npm test suite is running on the frozen source. Package evidence and final results will be recorded when complete; focused checks do not claim full-suite or GitHub CI success.
+
+## Final native-input audit
+
+A separate direct keyboard test found that the new disclosure summary was outside the original native-input selector: Space reached the global shortcut and left the disclosure closed. The partial full run was stopped and its incomplete output retained locally, not reported as a full result. The existing input guard now includes Governor summaries. Native Space and Enter both open the disclosure while preserving Pause and focus; the four focused save/native-input scenarios also pass. Final screenshot capture was refreshed after this input-only fix. The earlier89558a9 package is superseded; the final package is built from the corrected commit.
