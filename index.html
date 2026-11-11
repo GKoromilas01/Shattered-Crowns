@@ -6987,13 +6987,13 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <!-- Version display fix: single authoritative visible release label. -->
 <script id="sc1406VersionFix">
 (()=>{'use strict';
- const version='14.14';
+ const version='0.22.0';
  function sync(){
   document.title='Shattered Crowns — v'+version;
   const badge=document.getElementById('sc179Version');
   if(badge&&badge.textContent!=='V'+version)badge.textContent='V'+version;
   const heading=document.querySelector('header h1 small');
-  if(heading&&heading.textContent!=='RTS v'+version+'.0')heading.textContent='RTS v'+version+'.0';
+  if(heading&&heading.textContent!=='RTS v'+version)heading.textContent='RTS v'+version;
   document.querySelectorAll('#sc171Recovery,#sc174BuildLabel').forEach(node=>node.remove());
  }
  function start(){
@@ -8862,7 +8862,6 @@ body.sc22Interlude :is(#sc1311PauseOverlay,#scResponsiveHud,#scHudNotices,#sc140
  for(const event of ['sc-city-started','sc-city-restored'])window.addEventListener(event,()=>finish(false));
  document.addEventListener('visibilitychange',()=>{if(document.hidden)finish();});
  window.scVignette={open,close:()=>finish()};
- const badge=document.getElementById('sc179Version');if(badge)badge.textContent='v0.22';document.title='Shattered Crowns — v0.22 · A Living Settlement';
  }if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();})();
 </script>
 
