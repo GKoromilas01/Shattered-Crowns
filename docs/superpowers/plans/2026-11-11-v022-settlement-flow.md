@@ -25,5 +25,6 @@ Manual orders and released/cancelled builders must never be stolen. Four-builder
 
 ## Task 3: release evidence
 - [x] Set 0.22 release metadata and document scope/source/limitations.
-- [x] Run full suite, syntax/diff checks, exact-source package and five packaged smokes.
+- [x] Run syntax/diff checks, exact-source package and five packaged smokes.
+- [ ] Await the full final-head CI suite; this is the merge gate.
 - [ ] Review final diff and record evidence; commit and open draft PR when possible. No merge/deployment.
