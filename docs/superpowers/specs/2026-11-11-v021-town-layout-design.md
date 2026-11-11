@@ -1,0 +1,11 @@
+# v0.21 — Room to build
+
+Owner approved proceeding with routine decisions delegated. Base: main c4454b2, released v0.20. Scope: remove the two persistent Supply/Markets HUD diagnostics, preserve their live values in optional City Life detail, give new civic structures a consistent physical separation and visible placement guides, and explain when the entire local map fits on screen.
+
+Approaches: mandatory Caesar-style road adjacency would require changing core service and path rules; removing roads would undo existing logistics and housing design. Choose free placement with useful existing roads, consistent structure clearance, and visual guidance. Roads retain every existing rule. Future road travel-speed benefits require their own design. Existing accepted saves remain byte-for-byte restorable; never relocate a crowded legacy town.
+
+New non-road civic placement uses the larger of its existing collision threshold and the sum of both physical radii plus 10 map units. Use the existing construction radii for candidates. Completed buildings and unfinished projects both reserve space. Existing road, shoreline, resource, defense eligibility, costs, production and movement rules remain. Defense placement itself retains its existing rules. Show nearby occupied clearance rings and a candidate footprint while a civic tool is active; do not draw permanent overlays across a city or imply spacing alone guarantees terrain legality.
+
+Move existing live Supply/Markets nodes into the stable City figures and services disclosure. No duplicate data or new inventory accounting. Add a live map-fit hint only when the entire world fits the viewport: zooming in restores panning when there is overflow. Screenshot from the owner shows the full local map; probes reproduce edge panning at 1440x900. This is a clarification, not a proven scrolling regression. Moving troops never auto-follows the camera.
+
+Preserve exact save schemas1–5, construction assignments, audio, maps, economy and current control focus. Inspect actual phone/desktop views, run new regressions then affected suites and the full suite, package exact committed source and run packaged smoke. Document reference research, larger city maps, multiplayer server persistence, subdued magic and the harbour art target. No merge or deployment.
