@@ -2,7 +2,7 @@
 
 Browser-first medieval city-building RTS with a peaceful city campaign, kingdom overview and classic skirmish mode. Serve this directory with `python3 -m http.server 8000` and open http://localhost:8000.
 
-Current development: [Milestone 18 — Governors & Living World Maps](docs/MILESTONE18.md). Five governor starts, illustrated natural atlas maps and optional bowed strings.
+Current development: [Milestone 19 — A Living, Prosperous City](docs/MILESTONE19.md). A real-data Governor overview, direct workplace panels and five-start economic/save verification.
 
 ## Automated testing
 
@@ -25,7 +25,7 @@ SMOKE_BASE_URL=https://gkoromilas01.github.io/Shattered-Crowns/ npm run test:smo
 
 Live smoke gathers actual resources for road tests and never replaces the served game or modifies server data. Read the [testing/release runbook](docs/RELEASE_PIPELINE.md) for artifact smoke, clean setup, required checks, protection activation and rollback.
 
-The released [measured city advisor](docs/ADVISOR_UPDATE.md) ranks bottlenecks with simulation evidence and direct City Life review actions. This integration candidate combines that advisor with [Governors & Living World Maps](docs/MILESTONE18.md); publication requires separate owner approval.
+The released [measured city advisor](docs/ADVISOR_UPDATE.md) ranks bottlenecks with simulation evidence and direct City Life review actions. The stacked city-management candidate combines that advisor with [Governors & Living World Maps](docs/MILESTONE18.md) and [A Living, Prosperous City](docs/MILESTONE19.md). It requires separate integration and publication approval.
 
 ## Releases and owner approval
 
