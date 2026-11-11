@@ -8784,4 +8784,32 @@ prev.addEventListener('click',()=>move(-1));next.addEventListener('click',()=>mo
  window.addEventListener('resize',refresh);document.addEventListener('fullscreenchange',refresh);setInterval(refresh,500);refresh();
 }if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();})();
 </script>
+
+<!-- Responsive HUD: shared flow owns clearance instead of independent fixed offsets. -->
+<style id="scResponsiveHudStyle">
+#scResponsiveHud{position:fixed;inset:0 0 auto;z-index:31012;display:flex;flex-wrap:wrap;align-items:center;gap:5px 8px;padding:5px 8px;background:#18352ff2;border-bottom:1px solid #b99b62;pointer-events:none}
+#scResponsiveHud>*{pointer-events:auto}
+#scResponsiveHud #resourceBar{position:static!important;flex:1 1 100%;height:auto!important;min-height:0!important;padding:0!important;border:0;white-space:normal!important;background:transparent}
+#scResponsiveHud #sc1380Zoom,#scResponsiveHud #sc154Pause,#scResponsiveHud #sc158CityStatus,#scResponsiveHud #sc146MenuButton,#scResponsiveHud #sc149Status{position:static!important;inset:auto!important;transform:none!important;margin:0!important;max-height:none!important;max-width:100%!important}
+#scResponsiveHud #sc158CityStatus{flex:1 1 auto;white-space:normal;overflow-wrap:anywhere}
+#scResponsiveHud #sc149Status{flex:1 1 500px;min-width:0;overflow-x:auto!important}
+#scFloatingMinimap{top:calc(var(--sc-hud-height, 115px) + 8px)!important}
+#sc146Menu{top:calc(var(--sc-hud-height, 115px) + 8px)!important;max-height:calc(100dvh - var(--sc-hud-height, 115px) - 112px)!important}
+#sc159Pulse,#sc1310AdvisorPanel,#advisorTop.sc155Open,#scConstructionPanel,#sc189HelpPanel,#sc190ChroniclePanel{top:calc(var(--sc-hud-height, 115px) + 8px)!important;max-height:calc(100dvh - var(--sc-hud-height, 115px) - 112px)!important}
+#scHudNotices{position:fixed;left:8px;right:8px;bottom:96px;z-index:14001;display:flex;flex-direction:column;align-items:flex-start;gap:4px;pointer-events:auto;max-height:calc(100dvh - var(--sc-hud-height, 115px) - 112px);overflow:auto}
+#scHudNotices>*{position:static!important;inset:auto!important;transform:none!important;margin:0!important;max-width:100%!important;white-space:normal!important;overflow-wrap:anywhere;flex:none}
+#scHudNotices>*:empty,#scHudNotices>[style*="opacity: 0"]{display:none!important}
+@media(max-width:600px){#scResponsiveHud #sc158CityStatus{flex-basis:100%}#scResponsiveHud #sc149Status{flex-basis:calc(100% - 80px)}#sc154Hint{display:none!important}}
+</style>
+<script id="scResponsiveHudScript">
+(()=>{function setup(){
+ const hud=document.createElement('div');hud.id='scResponsiveHud';hud.setAttribute('aria-label','City status and controls');
+ document.body.append(hud);
+ for(const id of ['resourceBar','sc154Pause','sc1380Zoom','sc158CityStatus','sc146MenuButton','sc149Status']){const el=document.getElementById(id);if(el)hud.append(el);}
+ const notices=document.createElement('div');notices.id='scHudNotices';document.body.append(notices);
+ for(const id of ['sc179Version','sc154Hint','sc143Tip','sc150SelectedIndicator','sc151OrderToast','sc196CostStrip','sc1345TheaterCard','sc1350Budget','sc1354Alerts','sc1399Planner']){const el=document.getElementById(id);if(el)notices.append(el);}
+ new ResizeObserver(()=>document.documentElement.style.setProperty('--sc-hud-height',hud.getBoundingClientRect().height+'px')).observe(hud);
+}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup,{once:true});else setup();
+})();
+</script>
 </body></html>
