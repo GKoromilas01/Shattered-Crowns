@@ -1,5 +1,9 @@
 # Release notes
 
+## v0.20.0 — City Clarity
+
+Governor’s Hall puts measured food problems, housing and worksites waiting for builders before secondary figures. Detailed city figures use a labelled disclosure, while existing section navigation remains available. Employment links directly to the five workplace inspectors. Browser saves show checkpoint time and visible results; downloadable files remain distinct from browser storage. Restrained dark/forest/brass styling improves hierarchy without adding renderer work or external assets. Existing saves, assignments, rates, maps, audio and peaceful campaign rules remain compatible. See [verification](docs/validation/v020-city-clarity.md). Draft only; merge and publication remain owner decisions.
+
 ## v0.19.0 — A Living, Prosperous City
 
 Real-data Governor overview and actionable advice, five building-specific workplace panels, and extended economic/save tests across all five starts. Workplace operations and economic rules are shared with the existing game. A bounded departure timer fixes long-shortage checkpoint rejection without changing save formats or population rules. See [Milestone 19](docs/MILESTONE19.md).
