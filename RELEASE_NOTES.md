@@ -1,5 +1,11 @@
 # Release notes
 
+## v0.23.0 — Brookstead’s First Charter
+
+Choose Brookstead on the title screen and opt into a new First Charter chapter. Welcome a household into a newly built, watered, road-connected home; demonstrate six measured food cycles; choose a shared granary or a common garden and complete it using normal workers and materials. Its factual outcome is recorded in Chronicle → History and saved with the city. Advisor retains economic guidance first, with chapter objectives in the same panel.
+
+No construction slowdown, new currency, free rewards, caravan, diplomacy or mobile expansion. Existing rates, prices and builder handoff remain. Saves in schemas 1–5 still load without enrolling a chapter. Chapter saves use schema 6, including unfinished projects, and cannot be loaded by older game versions. Keep an older exported checkpoint when planning a downgrade. See [Milestone 23](docs/MILESTONE23.md). Feature candidate only; merge and deployment require separate approval.
+
 ## v0.22.0 — A Living Settlement
 
 City builders continue to the nearest unfinished project with room for builders, while manual orders and release remain in control. Building information stays in one inspector, Worksites replaces conflicting panels, and changing selection clears stale placement messages. Right-click keeps its game orders and panning without opening the browser menu over the game; small resource near-misses are easier to target.
