@@ -23,3 +23,9 @@ Explicit synthetic legacy schema-4 and unfinished schema-5 format round trips pa
 
 ## Pending final gates
 Full final-source regression/pipeline; exact committed-source package validation and packaged smoke; final published-head CI. Missing, pending, skipped or cancelled checks do not count as success. Report observed failures separately from unchanged selective reruns. No merge/deployment authorization is implied by any result here.
+
+## First published candidate and inspector regression
+Candidate d1a3df51bcc7a478a76f77b4233bc41d5782950c completed push CI with 449/451 regression tests passing. The two failures were unchanged building-control hit-target assertions at desktop widths 1366 and 1440. The incoming trade request covered the active building inspector; this was reproduced locally and in a new notification-priority test. The PR counterpart reported the same failures before cancellation. Neither run establishes release readiness; subsequent package steps were skipped.
+
+The correction defers the request and sayings while a visible building inspector is open. The request remains unacknowledged until it can appear automatically after the inspector closes. CSS-hidden inspectors underneath the shared trade screen do not close that screen. Existing hit-target assertions are retained without weakening. Final replacement-head CI is required.
+The replacement correction passed all building-panel and caravan-interface checks together: 25/25, including all three unchanged layout widths and the new deferred-notification case. Pipeline checks passed 22/22; 131 inline scripts parsed and git diff --check passed. These focused results do not replace the required clean full final-head CI.
