@@ -2,7 +2,7 @@
 
 Browser-first medieval city-building RTS with a peaceful city campaign, kingdom overview and classic skirmish mode. Serve this directory with `python3 -m http.server 8000` and open http://localhost:8000.
 
-Current development: [Milestone 23 — Brookstead’s First Charter](docs/MILESTONE23.md). An optional opening chapter using existing housing, food, construction and one shared investment; its outcome is saved in Chronicle History. Other starts and sandbox remain available.
+Current development: [Milestone 24 — Ironmere’s First Shipment](docs/MILESTONE24.md). One resource-funded neighbour agreement, automatic request notices, shared Market/City Life controls, and non-pausing milestone sayings. Brookstead’s optional First Charter and the existing sandbox starts remain available.
 
 ## Automated testing
 

@@ -1,0 +1,26 @@
+const {test,before,after}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs');
+const {setup,game,snapshot,capture,advance,conserved,build,gather,roads}=require('./support/living-city.cjs');let env;
+before(async()=>{env=await setup();fs.mkdirSync('test-results/caravan',{recursive:true});});after(async()=>env?.close());
+const cycleRows=new WeakMap();
+async function instrument(p){await p.evaluate(()=>{const original=__livingCityTest.advance.bind(__livingCityTest);window.__tradeCycles=[];__livingCityTest.advance=n=>{const rows=original(n);__tradeCycles.push(...rows);return rows;};});}
+async function collect(p){const rows=await p.evaluate(()=>{const rows=window.__tradeCycles||[];window.__tradeCycles=[];return rows;});const all=cycleRows.get(p)||[];all.push(...rows);cycleRows.set(p,all);}
+async function checkpoint(p,label){await collect(p);const before=await capture(p);assert.equal((await p.evaluate(()=>scSavedCity.save())).ok,true);await p.reload();await p.locator('#sc1310Skip').click();const restored=await p.evaluate(()=>scSavedCity.resume());assert.equal(restored.ok,true,restored.message);const after=await capture(p);assert.deepEqual(after.state.resources,before.state.resources,label+' preserves resources');assert.deepEqual(after.state.chapter,before.state.chapter,label+' preserves chapter');assert.deepEqual(after.state.regional.caravan,before.state.regional.caravan,label+' preserves shipment');assert.equal(await p.evaluate(()=>scCitySave.status().paused),true);await instrument(p);}
+for(const origin of ['brookstead','home'])test('Resource-funded Ironmere shipment from '+origin+' survives checkpoints and returns exactly once',async t=>{
+ const p=await game(t,env,origin),initial=await capture(p),keep=initial.state.buildings.find(b=>b.type==='keep');if(origin==='brookstead')assert.equal(await p.evaluate(()=>scFirstCharter.begin()),true);
+ await instrument(p);
+ await gather(p,'wood',25);await gather(p,'stone',25);await build(p,'farm',keep.x+180,keep.y-100);const home=await build(p,'house',keep.x+180,keep.y+130);await build(p,'well',home.x-80,home.y);
+ const line=await p.evaluate(({x,y})=>__livingCityTest.roadLine(x,y),home);assert.ok(line);await roads(p,line);
+ if(origin==='brookstead'){
+  for(let n=0;n<120&&(await p.evaluate(()=>scFirstCharter.snapshot().stage))!=='petition';n++)await advance(p,5);
+  assert.equal((await p.evaluate(()=>scFirstCharter.snapshot())).stage,'petition');await p.locator('#sc1310AdvisorBtn').click();await p.locator('#sc23Garden').click();await p.locator('#sc1310AdvisorClose').click();await build(p,'garden',home.x+70,home.y+70);await advance(p,5);assert.equal((await p.evaluate(()=>scFirstCharter.snapshot())).stage,'complete');
+ }
+ const market=await build(p,'market',home.x-100,home.y+90);
+ for(let n=0;n<60&&!(await p.evaluate(()=>scCaravan.snapshot().trade));n++)await advance(p,5);
+ assert.equal((await p.evaluate(()=>scCaravan.snapshot())).trade?.phase,'offer','Normal market route earns an offer');
+ for(let n=0;n<36&&(await capture(p)).state.resources.wood<40;n++)await gather(p,'wood',5);
+ await checkpoint(p,'offer');await p.evaluate(id=>scCityEconomy.inspect(id),market.id);await p.locator('#sc24MarketTrade').waitFor({state:'visible'});await p.locator('#sc24MarketTrade').click();
+ const before=await capture(p);await p.locator('#sc24Send').focus();await p.keyboard.press('Space');assert.equal((await capture(p)).state.resources.wood,before.state.resources.wood-40);await p.locator('#sc24TradeClose').click();await advance(p,35);await checkpoint(p,'outbound');await advance(p,30);assert.equal((await p.evaluate(()=>scCaravan.snapshot())).trade.phase,'returning');await checkpoint(p,'returning');await advance(p,55);
+ const done=await capture(p),trade=done.state.regional.caravan;assert.equal(trade.phase,'complete');assert.equal(done.state.resources.stone,before.state.resources.stone+36);assert.equal(trade.outcome.terms.wood,40);await checkpoint(p,'returned');await advance(p,10);assert.equal((await capture(p)).state.resources.stone,done.state.resources.stone);assert.equal(await p.evaluate(()=>scCaravan.dispatch()),false);
+ await p.locator('#sc190ChronicleBtn').click();await p.locator('#sc199Tabs [data-tab=history]').click();await p.locator('#sc24TradeHistory').waitFor({state:'visible'});assert.equal(await p.locator('#sc24TradeHistory').count(),1);await collect(p);const rows=cycleRows.get(p)||[];assert.ok(rows.length>20,'Collect measured cycles across reloads, not an empty report');for(const row of rows)conserved(row);conserved(await snapshot(p));
+ fs.writeFileSync('test-results/caravan/'+origin+'.json',JSON.stringify({method:'Actual gathering and paid native construction, no resource/population/building grants; simulation accelerated by the existing test helper. Brookstead completes its First Charter first; home is sandbox.',origin,initial:initial.state.resources,dispatch:before.state.resources,final:done.state.resources,trade,foodCycles:rows.length,foodShortfalls:rows.filter(r=>r.food.shortfall>0).length},null,2));await p.screenshot({path:'test-results/caravan/'+origin+'.png'});
+});

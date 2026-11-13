@@ -1,5 +1,11 @@
 # Release notes
 
+## v0.24.0 — Ironmere’s First Shipment
+
+Marches home and Brookstead can earn one Ironmere request: commit 40 real wood and receive 36 stone after 60 outbound plus 60 returning game seconds. The request appears automatically once; Market and City Life open the same compact trade screen. Detailed requirements are behind a disclosure. Pause and atlas freeze travel, and departed shipments return even if the Market later closes. Normal basket sales, prices and worker systems remain unchanged.
+
+Original milestone sayings appear briefly and fade without pausing or taking focus, with reduced-motion support and saved Chronicle history. Softer contact shadows, shaded roofs and a small original trade illustration polish existing graphics. New peaceful cities use schema 7; older schemas 1–6 load without fabricated history. Pre-v0.24 clients cannot load schema 7. Broader diplomacy, physical caravans, mobile expansion and the requested full keyboard-shortcut reference remain later work. See [Milestone 24](docs/MILESTONE24.md). Feature candidate only; no merge/deployment authorization.
+
 ## v0.23.0 — Brookstead’s First Charter
 
 Choose Brookstead on the title screen and opt into a new First Charter chapter. Welcome a household into a newly built, watered, road-connected home; demonstrate six measured food cycles; choose a shared granary or a common garden and complete it using normal workers and materials. Its factual outcome is recorded in Chronicle → History and saved with the city. Advisor retains economic guidance first, with chapter objectives in the same panel.

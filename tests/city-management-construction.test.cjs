@@ -17,7 +17,7 @@ for(const width of [390,1440])test('Governor preserves unfinished construction a
  assert.ok(site,'Paid placement creates a foundation');
  assert.equal(saved.state.resources.wood,initial.state.resources.wood-75);
  assert.equal(saved.state.resources.gold,initial.state.resources.gold-30);
- assert.equal(saved.schema,5);
+ assert.equal(saved.schema,7);
  assert.equal(await p.evaluate(id=>scCityEconomy.inspect(id),site.id),false,'A foundation is not an operational workplace');
  assert.equal((await snapshot(p)).workforce.sites.some(b=>b.id===site.id),false);
  await advance(p,5);
@@ -36,7 +36,7 @@ for(const width of [390,1440])test('Governor preserves unfinished construction a
  assert.equal(await p.evaluate(id=>scConstruction.assign(id),site.id),true);
  for(let seconds=0;seconds<180&&(await p.evaluate(()=>scConstruction.snapshot().sites.length));seconds+=2)await advance(p,2);
  const completed=await capture(p);
- assert.equal(completed.state.construction,undefined);
+ assert.deepEqual(completed.state.construction,[]);
  assert.ok(completed.state.buildings.some(b=>b.id===site.id&&b.type==='farm'));
  assert.ok(completed.state.units.filter(u=>u.type==='worker').every(u=>u.order?.type!=='build'));
  assert.equal(await p.evaluate(id=>scCityEconomy.inspect(id),site.id),true,'Completed project becomes inspectable');
