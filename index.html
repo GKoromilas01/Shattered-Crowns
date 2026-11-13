@@ -3444,7 +3444,7 @@ window.scCancelConstruction=()=>{mode=null;drag=null;wallPointer=null;window.dis
 // Versioned session snapshots. Transient pointer/visual effects are deliberately not replayed.
 // One optional local chapter. Progress observes completed economy cycles only.
 const scChapterId='brookstead-first-charter';
-function scChapterFood(s){const f=s.food.last;return !!f&&f.shortfall===0&&f.harvest+f.logistics+f.bakeryNet-f.exports>=f.demand&&s.food.stock>=4*f.demand&&s.housing.displaced===0;}
+function scChapterFood(s){const f=s.food.last;return !!f&&f.shortfall===0&&f.harvest+f.logistics+f.bakeryNet-f.exports>=f.demand&&s.food.stock>=4*s.food.demand&&s.housing.displaced===0;}
 function scChapterHome(s){return scChapter&&s.housing.houses.find(h=>h.id>=scChapter.startNextId&&h.occupancy>0&&h.water&&h.access)||null;}
 function scChapterTick(){
  if(!scChapter||scChapter.stage==='complete'||scScenario!=='city'||scOriginId!=='brookstead'||ended)return;
@@ -3475,7 +3475,7 @@ function scChapterChoose(choice){
 }
 function scChapterSnapshot(){
  if(!scChapter)return null;const s=citySnapshot(),home=scChapterHome(s);
- return {...scClone(scChapter),homeReady:!!home,foodReady:!!home&&scChapterFood(s),reserveTarget:(s.food.last?.demand||s.food.demand)*4};
+ return {...scClone(scChapter),homeReady:!!home,foodReady:!!home&&scChapterFood(s),reserveTarget:s.food.demand*4};
 }
 function scChapterPrepare(q,data){
  const fail=()=>{throw new Error('Invalid First Charter checkpoint. Your city has not changed.');};

@@ -5,6 +5,7 @@ const adapter=`window.__charterTest={
  project(type){const site=scStartConstruction(type,{x:1320,y:650});selected=units.filter(u=>u.type==='worker');scConstructionAssign(site.id);for(const u of selected){u.x=site.x;u.y=site.y;}return site.id;},
  finish(id){const site=scConstructionSites.find(s=>s.id===id);site.progress=site.required-.01;scConstructionTick(.25);},
  shortage(){food=0;for(const b of buildings)if(b.type==='farm')b.cityWorkPaused=true;},
+ reserveBoundary(){population=23;food=40;},
  move(id,x,y){const b=buildings.find(b=>b.id===id);b.x=x;b.y=y;},
  remove(id){buildings=buildings.filter(b=>b.id!==id);updateUI();}
 };`;
