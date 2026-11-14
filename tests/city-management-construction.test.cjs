@@ -17,7 +17,7 @@ for(const width of [390,1440])test('Governor preserves unfinished construction a
  assert.ok(site,'Paid placement creates a foundation');
  assert.equal(saved.state.resources.wood,initial.state.resources.wood-75);
  assert.equal(saved.state.resources.gold,initial.state.resources.gold-30);
- assert.equal(saved.schema,7);
+ assert.equal(saved.schema,8);
  assert.equal(await p.evaluate(id=>scCityEconomy.inspect(id),site.id),false,'A foundation is not an operational workplace');
  assert.equal((await snapshot(p)).workforce.sites.some(b=>b.id===site.id),false);
  await advance(p,5);

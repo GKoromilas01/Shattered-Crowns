@@ -778,7 +778,7 @@ function scDrawAtmosphere(g,width,height,time){
 }
 window.scDrawTerrainDetail=scDrawTerrainDetail;window.scDrawAtmosphere=scDrawAtmosphere;
 
-const alive=o=>o&&o.hp>0;function init(){scRegionalInputEpoch++;scChapter=null;scRegional=scScenario==='city'?{version:1,caravan:null,sayings:[{id:'start',at:0,shown:false}]}:null;scReadyCycles=0;scSelectedLocation=scOriginId;scOverview=false;scCityIdentity=Date.now().toString(36)+'-'+(++scCitySequence);stats={spawned:[0,0],lost:[0,0],kills:[0,0],damage:[0,0],gathered:[0,0],raids:0};aiRally=null;scConstructionSites=[];units=[];buildings=[];nodes=[];effects=[];projectiles=[];combatTexts=[];gold=240;wood=100;stone=30;food=90;population=8;happiness=70;cityTimer=0;cityCycleNumber=0;cityLedger=null;cityFlows=[];cityHouseholds=[];citySatisfactionLast=null;cityGrowth={progress:0,departure:0,reason:"Build serviced housing to welcome residents."};tradeGoods=0;goodsSold=0;window.sc1411LogisticsSnapshot=null;window.sc1412MarketDistributionSnapshot=null;scFestivalCooldown=0;scEventFoodReserve=30;cityProsperity=0;wellCoverage=0;roadMarkets=0;healerCoverage=0;granaryCount=0;employment={jobs:0,filled:0,available:0,byId:new Map()};aiGold=240;aiWood=100;trainQueue=[];aiQueue=[];trainTimer=0;aiTrainTimer=0;aiDecision=0;aiAttackTimer=0;difficulty=el("difficulty").value;selected=[];inspectedBuilding=null;window.scRTSSelected=[];window.scRTSInspectedBuilding=null;drag=null;mode=null;paused=false;ended=false;elapsed=0;aiTimer=0;resourceTimer=0;nextId=1;uiRefresh=0;scUndoStack.length=0;addBuilding(0,'keep',120,310);if(scScenario==='skirmish')addBuilding(1,'keep',1170,440);for(let i=0;i<3;i++)addUnit(0,'worker',170,255+i*40);for(let i=0;i<3;i++)addUnit(0,'soldier',205,290+i*30);if(scScenario==='skirmish'){for(let i=0;i<3;i++)addUnit(1,'soldier',1090,400+i*40);for(let i=0;i<3;i++)addUnit(1,'worker',1125,340+i*42);}for(let i=0;i<7;i++)nodes.push({x:280+(i%3)*50,y:110+Math.floor(i/3)*65,type:'tree',amount:600,radius:18,renew:0});for(let i=0;i<5;i++)nodes.push({x:430+(i%2)*70,y:430+Math.floor(i/2)*55,type:'gold',amount:800,radius:19,renew:0});for(let i=0;i<5;i++)nodes.push({x:330+(i%2)*75,y:280+Math.floor(i/2)*43,type:'stone',amount:700,radius:19,renew:0});// Additional deposits support a larger settlement without replacing the original start.
+const alive=o=>o&&o.hp>0;function init(){scRegionalInputEpoch++;scChapter=null;scRegional=scScenario==='city'?{version:2,caravan:null,followup:null,receipts:[],sayings:[{id:'start',at:0,shown:false}]}:null;scReadyCycles=0;scSelectedLocation=scOriginId;scOverview=false;scCityIdentity=Date.now().toString(36)+'-'+(++scCitySequence);stats={spawned:[0,0],lost:[0,0],kills:[0,0],damage:[0,0],gathered:[0,0],raids:0};aiRally=null;scConstructionSites=[];units=[];buildings=[];nodes=[];effects=[];projectiles=[];combatTexts=[];gold=240;wood=100;stone=30;food=90;population=8;happiness=70;cityTimer=0;cityCycleNumber=0;cityLedger=null;cityFlows=[];cityHouseholds=[];citySatisfactionLast=null;cityGrowth={progress:0,departure:0,reason:"Build serviced housing to welcome residents."};tradeGoods=0;goodsSold=0;window.sc1411LogisticsSnapshot=null;window.sc1412MarketDistributionSnapshot=null;scFestivalCooldown=0;scEventFoodReserve=30;cityProsperity=0;wellCoverage=0;roadMarkets=0;healerCoverage=0;granaryCount=0;employment={jobs:0,filled:0,available:0,byId:new Map()};aiGold=240;aiWood=100;trainQueue=[];aiQueue=[];trainTimer=0;aiTrainTimer=0;aiDecision=0;aiAttackTimer=0;difficulty=el("difficulty").value;selected=[];inspectedBuilding=null;window.scRTSSelected=[];window.scRTSInspectedBuilding=null;drag=null;mode=null;paused=false;ended=false;elapsed=0;aiTimer=0;resourceTimer=0;nextId=1;uiRefresh=0;scUndoStack.length=0;addBuilding(0,'keep',120,310);if(scScenario==='skirmish')addBuilding(1,'keep',1170,440);for(let i=0;i<3;i++)addUnit(0,'worker',170,255+i*40);for(let i=0;i<3;i++)addUnit(0,'soldier',205,290+i*30);if(scScenario==='skirmish'){for(let i=0;i<3;i++)addUnit(1,'soldier',1090,400+i*40);for(let i=0;i<3;i++)addUnit(1,'worker',1125,340+i*42);}for(let i=0;i<7;i++)nodes.push({x:280+(i%3)*50,y:110+Math.floor(i/3)*65,type:'tree',amount:600,radius:18,renew:0});for(let i=0;i<5;i++)nodes.push({x:430+(i%2)*70,y:430+Math.floor(i/2)*55,type:'gold',amount:800,radius:19,renew:0});for(let i=0;i<5;i++)nodes.push({x:330+(i%2)*75,y:280+Math.floor(i/2)*43,type:'stone',amount:700,radius:19,renew:0});// Additional deposits support a larger settlement without replacing the original start.
 for(let i=0;i<10;i++)nodes.push({x:1390+(i%5)*70,y:120+Math.floor(i/5)*120,type:i%3===0?'stone':'tree',amount:650,radius:18,renew:0});
 
 for(let i=0;i<5;i++)nodes.push({x:130+i*118,y:680+(i%2)*95,type:'tree',amount:600,radius:18,renew:0});
@@ -3445,7 +3445,7 @@ window.scCancelConstruction=()=>{mode=null;drag=null;wallPointer=null;window.dis
 // One optional local chapter. Progress observes completed economy cycles only.
 const scChapterId='brookstead-first-charter';
 // One local agreement; cargo belongs to this city's checkpoint, never a global reward ledger.
-function scRegionalEnsure(){return scRegional||(scRegional={version:1,caravan:null,sayings:[]});}
+function scRegionalEnsure(){return scRegional||(scRegional={version:2,caravan:null,followup:null,receipts:[],sayings:[]});}
 function scRegionalMilestone(id){
  if(scScenario!=='city')return;const q=scRegionalEnsure();
  if(!q.sayings.some(s=>s.id===id))q.sayings.push({id,at:elapsed,shown:false});
@@ -3461,7 +3461,7 @@ function scRegionalEligibility(){
  return {eligible:reasons.length===0,reasons};
 }
 function scRegionalOffer(){
- if(scRegional?.caravan||!scRegionalEligibility().eligible)return;
+ if(scRegional?.caravan){scRegionalFollowupOffer();return;}if(!scRegionalEligibility().eligible)return;
  scRegionalEnsure().caravan={id:'ironmere-first-trade',phase:'offer',terms:{wood:40,stone:36,legSeconds:60},offeredAt:elapsed,noticed:false,departedAt:null,progress:0,escrow:0,outcome:null};
  window.dispatchEvent(new Event('sc-regional-changed'));
 }
@@ -3470,16 +3470,16 @@ function scRegionalDispatch(){
  wood-=q.terms.wood;q.escrow=q.terms.wood;q.departedAt=elapsed;q.phase='outbound';q.noticed=true;
  updateUI();window.dispatchEvent(new Event('sc-regional-changed'));return true;
 }
-function scRegionalTick(dt){
+function scRegionalFirstTick(dt){
  const q=scRegional?.caravan;if(scScenario!=='city'||ended||!q||!['outbound','returning'].includes(q.phase))return;
  q.progress=Math.min(q.terms.legSeconds*2,q.progress+dt);
  if(q.progress>=q.terms.legSeconds*2){
   stone+=q.terms.stone;q.escrow=0;q.phase='complete';
   q.outcome={neighbour:'ironmere',terms:scClone(q.terms),completedAt:elapsed,population,food};
-  scRegionalMilestone('trade');updateUI();
+  scRegional.receipts.push({id:'first',stone:36,at:elapsed,shown:false});scRegionalMilestone('trade');updateUI();
  }else if(q.progress>=q.terms.legSeconds)q.phase='returning';
 }
-function scRegionalPrepare(q,data){
+function scRegionalPrepareFirst(q,data){
  const fail=()=>{throw new Error('Invalid regional journey checkpoint. Your city has not changed.');};
  const keys=(o,fields)=>{if(!o||typeof o!=='object'||Array.isArray(o)||Object.keys(o).length!==fields.length||Object.keys(o).some(k=>!fields.includes(k)))fail();};
  const finite=(n,min=0,max=data.state.clock.elapsed)=>{if(!Number.isFinite(n)||n<min||n>max)fail();};
@@ -3502,14 +3502,59 @@ function scRegionalPrepare(q,data){
  }
  return scClone(q);
 }
+function scRegionalFollowupOffer(){
+ if(scRegional?.caravan?.phase!=='complete'||scRegional.followup||!scRegionalEligibility().eligible)return;
+ scRegional.followup={id:'ironmere-followup',phase:'offer',offeredAt:elapsed,noticed:false,choice:null,cost:null,departedAt:null,progress:0,escrow:0,outcome:null};
+ window.dispatchEvent(new Event('sc-regional-changed'));
+}
+function scRegionalDispatchFollowup(choice){
+ const q=scRegional?.followup;if(!q||q.phase!=='offer'||!['wood','gold'].includes(choice)||!scRegionalEligibility().eligible)return false;
+ const amount=choice==='wood'?20:15;if((choice==='wood'?wood:gold)<amount)return false;
+ if(choice==='wood')wood-=amount;else gold-=amount;
+ q.choice=choice;q.cost={resource:choice,amount};q.escrow=amount;q.departedAt=elapsed;q.phase='outbound';q.noticed=true;
+ updateUI();window.dispatchEvent(new Event('sc-regional-changed'));return true;
+}
+function scRegionalTick(dt){
+ scRegionalFirstTick(dt);const q=scRegional?.followup;
+ if(scScenario!=='city'||ended||!q||!['outbound','returning'].includes(q.phase))return;
+ q.progress=Math.min(120,q.progress+dt);
+ if(q.progress>=120){stone+=18;q.escrow=0;q.phase='complete';q.outcome={neighbour:'ironmere',choice:q.choice,cost:scClone(q.cost),stone:18,completedAt:elapsed,population,food};scRegional.receipts.push({id:'followup',stone:18,at:elapsed,shown:false});updateUI();window.dispatchEvent(new Event('sc-regional-changed'));}
+ else if(q.progress>=60)q.phase='returning';
+}
+function scRegionalPrepare(q,data){
+ const fail=()=>{throw new Error('Invalid regional follow-up or receipt. Your city has not changed.');};
+ const exact=(o,fields)=>{if(!o||typeof o!=='object'||Array.isArray(o)||Object.keys(o).length!==fields.length||Object.keys(o).some(k=>!fields.includes(k)))fail();};
+ const finite=(n,min=0,max=data.state.clock.elapsed)=>{if(!Number.isFinite(n)||n<min||n>max)fail();};
+ if(data.schema===7){const old=scRegionalPrepareFirst(q,data);return {...old,version:2,followup:null,receipts:[]};}
+ exact(q,['version','caravan','sayings','followup','receipts']);if(q.version!==2)fail();
+ scRegionalPrepareFirst({version:1,caravan:q.caravan,sayings:q.sayings},data);
+ const f=q.followup;
+ if(f!==null){
+  exact(f,['id','phase','offeredAt','noticed','choice','cost','departedAt','progress','escrow','outcome']);
+  if(q.caravan?.phase!=='complete'||f.id!=='ironmere-followup'||!['offer','outbound','returning','complete'].includes(f.phase)||typeof f.noticed!=='boolean')fail();finite(f.offeredAt,q.caravan.outcome.completedAt);finite(f.progress,0,120);
+  const cost=c=>{exact(c,['resource','amount']);if(c.resource!==f.choice||c.amount!==(f.choice==='wood'?20:15))fail();};
+  if(f.phase==='offer'){if(f.choice!==null||f.cost!==null||f.departedAt!==null||f.progress!==0||f.escrow!==0||f.outcome!==null)fail();}
+  else{
+   if(!['wood','gold'].includes(f.choice)||!f.noticed)fail();cost(f.cost);finite(f.departedAt,f.offeredAt);
+   if(f.progress>data.state.clock.elapsed-f.departedAt+1e-6)fail();
+   if(f.phase==='complete'){
+    if(f.progress!==120||f.escrow!==0)fail();const o=f.outcome;exact(o,['neighbour','choice','cost','stone','completedAt','population','food']);cost(o.cost);if(o.neighbour!=='ironmere'||o.choice!==f.choice||o.stone!==18||!Number.isSafeInteger(o.population))fail();finite(o.completedAt,f.departedAt+120-1e-6);finite(o.population,4,1e6);finite(o.food,0,1e12);
+   }else if(f.escrow!==f.cost.amount||f.outcome!==null||f.phase==='outbound'&&f.progress>=60||f.phase==='returning'&&(f.progress<60||f.progress>=120)||Math.abs(f.progress-(data.state.clock.elapsed-f.departedAt))>1e-6)fail();
+  }
+ }
+ if(!Array.isArray(q.receipts)||q.receipts.length>2)fail();const ids=new Set();
+ for(const r of q.receipts){exact(r,['id','stone','at','shown']);if(!['first','followup'].includes(r.id)||ids.has(r.id)||typeof r.shown!=='boolean')fail();ids.add(r.id);const trip=r.id==='first'?q.caravan:f;if(trip?.phase!=='complete'||r.stone!==(r.id==='first'?36:18)||r.at!==trip.outcome.completedAt)fail();finite(r.at);}
+ if(f?.phase==='complete'&&!ids.has('followup'))fail();return scClone(q);
+}
 // Observe physical activation before older inspector handlers can stop propagation.
 window.addEventListener('keydown',e=>{if((e.key==='Enter'||e.code==='Space')&&!e.repeat)scRegionalKeys.set(e.code,{epoch:scRegionalInputEpoch});},true);
 window.addEventListener('keyup',e=>{const token=scRegionalKeys.get(e.code);if(token)setTimeout(()=>{if(scRegionalKeys.get(e.code)===token)scRegionalKeys.delete(e.code);},0);},true);
 window.scCaravan=Object.freeze({
  activationAllowed:()=>![...scRegionalKeys.values()].some(token=>token.epoch!==scRegionalInputEpoch),
- snapshot:(details=true)=>({... (details?scRegionalEligibility():{eligible:false,reasons:[]}),supported:scScenario==='city'&&['home','brookstead'].includes(scOriginId),wood,charterComplete:scChapter?.stage==='complete',trade:scClone(scRegional?.caravan||null),sayings:scClone(scRegional?.sayings||[])}),
- dispatch:scRegionalDispatch,
- notice:()=>{const q=scRegional?.caravan;if(!q||q.phase!=='offer'||q.noticed||!scVillageActionReady())return false;q.noticed=true;return true;},
+ snapshot:(details=true)=>({... (details?scRegionalEligibility():{eligible:false,reasons:[]}),supported:scScenario==='city'&&['home','brookstead'].includes(scOriginId),wood,gold,followup:scClone(scRegional?.followup||null),receipts:scClone(scRegional?.receipts||[]),charterComplete:scChapter?.stage==='complete',trade:scClone(scRegional?.caravan||null),sayings:scClone(scRegional?.sayings||[])}),
+ dispatch:scRegionalDispatch,dispatchFollowup:scRegionalDispatchFollowup,
+ acknowledgeReceipt:id=>{const q=scRegional?.receipts.find(r=>r.id===id);if(!q||q.shown||!scVillageActionReady())return false;q.shown=true;return true;},
+ notice:()=>{const q=scRegional?.followup||scRegional?.caravan;if(!q||q.phase!=='offer'||q.noticed||!scVillageActionReady())return false;q.noticed=true;return true;},
  acknowledgeSaying:id=>{const q=scRegional?.sayings.find(s=>s.id===id);if(!q||q.shown||!scVillageActionReady())return false;q.shown=true;return true;}
 });
 
@@ -3607,7 +3652,7 @@ function scCaptureCity(){
  });
   const buildingRows=liveBuildings.map(b=>({...Object.fromEntries(scBuildingNumbers.map(k=>[k,k==='cityTier'?(b[k]||1):(b[k]??0)])),type:b.type,scLastNotifiedTier:b.scLastNotifiedTier??null,...(typeof b.cityWorkPaused==='boolean'?{cityWorkPaused:b.cityWorkPaused}:{}),...(typeof b.cityWorkPriority==='boolean'?{cityWorkPriority:b.cityWorkPriority}:{})}));
  const zoom=window.scMapZoom?.get()||1;
- return {format:scSaveFormat,schema:scScenario==='city'?(scRegional?7:scChapter?6:scConstructionSites.length?5:scNewOriginIds.includes(scOriginId)?4:scOriginId==='brookstead'?3:2):1,...(scScenario==='city'?{campaign:{mode:'city',stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,...(scOriginId!=='home'?{originId:scOriginId}:{})}}:{}),createdWith:'0.24.0',cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
+ return {format:scSaveFormat,schema:scScenario==='city'?(scRegional?8:scChapter?6:scConstructionSites.length?5:scNewOriginIds.includes(scOriginId)?4:scOriginId==='brookstead'?3:2):1,...(scScenario==='city'?{campaign:{mode:'city',stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,...(scOriginId!=='home'?{originId:scOriginId}:{})}}:{}),createdWith:'0.25.0',cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
   resources:{gold,wood,stone,food,tradeGoods,goodsSold,aiGold,aiWood},people:{population,happiness,prosperity:cityProsperity},
   clock:{elapsed,cityTimer,cityCycleNumber,aiTimer,resourceTimer,aiDecision,aiAttackTimer,aiTrainTimer,trainTimer,scFestivalCooldown},
   options:{difficulty,formation,eventFoodReserve:scEventFoodReserve,showLabels,showMinimap,serviceOverlay,ration:window.scRationPolicy?.capture()||{mode:el('sc1303Mode')?.value||'normal',emergency:window.scRationFactor===.75},breadExport:window.scBreadExportEnabled!==false,breadReserveCycles:window.scBreadReserveCycles??2},
@@ -3631,12 +3676,12 @@ function scPrepareCity(input){
  function list(v,max=5000){if(!Array.isArray(v)||v.length>max)fail();}
  const id=v=>number(v,1,1e9,true);
  keys(data,['format','schema','createdWith','cityId','savedAt','world','view','state',...(data.schema>=2?['campaign']:[])]);
- if(data.format!==scSaveFormat||![1,2,3,4,5,6,7].includes(data.schema))throw new Error('Unsupported save format or version. Your current city has not changed.');
+ if(data.format!==scSaveFormat||![1,2,3,4,5,6,7,8].includes(data.schema))throw new Error('Unsupported save format or version. Your current city has not changed.');
  if(typeof data.createdWith!=='string'||!/^\d+\.\d+\.\d+$/.test(data.createdWith)||typeof data.cityId!=='string'||!/^[a-zA-Z0-9-]{1,64}$/.test(data.cityId))fail();number(data.savedAt,0,1e15,true);
  keys(data.world,['version','width','height']);if(data.world.version!==1||data.world.width!==W||data.world.height!==H)throw new Error('This save belongs to an unsupported world layout.');
  keys(data.view,['zoom','centerX','centerY']);number(data.view.zoom,.55,1.55);number(data.view.centerX,0,W);number(data.view.centerY,0,H);
  if(data.schema>=2){keys(data.campaign,['mode','stableCycles','selectedLocation',...(data.schema>=3?['originId']:[])]);if(data.schema===3)choice(data.campaign.originId,['brookstead']);if(data.schema===4)choice(data.campaign.originId,scNewOriginIds);if(data.schema>=5&&data.campaign.originId!==undefined)choice(data.campaign.originId,scCityOrigins.map(p=>p.id));choice(data.campaign.mode,['city']);number(data.campaign.stableCycles,0,12,true);choice(data.campaign.selectedLocation,data.schema>=4?[...scKingdomLocations,...scNewOriginIds]:scKingdomLocations);}
- const s=data.state;keys(s,['resources','people','clock','options','units','buildings','nodes','selected','inspected','squads','nextId','stats','growth','ledger','flows','households','satisfactionLast','measurements','undo','trainQueue','aiQueue','ended',...(data.schema>=5?['construction']:[]),...(data.schema>=6?['chapter']:[]),...(data.schema===7?['regional']:[])]);
+ const s=data.state;keys(s,['resources','people','clock','options','units','buildings','nodes','selected','inspected','squads','nextId','stats','growth','ledger','flows','households','satisfactionLast','measurements','undo','trainQueue','aiQueue','ended',...(data.schema>=5?['construction']:[]),...(data.schema>=6?['chapter']:[]),...(data.schema>=7?['regional']:[])]);
  keys(s.resources,['gold','wood','stone','food','tradeGoods','goodsSold','aiGold','aiWood']);for(const k of ['gold','wood','stone','food','tradeGoods','goodsSold','aiGold','aiWood'])number(s.resources[k]);
  number(s.resources.tradeGoods,0,80);number(s.resources.goodsSold,0,1e12,true);
  keys(s.people,['population','happiness','prosperity']);number(s.people.population,4,1e6,true);number(s.people.happiness,0,100);number(s.people.prosperity,0,100);
@@ -3670,7 +3715,7 @@ function scPrepareCity(input){
  keys(s.measurements,['logistics','distribution','civic']);for(const [k,fields] of Object.entries({logistics:['connected','bonus','total'],distribution:['served','homes','coverage','savings','base','actual','percent'],civic:['homes','served','rate','moodBonus']})){const v=s.measurements[k];if(v!==null){keys(v,fields);for(const f of fields)number(v[f]);}}
  list(s.undo,30);for(const e of s.undo){choice(e.kind,['build','recruit']);keys(e,e.kind==='build'?['kind','ids','gold','wood','stone','label']:['kind','type','gold','wood','stone','label']);for(const k of ['gold','wood','stone'])number(e[k],0,1e9);if(typeof e.label!=='string')fail();if(e.kind==='build'){list(e.ids);for(const i of e.ids){id(i);if(i>=s.nextId)fail();}}else choice(e.type,scUnitTypes);}
  for(const q of [s.trainQueue,s.aiQueue]){list(q,1000);for(const type of q)choice(type,scUnitTypes);}
- const chapter=data.schema===6||data.schema===7&&s.chapter!==null?scChapterPrepare(s.chapter,data):null;const regional=data.schema===7?scRegionalPrepare(s.regional,data):null;
+ const chapter=data.schema===6||data.schema>=7&&s.chapter!==null?scChapterPrepare(s.chapter,data):null;const regional=data.schema>=7?scRegionalPrepare(s.regional,data):null;
  return {data,chapter,regional,construction:preparedSites,units:rebuiltUnits,buildings:rebuiltBuildings,nodes:rebuiltNodes,selected:rebuiltSelected,inspected:rebuiltInspected,squads:rebuiltSquads};
 }
 function scRestoreCity(input){
@@ -4178,7 +4223,7 @@ const bar=document.createElement('div');bar.id='sc140Bar';bar.innerHTML='<div id
 const label=bar.querySelector('#sc140Selection strong'),details=bar.querySelector('#sc140Details'),commands=bar.querySelector('#sc140Commands');
 const action=(key)=>{const btn=document.querySelector('#quickDock button[data-action="'+key+'"]');if(btn){btn.click();return true;}const fallback=document.getElementById(key);if(fallback){fallback.click();return true;}return false;};
 const keep=[['👷','Worker','worker'],['⚔️','Soldier','soldier'],['🏹','Archer','archer'],['🛡️','Upgrade','upgradeKeep']];
-const building=[['🏗','Worksites','scConstructionOpen'],['🏠','House','house'],['🌾','Farm','farm'],['🛣️','Road','road'],['🛒','Market','market'],['💧','Well','well'],['🌲','Lumber','lumberyard'],['🐟','Fishery','fishery'],['🏚️','Granary','granary'],['🥖','Bakery','bakery'],['🎭','Theater','theater'],['🏥','Healer','clinic'],['🌷','Garden','garden'],['⛲','Plaza','plaza'],['🏰','Fortress','fortress'],['🗼','Tower','tower'],['🧱','Wall','wall']];
+const building=[['🏠','House','house'],['🌾','Farm','farm'],['🛣️','Road','road'],['🛒','Market','market'],['💧','Well','well'],['🌲','Lumber','lumberyard'],['🐟','Fishery','fishery'],['🏚️','Granary','granary'],['🥖','Bakery','bakery'],['🎭','Theater','theater'],['🏥','Healer','clinic'],['🌷','Garden','garden'],['⛲','Plaza','plaza'],['🏰','Fortress','fortress'],['🗼','Tower','tower'],['🧱','Wall','wall']];
 const army=[['🛑','Stop','stopUnits'],['🛡️','Defend','scDefendKeep'],['↩️','Retreat','scRetreat'],['⚔️','Line','lineFormation'],['↕️','Column','columnFormation']];
 let selected=null,menu='keep',lastPointer={x:-1,y:-1};
 const modeIndicator=document.createElement('div');modeIndicator.id='sc153Mode';modeIndicator.textContent='🏗 Construction active · Esc to exit';document.body.append(modeIndicator);
@@ -7113,7 +7158,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <!-- Version display fix: single authoritative visible release label. -->
 <script id="sc1406VersionFix">
 (()=>{'use strict';
- const version='0.24.0';
+ const version='0.25.0';
  function sync(){
   document.title='Shattered Crowns — v'+version;
   const badge=document.getElementById('sc179Version');
@@ -9054,12 +9099,13 @@ body.sc22Interlude :is(#sc1311PauseOverlay,#scResponsiveHud,#scHudNotices,#sc140
 body.sc24Trading #scCityInspection{visibility:hidden!important}
 #sc24Offer{z-index:36030;border-left:4px solid #e5c576}#sc24Offer h2,#sc24TradePanel h2{font-size:19px;margin:0 0 10px;color:#ffe1a0}#sc24Offer button,#sc24TradePanel button,#sc24CityTrade,#sc24MarketTrade{float:none;white-space:normal;font:inherit;margin:5px 5px 5px 0;padding:9px;border:1px solid #b29965;border-radius:5px;background:#51482e;color:#fff0ca;cursor:pointer}#sc24TradePanel button:disabled{opacity:.6;cursor:default}#sc24TradePanel progress{width:100%;accent-color:#a5c98f}#sc24TradeTerms{font-size:17px;font-weight:700;color:#ffe1a0}#sc24TradeRules{font-size:12px;color:#ded6be;margin:10px 0}#sc24TradeRules summary{cursor:pointer;padding:6px 0}#sc24Commitment{font-size:11px;color:#d5caa8}.sc24TradeArt svg{display:block;width:100%;height:auto;margin:10px 0}
 #sc24MarketTrade{display:block;width:100%;text-align:left}#sc24CityTrade{display:block;margin:10px;max-width:calc(100% - 20px)}
-#sc24Saying{position:fixed;z-index:32010;left:50%;transform:translateX(-50%);top:calc(var(--sc-hud-height,115px) + 14px);box-sizing:border-box;max-width:calc(100vw - 24px);width:510px;padding:14px 20px;border:1px solid #bfa46b;border-radius:8px;background:#193a31ed;color:#f7ead0;box-shadow:0 3px 18px #0006;font:italic 16px/1.5 Georgia,serif;text-align:center;pointer-events:none;opacity:1;transition:opacity .6s ease}
+#sc24Saying{position:fixed;z-index:32010;left:50%;transform:translateX(-50%);top:calc(var(--sc-hud-height,115px) + 14px);box-sizing:border-box;max-width:calc(100vw - 24px);width:510px;padding:14px 20px;border:1px solid #bfa46b;border-radius:8px;background:#193a31ed;color:#f7ead0;box-shadow:0 3px 18px #0006;font:italic 16px/1.5 Georgia,serif;text-align:center;pointer-events:none;opacity:1;transition:opacity 1s ease}
 #sc24Saying *{pointer-events:none}#sc24Saying.sc24Fading{opacity:0}#sc24Saying small{display:block;font:11px/1.4 system-ui;margin-top:7px;color:#d5caa8}
 #sc24TradeHistory,#sc24SayingsHistory{padding:10px;border-left:3px solid #b99c63;background:#203a33;margin:10px 0;overflow-wrap:anywhere}#sc24SayingsHistory blockquote{margin:10px 0;padding:8px}#sc24SayingsHistory cite{display:block;font:11px/1.5 system-ui}
 :is(#sc24Offer,#sc24TradePanel,#sc24Saying,#sc24MarketTrade,#sc24CityTrade,#sc24TradeHistory,#sc24SayingsHistory)[hidden]{display:none!important}
 @media(prefers-reduced-motion:reduce){#sc24Saying{transition:none}}
 </style>
+<style id="sc25ReceiptStyle">#sc25Receipt{position:fixed;z-index:36025;top:calc(var(--sc-hud-height,115px) + 14px);left:50%;transform:translateX(-50%);width:510px;max-width:calc(100vw - 24px);box-sizing:border-box;padding:16px 20px;border:1px solid #cfb678;border-left:4px solid #b8d9a1;border-radius:8px;background:#193a31f5;color:#fff0ca;box-shadow:0 3px 18px #0006;font:15px/1.5 system-ui;pointer-events:none}#sc25Receipt[hidden]{display:none!important}</style>
 <script id="sc24Presentation">
 (()=>{'use strict';
  const api=window.scCaravan;if(!api)return;
@@ -9074,14 +9120,16 @@ body.sc24Trading #scCityInspection{visibility:hidden!important}
  const art=make('div',panel);art.className='sc24TradeArt';art.setAttribute('aria-hidden','true');art.innerHTML='<svg viewBox="0 0 360 66" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="sc24ArtSky" x2="0" y2="1"><stop stop-color="#304e48"/><stop offset="1" stop-color="#63745a"/></linearGradient></defs><rect width="360" height="66" rx="7" fill="url(#sc24ArtSky)"/><circle cx="54" cy="19" r="10" fill="#d8c591" opacity=".65"/><path d="M170 49 225 5 267 43 297 12 354 51" fill="#425e57"/><path d="m224 7-13 14 15-4 12 5z" fill="#b9c4aa"/><path d="M0 57 Q65 28 146 53 T360 50" fill="none" stroke="#c4ad7c" stroke-width="10"/><path d="M0 57 Q65 28 146 53 T360 50" fill="none" stroke="#78694e" stroke-width="1" stroke-dasharray="3 7"/><path d="M290 44V23h9v-6h7v6h9v21m-35 0V17h7v-7h6v7h7v27" fill="#a9aa8e" stroke="#344b42" stroke-width="2"/><path d="M293 44V33q5-7 10 0v11" fill="#344b42"/><ellipse cx="112" cy="53" rx="32" ry="5" fill="#213f35" opacity=".4"/><path d="m85 32 7 15h44l5-15z" fill="#b8945b" stroke="#54462e" stroke-width="2"/><path d="M96 33V20h15v13m3 0V17h15v16" fill="#c8af73" stroke="#6f5a38" stroke-width="2"/><path d="M100 20v12m19-14v14M91 39h46m-2 8 18 1" stroke="#e2ce99" stroke-width="2"/><g fill="#423e2e" stroke="#d2ba7d" stroke-width="2"><circle cx="99" cy="49" r="7"/><circle cx="129" cy="49" r="7"/></g><path d="M99 43v12m-6-6h12m24-6v12m-6-6h12" stroke="#b39863"/></svg>';
  const journey=make('p',panel),progress=make('progress',panel);progress.max=120;progress.setAttribute('aria-label','Shipment round-trip progress');
  const brief=make('p',panel),rules=make('details',panel);rules.id='sc24TradeRules';make('summary',rules,'Terms & requirements');make('p',rules,'Lady Elowen’s mountain settlement requests timber. One shipment per city: 60 game seconds outbound, then 60 returning. This is a timed journey, not a moving unit on the city map.');const requirements=make('p',rules);make('p',rules,'Stone is credited only after return. Later Market closure does not strand your shipment. Pause and World map freeze journey time; closing the browser grants no travel progress.');const commit=make('p',panel,'Sending commits cargo immediately; no recall after departure.');commit.id='sc24Commitment';
- const send=button(panel,'sc24Send','Send shipment · 40 wood'),feedback=make('p',panel);feedback.setAttribute('role','status');
- const market=button(document.getElementById('scCityInspection'),'sc24MarketTrade','Trade offers');market.hidden=true;
+ const send=button(panel,'sc24Send','Send shipment · 40 wood'),sendWood=button(panel,'sc25SendWood','Send · 20 wood'),sendGold=button(panel,'sc25SendGold','Send · 15 gold'),sendLater=button(panel,'sc25FollowupLater','Later'),feedback=make('p',panel);feedback.setAttribute('role','status');
+ const market=button(document.getElementById('scCityInspection'),'sc24MarketTrade','Trade offers');market.hidden=true;document.getElementById('buildingInspector').before(market);
  const city=button(null,'sc24CityTrade','Neighbour trade · Ironmere');document.getElementById('scCityEconomyPanel').before(city);
  const tradeHistory=make('section',document.getElementById('sc199history'));tradeHistory.id='sc24TradeHistory';tradeHistory.hidden=true;
  const sayingsHistory=make('section',document.getElementById('sc199history'));sayingsHistory.id='sc24SayingsHistory';sayingsHistory.hidden=true;
  const saying=make('aside',document.body);saying.id='sc24Saying';saying.hidden=true;saying.setAttribute('role','status');saying.setAttribute('aria-live','polite');
+ const receipt=make('aside',document.body);receipt.id='sc25Receipt';receipt.hidden=true;receipt.setAttribute('role','status');receipt.setAttribute('aria-live','polite');
  const words=make('span',saying);make('small',saying,'Original settlement saying · Shattered Crowns');
  const catalogue={start:{label:'A new city',text:'Leave room beside the road; tomorrow may bring a neighbour.'},charter:{label:'First Charter completed',text:'A town grows twice: first in its foundations, then in the care its people give one another.'},trade:{label:'First trade returned',text:'A road becomes a promise when both towns keep their word.'}};
+ let activeReceipt=null,receiptRemaining=0;
  let epoch=0,opener=null,offerOpen=false,activeSaying=null,remaining=0,lastTime=performance.now(),historyKey='',latest=null,identity=window.scCitySave.status().cityId,returnCityLife=false;const held=new WeakMap();
  const interactive='#sc24Offer button,#sc24TradePanel button,#sc24TradePanel summary,#sc24MarketTrade,#sc24CityTrade';
  window.addEventListener('keydown',e=>{
@@ -9090,47 +9138,62 @@ body.sc24Trading #scCityInspection{visibility:hidden!important}
   if(e.code==='Space'||e.key==='Enter'){if(e.repeat)e.preventDefault();else held.set(b,{epoch,kind:e.code==='Space'?'Space':'Enter'});e.stopImmediatePropagation();}
   else if(!['Tab','Shift','Control','Alt','Meta','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Home','End','PageUp','PageDown'].includes(e.key)){e.preventDefault();e.stopImmediatePropagation();}
  },true);
- function release(kind){const tokens=[view,later,close,send,market,city].map(b=>[b,held.get(b)]).filter(([,v])=>v?.kind===kind);setTimeout(()=>{for(const [b,v] of tokens)if(held.get(b)===v)held.delete(b);},0);}
+ function release(kind){const tokens=[view,later,close,send,sendWood,sendGold,sendLater,market,city].map(b=>[b,held.get(b)]).filter(([,v])=>v?.kind===kind);setTimeout(()=>{for(const [b,v] of tokens)if(held.get(b)===v)held.delete(b);},0);}
  window.addEventListener('keyup',e=>{if(e.code==='Space'||e.key==='Enter')release(e.code==='Space'?'Space':'Enter');},true);window.addEventListener('pointerup',()=>release('pointer'),true);window.addEventListener('pointercancel',()=>release('pointer'),true);
  function action(b,fn){b.addEventListener('pointerdown',()=>held.set(b,{epoch,kind:'pointer'}));b.addEventListener('click',()=>{if(held.has(b)&&held.get(b).epoch!==epoch||held.get(b)?.kind!=='pointer'&&!api.activationAllowed()){feedback.textContent='City changed. Release the held key and activate this control again.';return;}fn();});}
  function visible(id){const n=document.getElementById(id);return !!n&&!n.hidden&&n.getClientRects().length>0&&getComputedStyle(n).visibility!=='hidden';}
  function blocked(){return document.hidden||window.scCampaign.status().scenario!=='city'||window.scCitySave.status().ended||document.body.classList.contains('sc22Interlude')||!!document.querySelector('dialog[open]')||['sc1310Welcome','scKingdomPanel','scGovernorOverview','scConstructionPanel','scCityInspection','sc146Menu','sc159Pulse','sc1310AdvisorPanel','sc190ChroniclePanel','sc189HelpPanel'].some(visible);}
  function open(){opener=document.activeElement;offerOpen=false;returnCityLife=visible('sc159Pulse');if(returnCityLife){document.getElementById('sc159Pulse').hidden=true;document.getElementById('sc1312CityLifeBtn').setAttribute('aria-expanded','false');}panel.hidden=false;document.body.classList.add('sc24Trading');feedback.textContent='';suspendSaying();refresh();heading.focus({preventScroll:true});}
  function hide(restore=true){panel.hidden=true;document.body.classList.remove('sc24Trading');if(restore&&returnCityLife){document.getElementById('sc159Pulse').hidden=false;document.getElementById('sc1312CityLifeBtn').setAttribute('aria-expanded','true');}returnCityLife=false;if(restore&&opener?.isConnected&&opener.getClientRects().length)opener.focus({preventScroll:true});}
+ action(sendLater,()=>{api.notice();hide();refresh();});
  action(view,open);action(later,()=>{offerOpen=false;refresh();});action(close,()=>{hide();refresh();});action(market,open);action(city,open);
+ for(const [control,choice] of [[sendWood,'wood'],[sendGold,'gold']])action(control,()=>{feedback.textContent=api.dispatchFollowup(choice)?'Follow-up shipment departed. Payment committed once.':'Cannot send yet. Check requirements and chosen resources.';refresh();});
  action(send,()=>{feedback.textContent=api.dispatch()?'Shipment departed. 40 wood committed; 36 stone will arrive on return.':'Cannot send yet. Check current requirements and available wood.';refresh();});
  function put(n,text){if(n.textContent!==text)n.textContent=text;}
  function renderHistory(s){
-  const key=JSON.stringify([s.sayings,s.trade?.outcome]);if(key===historyKey)return;historyKey=key;tradeHistory.replaceChildren();sayingsHistory.replaceChildren();
+  const key=JSON.stringify([s.sayings,s.trade?.outcome,s.followup?.outcome]);if(key===historyKey)return;historyKey=key;tradeHistory.replaceChildren();sayingsHistory.replaceChildren();
   tradeHistory.hidden=!s.trade?.outcome;if(s.trade?.outcome){const o=s.trade.outcome;make('h3',tradeHistory,'First neighbour agreement · Ironmere');make('p',tradeHistory,'40 wood sent; 36 stone received. Returned at '+Math.floor(o.completedAt)+' game seconds, with '+o.population+' residents and '+Math.floor(o.food)+' food. This completed agreement is saved with your city.');}
+  if(s.followup?.outcome){const o=s.followup.outcome;make('h3',tradeHistory,'Ironmere follow-up · fulfilled');make('p',tradeHistory,o.cost.amount+' '+o.cost.resource+' sent; 18 stone received. Returned at '+Math.floor(o.completedAt)+' game seconds, with '+o.population+' residents. This chosen agreement is saved with your city.');}
   sayingsHistory.hidden=s.sayings.length===0;if(s.sayings.length){make('h3',sayingsHistory,'Words for the road · earned milestones');for(const entry of s.sayings){const q=catalogue[entry.id],b=make('blockquote',sayingsHistory,q.text);make('cite',b,q.label+' · '+Math.floor(entry.at)+' game seconds · Original settlement saying, Shattered Crowns');}}
  }
- function suspendSaying(){lastTime=performance.now();saying.hidden=true;}
+ function suspendSaying(){lastTime=performance.now();saying.hidden=receipt.hidden=true;}
  document.addEventListener('visibilitychange',suspendSaying);
  document.addEventListener('click',e=>{if(e.target.closest?.('#sc1312CityLifeBtn,#sc1310AdvisorBtn,#sc190ChronicleBtn,#sc189HelpButton,#sc146MenuButton')){if(!panel.hidden)hide(false);suspendSaying();}},true);
  function refresh(){
-  const id=window.scCitySave.status().cityId;if(id!==identity){identity=id;epoch++;offerOpen=false;activeSaying=null;remaining=0;offer.hidden=panel.hidden=saying.hidden=true;returnCityLife=false;document.body.classList.remove('sc24Trading');}if(!panel.hidden&&blocked())hide(false);const s=api.snapshot(!panel.hidden),q=s.trade,phase=q?.phase||'unavailable',unavailable=blocked();latest=s;city.hidden=!s.supported;
+  const id=window.scCitySave.status().cityId;if(id!==identity){identity=id;epoch++;offerOpen=false;activeSaying=activeReceipt=null;remaining=receiptRemaining=0;offer.hidden=panel.hidden=saying.hidden=receipt.hidden=true;returnCityLife=false;document.body.classList.remove('sc24Trading');}
+  if(!panel.hidden&&blocked())hide(false);const s=api.snapshot(!panel.hidden||visible('scCityInspection')||visible('sc159Pulse')),q=s.followup||s.trade,isFollow=!!s.followup,phase=q?.phase||'unavailable',unavailable=blocked();latest=s;city.hidden=!s.supported;
   const b=window.scRTSInspectedBuilding;market.hidden=!s.supported||!b||b.team!==0||b.hp<=0||b.type!=='market';
-  const suffix=phase==='offer'?'Trade offer available · Ironmere':phase==='outbound'?'Trade shipment · outbound':phase==='returning'?'Trade shipment · returning':phase==='complete'?'Trade agreement · fulfilled':'Trade offers · Ironmere';put(market,suffix);put(city,suffix);
-  if(q?.phase==='offer'&&!q.noticed&&!unavailable&&panel.hidden&&api.notice())offerOpen=true;
-  if(phase!=='offer')offerOpen=false;offer.hidden=!offerOpen||unavailable||!panel.hidden;if(!offer.hidden||!panel.hidden||unavailable)suspendSaying();
-  if(!offer.hidden)put(offerText,(s.charterComplete?'Your First Charter is recorded. ':'')+'Ironmere requests 40 wood and offers 36 stone on return. View the terms or leave the request for later.');
+  const next=s.reasons[0]||(s.wood<40?'Gather 40 wood.':'Await the next economy cycle.');
+  const suffix=phase==='offer'?(isFollow?'Follow-up offer available':'Offer available'):phase==='outbound'?'Outbound':phase==='returning'?'Returning':phase==='complete'?'Agreement fulfilled':next;put(market,'Neighbour trade · Ironmere — '+suffix);put(city,'Neighbour trade · Ironmere — '+suffix);
+  const receiptBusy=!!activeReceipt||s.receipts.some(r=>!r.shown);
+  if(q?.phase==='offer'&&!q.noticed&&!unavailable&&!receiptBusy&&panel.hidden&&api.notice())offerOpen=true;
+  if(phase!=='offer')offerOpen=false;offer.hidden=!offerOpen||unavailable||receiptBusy||!panel.hidden;if(!offer.hidden||!panel.hidden||unavailable)suspendSaying();
+  if(!offer.hidden)put(offerText,isFollow?'Ironmere offers a follow-up order: send 20 wood or 15 gold for 18 stone on return. Later costs nothing.':(s.charterComplete?'Your First Charter is recorded. ':'')+'Ironmere requests 40 wood and offers 36 stone on return. View the terms or leave the request for later.');
+  put(offerTitle,isFollow?'Follow-up request from Ironmere':'Trade request from Ironmere');put(heading,isFollow?'Ironmere’s follow-up':'Trade with Ironmere');put(terms,isFollow?'20 wood or 15 gold → 18 stone · 2 game minutes':'40 wood → 36 stone · 2 game minutes');
   progress.hidden=!q||phase==='offer';progress.value=q?.progress||0;
-  const label=phase==='offer'?'Offer ready. Wood available: '+Math.floor(s.wood)+'.':phase==='outbound'?'Outbound · '+Math.ceil(60-q.progress)+' game seconds to Ironmere. Cargo: 40 wood.':phase==='returning'?'Returning · '+Math.ceil(120-q.progress)+' game seconds until 36 stone is credited.':phase==='complete'?'Agreement fulfilled. 40 wood sent and 36 stone received.':'No trade request yet. Meet the requirements below; requests arrive on an economy cycle.';
-  put(journey,label);put(brief,(phase==='offer'||phase==='unavailable')?(s.reasons[0]||(s.wood<40?'Gather more wood to send this shipment.':'Ready to send.')):'');brief.hidden=!['offer','unavailable'].includes(phase);put(requirements,phase==='offer'||phase==='unavailable'?(s.reasons.length?s.reasons.join(' '):'Market, housing and food requirements are met.')+(s.wood<40?' Gather at least 40 wood before sending.':''):'No recall is available after departure. Your return remains due even if the Market closes.');
-  send.hidden=phase==='unavailable'||phase==='complete';send.disabled=phase!=='offer'||!s.eligible||s.wood<40;commit.hidden=phase==='complete';renderHistory(s);
+  const amount=isFollow?18:36,payment=isFollow?(q.cost?q.cost.amount+' '+q.cost.resource:'20 wood or 15 gold'):'40 wood';
+  const label=phase==='offer'?'Offer ready. Available: '+Math.floor(s.wood)+' wood · '+Math.floor(s.gold)+' gold.':phase==='outbound'?'Outbound · '+Math.ceil(60-q.progress)+' game seconds to Ironmere. Payment: '+payment+'.':phase==='returning'?'Returning · '+Math.ceil(120-q.progress)+' game seconds until '+amount+' stone is credited.':phase==='complete'?'Agreement fulfilled. '+payment+' sent and '+amount+' stone received.':'No trade request yet. Meet the requirements below; requests arrive on an economy cycle.';
+  put(journey,label);const poor=isFollow?s.wood<20&&s.gold<15:s.wood<40;put(brief,['offer','unavailable'].includes(phase)?(s.reasons[0]||(poor?'Gather the chosen payment before sending.':'Ready to send.')):'');brief.hidden=!['offer','unavailable'].includes(phase);put(requirements,['offer','unavailable'].includes(phase)?(s.reasons.length?s.reasons.join(' '):'Market, housing and food requirements are met.'):'No recall is available after departure. Your return remains due even if the Market closes.');
+  rules.querySelector('p').textContent=isFollow?'One optional follow-up order per city. Choose one payment: 20 wood or 15 gold; receive 18 stone once on return. Both choices take 60 game seconds outbound and 60 returning.':'Lady Elowen’s mountain settlement requests timber. One first shipment per city: 60 game seconds outbound, then 60 returning. This is a timed journey, not a moving unit on the city map.';
+  send.hidden=isFollow||phase==='unavailable'||phase==='complete';send.disabled=phase!=='offer'||!s.eligible||s.wood<40;sendLater.hidden=!isFollow||phase!=='offer';sendWood.hidden=sendGold.hidden=!isFollow||phase==='complete';sendWood.disabled=phase!=='offer'||!s.eligible||s.wood<20;sendGold.disabled=phase!=='offer'||!s.eligible||s.gold<15;commit.hidden=phase==='complete';renderHistory(s);
  }
  function animateSayings(){
   const now=performance.now(),delta=now-lastTime;lastTime=now;
-  if(blocked()||!offer.hidden||!panel.hidden){saying.hidden=true;return;}
+  if(blocked()||!panel.hidden){saying.hidden=receipt.hidden=true;return;}
+  if(activeReceipt){receiptRemaining-=delta;if(receiptRemaining<=0){api.acknowledgeReceipt(activeReceipt);activeReceipt=null;receipt.hidden=true;refresh();return;}}
+  if(!activeReceipt){const next=latest?.receipts.find(r=>!r.shown);if(next){activeReceipt=next.id;receiptRemaining=12000;put(receipt,'Shipment returned from Ironmere: +'+next.stone+' stone credited.');}}
+  if(activeReceipt){receipt.hidden=false;saying.hidden=true;offer.hidden=true;return;}receipt.hidden=true;
+  if(!offer.hidden){saying.hidden=true;return;}
   if(activeSaying){remaining-=delta;if(remaining<=0){activeSaying=null;saying.hidden=true;return;}}
-  if(!activeSaying){const next=latest?.sayings.find(s=>!s.shown);if(!next||!api.acknowledgeSaying(next.id)){saying.hidden=true;return;}activeSaying=next.id;remaining=7000;put(words,catalogue[next.id].text);}
-  saying.hidden=false;saying.classList.toggle('sc24Fading',remaining<=600);
+  if(!activeSaying){const next=latest?.sayings.find(s=>!s.shown);if(!next||!api.acknowledgeSaying(next.id)){saying.hidden=true;return;}activeSaying=next.id;remaining=13000;put(words,catalogue[next.id].text);}
+  saying.hidden=false;saying.classList.toggle('sc24Fading',remaining<=1000);
  }
- for(const e of ['sc-city-started','sc-city-restored'])window.addEventListener(e,()=>{epoch++;identity=window.scCitySave.status().cityId;offerOpen=false;activeSaying=null;remaining=0;lastTime=performance.now();offer.hidden=panel.hidden=saying.hidden=true;returnCityLife=false;document.body.classList.remove('sc24Trading');feedback.textContent='';historyKey='';refresh();});
+ for(const e of ['sc-city-started','sc-city-restored'])window.addEventListener(e,()=>{epoch++;identity=window.scCitySave.status().cityId;offerOpen=false;activeSaying=activeReceipt=null;remaining=receiptRemaining=0;lastTime=performance.now();offer.hidden=panel.hidden=saying.hidden=receipt.hidden=true;returnCityLife=false;document.body.classList.remove('sc24Trading');feedback.textContent='';historyKey='';refresh();});
  window.addEventListener('sc-regional-changed',refresh);window.scCaravanUI=Object.freeze({open});
  setInterval(refresh,500);setInterval(animateSayings,100);refresh();
 })();
 </script>
 
+<style id="sc25KeyboardStyle">#sc25Keyboard{margin:12px 0;padding:9px;border:1px solid #718668;border-radius:6px}#sc25Keyboard summary{cursor:pointer;color:#ffe1a0}#sc25Keyboard table{width:100%;font:12px/1.5 system-ui;border-collapse:collapse}#sc25Keyboard th,#sc25Keyboard td{text-align:left;vertical-align:top;padding:5px;border-bottom:1px solid #71866855}#sc25Keyboard kbd{font-weight:700;white-space:nowrap}</style>
+<script id="sc25KeyboardGuide">(()=>{'use strict';const host=document.getElementById('sc189HelpPanel');if(!host)return;const d=document.createElement('details');d.id='sc25Keyboard';const summary=document.createElement('summary');summary.textContent='Keyboard shortcuts';d.append(summary);const intro=document.createElement('p');intro.textContent='Close Help to use gameplay shortcuts. Selection keys need game focus, without Ctrl/Alt/Meta, and do not operate while typing or browsing the World map. Camera movement needs room beyond the visible map.';d.append(intro);const table=document.createElement('table');table.innerHTML='<thead><tr><th scope="col">Key</th><th scope="col">Action / context</th></tr></thead><tbody></tbody>';const rows=[['O','Select all idle map workers.'],['I','Select the next idle worker.'],['W / E / K','Select all map workers in a peaceful city.'],['X','Stop orders for selected units.'],['. / ,','Open Construction / military commands.'],['Arrow keys','Pan the city camera when the map exceeds the viewport.'],['Home','Return to the initial camera position.'],['Ctrl+Z','Undo the last supported construction or recruitment action; ordinary refunds apply.'],['F3 / Pause','Pause or resume the simulation.'],['Escape','Cancel placement or close the active supported panel.'],['Tab / Shift+Tab','Move between interface controls.'],['Enter / Space','Activate a focused button; Space toggles a focused disclosure.']];for(const [key,action] of rows){const row=document.createElement('tr'),name=document.createElement('th'),text=document.createElement('td');name.scope='row';const k=document.createElement('kbd');k.textContent=key;name.append(k);text.textContent=action;row.append(name,text);table.tBodies[0].append(row);}d.append(table);host.querySelector('h2').after(d);window.addEventListener('keydown',e=>{if(e.target.closest?.('#sc25Keyboard')&&(e.code==='Space'||e.key==='Enter'))e.stopImmediatePropagation();},true);})();</script>
 </body></html>
