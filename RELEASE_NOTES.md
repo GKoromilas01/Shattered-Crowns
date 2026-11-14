@@ -1,5 +1,11 @@
 # Release notes
 
+## v0.25.0 — Clearer Trade and Ironmere’s Follow-up
+
+Sayings receive twelve unobstructed readable seconds and a one-second fade. Factual return receipts take priority and state the actual stone credited; display never pays resources. Neighbour trade is prominent near the completed Market inspector heading and remains available in City Life. The duplicate Worksites card is removed from Construction while Menu, City Life and foundations retain management. Help adds a compact native keyboard disclosure.
+
+After the first agreement returns, eligible Marches home and Brookstead cities can choose one follow-up: 20 wood or 15 gold for 18 stone, with the existing 60-second outbound and 60-second return legs. Later spends nothing. Chosen payment and outcome persist in Chronicle and strict schema 8, with legacy schemas 1–7 supported without replaying historical payments or receipts. Older clients cannot load schema 8. No physical caravan, new settlement, broader diplomacy or mobile expansion. [Milestone 25 / playtest guide](docs/MILESTONE25.md). Candidate only; merge and deployment require separate approval.
+
 ## v0.24.0 — Ironmere’s First Shipment
 
 Marches home and Brookstead can earn one Ironmere request: commit 40 real wood and receive 36 stone after 60 outbound plus 60 returning game seconds. The request appears automatically once; Market and City Life open the same compact trade screen. Detailed requirements are behind a disclosure. Pause and atlas freeze travel, and departed shipments return even if the Market later closes. Normal basket sales, prices and worker systems remain unchanged.
