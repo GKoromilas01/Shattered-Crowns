@@ -4,7 +4,7 @@ Browser-first medieval city-building RTS with a peaceful city campaign, kingdom 
 
 Released: [Milestone 26 — A Working Trade Town](docs/MILESTONE26.md), main `8dff174`, verified in [production release 43712799913](https://github.com/GKoromilas01/Shattered-Crowns/actions/runs/43712799913). It includes illustrated Canvas graphics, readable resources, carpentry, reserved contract baskets, Ironmere supplier agreements and a builder-funded Market loading yard.
 
-Implementation candidate: [v0.27 — An Envoy to Ironmere](docs/MILESTONE27.md), approved for implementation on a feature branch. Validation is in progress; merge and deployment require separate owner approval.
+Implementation candidate: [v0.27 — An Envoy to Ironmere](docs/MILESTONE27.md), approved for implementation on a feature branch. See [PR #43](https://github.com/GKoromilas01/Shattered-Crowns/pull/43) for final-head validation and the playable package; merge and deployment require separate owner approval.
 
 ## Automated testing
 

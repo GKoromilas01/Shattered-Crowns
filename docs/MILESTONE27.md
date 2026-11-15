@@ -1,6 +1,6 @@
 # Milestone 27 — An Envoy to Ironmere
 
-Implementation candidate based on released v0.26 (`8dff174`). Owner approved the design for implementation. Merge and production deployment require separate approval. Validation remains in progress.
+Implementation candidate based on released v0.26 (`8dff174`). Owner approved the design for implementation. Merge and production deployment require separate approval. Final-head validation and the playable package are recorded in [PR #43](https://github.com/GKoromilas01/Shattered-Crowns/pull/43).
 
 ## A paid visit and one permanent charter
 

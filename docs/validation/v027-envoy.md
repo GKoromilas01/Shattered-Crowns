@@ -1,6 +1,6 @@
 # v0.27 envoy validation history
 
-Candidate only; final verification is in progress. Production remains v0.26. No merge/deployment approval is inferred.
+Feature candidate; production remains v0.26. This file preserves implementation methods and initial validation history. Final-head results, normal-clock measurements and the verified playable package are maintained in [PR #43](https://github.com/GKoromilas01/Shattered-Crowns/pull/43). No merge/deployment approval is inferred.
 
 ## Methods and failures retained
 
