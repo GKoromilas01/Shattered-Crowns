@@ -21,7 +21,8 @@ for(const [width,height] of [[390,844],[320,740],[430,932],[844,390],[1366,768],
  await page.locator('#sc154Pause').click();await page.waitForTimeout(100);assert.match(await page.locator('#sc154Pause').innerText(),/Resume/);await page.locator('#sc154Pause').click();
  await page.locator('#sc140Build').click();
  const house=page.locator('#sc140Commands button').filter({hasText:'House'});await house.scrollIntoViewIfNeeded();await house.click();
- await page.waitForFunction(()=>document.getElementById('sc143Tip').textContent.includes('House'));
+ // Tooltip enrichment can rename House to Build housing for citizens before the click.
+ await page.waitForFunction(()=>document.getElementById('sc196CostStrip').textContent.includes('House')&&document.getElementById('sc143Tip').textContent.trim().length>0);
  const notices=await page.evaluate(()=>{
   const elements=[...document.querySelectorAll('#scHudNotices>*')].filter(e=>e.getClientRects().length&&Number(getComputedStyle(e).opacity)>0);
   const bottom=document.getElementById('sc140Bar').getBoundingClientRect().top,issues=[];
