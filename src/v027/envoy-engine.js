@@ -4,7 +4,7 @@ const scEnvoyFields=['version','phase','paid','departedAt','progress','arrivedAt
 function scEnvoyChanged(){window.dispatchEvent(new Event('sc-envoy-changed'));scTownChanged();}
 function scEnvoyHistoryFull(){return (scTownState?.history.length||0)+(scTownState?.journey?1:0)>=512;}
 function scEnvoySend(){
- if(scEnvoyState||scEnvoyHistoryFull()||scScenario!=='city'||!buildings.some(b=>b.team===0&&b.type==='keep'&&alive(b))||!scVillageActionReady()||!scCaravan.activationAllowed()||gold<30)return false;
+ if(scEnvoyState||scFrontierState?.survey||scEnvoyHistoryFull()||scScenario!=='city'||!buildings.some(b=>b.team===0&&b.type==='keep'&&alive(b))||!scVillageActionReady()||!scCaravan.activationAllowed()||gold<30)return false;
  scTownEnsure();gold-=30;scEnvoyState={version:1,phase:'travelling',paid:30,departedAt:elapsed,progress:0,arrivedAt:null,choice:null,chosenAt:null};updateUI();scEnvoyChanged();return true;
 }
 function scEnvoyTick(dt){
@@ -16,7 +16,7 @@ function scEnvoyChoose(choice){
  q.choice=choice;q.chosenAt=elapsed;q.phase=choice==='leave'?'declined':'signed';updateUI();scEnvoyChanged();return true;
 }
 function scEnvoySnapshot(){
- const q=scEnvoyState;return {...(q?scClone(q):{phase:'unvisited',choice:null,progress:0,paid:0}),supported:scScenario==='city',supplierComplete:scTownState?.stage===3,historyFull:scEnvoyHistoryFull(),canSend:!q&&! (scEnvoyHistoryFull())&&scScenario==='city'&&buildings.some(b=>b.team===0&&b.type==='keep'&&alive(b))&&scVillageActionReady()&&gold>=30,hasYard:scTownHasYard(),gold,fee:30,duration:120};
+ const q=scEnvoyState;return {...(q?scClone(q):{phase:'unvisited',choice:null,progress:0,paid:0}),supported:scScenario==='city',supplierComplete:scTownState?.stage===3,historyFull:scEnvoyHistoryFull(),canSend:!q&&!scFrontierState?.survey&&! (scEnvoyHistoryFull())&&scScenario==='city'&&buildings.some(b=>b.team===0&&b.type==='keep'&&alive(b))&&scVillageActionReady()&&gold>=30,hasYard:scTownHasYard(),gold,fee:30,duration:120};
 }
 function scEnvoyPrepare(q,data){
  const fail=()=>{throw Error('Invalid envoy visit or charter checkpoint. Your city has not changed.');};
