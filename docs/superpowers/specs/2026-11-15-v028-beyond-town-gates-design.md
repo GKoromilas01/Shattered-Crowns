@@ -1,6 +1,6 @@
 # v0.28 — Beyond the Town Gates
 
-Status: detailed design for owner review. The owner played and accepted v0.27 and directed proceeding with the published exploration/diplomacy proposal. This document makes its gameplay and delivery boundaries concrete. It does not authorize merging or deploying either version.
+Status: owner approved for implementation on 16 November 2026. First deliver the Valewatch prototype for review before expanding the full set. The owner played and accepted v0.27 and directed proceeding with the published exploration/diplomacy proposal. This document makes its gameplay and delivery boundaries concrete. It does not authorize merging or deploying either version.
 
 Baseline: owner-playtested v0.27 head `522f192a8e2a3f077f16355cadf48120d3c7efa3`. v0.27 remains a separate, unmerged PR. Develop v0.28 separately and stack its PR on that branch until the owner separately authorizes integration.
 
