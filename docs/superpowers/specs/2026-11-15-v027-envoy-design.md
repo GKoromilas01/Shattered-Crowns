@@ -1,6 +1,6 @@
 # Proposed v0.27 — An Envoy to Ironmere
 
-**Status: design proposal for owner review, not implemented or an approved release scope.** Owner requested a recommendation for the next version and asked work to proceed. This document makes the proposed milestone concrete before changing gameplay. Baseline: released v0.26, main `8dff174d1d9ca2a14bba51f9e125cc647d08b8e1`, successful production release `43712799913`.
+**Status: owner approved this scope for implementation on 15 November 2026. Not yet implemented or released.** Owner requested a recommendation for the next version and asked work to proceed. This document makes the proposed milestone concrete before changing gameplay. The owner subsequently explicitly approved the written v0.27 scope. Baseline: released v0.26, main `8dff174d1d9ca2a14bba51f9e125cc647d08b8e1`, successful production release `43712799913`.
 
 ## Player experience
 

@@ -16,11 +16,12 @@ function scTownReserve(count){
  const q=scTownEnsure(),release=Math.max(0,q.reservedBaskets-count);if(tradeGoods+release>80)return false;
  tradeGoods+=release;q.reservedBaskets-=release;q.reservationTarget=count;scTownFillReservation();updateUI();scTownChanged();return true;
 }
-function scTownTerms(stage,kind,choice=null,batches=1){
+function scTownTerms(stage,kind,choice=null,batches=1,charter=scEnvoyState?.phase==='signed'?scEnvoyState.choice:null){
  if(kind==='agreement'){
   if(batches!==1||stage<0||stage>2||stage!==2&&choice!==null||stage===2&&!['timber','food'].includes(choice))return null;
   return stage===0?{planks:8,baskets:0,gold:40}:stage===1?{planks:0,baskets:12,gold:54}:choice==='timber'?{planks:12,baskets:4,gold:90}:{planks:4,baskets:16,gold:90};
  }
+ if(stage===3&&batches===1&&choice===null){if(kind==='charter-timber'&&charter==='timber')return {planks:16,baskets:0,gold:80};if(kind==='charter-provisions'&&charter==='provisions')return {planks:0,baskets:24,gold:108};}
  if(stage!==3||![1,2].includes(batches)||choice!==null)return null;
  return kind==='standing-planks'?{planks:8*batches,baskets:0,gold:36*batches}:kind==='standing-baskets'?{planks:0,baskets:12*batches,gold:51*batches}:null;
 }
@@ -55,7 +56,7 @@ function scTownPrepare(q,data){
  exact(q,['version','planks','reservedBaskets','reservationTarget','stage','nextShipmentId','journey','history','yards','upgrades']);if(q.version!==1)fail();num(q.planks);num(q.reservedBaskets,0,32,true);num(q.reservationTarget,q.reservedBaskets,32,true);num(q.stage,0,3,true);list(q.history,512);list(q.yards,5000);list(q.upgrades,5000);
  let stage=0,lastReturn=data.state.regional?.followup?.outcome?.completedAt||0;
  function shipment(j,completed,index){
-  exact(j,['id','kind','stage','choice','batches','progress','phase','departedAt','completedAt','cargo','gold']);if(j.id!==index+1||j.stage!==stage)fail();const terms=scTownTerms(stage,j.kind,j.choice,j.batches);if(!terms)fail();exact(j.cargo,['planks','baskets']);if(j.cargo.planks!==terms.planks||j.cargo.baskets!==terms.baskets||j.gold!==terms.gold)fail();num(j.departedAt,lastReturn,clock);num(j.progress,0,120);if(completed){if(j.phase!=='complete'||j.progress!==120)fail();num(j.completedAt,j.departedAt+120-1e-5,clock);lastReturn=j.completedAt;if(j.kind==='agreement')stage++;}else if(j.completedAt!==null||!['outbound','returning'].includes(j.phase)||j.progress>=120||j.phase==='outbound'&&j.progress>=60||j.phase==='returning'&&j.progress<60||Math.abs(j.progress-(clock-j.departedAt))>1e-5)fail();
+  exact(j,['id','kind','stage','choice','batches','progress','phase','departedAt','completedAt','cargo','gold']);if(j.id!==index+1||j.stage!==stage)fail();const terms=scTownTerms(stage,j.kind,j.choice,j.batches,data.state.diplomacy?.phase==='signed'?data.state.diplomacy.choice:null);if(!terms)fail();exact(j.cargo,['planks','baskets']);if(j.cargo.planks!==terms.planks||j.cargo.baskets!==terms.baskets||j.gold!==terms.gold)fail();num(j.departedAt,lastReturn,clock);num(j.progress,0,120);if(completed){if(j.phase!=='complete'||j.progress!==120)fail();num(j.completedAt,j.departedAt+120-1e-5,clock);lastReturn=j.completedAt;if(j.kind==='agreement')stage++;}else if(j.completedAt!==null||!['outbound','returning'].includes(j.phase)||j.progress>=120||j.phase==='outbound'&&j.progress>=60||j.phase==='returning'&&j.progress<60||Math.abs(j.progress-(clock-j.departedAt))>1e-5)fail();
  }
  q.history.forEach((j,i)=>shipment(j,true,i));if(stage!==q.stage)fail();if(q.journey!==null)shipment(q.journey,false,q.history.length);if(q.nextShipmentId!==q.history.length+(q.journey?2:1))fail();
  if((q.stage||q.journey||q.history.length)&&data.state.regional?.followup?.phase!=='complete')fail();
