@@ -46,10 +46,10 @@ for(const action of ['new village','restored save'])test('Delayed startup camera
  assert.deepEqual(after,before,'A timer for the original city must not take over another city camera; layout '+JSON.stringify({before:geometry,after:finalGeometry}));
 });
 
-test('Living woodland uses one ground shadow per harvestable tree',async t=>{
- const {page:p}=await browserPage(t,browser);await p.goto(url);await p.waitForFunction(()=>window.__renderVisualOnce);
- const counts=await p.evaluate(()=>{const g=document.querySelector('#field').getContext('2d'),ellipse=g.ellipse,seen=[];g.ellipse=function(...args){if(args[2]===34&&(args[3]===12||args[3]===13))seen.push(args);return ellipse.apply(this,args);};try{window.__renderVisualOnce();}finally{g.ellipse=ellipse;}return scRTSNodes.filter(n=>n.type==='tree'&&n.amount>0).map(n=>seen.filter(a=>Math.abs(a[0]-n.x)<=14&&a[1]-n.y>=12&&a[1]-n.y<=15).length);});
- assert.ok(counts.length>0);assert.ok(counts.every(n=>n===1),'One consistent contact shadow avoids doubled dark woodland patches');
+test('Living woodland paints one shadow-bearing sprite per visible harvestable tree',async t=>{
+ const {page:p}=await browserPage(t,browser);await p.goto(url);await p.waitForFunction(()=>window.__renderVisualOnce&&window.sc26WorldRenderer?.ready());
+ const counts=await p.evaluate(()=>{const c=document.querySelector('#field'),g=c.getContext('2d'),drawImage=g.drawImage,seen=[];g.drawImage=function(...args){if(['oak','birch','pine'].includes(args[0]?.dataset?.sc26Asset)){const t=g.getTransform();seen.push({x:t.e,y:t.f});}return drawImage.apply(this,args);};try{window.__renderVisualOnce();}finally{g.drawImage=drawImage;}const r=c.getBoundingClientRect(),v=c.parentElement.getBoundingClientRect(),z=r.width/c.width;return scRTSNodes.filter(n=>n.type==='tree'&&n.amount>0&&r.x+n.x*z>=v.x&&r.x+n.x*z<=v.right&&r.y+n.y*z>=v.y&&r.y+n.y*z<=v.bottom).map(n=>seen.filter(p=>Math.abs(p.x-n.x)<.01&&Math.abs(p.y-n.y-7)<.01).length);});
+ assert.ok(counts.length>0);assert.ok(counts.every(n=>n===1),'One shadow-bearing atlas draw per tree avoids duplicate woodland passes');
 });
 
 test('New governor biomes render distinct ground and restore the original palette',async t=>{

@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "files": {
+    "settlement": {
+      "path": "assets/v026/settlement.png",
+      "sha256": "fec26d7ead6faa39090c972454ff9af156d985b65c2185b8d23ed85f98c69449",
+      "width": 1448,
+      "height": 1086,
+      "bytes": 2232857,
+      "provenance": "Original OpenAI image generation for Shattered Crowns, 15 November 2026; no external asset pack.",
+      "runtime": {
+        "path": "assets/v026/settlement.webp",
+        "sha256": "ad9ada3931e69f0780a5f66456e67ef6d840e6065e04370a9a4c87958c5d1a8d",
+        "bytes": 778006,
+        "mime": "image/webp",
+        "encoding": "Browser Canvas WebP quality0.90; original dimensions and PNG retained; no crop/resize"
+      }
+    },
+    "buildings": {
+      "path": "assets/v026/buildings.png",
+      "sha256": "560ef1038c0d40d782005a88ebc0ef728f0a83615aaa017561231f95957ef124",
+      "width": 1261,
+      "height": 1247,
+      "bytes": 2431677,
+      "provenance": "Original OpenAI image generation for Shattered Crowns, 15 November 2026; no external asset pack.",
+      "runtime": {
+        "path": "assets/v026/buildings.webp",
+        "sha256": "ee4d877dad95a9664e0a2109353ca7534ad2533052e18d1f2725becc84bf2d6d",
+        "bytes": 630216,
+        "mime": "image/webp",
+        "encoding": "Browser Canvas WebP quality0.90; original dimensions and PNG retained; no crop/resize"
+      }
+    },
+    "nature": {
+      "path": "assets/v026/nature.png",
+      "sha256": "f5eadd5e4b4d0385511d45a646abe2a92a68c7f13bff1941021e4224822060df",
+      "width": 1448,
+      "height": 1086,
+      "bytes": 1953079,
+      "provenance": "Original OpenAI image generation for Shattered Crowns, 15 November 2026; no external asset pack.",
+      "runtime": {
+        "path": "assets/v026/nature.webp",
+        "sha256": "c1a5902f743ff54b0c281d5ec04bc688b55a7ba9288481b8536bb9e3da87bdfe",
+        "bytes": 543330,
+        "mime": "image/webp",
+        "encoding": "Browser Canvas WebP quality0.90; original dimensions and PNG retained; no crop/resize"
+      }
+    }
+  }
+}

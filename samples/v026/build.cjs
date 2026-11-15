@@ -1,7 +1,8 @@
 const fs=require('fs'),path=require('path'),{execFileSync}=require('child_process'),crypto=require('crypto');
 const root=path.resolve(__dirname,'../..'),out=path.resolve(process.argv[2]||path.join(root,'work/v026-playable'));
 const base='f98d18764c35c4658a86a607531076bc01a78b2e';
-let source=fs.readFileSync(path.join(root,'index.html'),'utf8');const original=execFileSync('git',['show',base+':index.html'],{cwd:root,maxBuffer:8*1024*1024});if(!original.equals(Buffer.from(source)))throw Error('Sample must be built from exact released v0.25 game bytes');
+// Reproduce the approved historical sample even after production source evolves.
+let source=execFileSync('git',['show',base+':index.html'],{cwd:root,maxBuffer:16*1024*1024}).toString('utf8');
 const hook=`function draw(){\nif(window.sc26Sample?.enabled&&window.sc26Art?.draw(ctx,{W,H,buildings,nodes,units,sites:scConstructionSites,selected,inspected:inspectedBuilding,visualTime,running:!paused&&!scOverview&&!ended&&!tutorialVisible&&document.getElementById('sc1310Welcome')?.hidden!==false,biome:scOriginProfile().biome,mode,pointer:wallPointer,preview:wallPointer?(mode==='road'?roadPoint(wallPointer):mode==='fishery'?fisheryPoint(wallPointer):compactAmenity(mode)?civicGridPoint(mode,wallPointer):wallPointer):null,valid:wallPointer&&canPlace(mode,wallPointer,selected.find(u=>u.type==='worker')),radius:scConstructionRadii[mode],drag}))return;\nctx.clearRect(0,0,W,H);`;
 const needle='function draw(){\nctx.clearRect(0,0,W,H);';if(source.split(needle).length!==2)throw Error('Unique draw hook not found');source=source.replace(needle,hook);
 const bridge=fs.readFileSync(path.join(__dirname,'scene-bridge.js'),'utf8');const bridgeNeedle='window.scHoverBuildings=buildings;function frame';if(source.split(bridgeNeedle).length!==2)throw Error('Unique sample bridge not found');source=source.replace(bridgeNeedle,bridge+'\n'+bridgeNeedle);

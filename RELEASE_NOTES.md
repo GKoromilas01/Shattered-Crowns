@@ -1,5 +1,13 @@
 # Release notes
 
+## v0.26.0 — A Working Trade Town
+
+Original illustrated world assets replace overlapping Canvas drawing passes while retaining coordinates, input and construction footprints. Workers reflect actual orders, construction has staged artwork, and existing combat/service/placement feedback remains available.
+
+Carpenters’ Workshops turn timber into planks through two civilian jobs. Eligible Ironmere partners can complete three resource-funded supplier agreements, explicitly reserve real bread baskets, then build a Market loading yard with real workers and dispatch bounded manual standing orders. Existing shipment terms, chapters and receipts are preserved. New state uses strict schema 9; schemas 1–8 remain readable without invented progress. See [Milestone 26](docs/MILESTONE26.md) for costs, returns, staffing tradeoffs and downgrade limits.
+
+Candidate only; no merge or deployment approval.
+
 ## v0.25.0 — Clearer Trade and Ironmere’s Follow-up
 
 Sayings receive twelve unobstructed readable seconds and a one-second fade. Factual return receipts take priority and state the actual stone credited; display never pays resources. Neighbour trade is prominent near the completed Market inspector heading and remains available in City Life. The duplicate Worksites card is removed from Construction while Menu, City Life and foundations retain management. Help adds a compact native keyboard disclosure.

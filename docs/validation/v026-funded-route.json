@@ -1,0 +1,106 @@
+{
+  "method": "Native paid construction, actual gathering and production; no resource/population/building grants. Simulation accelerated via existing helper; this is not normal-clock elapsed play.",
+  "initial": {
+    "gold": 240,
+    "wood": 100,
+    "stone": 30,
+    "food": 90,
+    "tradeGoods": 0,
+    "goodsSold": 0,
+    "aiGold": 240,
+    "aiWood": 100
+  },
+  "final": {
+    "gold": 3965,
+    "wood": 0,
+    "stone": 158.625,
+    "food": 242,
+    "tradeGoods": 79,
+    "goodsSold": 129,
+    "aiGold": 240,
+    "aiWood": 100
+  },
+  "town": {
+    "version": 1,
+    "planks": 47.8125,
+    "reservedBaskets": 0,
+    "reservationTarget": 0,
+    "stage": 3,
+    "nextShipmentId": 5,
+    "journey": null,
+    "history": [
+      {
+        "id": 1,
+        "kind": "agreement",
+        "stage": 0,
+        "choice": null,
+        "batches": 1,
+        "progress": 120,
+        "phase": "complete",
+        "departedAt": 567.1167,
+        "completedAt": 687.1167,
+        "cargo": {
+          "planks": 8,
+          "baskets": 0
+        },
+        "gold": 40
+      },
+      {
+        "id": 2,
+        "kind": "agreement",
+        "stage": 1,
+        "choice": null,
+        "batches": 1,
+        "progress": 120,
+        "phase": "complete",
+        "departedAt": 687.1167,
+        "completedAt": 807.1167,
+        "cargo": {
+          "planks": 0,
+          "baskets": 12
+        },
+        "gold": 54
+      },
+      {
+        "id": 3,
+        "kind": "agreement",
+        "stage": 2,
+        "choice": "food",
+        "batches": 1,
+        "progress": 120,
+        "phase": "complete",
+        "departedAt": 807.1167,
+        "completedAt": 927.1167,
+        "cargo": {
+          "planks": 4,
+          "baskets": 16
+        },
+        "gold": 90
+      },
+      {
+        "id": 4,
+        "kind": "standing-baskets",
+        "stage": 3,
+        "choice": null,
+        "batches": 1,
+        "progress": 120,
+        "phase": "complete",
+        "departedAt": 1002.1167,
+        "completedAt": 1122.1167,
+        "cargo": {
+          "planks": 0,
+          "baskets": 12
+        },
+        "gold": 51
+      }
+    ],
+    "yards": [
+      {
+        "marketId": 14,
+        "yardId": 18
+      }
+    ],
+    "upgrades": []
+  },
+  "elapsed": 1122.1167
+}

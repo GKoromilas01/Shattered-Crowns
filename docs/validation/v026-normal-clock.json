@@ -1,0 +1,53 @@
+{
+  "method": "Actual browser wall-clock time; no tick/advance adapter. Began from the exported resource-funded route city. Native Market/Neighbour trade standing-order click and Resume. Normal simulation ran throughout.",
+  "wallSeconds": 121.256,
+  "gameSeconds": 120.16209999942339,
+  "before": {
+    "gold": 3965,
+    "wood": 0,
+    "stone": 158.625,
+    "food": 242,
+    "tradeGoods": 79,
+    "goodsSold": 129,
+    "aiGold": 240,
+    "aiWood": 100
+  },
+  "tenSeconds": {
+    "gold": 4007,
+    "wood": 0,
+    "stone": 158.625,
+    "food": 242,
+    "tradeGoods": 79,
+    "goodsSold": 131,
+    "aiGold": 240,
+    "aiWood": 100
+  },
+  "after": {
+    "gold": 4505,
+    "wood": 0,
+    "stone": 158.625,
+    "food": 242,
+    "tradeGoods": 79,
+    "goodsSold": 153,
+    "aiGold": 240,
+    "aiWood": 100
+  },
+  "planksBefore": 39.8125,
+  "planksAt10s": 39.8125,
+  "lastJourney": {
+    "id": 5,
+    "kind": "standing-planks",
+    "stage": 3,
+    "choice": null,
+    "batches": 1,
+    "progress": 120,
+    "phase": "complete",
+    "departedAt": 1122.1167,
+    "completedAt": 1242.1288999994238,
+    "cargo": {
+      "planks": 8,
+      "baskets": 0
+    },
+    "gold": 36
+  }
+}
