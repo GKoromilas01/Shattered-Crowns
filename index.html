@@ -9574,7 +9574,7 @@ body.sc24Trading #scCityInspection{visibility:hidden!important}
   if(!panel.hidden&&blocked())hide(false);const s=api.snapshot(!panel.hidden||visible('scCityInspection')||visible('sc159Pulse')),q=s.followup||s.trade,isFollow=!!s.followup,phase=q?.phase||'unavailable',unavailable=blocked();latest=s;city.hidden=!(window.scEnvoy?.snapshot().supported||s.supported);
   const b=window.scRTSInspectedBuilding;market.hidden=!(window.scEnvoy?.snapshot().supported||s.supported)||!b||b.team!==0||b.hp<=0||b.type!=='market';
   const next=s.reasons[0]||(s.wood<40?'Gather 40 wood.':'Await the next economy cycle.');
-  const suffix=phase==='offer'?(isFollow?'Follow-up offer available':'Offer available'):phase==='outbound'?'Outbound':phase==='returning'?'Returning':phase==='complete'?'Agreement fulfilled':next;put(market,'Diplomacy & neighbour trade · Ironmere');put(city,'Diplomacy & neighbour trade · Ironmere');
+  const suffix=phase==='offer'?(isFollow?'Follow-up offer available':'Offer available'):phase==='outbound'?'Outbound':phase==='returning'?'Returning':phase==='complete'?'Agreement fulfilled':next;put(market,'Diplomacy & Neighbour trade · Ironmere'+(q?' — '+suffix:''));put(city,'Diplomacy & Neighbour trade · Ironmere'+(q?' — '+suffix:''));
   const receiptBusy=!!activeReceipt||s.receipts.some(r=>!r.shown);
   if(q?.phase==='offer'&&!q.noticed&&!unavailable&&!receiptBusy&&panel.hidden&&api.notice())offerOpen=true;
   if(phase!=='offer')offerOpen=false;offer.hidden=!offerOpen||unavailable||receiptBusy||!panel.hidden;if(!offer.hidden||!panel.hidden||unavailable)suspendSaying();
