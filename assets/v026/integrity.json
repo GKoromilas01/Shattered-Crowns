@@ -45,6 +45,21 @@
         "mime": "image/webp",
         "encoding": "Browser Canvas WebP quality0.90; original dimensions and PNG retained; no crop/resize"
       }
+    },
+    "deposits": {
+      "path": "assets/v026/deposits.png",
+      "sha256": "469c3e8453b813c8acde73c3195461b0a1d6ec61d799b0eb499cb9358cb000eb",
+      "width": 1774,
+      "height": 887,
+      "bytes": 1048119,
+      "provenance": "Original OpenAI image generation for the owner-requested resource readability follow-up, 15 November 2026; separate two-cell atlas; previous art unchanged.",
+      "runtime": {
+        "path": "assets/v026/deposits.webp",
+        "sha256": "2f9a43bce126d62f43594c7a7841b9c3dc4aede11a55c0744894a9487fb333cb",
+        "bytes": 224364,
+        "mime": "image/webp",
+        "encoding": "Browser Canvas WebP quality0.90; original dimensions and PNG retained; no crop/resize"
+      }
     }
   }
 }

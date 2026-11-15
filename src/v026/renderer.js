@@ -1,12 +1,13 @@
 /* Original v0.26 art spike. Renderer only: never writes world entities. */
 (()=>{'use strict';
-const atlas=new Image(),buildingAtlas=new Image(),natureAtlas=new Image();atlas.src=window.sc26Assets.settlement;buildingAtlas.src=window.sc26Assets.buildings;natureAtlas.src=window.sc26Assets.nature;const images=[atlas,buildingAtlas,natureAtlas];
+const atlas=new Image(),buildingAtlas=new Image(),natureAtlas=new Image(),depositAtlas=new Image();atlas.src=window.sc26Assets.settlement;buildingAtlas.src=window.sc26Assets.buildings;natureAtlas.src=window.sc26Assets.nature;depositAtlas.src=window.sc26Assets.deposits;const images=[atlas,buildingAtlas,natureAtlas,depositAtlas];
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const frames={keep:[0,0,362,382,190,350],house:[362,0,362,382,183,350],market:[724,0,362,382,181,350],tree:[1086,0,362,382,182,350],foundation:[0,390,362,372,180,718-390],frame:[362,390,362,372,180,718-390],roof:[724,390,362,372,181,718-390],idle:[95,794,180,270,88,229],walk:[442,794,195,270,100,229],gather:[801,794,180,270,95,229],build:[1150,794,210,270,110,229]};
 const extra=['farm','fishery','well','lumberyard','granary','bakery','clinic','garden','plaza','theater','tower','fortress','wall','workshop','loadingyard','road'];
 for(let i=0;i<extra.length;i++){const col=i%4,row=Math.floor(i/4);frames[extra[i]]=[col*315,row*312,col===3?316:315,row===3?311:312,157,row===3?(i===12?247:i===13?280:265):300];}
 for(const [key,col,row] of [['oak',0,0],['birch',1,0],['pine',2,0],['shrub',3,0],['stone',0,1],['gold',1,1],['rubble',2,1],['stump',3,1]])frames[key]=[col*362,row===0?0:380,362,row===0?380:345,181,row===0?350:295];
-const sheet=key=>extra.includes(key)?buildingAtlas:['oak','birch','pine','shrub','stone','gold','rubble','stump'].includes(key)?natureAtlas:atlas;
+frames.stone=[0,0,887,887,443.5,750];frames.gold=[887,0,887,887,443.5,750];
+const sheet=key=>['stone','gold'].includes(key)?depositAtlas:extra.includes(key)?buildingAtlas:['oak','birch','pine','shrub','stone','gold','rubble','stump'].includes(key)?natureAtlas:atlas;
 const spriteCache=new Map();
 const sprite=(g,key,x,y,width,flip=false)=>{const f=frames[key];if(!f)return;const cacheKey=key+':'+width;let cell=spriteCache.get(cacheKey);if(!cell){const scale=width/f[2],ratio=2,c=document.createElement('canvas');c.width=Math.ceil(width*ratio);c.height=Math.ceil(f[3]*scale*ratio);c.dataset.sc26Asset=key;c.getContext('2d').drawImage(sheet(key),f[0],f[1],f[2],f[3],0,0,c.width,c.height);cell={canvas:c,x:f[4]*scale,y:f[5]*scale,width,height:f[3]*scale};spriteCache.set(cacheKey,cell);}g.save();g.translate(x,y);if(flip)g.scale(-1,1);g.drawImage(cell.canvas,-cell.x,-cell.y,cell.width,cell.height);g.restore();};
 

@@ -1,0 +1,88 @@
+{
+  "baseline": "fc83cd39de8da72f62e944e48dc3ef4df46242e5",
+  "scene": "Actual Brookstead opening/deposits; identical fresh-start bridge and frozen visual time; no relocated or added objects; Pause card and saying hidden equally for comparison",
+  "pair": {
+    "a": {
+      "type": "stone",
+      "x": 1330,
+      "y": 730
+    },
+    "b": {
+      "type": "gold",
+      "x": 1370,
+      "y": 705
+    },
+    "d": 47.169905660283014
+  },
+  "records": [
+    {
+      "version": "before",
+      "zoom": 1,
+      "stateHash": "1d99e73dea1e2d9e1f6dea9679bc8f4d14f8f0869ba64f1962aa1c1ca8e330de",
+      "camera": {
+        "left": 630,
+        "top": 73
+      }
+    },
+    {
+      "version": "before",
+      "zoom": 1.5,
+      "stateHash": "1d99e73dea1e2d9e1f6dea9679bc8f4d14f8f0869ba64f1962aa1c1ca8e330de",
+      "camera": {
+        "left": 1305,
+        "top": 523
+      }
+    },
+    {
+      "version": "after",
+      "zoom": 1,
+      "stateHash": "1d99e73dea1e2d9e1f6dea9679bc8f4d14f8f0869ba64f1962aa1c1ca8e330de",
+      "camera": {
+        "left": 630,
+        "top": 73
+      }
+    },
+    {
+      "version": "after",
+      "zoom": 1.5,
+      "stateHash": "1d99e73dea1e2d9e1f6dea9679bc8f4d14f8f0869ba64f1962aa1c1ca8e330de",
+      "camera": {
+        "left": 1305,
+        "top": 523
+      }
+    }
+  ],
+  "labels": [
+    {
+      "text": "Gold: 200",
+      "title": "Gold — treasury coins",
+      "svg": 1,
+      "decorative": "true"
+    },
+    {
+      "text": "Wood: 90",
+      "title": "Wood — timber logs",
+      "svg": 1,
+      "decorative": "true"
+    },
+    {
+      "text": "Stone: 30",
+      "title": "Stone — quarried rock",
+      "svg": 1,
+      "decorative": "true"
+    },
+    {
+      "text": "Food: 110",
+      "title": "Food — household grain and bread",
+      "svg": 1,
+      "decorative": "true"
+    },
+    {
+      "text": "Trade Goods: 0",
+      "title": "Trade Goods — bread baskets for sale",
+      "svg": 1,
+      "decorative": "true"
+    }
+  ],
+  "errors": []
+}
