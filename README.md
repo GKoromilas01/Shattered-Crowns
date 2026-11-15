@@ -2,7 +2,7 @@
 
 Browser-first medieval city-building RTS with a peaceful city campaign, kingdom overview and classic skirmish mode. Serve this directory with `python3 -m http.server 8000` and open http://localhost:8000.
 
-Current development: [Milestone 25 — Clearer Trade and Ironmere’s Follow-up](docs/MILESTONE25.md). Longer readable sayings, factual shipment receipts, clearer Market access, retained construction management, a compact shortcut reference and one optional resource-funded follow-up order. Released v0.24 remains the baseline until separate merge and deployment approval.
+Current development: [Milestone 26 — A Working Trade Town](docs/MILESTONE26.md). Approved asset-assisted Canvas graphics, carpentry production, explicit contract-basket reservations, a three-stage Ironmere agreement and a builder-funded Market loading yard. Released v0.25 remains the production baseline until separate merge and deployment approval.
 
 ## Automated testing
 
