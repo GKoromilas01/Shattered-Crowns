@@ -1,5 +1,11 @@
 # Release notes
 
+## v0.27.0 — An Envoy to Ironmere
+
+After the three supplier agreements, pay 30 real gold for an envoy’s 120-second visit. Defer Lady Elowen’s audience, sign one permanent timber or provisions charter, or leave without signing. A completed loading yard enables manually dispatched charter cargo: 16 planks for 80 gold or 24 reserved baskets for 108 gold, sharing the existing supplier cargo slot. Existing agreements and standing-order terms are retained.
+
+An original envoy portrait, sealed-letter atlas entry and contextual Chronicle/Advisor summaries accompany the chapter. New envoy state uses strict schema 10; schemas 1–9 retain their resources and progress without invented diplomacy. See [Milestone 27](docs/MILESTONE27.md). Implementation candidate; validation in progress, no merge or deployment approval.
+
 ## v0.26.0 — A Working Trade Town
 
 Original illustrated world assets replace overlapping Canvas drawing passes while retaining coordinates, input and construction footprints. Workers reflect actual orders, construction has staged artwork, and existing combat/service/placement feedback remains available.
