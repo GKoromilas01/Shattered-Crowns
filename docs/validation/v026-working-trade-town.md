@@ -54,6 +54,8 @@ Runtime visual assets total **1,951,552 bytes (1.86 MiB)**; original PNGs and ru
 
 - The subsequent full run exposed a timing-dependent HUD assertion at 844×390: tooltip enrichment can change `House` to `Build housing for citizens` before the click. The saved trace confirms real House placement/cost feedback and a populated command notice. The layout test now waits for those actual signals; every clipping/overlap assertion remains unchanged.
 
+- The completed local full run recorded 483/488 passing: its only failures were the one tooltip wait and four old 16-card expectations described above. The two corrected layout files subsequently passed all 13 cases, including all original overlap, clipping, paging, Pause and no-spending assertions. Production bytes did not change for these test corrections. The final-head full CI result remains a separate gate recorded in the PR.
+
 ## Release gates
 
 This note records the implementation and local focused evidence before final integration finishes. **Full local regression, immutable-source package verification, packaged smoke and clean full final-head CI must all be confirmed in the PR's final validation update.** A green focused suite or the earlier sample is not a clean full-suite claim. The required verification workflow produces the three-file self-contained playable artifact only after all tests and packaged smoke pass. Its read-only PR jobs do not deploy.
