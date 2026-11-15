@@ -50,6 +50,8 @@ Runtime visual assets total **1,951,552 bytes (1.86 MiB)**; original PNGs and ru
 - Independent read-only review found five P2 issues: Workshop placement overlay omission, missing health bars, missing enemy ownership cues, prerequisite journey chronology, and a reduced-motion target ring. Each was reproduced by a failing regression and fixed. A separate biome regression now retains all original ground palettes. No Critical finding or deferred minor was reported.
 - Review declined to judge performance/device evidence, screenshot quality, crowded interaction acceptance, hidden-tab behavior, package smoke, full suite and final CI. Those remain the implementer's validation responsibilities; reference measurements, native/legacy tests and package/CI evidence must be read directly, rather than inferred from the source review.
 
+- The first full regression attempt exposed an optional-presentation dependency: engine-only legacy caravan fixtures deliberately omit the older trade panel. The new supplier UI now checks that host before initializing, so engine-only tests do not throw. Shipment assertions were unchanged; the full suite is restarted on the corrected commit.
+
 ## Release gates
 
 This note records the implementation and local focused evidence before final integration finishes. **Full local regression, immutable-source package verification, packaged smoke and clean full final-head CI must all be confirmed in the PR's final validation update.** A green focused suite or the earlier sample is not a clean full-suite claim. The required verification workflow produces the three-file self-contained playable artifact only after all tests and packaged smoke pass. Its read-only PR jobs do not deploy.
