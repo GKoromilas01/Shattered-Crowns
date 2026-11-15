@@ -50,24 +50,10 @@ test('Worksites and inspector replace one another without a duplicate map box',a
  await p.evaluate(()=>scConstructionUI.open());await p.locator('#scConstructionPanel').waitFor({state:'visible'});await p.locator('#scCityInspection').waitFor({state:'hidden'});
  await p.evaluate(id=>scCityEconomy.inspect(id),id);await p.locator('#scConstructionPanel').waitFor({state:'hidden'});await p.locator('#scCityInspection').waitFor({state:'visible'});
 });
-test('Chronicle offers attributed literature and a skippable scene that preserves the city',async t=>{
- const p=await game(t);await p.locator('#sc190ChronicleBtn').click();const literature=p.locator('#sc22Literature');await literature.waitFor({state:'visible'});
- await literature.locator('summary').click();assert.match(await literature.innerText(),/Shakespeare/);assert.match(await literature.innerText(),/Sonnet 18/);assert.match(await literature.innerText(),/Original settlement saying/);
- const before=await p.evaluate(()=>({state:scCitySave.capture().state,paused:scCitySave.status().paused,view:scCitySave.capture().view}));
- await p.locator('#sc22SceneOpen').click();await p.locator('#sc22Vignette').waitFor({state:'visible'});assert.equal(await p.evaluate(()=>scCampaign.status().overview),true);
- assert.equal(await p.locator('#scResponsiveHud').isVisible(),false);
- await p.keyboard.press('F3');assert.equal(await p.evaluate(()=>scCitySave.status().paused),before.paused,'Game hotkeys must not change the city under the scene');
- await p.waitForTimeout(300);assert.deepEqual(await p.evaluate(()=>scCitySave.capture().state),before.state);
- await p.keyboard.press('Escape');await p.locator('#sc22Vignette').waitFor({state:'hidden'});assert.equal(await p.locator('#scResponsiveHud').isVisible(),true);assert.equal(await p.evaluate(()=>scCampaign.status().overview),false);assert.equal(await p.evaluate(()=>scCitySave.status().paused),before.paused);assert.deepEqual(await p.evaluate(()=>scCitySave.capture().view),before.view);
+test('Chronicle keeps attributed messages without a replay interlude or changing the city',async t=>{
+ const p=await game(t);const before=await p.evaluate(()=>({state:scCitySave.capture().state,view:scCitySave.capture().view,paused:scCitySave.status().paused}));await p.locator('#sc190ChronicleBtn').click();const literature=p.locator('#sc22Literature');await literature.waitFor({state:'visible'});await literature.locator('summary').click();assert.match(await literature.innerText(),/Shakespeare/);assert.match(await literature.innerText(),/Original settlement saying/);assert.equal(await p.locator('#sc22SceneOpen,#sc22Vignette').count(),0);assert.deepEqual(await p.evaluate(()=>({state:scCitySave.capture().state,view:scCitySave.capture().view,paused:scCitySave.status().paused})),before);
 });
-test('Scene restores running state, respects reduced motion and cleans up on city changes',async t=>{
- const p=await game(t);await p.emulateMedia({reducedMotion:'reduce'});assert.equal(await p.evaluate(()=>typeof scVignette),'object');
- await p.locator('#sc154Pause').click();assert.equal(await p.evaluate(()=>scVignette.open()),true);assert.equal(await p.evaluate(()=>scVignette.open()),false);
- assert.equal(await p.locator('#sc22Vignette').getAttribute('data-motion'),'still');await p.locator('#sc22SceneSkip').click();assert.equal(await p.evaluate(()=>scCitySave.status().paused),false);
- assert.equal(await p.evaluate(()=>{scVignette.open();scVignette.close();return scVignette.open();}),true);await p.waitForTimeout(100);assert.equal(await p.locator('#sc22Vignette').isVisible(),true,'An earlier close event must not dismiss a newly opened scene');await p.keyboard.press('Escape');
- await p.locator('#sc154Pause').click();const save=await p.evaluate(()=>scCitySave.capture());await p.evaluate(()=>scVignette.open());assert.equal((await p.evaluate(s=>scCitySave.restore(s),save)).ok,true);assert.equal(await p.locator('#sc22Vignette').isVisible(),false);assert.deepEqual(await p.evaluate(()=>scCitySave.capture().state),save.state);
- await p.evaluate(()=>scVignette.open());await p.evaluate(()=>scCampaign.start('city','brookstead'));assert.equal(await p.locator('#sc22Vignette').isVisible(),false);assert.equal(await p.evaluate(()=>scCampaign.status().overview),false);
-});
+test('House Plots option is removed while native house construction remains available',async t=>{const p=await game(t);assert.equal(await p.locator('#sc1387Plots').count(),0);assert.equal(await p.evaluate(()=>window.scHousePlotsVisible),false);await p.locator('#sc140Build').click();assert.equal(await p.locator('#sc140Commands').getByRole('button',{name:/Build housing|House/i}).count(),1);});
 test('Construction completion cue respects effects settings and coalesces simultaneous completions',async t=>{
  const p=await game(t);await p.evaluate(()=>scAudio.configure({music:false,effects:true,muted:false,volume:30}));await p.mouse.click(800,400);await p.waitForFunction(()=>scAudio.status().contextState==='running');
  await p.evaluate(()=>__flow.setup());let ids=await p.evaluate(()=>__flow.sites());await p.evaluate(id=>__flow.assign(id),ids[0]);

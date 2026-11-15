@@ -25,3 +25,15 @@ These are actual native UI captures from controlled late-supplier fixtures, not 
 ![Envoy travelling in Neighbour trade](v027/visit-travelling.png)
 ![Ironmere visit in the native atlas](v027/ironmere-visit.png)
 ![Native audience at 390px width](v027/audience-390.png)
+
+## Owner access/opening amendment
+
+The owner subsequently requested diplomacy from the beginning across all peaceful starts, clearer starting workers, illustrated command graphics, and removal of House Plots and replay interludes. These amend v0.27; they are not a new version.
+
+The initial six opening/command checks failed against the old behavior; after moving workers, the Home entry check separately exposed the supplier-gated navigation. New global visit/strict stage-zero charter transactions and UI were implemented without inventing legacy progress. The first combined run was 22/24: an old assertion still expected the superseded entry gate, and one cold navigation exceeded an inherited seven-second action timeout before any game action. The gate assertion now checks early eligibility; navigation explicitly uses the existing harness convention of 30 seconds while action timeouts remain seven. The subsequent focused suite passed **36/36**: all five starts, both foreign early charter transactions, phase saves, cost/art graphics, native input guards, old supplier behavior and requested UI removals. Removal tests were observed failing before removing the controls.
+
+The prior 507-test CI run verifies the earlier `eb13de4` candidate only. The amended final head requires fresh CI, which finishes independently; no automatic polling or blanket claim that old CI verifies new code. A fresh reviewer was attempted but could not start because of an agent usage limit; this amendment receives explicit author review plus runtime checks, with that limitation recorded for owner review.
+
+Additional checks: **9/9** passed for the original supplier engine plus the mixed chronology where an early charter precedes the old shipments and supplier agreements. Screenshot inspection then caught old trade requirements appearing above the envoy. A native ordering assertion failed, the envoy was moved directly below the panel heading and unavailable old requests were put behind a disclosure; the ordering check passed **1/1**. Before/after captures use the previous candidate and the amended native game at the same viewport.
+
+[Opening before](v027/access/opening-before.png) · [Opening after](v027/access/opening-after.png) · [Commands before](v027/access/commands-before.png) · [Commands after](v027/access/commands-after.png) · [Early diplomacy](v027/access/early-diplomacy.png).
