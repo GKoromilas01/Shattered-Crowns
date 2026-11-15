@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "files": {
+    "envoy": {
+      "path": "assets/v027/envoy.png",
+      "sha256": "dfb12673541f879d8f0caa42aa8cf742c9e355d57d05caf2827500de80d9f01a",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 2685012,
+      "provenance": "Original OpenAI image generation for Shattered Crowns v0.27, 15 November 2026. Unnamed town envoy; not a portrait of Lady Elowen. No third-party asset pack.",
+      "runtime": {
+        "path": "assets/v027/envoy.webp",
+        "sha256": "ca72dd00d5146c1135d11a194ef6ed21c903b1fac8bcf4377bacf79ddf33c1c0",
+        "bytes": 305504,
+        "mime": "image/webp",
+        "encoding": "Browser Canvas WebP quality 0.88; original dimensions and PNG retained; no crop/resize"
+      }
+    }
+  }
+}

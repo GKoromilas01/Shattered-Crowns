@@ -3,7 +3,7 @@ let scEnvoyState=null;
 const scEnvoyFields=['version','phase','paid','departedAt','progress','arrivedAt','choice','chosenAt'];
 function scEnvoyChanged(){window.dispatchEvent(new Event('sc-envoy-changed'));scTownChanged();}
 function scEnvoySend(){
- if(scEnvoyState||scTownState?.stage!==3||!scTownReady()||!scVillageActionReady()||!scCaravan.activationAllowed()||gold<30)return false;
+ if(scEnvoyState||scTownState?.history.length>=512||scTownState?.stage!==3||!scTownReady()||!scVillageActionReady()||!scCaravan.activationAllowed()||gold<30)return false;
  gold-=30;scEnvoyState={version:1,phase:'travelling',paid:30,departedAt:elapsed,progress:0,arrivedAt:null,choice:null,chosenAt:null};updateUI();scEnvoyChanged();return true;
 }
 function scEnvoyTick(dt){
@@ -15,7 +15,7 @@ function scEnvoyChoose(choice){
  q.choice=choice;q.chosenAt=elapsed;q.phase=choice==='leave'?'declined':'signed';updateUI();scEnvoyChanged();return true;
 }
 function scEnvoySnapshot(){
- const q=scEnvoyState;return {...(q?scClone(q):{phase:'unvisited',choice:null,progress:0,paid:0}),supported:scTownSupported(),supplierComplete:scTownState?.stage===3,canSend:!q&&scTownState?.stage===3&&scTownReady()&&scVillageActionReady()&&gold>=30,hasYard:scTownHasYard(),gold,fee:30,duration:120};
+ const q=scEnvoyState;return {...(q?scClone(q):{phase:'unvisited',choice:null,progress:0,paid:0}),supported:scTownSupported(),supplierComplete:scTownState?.stage===3,historyFull:scTownState?.history.length>=512,canSend:!q&&! (scTownState?.history.length>=512)&&scTownState?.stage===3&&scTownReady()&&scVillageActionReady()&&gold>=30,hasYard:scTownHasYard(),gold,fee:30,duration:120};
 }
 function scEnvoyPrepare(q,data){
  const fail=()=>{throw Error('Invalid envoy visit or charter checkpoint. Your city has not changed.');};
