@@ -1,0 +1,21 @@
+{
+  "file": "settlement-atlas.png",
+  "sha256": "fec26d7ead6faa39090c972454ff9af156d985b65c2185b8d23ed85f98c69449",
+  "width": 1448,
+  "height": 1086,
+  "bytes": 2232857,
+  "creation": "Original OpenAI image generation for Shattered Crowns, 2026-11-15",
+  "rights": "Original generated sample art; no third-party asset pack. No copied pixels from the concept illustration.",
+  "coverage": [
+    "keep",
+    "cottage",
+    "market",
+    "oak",
+    "foundation",
+    "frame",
+    "roof",
+    "worker idle/walk/gather/build"
+  ],
+  "cropMetadata": "../renderer.js frames; source atlas retained unchanged",
+  "status": "Throwaway sample pending art review, not a full production asset set"
+}
