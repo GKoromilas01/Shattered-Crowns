@@ -13,6 +13,9 @@ Read this first when continuing. Newest at top. Details are in `docs/MILESTONE*.
 - Done (PR #45): Ashford engine terms, earned 48-basket reserve after a double pact, accessibility test fix, `tests/ashford.test.cjs`.
 - Pending: Ashford UI (partner chooser `#sc28Contact`, Caelan portrait, atlas route), funded-route tests, `docs/validation/v028-ashford.md`.
 
+## Design direction
+See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; multiplayer online; war allowed but costly to the aggressor.
+
 ## Standing rules
 - Every version adds: UI/gameplay/fixes, a small graphics improvement or cut scene, a sound improvement (e.g. an extra anthem; music is generated in Web Audio).
 - Log every AI-generated image in `docs/ASSET_LOG.md`.
