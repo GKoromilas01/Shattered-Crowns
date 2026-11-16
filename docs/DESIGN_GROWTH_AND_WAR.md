@@ -8,10 +8,13 @@ Owner decisions. Like `FUTURE_WORLD_DIRECTION.md`, these guide later proposals; 
 - The long-term game is a **multiplayer online strategy**. Progress is server-authoritative; local saves stay for single-player (see `FUTURE_WORLD_DIRECTION.md` for the multiplayer rules).
 - Systems to cover, in small playable slices: **war, economy, trade, politics, religions, jury/justice, political systems**.
 
-## War must be costly
-- War is allowed but never the cheap option. Declaring or starting a war carries a large, visible cost to the aggressor's **economy and politics** (trade loss, unrest, lost standing with neighbours, faction anger, upkeep), so players do not start one lightly.
-- Defenders suffer too, but a declared aggressor carries the larger penalty. Peace, trade and pacts are the efficient route.
-- Build order: costs and consequences are designed and tested first (as numbers in a table with tests), then units/battles.
+## War: costly to wage, rewarding only if won (owner, 16 November 2026)
+- War is allowed but never the cheap option, and it should feel like the real world: expensive, risky and slow to pay off.
+- **While the war lasts** the aggressor carries a large, visible cost to **economy and politics**: trade loss, higher upkeep, food and goods shortages, unrest, war weariness, lost standing with neighbours and factions. These costs keep growing the longer the war drags on, so a stalled war is hard to maintain.
+- **Defenders** also suffer (raids, disrupted trade), but the declared aggressor carries the larger penalty.
+- **If won**, the effect is positive and real: tribute or reparations, captured resources, trade routes and territory, higher standing and a stronger political position. The reward must be worth the war but never so large that war beats peaceful growth by default.
+- **If lost or abandoned**: reparations, lost resources and standing, internal unrest.
+- **Balance rule:** expected value of a war should only be positive for a player who is clearly stronger or well prepared. Peace, trade and pacts remain the efficient default route. Costs, rewards and war duration are set as numbers in a table with tests before any combat is built, then tuned by playtesting.
 
 ## Open questions (not yet decided)
 - Do AI-run settlements keep growing while players are offline? (Suggested yes, slowly.)
