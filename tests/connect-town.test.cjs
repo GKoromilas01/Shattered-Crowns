@@ -17,3 +17,13 @@ test('Units steer around a building instead of walking through it',async t=>{
  const r=await p.evaluate(()=>{const k=__ct.keep();const u=__ct.u();const h=__ct.add('house',k.x,k.y);h.x=800;h.y=700;__ct.clear(h);u.x=h.x-120;u.y=h.y;u.speed=60;const goal={x:h.x+120,y:h.y};let min=1e9;for(let i=0;i<400;i++){__ct.step(u,goal,1);min=Math.min(min,Math.hypot(u.x-h.x,u.y-h.y))}return {min,radius:h.radius,end:Math.hypot(u.x-goal.x,u.y-goal.y)}});
  assert.ok(r.min>=r.radius,'walked inside: '+JSON.stringify(r));assert.ok(r.end<5,'did not arrive: '+JSON.stringify(r));
 });
+test('Roads can be placed right beside buildings and the Guide panel is visible with both modes',async t=>{
+ const p=await game(t);
+ const r=await p.evaluate(()=>{const k=__ct.keep();const ok=scCanPlace('road',{x:k.x+k.radius+18,y:k.y+4},null);return {ok,stone:__ct.stone()}});
+ assert.equal(r.ok,true,'road beside keep is blocked');
+ await p.locator('#sc1310Skip').click().catch(()=>{});
+ assert.equal(await p.locator('#scGuide').isVisible(),true);
+ assert.equal(await p.locator('#scGuideMode option').count(),2);
+ await p.selectOption('#scGuideMode','tester');
+ assert.match(await p.locator('#scGuideText').textContent(),/Road/);
+});

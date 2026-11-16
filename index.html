@@ -856,7 +856,7 @@ function scDrawAtmosphere(g,width,height,time){
 }
 window.scDrawTerrainDetail=scDrawTerrainDetail;window.scDrawAtmosphere=scDrawAtmosphere;
 
-const alive=o=>o&&o.hp>0;function init(){scFrontierState=null;scEnvoyState=null;scTownState=null;scRegionalInputEpoch++;scChapter=null;scRegional=scScenario==='city'?{version:2,caravan:null,followup:null,receipts:[],sayings:[{id:'start',at:0,shown:false}]}:null;scReadyCycles=0;scSelectedLocation=scOriginId;scOverview=false;scCityIdentity=Date.now().toString(36)+'-'+(++scCitySequence);stats={spawned:[0,0],lost:[0,0],kills:[0,0],damage:[0,0],gathered:[0,0],raids:0};aiRally=null;scConstructionSites=[];units=[];buildings=[];nodes=[];effects=[];projectiles=[];combatTexts=[];gold=240;wood=100;stone=30;food=90;population=8;happiness=70;cityTimer=0;cityCycleNumber=0;cityLedger=null;cityFlows=[];cityHouseholds=[];citySatisfactionLast=null;cityGrowth={progress:0,departure:0,reason:"Build serviced housing to welcome residents."};tradeGoods=0;goodsSold=0;window.sc1411LogisticsSnapshot=null;window.sc1412MarketDistributionSnapshot=null;scFestivalCooldown=0;scEventFoodReserve=30;cityProsperity=0;wellCoverage=0;roadMarkets=0;healerCoverage=0;granaryCount=0;employment={jobs:0,filled:0,available:0,byId:new Map()};aiGold=240;aiWood=100;trainQueue=[];aiQueue=[];trainTimer=0;aiTrainTimer=0;aiDecision=0;aiAttackTimer=0;difficulty=el("difficulty").value;selected=[];inspectedBuilding=null;window.scRTSSelected=[];window.scRTSInspectedBuilding=null;drag=null;mode=null;paused=false;ended=false;elapsed=0;aiTimer=0;resourceTimer=0;nextId=1;uiRefresh=0;scUndoStack.length=0;addBuilding(0,'keep',120,310);if(scScenario==='skirmish')addBuilding(1,'keep',1170,440);for(let i=0;i<3;i++)addUnit(0,'worker',96+i*24,370);for(let i=0;i<3;i++)addUnit(0,'soldier',205,290+i*30);if(scScenario==='skirmish'){for(let i=0;i<3;i++)addUnit(1,'soldier',1090,400+i*40);for(let i=0;i<3;i++)addUnit(1,'worker',1125,340+i*42);}for(let i=0;i<7;i++)nodes.push({x:280+(i%3)*50,y:110+Math.floor(i/3)*65,type:'tree',amount:600,radius:18,renew:0});for(let i=0;i<5;i++)nodes.push({x:430+(i%2)*70,y:430+Math.floor(i/2)*55,type:'gold',amount:800,radius:19,renew:0});for(let i=0;i<5;i++)nodes.push({x:330+(i%2)*75,y:280+Math.floor(i/2)*43,type:'stone',amount:700,radius:19,renew:0});// Additional deposits support a larger settlement without replacing the original start.
+const alive=o=>o&&o.hp>0;function init(){scFrontierState=null;scEnvoyState=null;scTownState=null;scRegionalInputEpoch++;scChapter=null;scRegional=scScenario==='city'?{version:2,caravan:null,followup:null,receipts:[],sayings:[{id:'start',at:0,shown:false}]}:null;scReadyCycles=0;scSelectedLocation=scOriginId;scOverview=false;scCityIdentity=Date.now().toString(36)+'-'+(++scCitySequence);stats={spawned:[0,0],lost:[0,0],kills:[0,0],damage:[0,0],gathered:[0,0],raids:0};aiRally=null;scConstructionSites=[];units=[];buildings=[];nodes=[];effects=[];projectiles=[];combatTexts=[];gold=260;wood=240;stone=50;food=100;population=8;happiness=70;cityTimer=0;cityCycleNumber=0;cityLedger=null;cityFlows=[];cityHouseholds=[];citySatisfactionLast=null;cityGrowth={progress:0,departure:0,reason:"Build serviced housing to welcome residents."};tradeGoods=0;goodsSold=0;window.sc1411LogisticsSnapshot=null;window.sc1412MarketDistributionSnapshot=null;scFestivalCooldown=0;scEventFoodReserve=30;cityProsperity=0;wellCoverage=0;roadMarkets=0;healerCoverage=0;granaryCount=0;employment={jobs:0,filled:0,available:0,byId:new Map()};aiGold=240;aiWood=100;trainQueue=[];aiQueue=[];trainTimer=0;aiTrainTimer=0;aiDecision=0;aiAttackTimer=0;difficulty=el("difficulty").value;selected=[];inspectedBuilding=null;window.scRTSSelected=[];window.scRTSInspectedBuilding=null;drag=null;mode=null;paused=false;ended=false;elapsed=0;aiTimer=0;resourceTimer=0;nextId=1;uiRefresh=0;scUndoStack.length=0;addBuilding(0,'keep',120,310);if(scScenario==='skirmish')addBuilding(1,'keep',1170,440);for(let i=0;i<3;i++)addUnit(0,'worker',96+i*24,370);for(let i=0;i<3;i++)addUnit(0,'soldier',205,290+i*30);if(scScenario==='skirmish'){for(let i=0;i<3;i++)addUnit(1,'soldier',1090,400+i*40);for(let i=0;i<3;i++)addUnit(1,'worker',1125,340+i*42);}for(let i=0;i<7;i++)nodes.push({x:280+(i%3)*50,y:110+Math.floor(i/3)*65,type:'tree',amount:600,radius:18,renew:0});for(let i=0;i<5;i++)nodes.push({x:430+(i%2)*70,y:430+Math.floor(i/2)*55,type:'gold',amount:800,radius:19,renew:0});for(let i=0;i<5;i++)nodes.push({x:330+(i%2)*75,y:280+Math.floor(i/2)*43,type:'stone',amount:700,radius:19,renew:0});// Additional deposits support a larger settlement without replacing the original start.
 for(let i=0;i<10;i++)nodes.push({x:1390+(i%5)*70,y:120+Math.floor(i/5)*120,type:i%3===0?'stone':'tree',amount:650,radius:18,renew:0});
 
 for(let i=0;i<5;i++)nodes.push({x:130+i*118,y:680+(i%2)*95,type:'tree',amount:600,radius:18,renew:0});
@@ -1586,6 +1586,7 @@ function civicGridPoint(type,p){
 }
 function scBuildingSpacing(type,b){
  if(type!=='road'&&b.type==='road')return 0;// Roads are soft paths: buildings may stand over or beside them.
+ if(type==='road'&&b.type!=='road')return Math.max(6,b.radius*.55);// Roads may run right past buildings; only the building core blocks them.
  const small=compactAmenity(type),radius=type==='road'?15:small?14:type==='house'?12:24;
  const previous=type==='road'&&b.type==='road'?32:
   (small||type==='road')?(radius+b.radius+(small?scBuildingClearance:3)):
@@ -1602,7 +1603,7 @@ function canPlace(type,p,worker){
  ! [...buildings,...scConstructionSites].some(b=>{
   return dist(b,p)<scBuildingSpacing(type,b);
  })&&
- !nodes.some(n=>dist(n,p)<n.radius+(small?6:type==='road'?15:24))&&
+ !nodes.some(n=>dist(n,p)<(type==='road'?Math.max(8,n.radius*.6):n.radius+(small?6:24)))&&
  !(p.x>445&&p.x<550&&Math.abs(p.y-315)>30);
 }
 window.scCanPlace=canPlace;
@@ -3558,11 +3559,11 @@ const scPlayerSteps=[
  {text:'Gather more wood and gold, then build a Market. Markets let you trade for what you are missing.',check:()=>!!buildings.find(b=>b.team===0&&b.type==='market'&&alive(b))}
 ];
 const scTesterSteps=[
- {text:'Build a House far from your Keep, then click it. A "Connect to town" button appears. Press it and check the thin path looks natural.',check:()=>!!window.scConnectUsed},
- {text:'Select a worker and a soldier and send them across a group of buildings. They should walk around, never through. Press Check Test when you are happy.',manual:true},
- {text:'Look at the whole town: no birds or little running figures, roads thin and not blocking building. Press Check Test to confirm.',manual:true},
- {text:'Open the World Atlas and click a village on an island. Press Check Test when you saw its banner and history.',manual:true},
- {text:'Start a new city and check your starting stock affords about 4 buildings (Farm, House, Lumberyard, Well). Press Check Test when done.',manual:true}
+ {text:'Choose a Road in Construction and drag it right past your Keep and a house. It should stay green and build, not turn red.',manual:true},
+ {text:'Build a House far from your Keep, then click it. Press "Connect to town" and check the thin path looks natural.',check:()=>!!window.scConnectUsed},
+ {text:'Music: open the music menu and check the style is "Shattered Crowns playlist". The first theme plays about 7 minutes, then the next anthem fades in. Press Done when you have checked the setting.',manual:true},
+ {text:'Click a worker, then a soldier: you should hear a spoken line each time. Send them across buildings; they walk around, never through.',manual:true},
+ {text:'Check your starting stock (260 gold, 240 wood, 50 stone) affords about 4 buildings: Farm, House, Lumberyard, Well.',manual:true}
 ];
 let scAdvisorMode='player';try{const m=localStorage.getItem('shattered-crowns-advisor-mode-v1');if(m==='tester'||m==='player')scAdvisorMode=m}catch(e){}
 const versionTests=[...(scAdvisorMode==='tester'?scTesterSteps:scPlayerSteps)];
@@ -3588,6 +3589,16 @@ el('advisorNext').onclick=()=>{
 el('advisorSkip').onclick=()=>{if(advisorStep<versionTests.length){advisorStep++;showAdvisorTest();announceAdvisor()}};
 el('advisorRestart').onclick=()=>{advisorStep=0;advisorFinished=false;showAdvisorTest();announceAdvisor()};
 (function(){const host=el('advisorProgress');if(!host||el('advisorMode'))return;const sel=document.createElement('select');sel.id='advisorMode';sel.setAttribute('aria-label','Advisor mode');sel.innerHTML='<option value="player">Advisor: New player</option><option value="tester">Advisor: Tester</option>';sel.value=scAdvisorMode;sel.onchange=()=>{scAdvisorMode=sel.value;try{localStorage.setItem('shattered-crowns-advisor-mode-v1',scAdvisorMode)}catch(e){}versionTests.splice(0,versionTests.length,...(scAdvisorMode==='tester'?scTesterSteps:scPlayerSteps));advisorStep=0;advisorFinished=false;showAdvisorTest();announceAdvisor()};host.after(sel);window.scAdvisorMode=()=>scAdvisorMode})();
+/* v0.30 Guide panel: always-visible, collapsible step helper (New player / Tester) */
+(function(){if(document.getElementById('scGuide'))return;const box=document.createElement('section');box.id='scGuide';box.setAttribute('aria-label','Guide');
+box.style.cssText='position:fixed;left:8px;bottom:140px;width:300px;z-index:691;background:rgba(24,58,53,.95);color:#f5dba3;border:1px solid #7a8b65;border-radius:8px;padding:8px 10px;font:12.5px/1.35 system-ui;box-shadow:0 4px 14px rgba(0,0,0,.45)';
+box.innerHTML='<div style="display:flex;gap:6px;align-items:center;justify-content:space-between"><select id="scGuideMode" aria-label="Guide mode" style="flex:1;background:#102926;color:#f5dba3;border:1px solid #7a8b65;border-radius:4px;padding:3px"><option value="player">Guide: New player</option><option value="tester">Guide: Tester</option></select><button type="button" id="scGuideToggle" aria-expanded="true" aria-label="Collapse guide" style="background:#102926;color:#f5dba3;border:1px solid #7a8b65;border-radius:4px;padding:2px 8px;cursor:pointer">–</button></div><div id="scGuideBody"><p id="scGuideText" style="margin:8px 0 4px"></p><p id="scGuideProgress" style="margin:0 0 6px;opacity:.8"></p><div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" id="scGuideNext" style="flex:1;background:#6d4a31;color:#f5dba3;border:1px solid #a07250;border-radius:4px;padding:5px;cursor:pointer;font-weight:600"></button><button type="button" id="scGuideSkip" style="background:#102926;color:#f5dba3;border:1px solid #7a8b65;border-radius:4px;padding:5px 8px;cursor:pointer">Skip</button><button type="button" id="scGuideRestart" style="background:#102926;color:#f5dba3;border:1px solid #7a8b65;border-radius:4px;padding:5px 8px;cursor:pointer">Restart</button></div></div>';
+document.body.appendChild(box);const g=id=>document.getElementById(id);let collapsed=false;try{collapsed=localStorage.getItem('shattered-crowns-guide-collapsed-v1')==='1'}catch(e){}
+function paint(){const t=versionTests[advisorStep];g('scGuideText').textContent=t?(scAdvisorMode==='tester'?'🧪 ':'🧭 ')+t.text:'🎉 All steps done. Switch mode, or press Restart.';g('scGuideProgress').textContent='Step '+Math.min(advisorStep+1,versionTests.length)+' of '+versionTests.length;g('scGuideNext').textContent=t?(t.manual?'Done — Next':t.check()?'✓ Complete — Next':'Check'):'Restart';g('scGuideMode').value=scAdvisorMode;g('scGuideBody').hidden=collapsed;g('scGuideToggle').textContent=collapsed?'+':'–';g('scGuideToggle').setAttribute('aria-expanded',String(!collapsed));g('scGuideToggle').setAttribute('aria-label',collapsed?'Expand guide':'Collapse guide')}
+g('scGuideMode').onchange=e=>{const m=g('advisorMode');m.value=e.target.value;m.onchange();paint()};
+g('scGuideToggle').onclick=()=>{collapsed=!collapsed;try{localStorage.setItem('shattered-crowns-guide-collapsed-v1',collapsed?'1':'0')}catch(e){}paint()};
+g('scGuideNext').onclick=()=>{g('advisorNext').onclick();paint()};g('scGuideSkip').onclick=()=>{g('advisorSkip').onclick();paint()};g('scGuideRestart').onclick=()=>{g('advisorRestart').onclick();paint()};
+setInterval(()=>{box.hidden=!!(document.getElementById('sc1310Welcome')&&document.getElementById('sc1310Welcome').hidden===false)||tutorialVisible;if(!box.hidden){if(!advisorFinished&&advisorStep<versionTests.length&&!versionTests[advisorStep].manual&&versionTests[advisorStep].check()){advanceAdvisor()}paint()}},500);paint();window.scGuide={paint}})();
 showAdvisorTest();
 function advisorAutoCheck(now){
  if(!tutorialVisible&&!advisorAnnouncementShown)announceAdvisor();
@@ -7677,7 +7688,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <!-- Version display fix: single authoritative visible release label. -->
 <script id="sc1406VersionFix">
 (()=>{'use strict';
- const version='0.28.0';
+ const version='0.30.0';
  function sync(){
   document.title='Shattered Crowns — v'+version;
   const badge=document.getElementById('sc179Version');
@@ -9161,7 +9172,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  let settings={...defaults},storageAvailable=true;
  try{const saved=localStorage.getItem(KEY);if(saved!==null){const value=JSON.parse(saved);if(valid(value))settings={...value};}}catch(_){storageAvailable=false;}
  const Audio=window.AudioContext||window.webkitAudioContext,supported=typeof Audio==='function';
- let musicStyle='city';try{const saved=localStorage.getItem('shattered-crowns-music-style-v1');if(['city','ambient','strings','anthem','playlist'].includes(saved))musicStyle=saved;}catch(_){storageAvailable=false;}
+ let musicStyle='playlist';try{const saved=localStorage.getItem('shattered-crowns-music-style-v1');if(['city','ambient','strings','anthem','playlist'].includes(saved))musicStyle=saved;/* v0.30: the old default 'city' moves to the rotating playlist once, so the new anthems are heard */if(saved==='city'&&!localStorage.getItem('shattered-crowns-playlist-default-v030')){musicStyle='playlist';localStorage.setItem('shattered-crowns-playlist-default-v030','1');}}catch(_){storageAvailable=false;}
  let cityBar=0,nextCityBar=0,entered=false,restoredBeforeEntry=false,openingActivated=false;
  let context=null,master=null,music=null,effects=null,analyser=null,unlocked=false,error='',effectsPlayed=0,lastEffect=null,lastCompletionCue=-Infinity,lastCue=-Infinity,lastCanvas=-Infinity,chord=0,nextChord=0;
  const voices=new Set(),wave=new Float32Array(256);
