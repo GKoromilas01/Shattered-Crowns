@@ -7,6 +7,7 @@ Read this first when continuing. Newest at top. Details are in `docs/MILESTONE*.
 
 ## v0.29 (in progress)
 - Done: fictional world map (`docs/WORLD_MAP_V029.md`), settlement placement from terrain, resource profiles in atlas text.
+- Done: "Crown anthem · marching horns" music style (original 16-bar D-minor march, Web Audio, Menu → Sound → Music style; `tests/anthem.test.cjs`).
 - Pending: map polish; hook resource profiles into city starts; per-version cut scene, new anthem and small graphics upgrade.
 
 ## v0.28 Beyond the Town Gates (PR #44 merged-approved; Ashford in PR #45)
