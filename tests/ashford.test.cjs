@@ -37,7 +37,7 @@ test('Ashford repeat orders, pact and double batches need a yard, real baskets a
  const p=await game(t,'briar-3');await p.evaluate(()=>__townTest.prepare());await discover(p,'ashford');await p.evaluate(()=>{stone=200;});
  assert.equal(await dispatch(p,'ashford','intro-aid'),true);await advance(p,120);
  assert.equal(await reserve(p,12),true);assert.equal(await dispatch(p,'ashford','basic'),false,'Needs a real loading yard');
- await p.evaluate(()=>{gold=400;wood=400;stone=200;scTownState.planks=40;});const yard=await p.evaluate(()=>scTradeTown.upgrade(__townTest.market().id));assert.equal(typeof yard,'number');await p.evaluate(id=>__townTest.finish(id),yard);
+ await p.evaluate(()=>{__envoyTest.gold(400);__envoyTest.wood(400);stone=200;__envoyTest.stock(40);});const yard=await p.evaluate(()=>scTradeTown.upgrade(__townTest.market().id));assert.equal(typeof yard,'number');await p.evaluate(id=>__townTest.finish(id),yard);
  assert.equal(await p.evaluate(()=>scFrontiers.sign('ashford')),false,'Pact needs three trust');
  for(let i=0;i<2;i++){assert.equal(await reserve(p,12),true);const before=await capture(p);assert.equal(await dispatch(p,'ashford','basic'),true);const sent=await capture(p);assert.equal(sent.state.tradeTown.reservedBaskets,before.state.tradeTown.reservedBaskets-12);assert.equal(sent.state.exploration.cargo.reward.gold,53);await advance(p,120);}
  assert.equal((await snapshot(p)).contacts.ashford.trust,3);assert.equal(await p.evaluate(()=>scFrontiers.sign('ashford')),true);
