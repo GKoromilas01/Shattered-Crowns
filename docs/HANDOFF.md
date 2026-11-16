@@ -22,6 +22,7 @@ Read this first when continuing. Newest at top. Details are in `docs/MILESTONE*.
 See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; multiplayer online; war allowed but costly to the aggressor.
 
 ## Standing rules
+- Owner decisions (v0.29): starting stock should afford 2-3 buildings, a bit more is fine, then gather or trade; do not make the opening harsh. The advisor guides the first 4-5 buildings. The advisor has two modes the player chooses: **New player** (teaches what to build next) and **Tester** (tells the owner the next thing to test, so they do not hunt through menus). Tester steps must be updated with every version.
 - Art: every new image follows docs/ART_DIRECTION.md (one shared palette, no mixed styles).
 - Every version adds: UI/gameplay/fixes, a small graphics improvement or cut scene, a sound improvement (e.g. an extra anthem; music is generated in Web Audio).
 - Log every AI-generated image in `docs/ASSET_LOG.md`.

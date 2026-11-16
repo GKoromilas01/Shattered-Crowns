@@ -325,10 +325,10 @@ const scCityOrigins=scFreezeOrigins([
   "biome": "meadow",
   "name": "Marches home",
   "description": "An open starting site with the original resources and six units. Build your first neighborhood.",
-  "gold": 240,
-  "wood": 100,
-  "stone": 30,
-  "food": 90,
+  "gold": 260,
+  "wood": 240,
+  "stone": 50,
+  "food": 100,
   "population": 8
  },
  {
@@ -338,10 +338,10 @@ const scCityOrigins=scFreezeOrigins([
   "biome": "meadow",
   "name": "Brookstead village",
   "description": "A farm, house, well and three road tiles beside your keep. Nearby deposits are arranged for the village; start with 200 gold, 90 wood, 30 stone and 110 food.",
-  "gold": 200,
-  "wood": 90,
-  "stone": 30,
-  "food": 110,
+  "gold": 240,
+  "wood": 220,
+  "stone": 50,
+  "food": 120,
   "population": 8
  },
  {
@@ -351,10 +351,10 @@ const scCityOrigins=scFreezeOrigins([
   "biome": "woodland",
   "name": "Thornmere village",
   "description": "Briarwatch woodland village: 10 residents, a farm, house, well, lumberyard and connected road. Abundant nearby timber; expand food and housing carefully.",
-  "gold": 180,
-  "wood": 140,
-  "stone": 45,
-  "food": 110,
+  "gold": 220,
+  "wood": 280,
+  "stone": 55,
+  "food": 120,
   "population": 10,
   "center": [
    1000,
@@ -483,10 +483,10 @@ const scCityOrigins=scFreezeOrigins([
   "biome": "dryland",
   "name": "Datehaven village",
   "description": "Saffron Expanse dryland village: 8 residents, a farm, house, well and roads. Sparse date groves, plentiful stone and a limited timber reserve encourage careful construction.",
-  "gold": 210,
-  "wood": 80,
-  "stone": 80,
-  "food": 100,
+  "gold": 240,
+  "wood": 210,
+  "stone": 110,
+  "food": 110,
   "population": 8,
   "center": [
    1200,
@@ -587,10 +587,10 @@ const scCityOrigins=scFreezeOrigins([
   "biome": "coastal",
   "name": "Bell Shoal town",
   "description": "Stormhaven coastal town: 14 residents, two houses, a well, fishery, granary, market and roads. Feed a larger population with coastal fishing, then diversify production.",
-  "gold": 190,
-  "wood": 120,
-  "stone": 45,
-  "food": 140,
+  "gold": 230,
+  "wood": 250,
+  "stone": 60,
+  "food": 150,
   "population": 14,
   "center": [
    1100,
@@ -3550,19 +3550,28 @@ document.getElementById('civicReset').addEventListener('click',()=>{civicCount=0
 civicUpdate();
 
 // V12.0: Advisor focuses only on the current RTS battle report.
-const versionTests=[
- {text:'Select your Royal Keep to open recruitment commands.',check:()=>!!window.sc134KeepSelected},
- {text:'Train a worker at the Royal Keep.',check:()=>!!window.sc134TrainedWorker},
- {text:'Open Construction and select a Road.',check:()=>!!window.sc134RoadChosen},
- {text:'Drag a straight road on clear ground, then release the left mouse button.',check:()=>!!window.sc134RoadBuilt},
- {text:'Place a House or Farm on clear ground in the main map.',check:()=>!!window.sc134CityBuilt}
+const scPlayerSteps=[
+ {text:'Build a Farm near your Keep so your people can eat. (Construction → Farm)',check:()=>!!buildings.find(b=>b.team===0&&b.type==='farm'&&alive(b))},
+ {text:'Build a House so your village can grow.',check:()=>!!buildings.find(b=>b.team===0&&b.type==='house'&&alive(b))},
+ {text:'Build a Lumberyard so wood keeps coming.',check:()=>!!buildings.find(b=>b.team===0&&b.type==='lumberyard'&&alive(b))},
+ {text:'Build a Well. Clean water keeps people healthy and content.',check:()=>!!buildings.find(b=>b.team===0&&b.type==='well'&&alive(b))},
+ {text:'Gather more wood and gold, then build a Market. Markets let you trade for what you are missing.',check:()=>!!buildings.find(b=>b.team===0&&b.type==='market'&&alive(b))}
 ];
+const scTesterSteps=[
+ {text:'Build a House far from your Keep, then click it. A "Connect to town" button appears. Press it and check the thin path looks natural.',check:()=>!!window.scConnectUsed},
+ {text:'Select a worker and a soldier and send them across a group of buildings. They should walk around, never through. Press Check Test when you are happy.',manual:true},
+ {text:'Look at the whole town: no birds or little running figures, roads thin and not blocking building. Press Check Test to confirm.',manual:true},
+ {text:'Open the World Atlas and click a village on an island. Press Check Test when you saw its banner and history.',manual:true},
+ {text:'Start a new city and check your starting stock affords about 4 buildings (Farm, House, Lumberyard, Well). Press Check Test when done.',manual:true}
+];
+let scAdvisorMode='player';try{const m=localStorage.getItem('shattered-crowns-advisor-mode-v1');if(m==='tester'||m==='player')scAdvisorMode=m}catch(e){}
+const versionTests=[...(scAdvisorMode==='tester'?scTesterSteps:scPlayerSteps)];
 window.sc134KeepSelected=false;window.sc134TrainedWorker=false;window.sc134RoadChosen=false;window.sc134RoadBuilt=false;window.sc134CityBuilt=false;let advisorStep=0,advisorLastCheck=0,advisorFinished=false;
 function showAdvisorTest(){
  const test=versionTests[advisorStep];
  el('advisorTest').textContent=test?'🧪 '+test.text:'🎉 Tutorial complete. Keep building your city, or press Restart Tests to practice again.';
  el('advisorProgress').textContent=' '+Math.min(advisorStep,versionTests.length)+'/'+versionTests.length;
- el('advisorNext').textContent=test?(test.check()?'✓ Complete — Next':'Check Test'):'Restart Tests';
+ el('advisorNext').textContent=test?(test.manual?'Done — Next':test.check()?'✓ Complete — Next':'Check Test'):'Restart Tests';
 }
 function advanceAdvisor(){
  if(advisorStep>=versionTests.length)return;
@@ -3573,11 +3582,12 @@ function advanceAdvisor(){
 }
 el('advisorNext').onclick=()=>{
  if(advisorStep>=versionTests.length){advisorStep=0;advisorFinished=false;showAdvisorTest();return}
- if(versionTests[advisorStep].check())advanceAdvisor();
+ if(versionTests[advisorStep].manual||versionTests[advisorStep].check())advanceAdvisor();
  else{msg('Not complete yet. '+versionTests[advisorStep].text);showAdvisorTest()}
 };
 el('advisorSkip').onclick=()=>{if(advisorStep<versionTests.length){advisorStep++;showAdvisorTest();announceAdvisor()}};
 el('advisorRestart').onclick=()=>{advisorStep=0;advisorFinished=false;showAdvisorTest();announceAdvisor()};
+(function(){const host=el('advisorProgress');if(!host||el('advisorMode'))return;const sel=document.createElement('select');sel.id='advisorMode';sel.setAttribute('aria-label','Advisor mode');sel.innerHTML='<option value="player">Advisor: New player</option><option value="tester">Advisor: Tester</option>';sel.value=scAdvisorMode;sel.onchange=()=>{scAdvisorMode=sel.value;try{localStorage.setItem('shattered-crowns-advisor-mode-v1',scAdvisorMode)}catch(e){}versionTests.splice(0,versionTests.length,...(scAdvisorMode==='tester'?scTesterSteps:scPlayerSteps));advisorStep=0;advisorFinished=false;showAdvisorTest();announceAdvisor()};host.after(sel);window.scAdvisorMode=()=>scAdvisorMode})();
 showAdvisorTest();
 function advisorAutoCheck(now){
  if(!tutorialVisible&&!advisorAnnouncementShown)announceAdvisor();
@@ -3585,7 +3595,7 @@ function advisorAutoCheck(now){
  if(window.scArcherGuardAdvisor&&selected.some(u=>u.team===0&&u.type==='soldier')&&selected.some(u=>u.team===0&&u.type==='archer'))window.scArcherGuardAdvisor.mixed=true;
  if(now-advisorLastCheck<1100||tutorialVisible||paused||ended)return;
  advisorLastCheck=now;
- if(advisorStep<versionTests.length){if(versionTests[advisorStep].check())advanceAdvisor();else showAdvisorTest();}
+ if(advisorStep<versionTests.length){if(!versionTests[advisorStep].manual&&versionTests[advisorStep].check())advanceAdvisor();else showAdvisorTest();}
 }
 window.scBattleAdvisor={opened:false,casualty:false,healed:false};
 document.querySelector('[data-tab="army"]')?.addEventListener('click',()=>{window.scBattleAdvisor.opened=true},true);
@@ -4335,7 +4345,7 @@ window.scCityEconomy={snapshot:citySnapshot,setTradePolicy:(enabled,reserveCycle
 function scConnectPlan(b){if(!b||b.team!==0||b.type==='road')return null;const anchors=buildings.filter(o=>o.team===0&&alive(o)&&o!==b&&(o.type==='road'||o.type==='keep'||o.type==='market'));if(!anchors.length)return null;let t=anchors[0];for(const o of anchors)if(dist(b,o)<dist(b,t))t=o;const d=dist(b,t),gap=b.radius+t.radius+14;if(d<=gap)return {target:t,points:[],cost:0};const n=Math.max(0,Math.ceil((d-gap)/45)),pts=[];for(let i=1;i<=n;i++){const k=(b.radius+10+i*45)/d;if(k>=1-(t.radius+10)/d)break;pts.push({x:b.x+(t.x-b.x)*k,y:b.y+(t.y-b.y)*k});}return {target:t,points:pts,cost:pts.length*12}}
 function scConnectToTown(b){const plan=scConnectPlan(b);if(!plan)return {ok:false,reason:'No town centre, market or road to connect to.'};if(!plan.points.length)return {ok:true,placed:0,cost:0};if(stone<plan.cost)return {ok:false,reason:'Needs '+plan.cost+' stone for the path.',cost:plan.cost};let placed=0;for(const p of plan.points){if(buildings.some(o=>o.type==='road'&&dist(o,p)<20))continue;addBuilding(0,'road',p.x,p.y);placed++}stone-=placed*12;window.dispatchEvent(new Event('sc-construction-changed'));return {ok:true,placed,cost:placed*12}}
 window.scConnectToTown=id=>{const b=buildings.find(o=>o.id===id)||inspectedBuilding;return scConnectToTown(b)};window.scConnectPlan=id=>{const b=buildings.find(o=>o.id===id)||inspectedBuilding;const p=scConnectPlan(b);return p&&{count:p.points.length,cost:p.cost}};
-(function(){const btn=document.createElement('button');btn.id='scConnectTown';btn.type='button';btn.hidden=true;btn.style.cssText='position:fixed;left:50%;bottom:92px;transform:translateX(-50%);z-index:60;padding:8px 14px;background:#433121;color:#d7c4a8;border:1px solid #a07250;border-radius:6px;font:600 13px system-ui;cursor:pointer';btn.onclick=()=>{const r=scConnectToTown(inspectedBuilding);msg(r.ok?(r.placed?'Path laid to town for '+r.cost+' stone.':'Already connected.'):r.reason);refresh()};document.body.appendChild(btn);function refresh(){const b=inspectedBuilding;const plan=b&&b.team===0&&b.type!=='road'&&alive(b)?scConnectPlan(b):null;if(plan&&plan.points.length&&!document.hidden){btn.hidden=false;btn.textContent='Connect to town · '+plan.cost+' stone'}else btn.hidden=true}setInterval(refresh,500)})();
+(function(){const btn=document.createElement('button');btn.id='scConnectTown';btn.type='button';btn.hidden=true;btn.style.cssText='position:fixed;left:50%;bottom:92px;transform:translateX(-50%);z-index:60;padding:8px 14px;background:#433121;color:#d7c4a8;border:1px solid #a07250;border-radius:6px;font:600 13px system-ui;cursor:pointer';btn.onclick=()=>{const r=scConnectToTown(inspectedBuilding);if(r.ok&&r.placed)window.scConnectUsed=true;msg(r.ok?(r.placed?'Path laid to town for '+r.cost+' stone.':'Already connected.'):r.reason);refresh()};document.body.appendChild(btn);function refresh(){const b=inspectedBuilding;const plan=b&&b.team===0&&b.type!=='road'&&alive(b)?scConnectPlan(b):null;if(plan&&plan.points.length&&!document.hidden){btn.hidden=false;btn.textContent='Connect to town · '+plan.cost+' stone'}else btn.hidden=true}setInterval(refresh,500)})();
 window.scHoverBuildings=buildings;function frame(now){let dt=Math.min((now-last)/1000,.05);last=now;window.scRTSUnits=units;window.scRTSNodes=nodes;window.scHoverBuildings=buildings;/* camera managed by v12.37 */if(!paused&&!ended&&!tutorialVisible&&!scOverview&&!document.hidden&&document.getElementById('sc1310Welcome')?.hidden!==false){tick(dt);scFestivalCooldown=Math.max(0,scFestivalCooldown-dt);visualTime+=dt}draw();advisorAutoCheck(now);requestAnimationFrame(frame)}init();scRefreshBattleReadout();requestAnimationFrame(frame)})();
 </script><style id="treasuryStyles">
 #treasuryPanel{display:none;position:fixed;z-index:115;top:7vh;left:50%;transform:translateX(-50%);width:min(780px,94vw);max-height:85vh;overflow:auto;box-sizing:border-box;background:#172a2d;color:#f4ecd9;border:2px solid #bba36d;border-radius:13px;padding:17px 20px;box-shadow:0 16px 65px #000b;font-size:15px}
