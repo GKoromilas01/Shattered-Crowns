@@ -1,3 +1,5 @@
+> **v0.28 Valewatch playable prototype:** [scope, controls and economics](docs/MILESTONE28.md) · [validation](docs/validation/v028-prototype.md) · [PR #44](https://github.com/GKoromilas01/Shattered-Crowns/pull/44). Feature branch only; owner prototype review precedes Ashford. Production remains separately managed.
+
 # Shattered Crowns
 
 Browser-first medieval city-building RTS with a peaceful city campaign, kingdom overview and classic skirmish mode. Serve this directory with `python3 -m http.server 8000` and open http://localhost:8000.

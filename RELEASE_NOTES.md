@@ -1,3 +1,9 @@
+# v0.28.0 — Beyond the Town Gates: Valewatch prototype
+
+Explore a northern woodland route, meet Warden Mira, supply real goods and earn a permanent better-paying pact. Diplomacy begins in every peaceful city. Original portrait artwork and an atlas route reflect actual discoveries. Strict schema 11 preserves older saves without inventing progress. [Prototype scope and economics](docs/MILESTONE28.md) · [Validation](docs/validation/v028-prototype.md).
+
+This feature-branch prototype awaits owner review before Ashford expands the release. Not merged or deployed.
+
 # Release notes
 
 ## v0.27.0 — An Envoy to Ironmere
