@@ -26,3 +26,9 @@ Owner decisions. Like `FUTURE_WORLD_DIRECTION.md`, these guide later proposals; 
 1. Settlement tier model (data only, tested), with tier shown in the atlas.
 2. Resource profiles from the world map feeding city start deposits and growth.
 3. War cost table (economy and politics penalties) with tests, before any combat.
+
+## Resource balance (owner decision, v0.29)
+- Every village has all three main resources (wood, stone, food). Terrain only changes how much: mountains give plenty of stone and some gold but little timber; forests give timber but little stone. Nothing is ever zero.
+- Start with enough to build a few things anywhere; shortages appear as the settlement grows and needs more. They are fixed by trade: ask your market, or fill other markets' orders.
+- Workshops make specialty goods (planks, tools, salt, cloth, dyes, furs) that other villages lack, creating more trade.
+- Implemented as data in `src/v029/resource-profile.js` (income multiplier 0.6–1.5 by level, minimum starting stock, shortage and surplus lists, specialty by biome), tested in `tests/resource-profile.test.cjs`. Not yet wired into game play.
