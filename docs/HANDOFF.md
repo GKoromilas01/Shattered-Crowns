@@ -12,7 +12,8 @@ Read this first when continuing. Newest at top. Details are in `docs/MILESTONE*.
 ## v0.28 Beyond the Town Gates (PR #44 merged-approved; Ashford in PR #45)
 - Done (PR #45): Ashford engine terms, earned 48-basket reserve after a double pact, accessibility test fix, `tests/ashford.test.cjs`.
 - Done (PR #45): Ashford UI (partner chooser `#sc28Contact`, Ashford atlas route), `tests/ashford-ui.test.cjs`, `docs/validation/v028-ashford.md`.
-- Pending: Caelan portrait (see `docs/ASSET_LOG.md`), browser funded-route walkthrough for Ashford.
+- Done: Caelan portrait (`assets/v028/caelan.*`, see `docs/ASSET_LOG.md`).
+- Pending: browser funded-route walkthrough for Ashford.
 
 ## Design direction
 See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; multiplayer online; war allowed but costly to the aggressor.
