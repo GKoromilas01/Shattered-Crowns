@@ -6,6 +6,7 @@ Read this first when continuing. Newest at top. Details are in `docs/MILESTONE*.
 `npm ci && npm test` (Node 24+, Playwright Chromium). After editing `src/v026|v027|v028`, run `node scripts/embed-v026.cjs` (check with `--check`). The atlas code and world map data live directly in `index.html` (not generated).
 
 ## v0.29 (in progress)
+- Roads step 2 done: select a building with no road access and a "Connect to town · N stone" button lays a thin path (12 stone/tile) to the nearest road/keep/market. Units steer around buildings (move() in index.html).
 - Done: fictional world map (`docs/WORLD_MAP_V029.md`), settlement placement from terrain, resource profiles in atlas text.
 - Done: "Crown anthem · marching horns" music style (original 16-bar D-minor march, Web Audio, Menu → Sound → Music style; `tests/anthem.test.cjs`).
 - Done: unit voice lines (browser speech synthesis, Menu → Sound toggle, `tests/voices.test.cjs`); rotating playlist style (7 min per theme, 6 s fades; add themes to `playlistTracks`); the anthem builds over loops from simple to full strings, harp and horns.
