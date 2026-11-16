@@ -27,3 +27,7 @@ Keep an older export for downgrade: older clients cannot load schema 11. When re
 ## Delivery gate
 
 See [prototype validation](validation/v028-prototype.md) for checks, environment, performance, saves, screenshots and package provenance. This is a complete first-partner prototype for owner review, not the full two-partner v0.28 release. After review, expand Ashford within the approved scope. Separate approval remains necessary for merge and deployment.
+
+
+## Ashford (PR #45)
+Second partner: Lord Caelan at Ashford. Engine terms, earned 48-basket reserve, partner chooser UI and Ashford atlas route. See `docs/validation/v028-ashford.md`. Portrait pending.
