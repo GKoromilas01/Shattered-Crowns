@@ -15,6 +15,21 @@
         "mime": "image/webp",
         "encoding": "Canvas WebP quality0.88, original dimensions, no crop or resize"
       }
+    },
+    "caelan": {
+      "path": "assets/v028/caelan.png",
+      "sha256": "3ae2ace69c58e397cf6c889998af62ddd4adbc2b8808a68f5865baef5772ecc9",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 3115920,
+      "provenance": "Owner-supplied AI-generated portrait of Lord Caelan, Ashford river garrison, 16 November 2026 (generator per owner: the same OpenAI image tool used for Mira; confirm). Replaces the Leonardo test images. Character name/role from existing Ashford lore. No third-party asset pack.",
+      "runtime": {
+        "path": "assets/v028/caelan.webp",
+        "sha256": "e676bb6a3fcd23a6d062202ce94b22e2f6c0e2fcf00f4d42f6d4e365e0ffb263",
+        "bytes": 418236,
+        "mime": "image/webp",
+        "encoding": "WebP quality 88 via Pillow, original dimensions, no crop or resize"
+      }
     }
   }
 }
