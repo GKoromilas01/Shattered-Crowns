@@ -32,3 +32,6 @@ Owner decisions. Like `FUTURE_WORLD_DIRECTION.md`, these guide later proposals; 
 - Start with enough to build a few things anywhere; shortages appear as the settlement grows and needs more. They are fixed by trade: ask your market, or fill other markets' orders.
 - Workshops make specialty goods (planks, tools, salt, cloth, dyes, furs) that other villages lack, creating more trade.
 - Implemented as data in `src/v029/resource-profile.js` (income multiplier 0.6–1.5 by level, minimum starting stock, shortage and surplus lists, specialty by biome), tested in `tests/resource-profile.test.cjs`. Not yet wired into game play.
+
+## War cost model (v0.29, data only)
+`src/v029/war-costs.js`, tests in `tests/war-costs.test.cjs`. Example (20 soldiers, income 120/day, defender wealth 3000): a won war nets about +1000 at 5 days, +300 at 20 days, break-even near 25 days, and about -1000 at 40 days. A lost war is always negative. Unjust declarations cost more standing and stability and trigger embargoes. All numbers are first-pass and live in `CFG` for tuning; nothing is wired into combat yet.
