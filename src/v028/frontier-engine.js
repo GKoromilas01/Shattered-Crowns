@@ -1,12 +1,14 @@
 // Optional campaign exploration and receipt-backed relations. Rendering never activates this state.
 let scFrontierState=null;
 const scFrontierIds=['valewatch','ashford'];
-const scFrontierEnabled=id=>id==='valewatch'; // First approved prototype; Ashford follows owner review.
+const scFrontierEnabled=id=>scFrontierIds.includes(id);
+const scFrontierNames={valewatch:{place:'Valewatch',who:'Warden Mira'},ashford:{place:'Ashford',who:'Caelan'}};
 const scFrontierContact=()=>({surveySentAt:null,surveyPaid:0,discoveredAt:null,refusedAt:null,talkClosed:false,intro:null,introAt:null,pactAt:null});
 const scFrontierFresh=()=>({version:1,contacts:Object.fromEntries(scFrontierIds.map(id=>[id,scFrontierContact()])),survey:null,cargo:null,nextId:1,history:[]});
 function scFrontierTerms(id,kind,batches=1,version=1){
  if(version!==1||!scFrontierEnabled(id)||!Number.isSafeInteger(batches)||batches<1||batches>2||kind!=='pact'&&batches!==1)return null;
- const table={valewatch:{'intro-aid':[{wood:40},{stone:30},1],'intro-manufactured':[{planks:12},{gold:60},2],basic:[{planks:8},{gold:38},1],pact:[{planks:16},{gold:84},1]}};
+ const table={valewatch:{'intro-aid':[{wood:40},{stone:30},1],'intro-manufactured':[{planks:12},{gold:60},2],basic:[{planks:8},{gold:38},1],pact:[{planks:16},{gold:84},1]},
+  ashford:{'intro-aid':[{stone:20},{gold:48},1],'intro-manufactured':[{baskets:12},{gold:60},2],basic:[{baskets:12},{gold:53},1],pact:[{baskets:24},{gold:112},1]}};
  const row=table[id]?.[kind];if(!row)return null;const vector=(fields,v)=>Object.fromEntries(fields.map(k=>[k,(v[k]||0)*batches]));
  return {cost:vector(['gold','wood','stone','planks','baskets'],row[0]),reward:vector(['gold','wood','stone'],row[1]),trust:row[2]};
 }
@@ -22,6 +24,7 @@ function scFrontierTrust(q,id,at=Infinity){
  for(const j of q?.history||[])if(j.contact===id&&j.completedAt<=at+1e-5)trust+=scFrontierTerms(j.contact,j.kind,j.batches,j.termsVersion)?.trust||0;
  return Math.max(-1,Math.min(6,trust));
 }
+function scFrontierDoubleReserveEarned(q=scFrontierState,at=Infinity){const c=q?.contacts?.ashford;return !!c&&c.pactAt!==null&&c.pactAt!==undefined&&scFrontierTrust(q,'ashford',at)>=6;}
 function scFrontierHasIntro(q=scFrontierState,id=null,at=Infinity){return Array.isArray(q?.history)&&q.history.some(j=>(!id||j.contact===id)&&j.kind?.startsWith('intro-')&&j.phase==='complete'&&j.completedAt<=at+1e-5);}
 function scFrontierEnvoyBusy(){return !!scFrontierState?.survey||scEnvoyState?.phase==='travelling';}
 function scFrontierReady(){return scScenario==='city'&&scTradePolicyReady()&&scCaravan.activationAllowed();}
@@ -52,12 +55,12 @@ function scFrontierReopen(id){const c=scFrontierState?.contacts[id];if(!scFronti
 function scFrontierSign(id){const q=scFrontierState,c=q?.contacts[id];if(!scFrontierEnabled(id)||!scFrontierReady()||!c||c.pactAt!==null||!scFrontierHasIntro(q,id)||scFrontierTrust(q,id)<3)return false;c.pactAt=elapsed;scFrontierChanged();return true;}
 function scFrontierTick(dt){
  const q=scFrontierState;if(scScenario!=='city'||ended||!q)return;
- if(q.survey){const s=q.survey;s.progress=Math.min(60,s.progress+dt);if(s.progress>=60){q.contacts[s.contact].discoveredAt=elapsed;q.survey=null;msg('The Valewatch route is surveyed. Warden Mira’s needs are available in Diplomacy.');scFrontierChanged();}}
- if(q.cargo){const j=q.cargo;j.progress=Math.min(120,j.progress+dt);if(j.progress>=120){j.progress=120;j.phase='complete';j.completedAt=elapsed;scCargoCredit(j.reward);q.history.push(scClone(j));q.cargo=null;msg('Valewatch supplies returned. Actual cargo and earned trust are recorded in Chronicle.');scFrontierChanged();}else if(j.progress>=60)j.phase='returning';}
+ if(q.survey){const s=q.survey;s.progress=Math.min(60,s.progress+dt);if(s.progress>=60){q.contacts[s.contact].discoveredAt=elapsed;q.survey=null;msg('The '+scFrontierNames[s.contact].place+' route is surveyed. '+scFrontierNames[s.contact].who+'’s needs are available in Diplomacy.');scFrontierChanged();}}
+ if(q.cargo){const j=q.cargo;j.progress=Math.min(120,j.progress+dt);if(j.progress>=120){j.progress=120;j.phase='complete';j.completedAt=elapsed;scCargoCredit(j.reward);q.history.push(scClone(j));q.cargo=null;msg(scFrontierNames[j.contact].place+' supplies returned. Actual cargo and earned trust are recorded in Chronicle.');scFrontierChanged();}else if(j.progress>=60)j.phase='returning';}
 }
 function scFrontierSnapshot(){
  const q=scFrontierState||scFrontierFresh(),contacts={};for(const id of scFrontierIds){const c=q.contacts[id];contacts[id]={...scClone(c),enabled:scFrontierEnabled(id),trust:scFrontierTrust(q,id),introDone:scFrontierHasIntro(q,id),canSurvey:scFrontierEnabled(id)&&scFrontierReady()&&!scFrontierEnvoyBusy()&&c.surveySentAt===null&&gold>=10&&q.history.length<512,canSign:scFrontierEnabled(id)&&scFrontierReady()&&c.pactAt===null&&scFrontierHasIntro(q,id)&&scFrontierTrust(q,id)>=3,orders:Object.fromEntries(['intro-aid','intro-manufactured','basic','pact'].map(kind=>[kind,scFrontierOrder(id,kind)])),doublePact:scFrontierOrder(id,'pact',2)};}
- return {...scClone(q),contacts,active:!!scFrontierState,supported:scScenario==='city',envoyBusy:scFrontierEnvoyBusy(),cargoBusy:scSupplierCargoBusy(),hasYard:scTownHasYard(),marketReady:scFrontierMarketReady(),gold,wood,stone,planks:scTownState?.planks||0,reservedBaskets:scTownState?.reservedBaskets||0};
+ return {...scClone(q),contacts,active:!!scFrontierState,supported:scScenario==='city',envoyBusy:scFrontierEnvoyBusy(),cargoBusy:scSupplierCargoBusy(),doubleReserveEarned:scFrontierDoubleReserveEarned(scFrontierState),hasYard:scTownHasYard(),marketReady:scFrontierMarketReady(),gold,wood,stone,planks:scTownState?.planks||0,reservedBaskets:scTownState?.reservedBaskets||0};
 }
 function scFrontierPrepare(q,data){
  const fail=()=>{throw Error('Invalid exploration, partner cargo or earned pact. Your city has not changed.');};
