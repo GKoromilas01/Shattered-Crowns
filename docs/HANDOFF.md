@@ -21,6 +21,7 @@ Read this first when continuing. Newest at top. Details are in `docs/MILESTONE*.
 See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; multiplayer online; war allowed but costly to the aggressor.
 
 ## Standing rules
+- Art: every new image follows docs/ART_DIRECTION.md (one shared palette, no mixed styles).
 - Every version adds: UI/gameplay/fixes, a small graphics improvement or cut scene, a sound improvement (e.g. an extra anthem; music is generated in Web Audio).
 - Log every AI-generated image in `docs/ASSET_LOG.md`.
 - Merging and deploying need the owner's approval.
