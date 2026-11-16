@@ -1,0 +1,231 @@
+{
+  "environment": {
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+    "dpr": 1,
+    "viewport": [
+      1440,
+      1000
+    ],
+    "gpu": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+    "logicalCPUs": 3,
+    "node": "v24.19.0",
+    "playwright": "1.57.0",
+    "chromium": "154.0.8037.57",
+    "platform": "linux 6.18.57",
+    "mode": "headless; explicit selected browser; reduced motion; no device-performance claim"
+  },
+  "errors": [],
+  "cases": [
+    {
+      "scene": "opening",
+      "renderer": "v027-baseline",
+      "comparisonStateHash": "1d4bc075b9c0b95c33a087e64302769f857f5715227368afde888ac602fa8506",
+      "samples": 379,
+      "fps": 58.45968749517976,
+      "frameMs": {
+        "p50": 16.699999999999818,
+        "p95": 16.799999999999272,
+        "p99": 16.80000000000109
+      },
+      "drawCpuMs": {
+        "p50": 1,
+        "p95": 1.5999999940395355,
+        "p99": 2.7000000029802322
+      },
+      "heap": {
+        "used": 20783712,
+        "total": 33160008,
+        "limit": 4395630592
+      },
+      "cacheBytes": 18309320,
+      "counts": {
+        "buildings": 7,
+        "nodes": 37,
+        "units": 6,
+        "sites": 0
+      },
+      "camera": {
+        "left": 580,
+        "top": 110,
+        "zoom": 1.5
+      },
+      "normalClockGameTime": 7.94970000000004
+    },
+    {
+      "scene": "opening",
+      "renderer": "v028-prototype",
+      "comparisonStateHash": "1d4bc075b9c0b95c33a087e64302769f857f5715227368afde888ac602fa8506",
+      "samples": 381,
+      "fps": 58.61718822117603,
+      "frameMs": {
+        "p50": 16.699999999999818,
+        "p95": 16.799999999999272,
+        "p99": 33.399999999999636
+      },
+      "drawCpuMs": {
+        "p50": 0.9000000059604645,
+        "p95": 2,
+        "p99": 5.799999997019768
+      },
+      "heap": {
+        "used": 20912769,
+        "total": 32373577,
+        "limit": 4395630592
+      },
+      "cacheBytes": 18309320,
+      "counts": {
+        "buildings": 7,
+        "nodes": 37,
+        "units": 6,
+        "sites": 0
+      },
+      "camera": {
+        "left": 580,
+        "top": 110,
+        "zoom": 1.5
+      },
+      "normalClockGameTime": 8.016500000000038
+    },
+    {
+      "scene": "developed",
+      "renderer": "v027-baseline",
+      "comparisonStateHash": "76fcef0a8c92193f8ebc61ae62dac59b66afe98c39743b1debef34425877d4d4",
+      "samples": 386,
+      "fps": 59.539417871080154,
+      "frameMs": {
+        "p50": 16.699999999999818,
+        "p95": 16.700000000000728,
+        "p99": 16.800000000000182
+      },
+      "drawCpuMs": {
+        "p50": 1,
+        "p95": 1.5999999940395355,
+        "p99": 3.800000011920929
+      },
+      "heap": {
+        "used": 24444438,
+        "total": 39975778,
+        "limit": 4395630592
+      },
+      "cacheBytes": 18412512,
+      "counts": {
+        "buildings": 30,
+        "nodes": 8,
+        "units": 3,
+        "sites": 1
+      },
+      "camera": {
+        "left": 580,
+        "top": 110,
+        "zoom": 1.5
+      },
+      "normalClockGameTime": 8.03290000000004
+    },
+    {
+      "scene": "developed",
+      "renderer": "v028-prototype",
+      "comparisonStateHash": "76fcef0a8c92193f8ebc61ae62dac59b66afe98c39743b1debef34425877d4d4",
+      "samples": 385,
+      "fps": 59.233503084757736,
+      "frameMs": {
+        "p50": 16.699999999999818,
+        "p95": 16.700000000000728,
+        "p99": 33.30000000000018
+      },
+      "drawCpuMs": {
+        "p50": 0.9000000059604645,
+        "p95": 1.4000000059604645,
+        "p99": 4
+      },
+      "heap": {
+        "used": 25028470,
+        "total": 41025866,
+        "limit": 4395630592
+      },
+      "cacheBytes": 18412512,
+      "counts": {
+        "buildings": 30,
+        "nodes": 8,
+        "units": 3,
+        "sites": 1
+      },
+      "camera": {
+        "left": 580,
+        "top": 110,
+        "zoom": 1.5
+      },
+      "normalClockGameTime": 8.032900000000044
+    },
+    {
+      "scene": "stress",
+      "renderer": "v027-baseline",
+      "comparisonStateHash": "34709535bd2f765e3561f0148b35b24ad761b14534a1d3b47403006df4bcdc53",
+      "samples": 214,
+      "fps": 33.00940922412463,
+      "frameMs": {
+        "p50": 33.30000000000018,
+        "p95": 50,
+        "p99": 50.100000000000364
+      },
+      "drawCpuMs": {
+        "p50": 3.3999999910593033,
+        "p95": 5,
+        "p99": 5.899999991059303
+      },
+      "heap": {
+        "used": 30218578,
+        "total": 59112290,
+        "limit": 4395630592
+      },
+      "cacheBytes": 18412512,
+      "counts": {
+        "buildings": 222,
+        "nodes": 248,
+        "units": 120,
+        "sites": 1
+      },
+      "camera": {
+        "left": 580,
+        "top": 110,
+        "zoom": 1.5
+      },
+      "normalClockGameTime": 8.015900000000018
+    },
+    {
+      "scene": "stress",
+      "renderer": "v028-prototype",
+      "comparisonStateHash": "34709535bd2f765e3561f0148b35b24ad761b14534a1d3b47403006df4bcdc53",
+      "samples": 246,
+      "fps": 37.847900672338724,
+      "frameMs": {
+        "p50": 33.19999999999982,
+        "p95": 33.400000000001455,
+        "p99": 66.69999999999891
+      },
+      "drawCpuMs": {
+        "p50": 2.7000000029802322,
+        "p95": 5,
+        "p99": 14.599999994039536
+      },
+      "heap": {
+        "used": 34870487,
+        "total": 61734227,
+        "limit": 4395630592
+      },
+      "cacheBytes": 18412512,
+      "counts": {
+        "buildings": 222,
+        "nodes": 248,
+        "units": 120,
+        "sites": 1
+      },
+      "camera": {
+        "left": 580,
+        "top": 110,
+        "zoom": 1.5
+      },
+      "normalClockGameTime": 7.899400000000028
+    }
+  ]
+}
