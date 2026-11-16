@@ -1,0 +1,14 @@
+✔ Pages smoke: startup and source provenance (11931.080284ms)
+✔ Pages smoke: Construction Units switching and Advisor checklist (12354.712277ms)
+✔ Pages smoke: real resource gathering and 3x3/6x6 roads with costs and undo (63677.466214ms)
+✔ Pages smoke: camera scrolling minimap and real fullscreen (13099.654868ms)
+✔ Pages smoke: City Life economy advances and resident arithmetic reconciles (19620.431674ms)
+✔ Pages smoke: Valewatch survey is native, funded and persistent when prototype is present (13214.769242ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 134832.824024

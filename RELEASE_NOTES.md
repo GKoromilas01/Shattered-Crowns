@@ -1,4 +1,16 @@
+# v0.28.0 — Beyond the Town Gates: Valewatch prototype
+
+Explore a northern woodland route, meet Warden Mira, supply real goods and earn a permanent better-paying pact. Diplomacy begins in every peaceful city. Original portrait artwork and an atlas route reflect actual discoveries. Strict schema 11 preserves older saves without inventing progress. [Prototype scope and economics](docs/MILESTONE28.md) · [Validation](docs/validation/v028-prototype.md).
+
+This feature-branch prototype awaits owner review before Ashford expands the release. Not merged or deployed.
+
 # Release notes
+
+## v0.27.0 — An Envoy to Ironmere
+
+From the beginning in every peaceful city, pay 30 real gold for an envoy’s 120-second visit; no supplier-chain prerequisite. Defer Lady Elowen’s audience, sign one permanent timber or provisions charter, or leave without signing. A completed loading yard enables manually dispatched charter cargo: 16 planks for 80 gold or 24 reserved baskets for 108 gold, sharing the existing supplier cargo slot. Existing agreements and standing-order terms are retained.
+
+An original envoy portrait, sealed-letter atlas entry and contextual Chronicle/Advisor summaries accompany the chapter. Starting workers stand in front of the Keep; command buttons use illustrated art and portable cost graphics. House Plots and replay settlement interludes are removed, retaining one-time messages and Chronicle history. New envoy state uses strict schema 10; schemas 1–9 retain their resources and progress without invented diplomacy. See [Milestone 27](docs/MILESTONE27.md). Implementation candidate; [PR #43](https://github.com/GKoromilas01/Shattered-Crowns/pull/43) records final-head validation and the playable package. No merge or deployment approval.
 
 ## v0.26.0 — A Working Trade Town
 

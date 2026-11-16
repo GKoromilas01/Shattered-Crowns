@@ -1,8 +1,12 @@
+> **v0.28 Valewatch playable prototype:** [scope, controls and economics](docs/MILESTONE28.md) · [validation](docs/validation/v028-prototype.md) · [PR #44](https://github.com/GKoromilas01/Shattered-Crowns/pull/44). Feature branch only; owner prototype review precedes Ashford. Production remains separately managed.
+
 # Shattered Crowns
 
 Browser-first medieval city-building RTS with a peaceful city campaign, kingdom overview and classic skirmish mode. Serve this directory with `python3 -m http.server 8000` and open http://localhost:8000.
 
-Current development: [Milestone 26 — A Working Trade Town](docs/MILESTONE26.md). Approved asset-assisted Canvas graphics, carpentry production, explicit contract-basket reservations, a three-stage Ironmere agreement and a builder-funded Market loading yard. Released v0.25 remains the production baseline until separate merge and deployment approval.
+Released: [Milestone 26 — A Working Trade Town](docs/MILESTONE26.md), main `8dff174`, verified in [production release 43712799913](https://github.com/GKoromilas01/Shattered-Crowns/actions/runs/43712799913). It includes illustrated Canvas graphics, readable resources, carpentry, reserved contract baskets, Ironmere supplier agreements and a builder-funded Market loading yard.
+
+Implementation candidate: [v0.27 — An Envoy to Ironmere](docs/MILESTONE27.md), approved for implementation on a feature branch. See [PR #43](https://github.com/GKoromilas01/Shattered-Crowns/pull/43) for final-head validation and the playable package; merge and deployment require separate owner approval.
 
 ## Automated testing
 

@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "files": {
+    "mira": {
+      "path": "assets/v028/mira.png",
+      "sha256": "9955a461a04ac635845b235769306ebf6bb2f3868457a6b73974cfd2856263c6",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 2982185,
+      "provenance": "Original OpenAI image generation for Shattered Crowns Warden Mira, 16 November 2026. Character name/role from existing Valewatch lore. No third-party asset pack.",
+      "runtime": {
+        "path": "assets/v028/mira.webp",
+        "sha256": "fd39f8b3ec56fe597bb304ef5300ce519a985638935a22f38d50dd7a49d4c041",
+        "bytes": 378326,
+        "mime": "image/webp",
+        "encoding": "Canvas WebP quality0.88, original dimensions, no crop or resize"
+      }
+    },
+    "caelan": {
+      "path": "assets/v028/caelan.png",
+      "sha256": "3ae2ace69c58e397cf6c889998af62ddd4adbc2b8808a68f5865baef5772ecc9",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 3115920,
+      "provenance": "Owner-supplied AI-generated portrait of Lord Caelan, Ashford river garrison, 16 November 2026 (generator per owner: the same OpenAI image tool used for Mira; confirm). Replaces the Leonardo test images. Character name/role from existing Ashford lore. No third-party asset pack.",
+      "runtime": {
+        "path": "assets/v028/caelan.webp",
+        "sha256": "e676bb6a3fcd23a6d062202ce94b22e2f6c0e2fcf00f4d42f6d4e365e0ffb263",
+        "bytes": 418236,
+        "mime": "image/webp",
+        "encoding": "WebP quality 88 via Pillow, original dimensions, no crop or resize"
+      }
+    }
+  }
+}

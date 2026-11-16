@@ -1,0 +1,62 @@
+{
+  "method": "Unmodified production index; genuine earned v0.26 supplier save; native controls; real wall time. No tick adapter, grants or fake clock. Complete pact separately checked with accelerated simulation.",
+  "environment": {
+    "node": "v24.19.0",
+    "chromium": "154.0.8037.57",
+    "platform": "linux"
+  },
+  "sourceSha256": "cb7747e06ddb1dec0263d31a456a9144ace1b0a4f51dfe44c145bdc9e7e3912d",
+  "survey": {
+    "wallSeconds": 60.263,
+    "gameSeconds": 60.08089999972276,
+    "paid": 10
+  },
+  "cargo": {
+    "wallSeconds": 120.693,
+    "gameSeconds": 120.0616999994129,
+    "record": {
+      "id": 1,
+      "contact": "valewatch",
+      "kind": "intro-manufactured",
+      "batches": 1,
+      "termsVersion": 1,
+      "departedAt": 1182.2141999997227,
+      "progress": 120,
+      "phase": "complete",
+      "completedAt": 1302.225899999136,
+      "cost": {
+        "gold": 0,
+        "wood": 0,
+        "stone": 0,
+        "planks": 12,
+        "baskets": 0
+      },
+      "reward": {
+        "gold": 60,
+        "wood": 0,
+        "stone": 0
+      }
+    }
+  },
+  "before": {
+    "gold": 3965,
+    "wood": 0,
+    "stone": 158.625,
+    "food": 242,
+    "tradeGoods": 79,
+    "goodsSold": 129,
+    "aiGold": 240,
+    "aiWood": 100
+  },
+  "final": {
+    "gold": 4771,
+    "wood": 0,
+    "stone": 158.625,
+    "food": 242,
+    "tradeGoods": 79,
+    "goodsSold": 165,
+    "aiGold": 240,
+    "aiWood": 100
+  },
+  "errors": []
+}
