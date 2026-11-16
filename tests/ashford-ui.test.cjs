@@ -17,6 +17,7 @@ test('Partner chooser shows Valewatch first and Ashford separately without shari
  assert.equal(await p.locator('#sc28Survey').isHidden(),true);
  await advance(p,60);await trade(p);await p.locator('#sc28Contact').selectOption('ashford');
  assert.match(await p.locator('#sc28AshfordStatus').innerText(),/Caelan/);
+ await p.locator('#sc28AshfordPortrait').waitFor({state:'visible'});assert.equal(await p.locator('#sc28AshfordPortrait').evaluate(i=>i.naturalWidth),1254);
  await p.locator('#sc28AshfordReview').click();
  assert.equal(await p.locator('#sc28AshfordAid').innerText(),'Send 20 stone → 48 gold · +1 trust');
  assert.equal(await p.locator('#sc28AshfordManufactured').innerText(),'Send 12 baskets → 60 gold · +2 trust');
