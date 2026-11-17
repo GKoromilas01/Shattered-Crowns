@@ -5,6 +5,10 @@ Read this first when continuing. Newest at top. Details are in `docs/MILESTONE*.
 ## How to run
 `npm ci && npm test` (Node 24+, Playwright Chromium). After editing `src/v026|v027|v028`, run `node scripts/embed-v026.cjs` (check with `--check`). The atlas code and world map data live directly in `index.html` (not generated).
 
+## v0.32
+- Owner rule: every settlement starts as a Village (atlas kind, origin names, legend). Towns/cities only appear when a player grows one (not yet implemented in the engine; tier labels to come with the village-tier model).
+- Continent map opens scrolled to the centroid of its settlements. Known gap: Southveil's islands sit on the south edge of the world image, so they cannot be fully centred; fix by regenerating the world map with Southveil moved inward (tools/worldmap, then recompute continent crops and site rows).
+
 ## v0.31
 - Owner test of v0.30 passed (map, voices, roads, advisor modes, stock). v0.31: Connect to town now draws an unbroken path edge to edge; Guide moved top-right; new emblem icons for Worker/Soldier/Archer (CSS background on `#sc140Commands button[data-sc31]`); Brookstead stock 240/180/50/120. Owner asked for later: improved music for both anthems; Caelan portrait lives in Trade panel > Beyond the Town Gates > Ashford.
 
