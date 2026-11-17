@@ -11,3 +11,13 @@ for(const width of [390,1440])test('Continent maps show illustrated settlements 
  const markers=await p.locator('.scIdentityMap [data-world-place]').evaluateAll(es=>es.map(e=>{const r=e.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height,bg:getComputedStyle(e).backgroundColor,svg:!!e.querySelector('svg')};}));assert.equal(markers.length,8);assert.ok(markers.every(m=>m.svg&&m.bg==='rgba(0, 0, 0, 0)'));for(let i=0;i<markers.length;i++)for(let j=i+1;j<markers.length;j++){const a=markers[i],b=markers[j];assert.ok(a.x+a.w<=b.x||b.x+b.w<=a.x||a.y+a.h<=b.y||b.y+b.h<=a.y,'Miniature controls must remain separate');}
  await p.keyboard.press('Escape');const after=await p.evaluate(()=>scCitySave.capture());assert.deepEqual(after.state,before.state);assert.deepEqual(after.view,before.view);assert.deepEqual(after.campaign,before.campaign);
 });
+test('Every settlement starts as a village and each continent opens centred on its settlements',async t=>{
+ const p=await game(t);const kinds=await p.evaluate(()=>[...new Set(scWorldAtlas.settlements.map(s=>s.kind))]);assert.deepEqual(kinds,['Village']);
+ await p.evaluate(()=>scKingdomUI.openWorld());
+ for(const id of ['southveil','aurelia','stormisles']){
+  await p.locator('[data-continent="'+id+'"]').click();await p.waitForTimeout(250);
+  const r=await p.evaluate(id=>{const vp=document.getElementById('scContinentMap'),v=vp.getBoundingClientRect();const marks=[...document.querySelectorAll('#scContinentTerrain [data-continent-place]')].map(e=>e.getBoundingClientRect());const inside=marks.filter(m=>m.top>=v.top-4&&m.bottom<=v.bottom+4&&m.left>=v.left-4&&m.right<=v.right+4).length;return {inside,total:marks.length}},id);
+  assert.ok(r.inside>=Math.min(4,r.total),id+' markers in view '+JSON.stringify(r));
+  await p.evaluate(()=>scKingdomUI.openWorld());
+ }
+});
