@@ -25,5 +25,15 @@ test('Roads can be placed right beside buildings and the Guide panel is visible 
  assert.equal(await p.locator('#scGuide').isVisible(),true);
  assert.equal(await p.locator('#scGuideMode option').count(),2);
  await p.selectOption('#scGuideMode','tester');
- assert.match(await p.locator('#scGuideText').textContent(),/Road/);
+ assert.match(await p.locator('#scGuideText').textContent(),/Connect to town/);
+});
+test('Connect to town draws an unbroken path from the building edge to the keep edge',async t=>{
+ const p=await game(t);
+ const r=await p.evaluate(()=>{const k=__ct.keep();const h=__ct.add('house',k.x+60,k.y-240);__ct.clear(h);__ct.stone(500);const res=scConnectToTown(h.id);const rs=window.scHoverBuildings.filter(b=>b.type==='road'&&b.team===0).sort((a,b)=>a.y-b.y);let maxGap=0;for(let i=1;i<rs.length;i++)maxGap=Math.max(maxGap,Math.hypot(rs[i].x-rs[i-1].x,rs[i].y-rs[i-1].y));return {res,nearHouse:Math.hypot(rs[0].x-h.x,rs[0].y-h.y)-h.radius,nearKeep:Math.hypot(rs[rs.length-1].x-k.x,rs[rs.length-1].y-k.y)-k.radius,maxGap}});
+ assert.equal(r.res.ok,true);assert.ok(r.nearHouse<=14,'gap at house '+r.nearHouse);assert.ok(r.nearKeep<=14,'gap at keep '+r.nearKeep);assert.ok(r.maxGap<=41,'gap '+r.maxGap);
+});
+test('Guide panel sits top right and unit buttons carry the emblem icons',async t=>{
+ const p=await game(t);await p.locator('#sc1310Skip').click().catch(()=>{});await p.waitForTimeout(900);
+ const r=await p.evaluate(()=>{const g=document.getElementById('scGuide').getBoundingClientRect();return {right:innerWidth-g.right,top:g.top,icons:[...document.querySelectorAll('#sc140Commands button[data-sc31]')].map(b=>b.dataset.sc31)}});
+ assert.ok(r.right<20&&r.top<120);assert.deepEqual(r.icons.sort(),['archer','soldier','worker']);
 });

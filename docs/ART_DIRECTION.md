@@ -22,3 +22,9 @@ Painterly medieval realism, warm natural light, slightly muted/desaturated, soft
 1. Prompt includes the suffix above.
 2. Place it next to Caelan/envoy portraits and the world map: does it feel the same?
 3. Log it in docs/ASSET_LOG.md with generator and terms.
+
+## Before generating any key image (Claude reminds the owner every time)
+1. Is this a defining asset (main portrait, logo, cut scene, box art)? If yes: generate on a PAID Leonardo plan with PRIVATE MODE ON (see docs/ASSET_LOG.md, Leonardo reply of 2026-11-17). Minor or background art may use the free plan.
+2. Add the palette prompt suffix above.
+3. Check the result for brand-like or watermark-like text. Do not use it if it resembles a real brand.
+4. Send the image to Claude; Claude logs generator, plan, privacy mode and date in docs/ASSET_LOG.md.
