@@ -27,7 +27,7 @@ async function game(t, width = 1440, height = 900, rich = true) {
   const {context,page} = await browserPage(t,browser,{ viewport: { width, height } }); const errors = [];
   page.on('pageerror', e => errors.push(e.message)); page.setDefaultTimeout(6000);
   t.after(() => assert.deepEqual(errors, []));
-  await page.route('**/*', route => route.fulfill({ contentType: 'text/html', body: fs.readFileSync('index.html', 'utf8').replace('gold=240;wood=100;stone=30;', rich?'gold=2400;wood=2000;stone=2000;':'gold=240;wood=100;stone=30;').replace('function getRoadNetwork(){','function getRoadNetwork(){window.__roadBuilds=(window.__roadBuilds||0)+1;').replace('window.scHoverBuildings=buildings;function frame', adapter + '\nwindow.scHoverBuildings=buildings;function frame') }));
+  await page.route('**/*', route => route.fulfill({ contentType: 'text/html', body: fs.readFileSync('index.html', 'utf8').replace('gold=260;wood=240;stone=50;', rich?'gold=2400;wood=2000;stone=2000;':'gold=260;wood=240;stone=50;').replace('function getRoadNetwork(){','function getRoadNetwork(){window.__roadBuilds=(window.__roadBuilds||0)+1;').replace('window.scHoverBuildings=buildings;function frame', adapter + '\nwindow.scHoverBuildings=buildings;function frame') }));
   await page.goto(url); await page.locator('#sc1310Skip').click(); await page.locator('#sc154Pause').click();
   assert.equal(await page.evaluate(() => typeof window.scCityEconomy?.snapshot), 'function', 'Engine must publish one read-only city snapshot');
   return page;
@@ -91,7 +91,7 @@ for(const width of [390,601,640])test(`Living City narrow feedback remains clear
 });
 
 test('Living City survives five minutes from starting resources using real gathering and construction',async t=>{
- const p=await game(t,1440,900,false);assert.equal(Number(await p.locator('#resWood').innerText()),100);assert.equal(Number(await p.locator('#resStone').innerText()),30);
+ const p=await game(t,1440,900,false);assert.equal(Number(await p.locator('#resWood').innerText()),240);assert.equal(Number(await p.locator('#resStone').innerText()),50);
  for(const type of ['tree','stone']){await p.keyboard.press('k');const n=await p.evaluate(type=>window.scRTSNodes.find(n=>n.type===type&&n.amount>0&&n.x<1300),type);const q=await point(p,n.x,n.y,true);await p.mouse.click(q.x,q.y,{button:'right'});await advance(p,15);await p.keyboard.press('x');}
  assert.ok(Number(await p.locator('#resWood').innerText())>=160);assert.ok(Number(await p.locator('#resStone').innerText())>=71);
  for(const [name,x,y] of [['Farm',1180,100],['House',1100,200],['Well',1120,260]]){await p.locator('#sc140Build').click();await p.locator('#sc140Commands').getByRole('button',{name:new RegExp(name,'i')}).first().click();const q=await point(p,x,y,true);await p.mouse.click(q.x,q.y);}

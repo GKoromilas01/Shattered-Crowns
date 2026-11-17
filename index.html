@@ -1603,7 +1603,7 @@ function canPlace(type,p,worker){
  ! [...buildings,...scConstructionSites].some(b=>{
   return dist(b,p)<scBuildingSpacing(type,b);
  })&&
- !nodes.some(n=>dist(n,p)<(type==='road'?Math.max(8,n.radius*.6):n.radius+(small?6:24)))&&
+ !nodes.some(n=>dist(n,p)<n.radius+(small?6:type==='road'?15:24))&&
  !(p.x>445&&p.x<550&&Math.abs(p.y-315)>30);
 }
 window.scCanPlace=canPlace;
