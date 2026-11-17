@@ -42,3 +42,5 @@ See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; mul
 - Building inspector compact by default with "Show full details" toggle (owner request: too much text).
 - Voice lines now also play when a group is selected from the Units buttons (not only canvas clicks).
 - Tester steps rewritten (Trade: City Life → Trade → choose Ashford).
+- Music playlist theme length now 5 minutes (was 7).
+- Owner wishlist (later versions): more anthems in medieval style - Celtic, Oriental, Byzantine, Roman - using violins, flutes and medieval organ voices. Owner loves the second anthem. Follow docs/ART_DIRECTION.md-style consistency for audio too.

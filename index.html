@@ -9225,8 +9225,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   if(level>=4){for(const [beat,n,length] of anthemMelody[i])emit(noteFrequency(n-12),at+beat*B,length*B*.95,'music',.1*swell,'horn');emit(noteFrequency(root+12),at,B*1.8,'music',.09*swell,'horn');}
   if(level>=5){for(const [beat,n,length] of anthemMelody[i])emit(noteFrequency(Math.min(n+12,96)),at+beat*B,length*B*.95,'music',.055,'strings');for(const n of chord)emit(noteFrequency(n-12),at+B*2,B*1.6,'music',.06*swell,'horn');for(const k of [1,3])emit(noteFrequency(root),at+k*B,B*.8,'music',.14,'bass');}
  }
- // Rotating playlist: each theme plays for playlist.seconds (default 7 minutes), fades out, then the next fades in. Add new themes to playlistTracks.
- const playlist={seconds:420,fade:6},playlistTracks=[{name:'city',schedule:scheduleCityBar,beat:cityBeat},{name:'anthem',schedule:scheduleAnthemBar,beat:anthemBeat}];let playlistIndex=0,playlistStart=null,playlistFading=false;
+ // Rotating playlist: each theme plays for playlist.seconds (default 5 minutes), fades out, then the next fades in. Add new themes to playlistTracks.
+ const playlist={seconds:300,fade:6},playlistTracks=[{name:'city',schedule:scheduleCityBar,beat:cityBeat},{name:'anthem',schedule:scheduleAnthemBar,beat:anthemBeat}];let playlistIndex=0,playlistStart=null,playlistFading=false;
  const stringWaves=new WeakMap();const hornWaves=new WeakMap();
  function createAudioVoice(ctx,destination,frequency,at,duration,kind,amplitude,flavor='pad'){
   const osc=ctx.createOscillator(),gain=ctx.createGain(),voice={osc,gain,kind};
