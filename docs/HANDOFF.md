@@ -66,3 +66,6 @@ See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; mul
 ## v0.37
 - People: summary line, filters (All/Working age/Children/Elders), Household line in the person detail, ages advance +1 per 60 economy cycles (children can become workers).
 - Weather (visual only): `window.scWeather` (Clear/Cloudy/Rain/Fog changing every ~90s, canvas overlay `#sc37Weather`, label in the clock chip). No gameplay effect yet.
+
+## v0.37.1 hotfix
+- The weather canvas inherited the global `canvas{background:#31523b}` rule and hid the whole map. Now `background:transparent!important`. Lesson: any new canvas must override the global canvas style; always screenshot new overlays at a large viewport.
