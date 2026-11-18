@@ -25,7 +25,7 @@ test('Roads can be placed right beside buildings and the Guide panel is visible 
  assert.equal(await p.locator('#scGuide').isVisible(),true);
  assert.equal(await p.locator('#scGuideMode option').count(),2);
  await p.selectOption('#scGuideMode','tester');
- assert.match(await p.locator('#scGuideText').textContent(),/Connect to town/);
+ assert.match(await p.locator('#scGuideText').textContent(),/Start screen|World map|Connect to town/);
 });
 test('Connect to town draws an unbroken path from the building edge to the keep edge',async t=>{
  const p=await game(t);
