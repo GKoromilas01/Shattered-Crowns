@@ -3,9 +3,10 @@ before(async()=>{server=http.createServer((q,r)=>{r.setHeader('Content-Type','te
 test('Survivors start: journey prologue decides survivors and starting stock, then the village begins',async t=>{
  const {page:p}=await browserPage(t,browser,{viewport:{width:1440,height:900}});p.setDefaultTimeout(8000);await p.goto(url);
  await p.locator('#scStartJourney').waitFor({state:'attached'});await p.evaluate(()=>document.getElementById('scStartJourney').click());
- await p.locator('#sc35Journey').waitFor({state:'visible'});assert.equal(await p.locator('#sc35Begin').isDisabled(),false);
+ await p.locator('#sc35Journey').waitFor({state:'visible'});
+ await p.locator('#sc35Story').waitFor({state:'visible'});assert.match(await p.locator('#sc35Journey').innerText(),/Peaceful Valley/);await p.locator('#sc35StoryNext').click();assert.match(await p.locator('#sc35Journey').innerText(),/Raiders Come/);await p.locator('#sc35StoryNext').click();assert.match(await p.locator('#sc35Journey').innerText(),/Ashes/);await p.locator('#sc35StoryNext').click();assert.equal(await p.locator('#sc35Begin').isDisabled(),false);
  await p.locator('#sc35Begin').click();
- for(let i=0;i<5;i++){await p.locator('#sc35River').click();}
+ for(let i=0;i<5;i++){await p.locator('#sc35Trail').waitFor({state:'visible'});assert.equal(await p.locator('#sc35Trail').evaluate(c=>c.getContext('2d').getImageData(5,5,1,1).data[3]),255);await p.locator('#sc35River').click();}
  await p.locator('#sc35Found').waitFor({state:'visible'});assert.match(await p.locator('#sc35Journey').innerText(),/survivors reach the site/);
  await p.locator('#sc35Found').click();await p.waitForTimeout(400);
  const s=await p.evaluate(()=>({pop:scCityEconomy.snapshot().population,res:scCityEconomy.snapshot().resources||null}));
@@ -14,6 +15,7 @@ test('Survivors start: journey prologue decides survivors and starting stock, th
 test('A careless journey costs lives but never leaves fewer than three survivors',async t=>{
  const {page:p}=await browserPage(t,browser,{viewport:{width:1440,height:900}});p.setDefaultTimeout(8000);await p.goto(url);
  await p.locator('#scStartJourney').waitFor({state:'attached'});await p.evaluate(()=>document.getElementById('scStartJourney').click());
+ await p.locator('#sc35StorySkip').click();await p.locator('#sc35Begin').waitFor();
  await p.evaluate(()=>{for(const k of ['food','water']){const i=document.getElementById('sc35'+k);i.value=0;i.dispatchEvent(new Event('input'))}const t=document.getElementById('sc35tools');t.value=30;t.dispatchEvent(new Event('input'));const f=document.getElementById('sc35food');f.value=6;f.dispatchEvent(new Event('input'))});
  await p.locator('#sc35Begin').isDisabled().then(d=>{});
  await p.evaluate(()=>{for(const [k,v] of [['food',3],['water',3],['tools',30]]){const i=document.getElementById('sc35'+k);i.value=v;i.dispatchEvent(new Event('input'))}});
