@@ -82,3 +82,6 @@ Owner wants dark themes (violence, torture, executions, brothels, betrayal, sexu
 - Sexual content must never involve minors, including "underage queens" or children, in any form; handmaids and young royals are shown without sexual content.
 - Stores and payment processors, and age-rating bodies, restrict explicit sexual content and extreme violence; since the game will be sold, decide the target rating first. A common approach is implied or fade-to-black scenes by default with an optional mature toggle for violence.
 - Real-person likenesses and real-world statistics should use public, citable data.
+
+## Working rule (owner decision, 2026-11-18)
+Build the long-term ideas in small steps, one at a time, so each can be checked by playing before the next starts. Ideas in this file are recorded, not scheduled; nothing is built until the owner says so.
