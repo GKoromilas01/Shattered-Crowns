@@ -24,7 +24,7 @@ test('Music has a Next track button that changes the track',async t=>{
  const a=await p.evaluate(()=>scMusic.info().label);
  await p.locator('#scMusicNext').evaluate(e=>e.click());
  const b=await p.evaluate(()=>scMusic.info());
- assert.notEqual(b.label,a);assert.match(await p.locator('#scMusicNext').innerText(),new RegExp(b.label));
+ assert.notEqual(b.label,a);assert.match(await p.locator('#scMusicNext').getAttribute('title'),new RegExp(b.label));
 });
 test('Night is lighter and every kingdom has stone and gold within a short walk',async t=>{
  const p=await game(t);

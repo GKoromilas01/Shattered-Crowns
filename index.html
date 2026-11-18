@@ -76,7 +76,7 @@ function draw(g,s){if(!images.every(i=>i.complete&&i.naturalWidth))return false;
 
  }finally{g.restore();}
  const now=performance.now();samples.push({draw:now-start,frame:lastTime===null?0:now-lastTime});lastTime=now;if(samples.length>5000)samples.shift();return true;}
-function commandIcon(g,key,size=40){if(!images.every(i=>i.complete&&i.naturalWidth))return false;g.save();try{if(key==='soldier'||key==='archer'){object(g,{kind:'unit',value:{id:0,x:size/2,y:size-4,hp:100,max:100,type:key,team:0}},{running:false,visualTime:0,selected:[]});return true;}const f=frames[key==='worker'?'idle':key==='upgradeKeep'?'keep':key];if(!f)return false;const name=key==='worker'?'idle':key==='upgradeKeep'?'keep':key,k=Math.min((size-2)/f[2],(size-2)/f[3]);g.drawImage(sheet(name),f[0],f[1],f[2],f[3],(size-f[2]*k)/2,(size-f[3]*k)/2,f[2]*k,f[3]*k);return true;}finally{g.restore();}}
+function commandIcon(g,key,size=40){if(!images.every(i=>i.complete&&i.naturalWidth))return false;g.save();try{if(key==='school'){const k=size/80;g.translate(size/2,size*.78);g.scale(k*1.15,k*1.15);schoolArt(g,0,0);return true;}if(key==='soldier'||key==='archer'){object(g,{kind:'unit',value:{id:0,x:size/2,y:size-4,hp:100,max:100,type:key,team:0}},{running:false,visualTime:0,selected:[]});return true;}const f=frames[key==='worker'?'idle':key==='upgradeKeep'?'keep':key];if(!f)return false;const name=key==='worker'?'idle':key==='upgradeKeep'?'keep':key,k=Math.min((size-2)/f[2],(size-2)/f[3]);g.drawImage(sheet(name),f[0],f[1],f[2],f[3],(size-f[2]*k)/2,(size-f[3]*k)/2,f[2]*k,f[3]*k);return true;}finally{g.restore();}}
 window.sc26WorldRenderer={commandIcon,render:draw,ready:()=>images.every(i=>i.complete&&i.naturalWidth>0),coverage:()=>['keep','house','market','tree','stone','gold',...extra],status:()=>({...lastStatus}),drawObject:object,resetMetrics:()=>{samples.length=0;lastTime=null;},metrics:()=>samples.map(x=>({...x})),cacheBytes:()=> (ground?ground.width*ground.height*4:0)+(roadCache?roadCache.width*roadCache.height*4:0)+[...spriteCache.values()].reduce((n,c)=>n+c.canvas.width*c.canvas.height*4,0),frames};
 })();
 
@@ -3576,7 +3576,7 @@ const scPlayerSteps=[
 const scTesterSteps=[
  {text:'Open the build menu and press the new School (🎓). Place it near your houses. When it is finished, open People: one adult becomes a Teacher and children show "attends School" with more knowledge. Press Done when you see it.',manual:true},
  {text:'Open People. At the very top you see the Ruler with a portrait. The panel should sit fully above the bottom bar and scroll inside itself when the list is long. Tell me if the size and position feel right.',manual:true},
- {text:'Music: next to the music button on the top bar there is a new button with the track name (for example Town theme). Press it. The next track should start and the name should change. Tell me if it works.',manual:true},
+ {text:'Music: next to the music button on the top bar there is a new small ⏭ button. Hover it to see the track name (for example Town theme), then press it. The next track should start. Tell me if it works.',manual:true},
  {text:'Night: let the day turn to night (the clock at the lower left). It should now be a soft blue dusk where you can still see everything. Tell me if it is dark enough to feel like night but not too dark.',manual:true},
  {text:'Start new games in Briar, Saffron and Stormhaven (Menu, start screen). Stone and gold should now be a short walk from the keep. Tell me if the opening feels as easy as Brookstead.',manual:true}
 ];
@@ -7203,7 +7203,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <div id="sc1350Budget" aria-live="polite"></div>
 <script id="sc1350Budget">
 (()=>{'use strict';
-const costs={Workshop:[80,60,25],House:[60,25,0],Farm:[75,30,0],Road:[0,0,12],Market:[90,90,20],Well:[25,0,35],Lumber:[75,45,0],Fishery:[90,45,0],Granary:[85,0,35],Bakery:[80,45,15],Theater:[80,90,25],Healer:[70,65,25],Garden:[35,15,0],Plaza:[0,35,25],Tower:[100,100,0],Fortress:[150,180,120],Wall:[30,0,60]};
+const costs={School:[90,60,30],Workshop:[80,60,25],House:[60,25,0],Farm:[75,30,0],Road:[0,0,12],Market:[90,90,20],Well:[25,0,35],Lumber:[75,45,0],Fishery:[90,45,0],Granary:[85,0,35],Bakery:[80,45,15],Theater:[80,90,25],Healer:[70,65,25],Garden:[35,15,0],Plaza:[0,35,25],Tower:[100,100,0],Fortress:[150,180,120],Wall:[30,0,60]};
 function init(){const host=document.getElementById('sc140Commands'),box=document.getElementById('sc1350Budget');if(!host||!box)return;
 const read=id=>{const raw=document.getElementById(id)?.textContent||'';const m=raw.replace(/,/g,'').match(/-?\d+/);return m?Number(m[0]):0};
 function refresh(){
@@ -7668,7 +7668,7 @@ if(badge){badge.style.removeProperty('top');badge.style.removeProperty('right');
 </style>
 <script id="sc1399Planner">
 (()=>{'use strict';
-const costs={Workshop:[80,60,25],House:[60,25,0],Farm:[75,30,0],Road:[0,0,12],Market:[90,90,20],Well:[25,0,35],Lumber:[75,45,0],Fishery:[90,45,0],Granary:[85,0,35],Bakery:[80,45,15],Theater:[80,90,25],Healer:[70,65,25],Garden:[35,15,0],Plaza:[0,35,25],Tower:[100,100,0],Fortress:[150,180,120],Wall:[30,0,60]};
+const costs={School:[90,60,30],Workshop:[80,60,25],House:[60,25,0],Farm:[75,30,0],Road:[0,0,12],Market:[90,90,20],Well:[25,0,35],Lumber:[75,45,0],Fishery:[90,45,0],Granary:[85,0,35],Bakery:[80,45,15],Theater:[80,90,25],Healer:[70,65,25],Garden:[35,15,0],Plaza:[0,35,25],Tower:[100,100,0],Fortress:[150,180,120],Wall:[30,0,60]};
 function init(){
  const host=document.getElementById('sc140Commands');if(!host)return;
  const panel=document.createElement('section');panel.id='sc1399Planner';panel.setAttribute('aria-label','Construction resource planner');
@@ -7715,7 +7715,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </style>
 <script id="sc1402InlineCostsLogic">
 (()=>{'use strict';
- const costs={Workshop:[80,60,25],House:[60,25,0],Farm:[75,30,0],Road:[0,0,12],Market:[90,90,20],Well:[25,0,35],Lumber:[75,45,0],Fishery:[90,45,0],Granary:[85,0,35],Bakery:[80,45,15],Theater:[80,90,25],Healer:[70,65,25],Garden:[35,15,0],Plaza:[0,35,25],Tower:[100,100,0],Fortress:[150,180,120],Wall:[30,0,60]};
+ const costs={School:[90,60,30],Workshop:[80,60,25],House:[60,25,0],Farm:[75,30,0],Road:[0,0,12],Market:[90,90,20],Well:[25,0,35],Lumber:[75,45,0],Fishery:[90,45,0],Granary:[85,0,35],Bakery:[80,45,15],Theater:[80,90,25],Healer:[70,65,25],Garden:[35,15,0],Plaza:[0,35,25],Tower:[100,100,0],Fortress:[150,180,120],Wall:[30,0,60]};
  function refresh(){const host=document.getElementById('sc140Commands');if(!host)return;
   for(const button of host.querySelectorAll('button')){
    const name=Object.keys(costs).find(n=>button.textContent.trim().endsWith(n));
@@ -7739,7 +7739,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </style>
 <script id="sc1403Affordability">
 (()=>{'use strict';
-const costs={Workshop:[80,60,25],House:[60,25,0],Farm:[75,30,0],Road:[0,0,12],Market:[90,90,20],Well:[25,0,35],Lumber:[75,45,0],Fishery:[90,45,0],Granary:[85,0,35],Bakery:[80,45,15],Theater:[80,90,25],Healer:[70,65,25],Garden:[35,15,0],Plaza:[0,35,25],Tower:[100,100,0],Fortress:[150,180,120],Wall:[30,0,60]};
+const costs={School:[90,60,30],Workshop:[80,60,25],House:[60,25,0],Farm:[75,30,0],Road:[0,0,12],Market:[90,90,20],Well:[25,0,35],Lumber:[75,45,0],Fishery:[90,45,0],Granary:[85,0,35],Bakery:[80,45,15],Theater:[80,90,25],Healer:[70,65,25],Garden:[35,15,0],Plaza:[0,35,25],Tower:[100,100,0],Fortress:[150,180,120],Wall:[30,0,60]};
 function number(id){const raw=document.getElementById(id)?.textContent||'';const m=raw.replace(/,/g,'').match(/-?\d+/);return m?Number(m[0]):null}
 function refresh(){
  const host=document.getElementById('sc140Commands');if(!host)return;
@@ -7776,7 +7776,7 @@ else {refresh();setInterval(refresh,1000)}
 </style>
 <script id="sc1404Shortfall">
 (()=>{'use strict';
-const costs={Workshop:[80,60,25],House:[60,25,0],Farm:[75,30,0],Road:[0,0,12],Market:[90,90,20],Well:[25,0,35],Lumber:[75,45,0],Fishery:[90,45,0],Granary:[85,0,35],Bakery:[80,45,15],Theater:[80,90,25],Healer:[70,65,25],Garden:[35,15,0],Plaza:[0,35,25],Tower:[100,100,0],Fortress:[150,180,120],Wall:[30,0,60]};
+const costs={School:[90,60,30],Workshop:[80,60,25],House:[60,25,0],Farm:[75,30,0],Road:[0,0,12],Market:[90,90,20],Well:[25,0,35],Lumber:[75,45,0],Fishery:[90,45,0],Granary:[85,0,35],Bakery:[80,45,15],Theater:[80,90,25],Healer:[70,65,25],Garden:[35,15,0],Plaza:[0,35,25],Tower:[100,100,0],Fortress:[150,180,120],Wall:[30,0,60]};
 const labels=['🌲','🪙','🪨'];
 function get(id){const el=document.getElementById(id);if(!el)return null;const m=(el.textContent||'').replace(/,/g,'').match(/-?\d+/);return m?Number(m[0]):null}
 function update(){
@@ -7807,7 +7807,7 @@ else{update();setInterval(update,1000)}
 </style>
 <script id="sc1405Progress">
 (()=>{'use strict';
-const costs={Workshop:[80,60,25],House:[60,25,0],Farm:[75,30,0],Road:[0,0,12],Market:[90,90,20],Well:[25,0,35],Lumber:[75,45,0],Fishery:[90,45,0],Granary:[85,0,35],Bakery:[80,45,15],Theater:[80,90,25],Healer:[70,65,25],Garden:[35,15,0],Plaza:[0,35,25],Tower:[100,100,0],Fortress:[150,180,120],Wall:[30,0,60]};
+const costs={School:[90,60,30],Workshop:[80,60,25],House:[60,25,0],Farm:[75,30,0],Road:[0,0,12],Market:[90,90,20],Well:[25,0,35],Lumber:[75,45,0],Fishery:[90,45,0],Granary:[85,0,35],Bakery:[80,45,15],Theater:[80,90,25],Healer:[70,65,25],Garden:[35,15,0],Plaza:[0,35,25],Tower:[100,100,0],Fortress:[150,180,120],Wall:[30,0,60]};
 function read(id){const e=document.getElementById(id);if(!e)return null;const m=(e.textContent||'').replace(/,/g,'').match(/-?\d+/);return m?Number(m[0]):null}
 function update(){const host=document.getElementById('sc140Commands');if(!host)return;
  const resources=[read('resWood'),read('resGold'),read('resStone')];
@@ -9431,7 +9431,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  const trackLabels={city:'Town theme',anthem:'Crown anthem',celtic:'Celtic hills',byzantine:'Byzantine hall',oriental:'Silk road',roman:'Roman forum'};
  function musicInfo(){const t=playlistTracks[playlistIndex];return {style:musicStyle,track:musicStyle==='playlist'?t.name:musicStyle,label:trackLabels[musicStyle==='playlist'?t.name:musicStyle]||String(musicStyle)}}
  function nextTrack(){if(musicStyle!=='playlist'){setMusicStyle('playlist');}else{playlistIndex=(playlistIndex+1)%playlistTracks.length;playlistStart=null;playlistFading=false;cityBar=0;if(context){const now=context.currentTime;stop('music');music.gain.cancelScheduledValues(now);music.gain.setValueAtTime(.0001,now);music.gain.linearRampToValueAtTime(musicMix('playlist'),now+2);}}paintNext();return musicInfo()}
- function paintNext(){const b=document.getElementById('scMusicNext');if(b){const i=musicInfo();b.textContent='⏭ '+i.label;b.title='Next track (now playing: '+i.label+')'}}
+ function paintNext(){const b=document.getElementById('scMusicNext');if(b){const i=musicInfo();b.textContent='⏭';b.setAttribute('aria-label','Next music track (now playing: '+i.label+')');b.title='Next track (now playing: '+i.label+')'}}
  window.scMusic={info:musicInfo,next:nextTrack};
  function ambient(){if(document.getElementById('sc1310Welcome')?.hidden===false&&!openingActivated||!context||context.state!=='running'||document.hidden||!settings.music||settings.muted||settings.volume===0)return;const now=context.currentTime;if([...voices].some(v=>v.kind==='music'&&v.stopping))return;
   if(musicStyle==='city'||musicStyle==='strings'){if(nextCityBar<now-.1)nextCityBar=now+.03;while(nextCityBar<now+.5){scheduleCityBar(cityBar++,nextCityBar,tone);nextCityBar+=cityBeat*4;}return;}
@@ -10022,7 +10022,7 @@ for(const e of ['sc-city-started','sc-city-restored'])window.addEventListener(e,
 </script><script id="sc27OpeningPresentation">
 // Reuse the original world art and portable resource vectors in native command buttons.
 (()=>{'use strict';function ready(){const host=document.getElementById('sc140Commands');if(!host)return;
-const keys={House:'house',Workshop:'workshop',Farm:'farm',Road:'road',Market:'market',Well:'well',Lumber:'lumberyard',Fishery:'fishery',Granary:'granary',Bakery:'bakery',Theater:'theater',Healer:'clinic',Garden:'garden',Plaza:'plaza',Fortress:'fortress',Tower:'tower',Wall:'wall',Worker:'worker',Soldier:'soldier',Archer:'archer',Upgrade:'upgradeKeep'};
+const keys={House:'house',Workshop:'workshop',Farm:'farm',Road:'road',Market:'market',Well:'well',Lumber:'lumberyard',Fishery:'fishery',Granary:'granary',Bakery:'bakery',Theater:'theater',School:'school',Healer:'clinic',Garden:'garden',Plaza:'plaza',Fortress:'fortress',Tower:'tower',Wall:'wall',Worker:'worker',Soldier:'soldier',Archer:'archer',Upgrade:'upgradeKeep'};
 const style=document.createElement('style');style.textContent='#sc140Commands .sc140Icon canvas{display:block;width:28px;height:28px;margin:0 auto}#sc140Commands button[data-sc27-cost]::after{display:none!important}#sc140Commands .sc27Costs{display:block;height:14px;margin-top:2px}#sc140Commands .sc27Costs img,#sc140Commands .sc1362Price img{display:block;max-width:100%;height:14px;margin:0 auto}#sc140Commands .sc1362Price[data-sc27-source]{font-size:0!important;line-height:0!important}';document.head.append(style);
 function costs(button,source,parent){if(!source||parent.dataset.sc27Source===source)return;const parts=[];for(const [id,name,symbol]of [['resGold','gold','🪙'],['resWood','wood','🌲'],['resStone','stone','🪨']]){const m=source.match(new RegExp(symbol+'[\\s\uFE0F]*(\\d+)','u'));if(m)parts.push({id,name,n:m[1]});}if(!parts.length)return;let x=0,body='';for(const p of parts){const icon=sc26ResourceIcon(p.id);icon.setAttribute('x',String(x));icon.setAttribute('y','1');icon.setAttribute('width','12');icon.setAttribute('height','12');body+=icon.outerHTML+'<text x="'+(x+13)+'" y="11" fill="#ffe4a0" font-family="system-ui,sans-serif" font-size="11" font-weight="600">'+p.n+'</text>';x+=15+p.n.length*6;}const img=new Image();img.alt='';img.setAttribute('aria-hidden','true');img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="'+x+'" height="14" viewBox="0 0 '+x+' 14">'+body+'</svg>');parent.dataset.sc27Source=source;if(parent.classList.contains('sc27Costs'))parent.replaceChildren(img);else {parent.querySelector('img')?.remove();parent.append(img);}const description=parts.map(p=>p.n+' '+p.name).join(', ');button.setAttribute('aria-description','Cost: '+description);button.title=button.title.replace(/ — Cost:.*$/,'')+' — Cost: '+description;}
 function refresh(){for(const b of host.querySelectorAll('button')){const label=[...b.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join('').trim(),key=keys[label],icon=b.querySelector('.sc140Icon');if(key&&icon&&!icon.querySelector('canvas')&&sc26WorldRenderer.ready()){const canvas=document.createElement('canvas');canvas.width=canvas.height=80;canvas.setAttribute('aria-hidden','true');const g=canvas.getContext('2d');g.scale(2,2);if(sc26WorldRenderer.commandIcon(g,key,40))icon.replaceChildren(canvas);}const source=b.getAttribute('data-sc1402-cost');if(source){b.dataset.sc27Cost='true';let price=b.querySelector('.sc27Costs');if(!price){price=document.createElement('span');price.className='sc27Costs';price.setAttribute('aria-hidden','true');b.append(price);}costs(b,source,price);}const recruit=b.querySelector('.sc1362Price');if(recruit)costs(b,recruit.textContent,recruit);}if(!sc26WorldRenderer.ready())setTimeout(refresh,100);}
