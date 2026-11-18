@@ -56,3 +56,8 @@ See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; mul
 - Survivors start (`window.scJourney`, button "Begin as survivors (journey)" on the start screen): supplies, five stages river/ridge, terrain from the origin's biome, leader name + code-drawn portrait stored in localStorage `shattered-crowns-leader-v1`; applies via `scApplyJourney` (population 3-8, reduced stock). Castle size is not yet reduced.
 - Ranks: Sergeant/Captain/General from victories (`scEarnKill`), shown in the selection title; General triggers a story card.
 - NOT in this version (needs more design): sea trade/ships, spies, marriages/alliances, wiring resource-profile.js and war-costs.js, real cut-scene stills, asset files.
+
+## v0.36 (living society, step 1)
+- `window.scPeople`: residents are derived deterministically from the economy snapshot (no save changes): name, age, role from filled workplace slots, home, traits, six stats that grow with experience. People button (top bar) lists and inspects them; a selected worker shows a person name and role.
+- `window.scDayNight`: 6-minute day (dawn, day, dusk, night, pre-dawn), soft tint overlay and clock chip. Real-time, not tied to pause.
+- Next steps (see docs/ROADMAP_LONG_TERM.md section 11): building hubs (Stables, School, Monastery), crime and law, court and council.
