@@ -69,3 +69,7 @@ See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; mul
 
 ## v0.37.1 hotfix
 - The weather canvas inherited the global `canvas{background:#31523b}` rule and hid the whole map. Now `background:transparent!important`. Lesson: any new canvas must override the global canvas style; always screenshot new overlays at a large viewport.
+
+## Owner working rules (2026-11-18)
+- Each release should bundle several new things; avoid one-small-fix versions that cost an hour of CI each. Batch non-urgent fixes into the next feature version (urgent bugs excepted, like the v0.37.1 blank map).
+- When the owner suggests new features, do not drop current work or follow the order given. Read the roadmap docs (ROADMAP_IDEAS.md, ROADMAP_LONG_TERM.md, DESIGN_GROWTH_AND_WAR.md), set the priorities, and build in the order that is best for the game. Errors/bugs reported by the owner are handled first.
