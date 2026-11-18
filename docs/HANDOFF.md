@@ -35,3 +35,12 @@ See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; mul
 - Every version adds: UI/gameplay/fixes, a small graphics improvement or cut scene, a sound improvement (e.g. an extra anthem; music is generated in Web Audio).
 - Log every AI-generated image in `docs/ASSET_LOG.md`.
 - Merging and deploying need the owner's approval.
+
+## v0.33 (owner feedback on v0.31)
+- Connect to town: grid-aligned L route, offered for every own building (was missing when close to keep/market); shows "Connected ✓" or "No clear path" when disabled.
+- Lower-left hint notices hidden; Guide panel closable (X) with reopen tab; auto-hides behind side panels.
+- Building inspector compact by default with "Show full details" toggle (owner request: too much text).
+- Voice lines now also play when a group is selected from the Units buttons (not only canvas clicks).
+- Tester steps rewritten (Trade: City Life → Trade → choose Ashford).
+- Music playlist theme length now 5 minutes (was 7).
+- Owner wishlist (later versions): more anthems in medieval style - Celtic, Oriental, Byzantine, Roman - using violins, flutes and medieval organ voices. Owner loves the second anthem. Follow docs/ART_DIRECTION.md-style consistency for audio too.
