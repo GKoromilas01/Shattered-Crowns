@@ -14,6 +14,13 @@ A living version of the world: every person has a job, a role, stats and relatio
 - Giants and great warriors, thieves, bandits, madmen, influencers, executioners, handmaidens, eunuch armies, very loyal advisors who may betray you, double agents.
 - Day and night, sleep and waking, and the cycle of seasons.
 
+## 2b. Families and growing workers (owner idea, 2026-11-18)
+- Residents are not only bought with gold. A working household raises children (about two per couple when food, housing and health allow). Children grow up over game seasons and go to school, apprenticeships, university, monastery or the army, then become useful members of society (workers, artisans, sages, soldiers, merchants).
+- Workers therefore come mostly "for free" from a well-run society; gold hiring stays as an emergency or immigrant option.
+- Needs a pipeline: births (housing + food + happiness), childhood (school capacity), adult placement (jobs, training buildings). Education raises stats (wisdom, knowledge) and unlocks better jobs.
+- Design caution: growth must be slow enough that a small village is not instantly overrun, and a collapse (hunger, plague, war) must be able to shrink the population. Existing growth/migration rules (docs/DESIGN_GROWTH_AND_WAR.md) stay; this adds a family layer on top.
+- First build step: give each household a family (spouse, children) in the People model, with ages advancing over seasons, and a school building that raises child stats.
+
 ## 3. Culture and learning
 - Clergy, sages, philosophers teaching kings and queens, generals teaching soldiers, writers and poets (poems of love, war, prosperity, freedom).
 - Greek and Roman verse, Greek language, ancient papyrus and Egyptian styling. Riddles that bring a country's help if solved. Proverbs on loading screens and titles.
