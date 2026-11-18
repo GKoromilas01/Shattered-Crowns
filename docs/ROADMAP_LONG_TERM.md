@@ -83,5 +83,5 @@ Owner wants dark themes (violence, torture, executions, brothels, betrayal, sexu
 - Stores and payment processors, and age-rating bodies, restrict explicit sexual content and extreme violence; since the game will be sold, decide the target rating first. A common approach is implied or fade-to-black scenes by default with an optional mature toggle for violence.
 - Real-person likenesses and real-world statistics should use public, citable data.
 
-## Working rule (owner decision, 2026-11-18)
-Build the long-term ideas in small steps, one at a time, so each can be checked by playing before the next starts. Ideas in this file are recorded, not scheduled; nothing is built until the owner says so.
+## Working rule (owner decision, 2026-11-18, refined)
+Each version should feel clearly different from the last (3-4 visible changes), but every change must be easy to check: something the owner can see or click in about 30 seconds, with one Tester step each. Avoid hidden or deeply systemic changes that are hard to verify by playing. Ideas in this file are recorded, not scheduled; nothing is built until the owner says so.
