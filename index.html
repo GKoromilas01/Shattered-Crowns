@@ -4416,7 +4416,7 @@ setInterval(paint,300);paint()})();
  setInterval(tick,1000);tick();
 
  /* Weather: visual only (v0.37) */
- const wc=document.createElement('canvas');wc.id='sc37Weather';wc.setAttribute('aria-hidden','true');wc.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:41';document.body.append(wc);
+ const wc=document.createElement('canvas');wc.id='sc37Weather';wc.setAttribute('aria-hidden','true');wc.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:41;background:transparent!important;border:0;box-shadow:none';document.body.append(wc);
  const KINDS=['Clear','Clear','Cloudy','Rain','Clear','Fog','Cloudy','Rain'];let wForced=null,drops=[];
  function weatherNow(){if(wForced)return wForced;const slot=Math.floor((performance.now()/1000)/90);return KINDS[Math.floor(h(slot,5.5)*KINDS.length)]}
  function drawWeather(){const kind=weatherNow();wc.width=innerWidth;wc.height=innerHeight;const g=wc.getContext('2d');g.clearRect(0,0,wc.width,wc.height);
@@ -7845,7 +7845,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <!-- Version display fix: single authoritative visible release label. -->
 <script id="sc1406VersionFix">
 (()=>{'use strict';
- const version='0.37.0';
+ const version='0.37.1';
  function sync(){
   document.title='Shattered Crowns — v'+version;
   const badge=document.getElementById('sc179Version');
