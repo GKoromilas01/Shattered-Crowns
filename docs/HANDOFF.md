@@ -73,3 +73,4 @@ See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; mul
 ## Owner working rules (2026-11-18)
 - Each release should bundle several new things; avoid one-small-fix versions that cost an hour of CI each. Batch non-urgent fixes into the next feature version (urgent bugs excepted, like the v0.37.1 blank map).
 - When the owner suggests new features, do not drop current work or follow the order given. Read the roadmap docs (ROADMAP_IDEAS.md, ROADMAP_LONG_TERM.md, DESIGN_GROWTH_AND_WAR.md), set the priorities, and build in the order that is best for the game. Errors/bugs reported by the owner are handled first.
+- Before starting each new version (including fix-only ones), tell the owner what it will contain and wait for his agreement before building. Urgent breakages may be fixed first but still tell him the plan. Also tell him the full time to live (~2 hours from push: PR checks ~50 min, main checks ~50 min, release + his approval click).
