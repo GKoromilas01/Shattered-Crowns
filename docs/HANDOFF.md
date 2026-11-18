@@ -50,3 +50,9 @@ See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; mul
 - Milestone story cards (`window.scMilestones`): homes, harvest, market, growth, caravan; shown once per browser (localStorage `shattered-crowns-milestones-v1`); disabled under automation unless `window.scMilestoneTest`.
 - docs/ART_PIPELINE.md: art specs and the future asset-file migration.
 - Tester steps rewritten.
+
+## v0.35 (all free/code-drawn; no Leonardo or paid AI used)
+- Four generated themes (Celtic, Byzantine, Oriental, Roman) with violin/flute/organ/horn voices added to the playlist (`modalTheme`, `window.scModalThemes`); new 'organ' voice.
+- Survivors start (`window.scJourney`, button "Begin as survivors (journey)" on the start screen): supplies, five stages river/ridge, terrain from the origin's biome, leader name + code-drawn portrait stored in localStorage `shattered-crowns-leader-v1`; applies via `scApplyJourney` (population 3-8, reduced stock). Castle size is not yet reduced.
+- Ranks: Sergeant/Captain/General from victories (`scEarnKill`), shown in the selection title; General triggers a story card.
+- NOT in this version (needs more design): sea trade/ships, spies, marriages/alliances, wiring resource-profile.js and war-costs.js, real cut-scene stills, asset files.
