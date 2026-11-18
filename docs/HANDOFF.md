@@ -44,3 +44,9 @@ See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; mul
 - Tester steps rewritten (Trade: City Life → Trade → choose Ashford).
 - Music playlist theme length now 5 minutes (was 7).
 - Owner wishlist (later versions): more anthems in medieval style - Celtic, Oriental, Byzantine, Roman - using violins, flutes and medieval organ voices. Owner loves the second anthem. Follow docs/ART_DIRECTION.md-style consistency for audio too.
+
+## v0.34
+- Southveil continent view re-cropped (`scCropFix`): settlements were on the bottom edge of the world image; the view now pads beyond the image with a dark frame and an "edge of the known world" caption. Land polygons and positions are transformed to the new crop; world-map positions unchanged.
+- Milestone story cards (`window.scMilestones`): homes, harvest, market, growth, caravan; shown once per browser (localStorage `shattered-crowns-milestones-v1`); disabled under automation unless `window.scMilestoneTest`.
+- docs/ART_PIPELINE.md: art specs and the future asset-file migration.
+- Tester steps rewritten.
