@@ -215,7 +215,7 @@ main{height:calc(100dvh - 200px)!important;max-height:calc(100dvh - 200px)!impor
 #fieldViewport,.fieldViewport{height:100%!important}
 @media(max-width:760px){#sc140Bar{grid-template-columns:110px 1fr;height:152px;padding:5px;gap:5px}#sc140Utility{display:none}#sc140Selection{font-size:11px}#sc140Commands button{min-width:66px;min-height:44px}main{height:calc(100dvh - 224px)!important}}
 </style><style id="scOpeningCriticalStyle">
-html.scStarting body> :not(#sc1310Welcome):not(#sc35Journey):not(script):not(style){visibility:hidden!important}
+html.scStarting body> :not(#sc1310Welcome):not(script):not(style){visibility:hidden!important}
 html.scStarting body{overflow:hidden!important}
 html.scStarting body>#scKingdomPanel.scLivingWorld{visibility:visible!important}
 html #sc1310Welcome{position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;max-height:100dvh!important;z-index:2147483600!important;overflow:auto!important;display:grid;align-items:center;justify-items:start;text-align:left;padding:clamp(20px,5vw,70px)!important;border:0!important;border-radius:0!important;background:#091b18!important;color:#f6e8c6;font:16px/1.5 Georgia,serif!important;isolation:isolate}
@@ -4379,6 +4379,7 @@ setInterval(paint,300);paint()})();
  function start(origin,done){
   const prof=(window.scCampaign.origins().find(p=>p.id===origin))||{},biome=prof.biome||'meadow',T=TERRAIN[biome]||TERRAIN.meadow,seed=[...origin].reduce((a,c)=>a+c.charCodeAt(0),7),R=rng(seed);
   const state={survivors:8,food:14,water:14,tools:8,leg:0,log:[]},legs=[];for(let i=0;i<5;i++)legs.push({days:2+Math.floor(R()*3),risky:R()<.65});
+  if(!document.getElementById('sc35JourneyCss')){const st=document.createElement('style');st.id='sc35JourneyCss';st.textContent='html.scStarting body>#sc35Journey#sc35Journey{visibility:visible!important}';document.head.append(st)}
   const o=document.createElement('div');o.id='sc35Journey';o.setAttribute('role','dialog');o.setAttribute('aria-label','The road to a new home');o.style.cssText='position:fixed;inset:0;z-index:2147483640;background:#16302f;color:#d7c4a8;font-family:Georgia,serif;overflow:auto;display:flex;justify-content:center;padding:18px';
   const box=document.createElement('div');box.style.cssText='max-width:560px;width:100%;';o.append(box);document.body.append(o);
   const btn=(t,f,id)=>{const b=document.createElement('button');b.type='button';b.textContent=t;if(id)b.id=id;b.style.cssText='margin:6px 8px 0 0;padding:8px 14px;background:#6d4a31;color:#d7c4a8;border:1px solid #d9a93c;border-radius:6px;font:600 14px system-ui;cursor:pointer';b.onclick=f;return b};
