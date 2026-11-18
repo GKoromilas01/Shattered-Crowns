@@ -62,3 +62,7 @@ See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; mul
 - `window.scDayNight`: 6-minute day (dawn, day, dusk, night, pre-dawn), soft tint overlay and clock chip. Real-time, not tied to pause.
 - Next steps (see docs/ROADMAP_LONG_TERM.md section 11): building hubs (Stables, School, Monastery), crime and law, court and council.
 - v0.36 also: survivors journey now opens with three code-drawn story pages (peace, raid, ashes; skippable) and a trail picture for each stage by terrain (`story`, `trail` in the journey IIFE). Real cut scenes to replace them later.
+
+## v0.37
+- People: summary line, filters (All/Working age/Children/Elders), Household line in the person detail, ages advance +1 per 60 economy cycles (children can become workers).
+- Weather (visual only): `window.scWeather` (Clear/Cloudy/Rain/Fog changing every ~90s, canvas overlay `#sc37Weather`, label in the clock chip). No gameplay effect yet.

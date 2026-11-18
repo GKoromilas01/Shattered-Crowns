@@ -17,3 +17,16 @@ test('Working residents match filled jobs and the day turns through dawn, day, d
  await p.evaluate(()=>scDayNight.setTime(300));assert.notEqual(await p.locator('#sc36Daylight').evaluate(e=>getComputedStyle(e).pointerEvents),'auto');
  assert.equal(await p.locator('#sc36Clock').innerText().then(s=>/Night/.test(s)),true);
 });
+test('People list has a summary, filters and household families that grow up',async t=>{
+ const p=await game(t);await p.locator('#sc36PeopleBtn').click();
+ assert.match(await p.locator('#sc36Summary').innerText(),/\d+ residents: \d+ working age, \d+ children, \d+ elders/);
+ const all=await p.locator('.sc36Row').count();
+ for(const k of ['workers','children','elders']){await p.locator('.sc36Filter[data-filter="'+k+'"]').click();const n=await p.locator('.sc36Row').count();assert.ok(n<=all);}
+ await p.locator('.sc36Filter[data-filter="all"]').click();await p.locator('.sc36Row').first().click();assert.match(await p.locator('#sc36Family').innerText(),/Household:|Lives alone/);
+ const r=await p.evaluate(()=>{const a=scPeople.list();const kids=a.filter(x=>x.role==='Child');return {kids:kids.length,hh:a.some(x=>x.household.length>0)}});assert.equal(r.hh,true);
+});
+test('Weather changes the screen overlay and the clock label',async t=>{
+ const p=await game(t);const seen=await p.evaluate(()=>{const o={};for(const k of scWeather.kinds){scWeather.set(k);o[k]=document.getElementById('sc36Clock').textContent}scWeather.clear();return o});
+ assert.match(seen.Rain,/Rain/);assert.match(seen.Fog,/Fog/);assert.match(seen.Cloudy,/Cloudy/);assert.doesNotMatch(seen.Clear,/Rain|Fog|Cloudy/);
+ assert.equal(await p.locator('#sc37Weather').evaluate(c=>getComputedStyle(c).pointerEvents),'none');
+});

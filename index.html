@@ -3559,11 +3559,10 @@ const scPlayerSteps=[
  {text:'Gather more wood and gold, then build a Market. Markets let you trade for what you are missing.',check:()=>!!buildings.find(b=>b.team===0&&b.type==='market'&&alive(b))}
 ];
 const scTesterSteps=[
- {text:'Press the People button in the top bar. Every resident is listed with a role. Click one to see their traits and six stats (wealth, power, wisdom, knowledge, health, beauty). Press Done when you have looked at two people.',manual:true},
- {text:'Build a Farm and a Workshop and wait a little. Open People again: some residents should now be farmers or artisans instead of "Labourer (no post yet)". Tell me if the jobs look right.',manual:true},
- {text:'Select a single worker on the map. The selection title should show a name and job instead of just "Worker". Press Done and tell me what you saw.',manual:true},
- {text:'Watch the small clock at the lower left. The day moves through dawn, day, dusk and night (about 6 minutes per day) and the screen darkens softly at night. Tell me if the night is too dark or too bright.',manual:true},
- {text:'Start screen, "Begin as survivors (journey)": three story pages show the old village at peace, the raiders and the ashes. Then each of the five stages shows a picture of your trail. Tell me if the story and pictures work for you.',manual:true}
+ {text:'Open People. At the top you see how many residents are working age, children and elders. Press the Children filter and then Elders. Press Done when the lists change.',manual:true},
+ {text:'Click a resident in the list. Under their stats you should see a Household line naming the family who live with them. Tell me if it reads well.',manual:true},
+ {text:'Leave the game running for about 10 minutes (use speed-up if you have it) and open People again. Children should be a little older, and a child who reaches 16 becomes a worker. Tell me what you saw.',manual:true},
+ {text:'Weather: watch the small label at the lower left. Every minute or two the weather changes: Clear, Cloudy, Rain or Fog, with a soft rain or mist effect on the screen. It is only visual for now. Tell me if it looks good or is too strong.',manual:true}
 ];
 let scAdvisorMode='player';try{const m=localStorage.getItem('shattered-crowns-advisor-mode-v1');if(m==='tester'||m==='player')scAdvisorMode=m}catch(e){}
 const versionTests=[...(scAdvisorMode==='tester'?scTesterSteps:scPlayerSteps)];
@@ -4382,11 +4381,12 @@ setInterval(paint,300);paint()})();
   const slots=[];for(const site of (s.workforce&&s.workforce.sites)||[]){for(let k=0;k<(site.filled||0);k++)slots.push({role:ROLE[site.type]||'Labourer',site:site.type+' #'+site.id})}
   const houses=(s.housing&&s.housing.houses)||[];const homes=[];for(let k=0;k<((s.housing&&s.housing.keepResidents)||0);k++)homes.push('the Keep');houses.forEach(x=>{for(let k=0;k<(x.occupancy||0);k++)homes.push('House #'+x.id)});
   const out=[];let slot=0;
-  for(let i=0;i<N;i++){const r=k=>h(seed+i*3.7,k),age=r(1)<.2?6+Math.floor(r(2)*9):r(1)>.9?62+Math.floor(r(2)*20):18+Math.floor(r(2)*40),child=age<16,elder=age>=62;
+  for(let i=0;i<N;i++){const r=k=>h(seed+i*3.7,k),age0=r(1)<.2?6+Math.floor(r(2)*9):r(1)>.9?62+Math.floor(r(2)*20):18+Math.floor(r(2)*40),age=age0+Math.floor((s.cycles||0)/60),child=age<16,elder=age>=62;
    let role,site=null;if(child){role='Child'}else if(elder){role='Elder'}else if(slot<slots.length){role=slots[slot].role;site=slots[slot].site;slot++}else{role=i<2?'Steward':'Labourer (no post yet)'}
    const st={};const base=k=>Math.round(25+r(k)*45);st.wealth=base(10);st.power=base(11);st.wisdom=base(12)+(elder?15:0);st.knowledge=base(13)+(child?-15:0);st.health=base(14)+(child?15:0)-(elder?20:0);st.beauty=base(15);
    const sk=SKILL[role];if(sk)st[sk]+=Math.round(xp/2);if(elder)st.wisdom+=10;for(const k of Object.keys(st))st[k]=Math.max(1,Math.min(100,st[k]));
    out.push({id:i,name:G[Math.floor(r(20)*G.length)]+' '+F[Math.floor(r(21)*F.length)],age,role,site,home:homes[i]||'the Keep',traits:[TRAITS[Math.floor(r(22)*TRAITS.length)],TRAITS[Math.floor(r(23)*TRAITS.length)]].filter((t,j,a)=>a.indexOf(t)===j),stats:st,experience:xp})}
+  const byHome={};out.forEach(p=>{(byHome[p.home]=byHome[p.home]||[]).push(p)});out.forEach(p=>{p.household=(byHome[p.home]||[]).filter(q=>q.id!==p.id).map(q=>({id:q.id,name:q.name,age:q.age,role:q.role}))});
   return out}
  function forUnit(u){const all=people().filter(p=>p.age>=16&&p.age<62);return all.length?all[(u.id||0)%all.length]:null}
  window.scPeople={list:people,forUnit};
@@ -4394,8 +4394,12 @@ setInterval(paint,300);paint()})();
  const css=document.createElement('style');css.textContent='#sc36People{position:fixed;left:50%;top:170px;transform:translateX(-50%);width:min(560px,94vw);max-height:62vh;overflow:auto;z-index:960;background:#1f3a38;color:#d7c4a8;border:2px solid #a07250;border-radius:10px;padding:12px;font:14px Georgia,serif;box-shadow:0 8px 30px #000a}#sc36People h3{margin:0 0 6px;color:#d9a93c}#sc36People button.sc36Row{display:grid;grid-template-columns:1.4fr 1.2fr .5fr;gap:6px;width:100%;text-align:left;margin:2px 0;padding:6px 8px;background:#2b4a46;color:#d7c4a8;border:1px solid #466d62;border-radius:5px;cursor:pointer;font:13px system-ui}#sc36People button.sc36Row:hover,#sc36People button.sc36Row:focus-visible{border-color:#d9a93c}.sc36Bar{display:grid;grid-template-columns:90px 1fr 30px;gap:6px;align-items:center;margin:3px 0;font:12px system-ui}.sc36Bar i{display:block;height:8px;background:#433121;border-radius:4px;overflow:hidden}.sc36Bar b{display:block;height:100%;background:#d9a93c}#sc36Close{float:right;padding:3px 9px;background:#6d4a31;color:#d7c4a8;border:1px solid #d9a93c;border-radius:5px;cursor:pointer}#sc36Back{padding:4px 10px;margin-bottom:8px;background:#433121;color:#d7c4a8;border:1px solid #a07250;border-radius:5px;cursor:pointer}';document.head.append(css);
  let panel=null;
  function close(){if(panel){panel.remove();panel=null}const b=document.getElementById('sc36PeopleBtn');if(b)b.setAttribute('aria-expanded','false')}
- function detail(p){panel.querySelector('#sc36Body').innerHTML='';const body=panel.querySelector('#sc36Body');const back=document.createElement('button');back.id='sc36Back';back.type='button';back.textContent='← All residents';back.onclick=()=>list();const t=document.createElement('h3');t.textContent=p.name+' · '+p.age;const meta=document.createElement('p');meta.id='sc36Meta';meta.textContent=p.role+(p.site?' at '+p.site:'')+' · lives in '+p.home+' · '+p.traits.join(', ')+' · experience '+p.experience;body.append(back,t,meta);for(const [k,v] of Object.entries(p.stats)){const d=document.createElement('div');d.className='sc36Bar';d.innerHTML='<span>'+k[0].toUpperCase()+k.slice(1)+'</span><i><b style="width:'+v+'%"></b></i><span>'+v+'</span>';body.append(d)}back.focus()}
- function list(){const body=panel.querySelector('#sc36Body');body.innerHTML='';const ps=people();const note=document.createElement('p');note.style.cssText='margin:0 0 6px;font:12px system-ui;color:#caa87b';note.textContent=ps.length+' residents. Choose one to see their job, traits and stats.';body.append(note);ps.sort((a,b)=>a.role.localeCompare(b.role)).forEach(p=>{const b=document.createElement('button');b.type='button';b.className='sc36Row';b.dataset.person=p.id;b.innerHTML='<span>'+p.name+'</span><span>'+p.role+'</span><span>'+p.age+'</span>';b.onclick=()=>detail(p);body.append(b)})}
+ function detail(p){panel.querySelector('#sc36Body').innerHTML='';const body=panel.querySelector('#sc36Body');const back=document.createElement('button');back.id='sc36Back';back.type='button';back.textContent='← All residents';back.onclick=()=>list();const t=document.createElement('h3');t.textContent=p.name+' · '+p.age;const meta=document.createElement('p');meta.id='sc36Meta';meta.textContent=p.role+(p.site?' at '+p.site:'')+' · lives in '+p.home+' · '+p.traits.join(', ')+' · experience '+p.experience;body.append(back,t,meta);const fam=document.createElement('p');fam.id='sc36Family';fam.style.cssText='font:13px system-ui;margin:6px 0';fam.textContent=p.household.length?'Household: '+p.household.map(q=>q.name+' ('+q.age+', '+q.role+')').join(', '):'Lives alone.';body.append(fam);for(const [k,v] of Object.entries(p.stats)){const d=document.createElement('div');d.className='sc36Bar';d.innerHTML='<span>'+k[0].toUpperCase()+k.slice(1)+'</span><i><b style="width:'+v+'%"></b></i><span>'+v+'</span>';body.append(d)}back.focus()}
+ let filter='all';
+ const kind=p=>p.role==='Child'?'children':p.role==='Elder'?'elders':'workers';
+ function list(){const body=panel.querySelector('#sc36Body');body.innerHTML='';const ps=people();const c={workers:0,children:0,elders:0};ps.forEach(p=>c[kind(p)]++);const note=document.createElement('p');note.id='sc36Summary';note.style.cssText='margin:0 0 6px;font:12px system-ui;color:#caa87b';note.textContent=ps.length+' residents: '+c.workers+' working age, '+c.children+' children, '+c.elders+' elders. Children grow up over time.';body.append(note);
+  const bar=document.createElement('div');bar.style.cssText='margin:0 0 6px';for(const [k,l] of [['all','All'],['workers','Working age'],['children','Children'],['elders','Elders']]){const f=document.createElement('button');f.type='button';f.className='sc36Filter';f.dataset.filter=k;f.textContent=l;f.setAttribute('aria-pressed',String(filter===k));f.style.cssText='margin:0 6px 4px 0;padding:3px 10px;background:'+(filter===k?'#6d4a31':'#2b4a46')+';color:#d7c4a8;border:1px solid #a07250;border-radius:12px;cursor:pointer;font:12px system-ui';f.onclick=()=>{filter=k;list()};bar.append(f)}body.append(bar);
+  ps.filter(p=>filter==='all'||kind(p)===filter).sort((a,b)=>a.role.localeCompare(b.role)).forEach(p=>{const b=document.createElement('button');b.type='button';b.className='sc36Row';b.dataset.person=p.id;b.innerHTML='<span>'+p.name+'</span><span>'+p.role+'</span><span>'+p.age+'</span>';b.onclick=()=>detail(p);body.append(b)})}
  function open(){if(panel){close();return}panel=document.createElement('section');panel.id='sc36People';panel.setAttribute('aria-label','Residents');panel.innerHTML='<button id="sc36Close" type="button" aria-label="Close residents">✕</button><h3>Residents</h3><div id="sc36Body"></div>';panel.querySelector('#sc36Close').onclick=close;document.body.append(panel);list();const b=document.getElementById('sc36PeopleBtn');if(b)b.setAttribute('aria-expanded','true');}
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel)close()});
  function install(){const c=document.getElementById('sc1312CityLifeBtn');if(!c)return false;if(document.getElementById('sc36PeopleBtn'))return true;const b=document.createElement('button');b.type='button';b.id='sc36PeopleBtn';b.textContent='👥 People';b.setAttribute('aria-expanded','false');b.className=c.className;b.style.cssText=c.style.cssText;b.onclick=e=>{e.stopPropagation();open()};c.after(b);return true}
@@ -4408,8 +4412,20 @@ setInterval(paint,300);paint()})();
  const chip=document.createElement('div');chip.id='sc36Clock';chip.style.cssText='position:fixed;left:8px;bottom:140px;z-index:690;padding:3px 9px;background:#1f3a38cc;color:#d7c4a8;border:1px solid #466d62;border-radius:12px;font:12px system-ui;pointer-events:none';document.body.append(chip);
  const DAY=360;let forced=null;
  function phase(t){const f=((t%DAY)+DAY)%DAY/DAY;if(f<.08)return {name:'Dawn',icon:'🌅',c:'rgba(255,170,90,.14)'};if(f<.5)return {name:'Day',icon:'☀️',c:'rgba(255,255,255,0)'};if(f<.6)return {name:'Dusk',icon:'🌇',c:'rgba(150,60,60,.18)'};if(f<.92)return {name:'Night',icon:'🌙',c:'rgba(10,20,60,.42)'};return {name:'Pre-dawn',icon:'🌌',c:'rgba(20,30,70,.28)'}}
- function tick(){const t=forced!==null?forced:performance.now()/1000+DAY*.1,p=phase(t);veil.style.backgroundColor=p.c;chip.textContent=p.icon+' '+p.name;chip.dataset.phase=p.name}
+ function tick(){const t=forced!==null?forced:performance.now()/1000+DAY*.1,p=phase(t);veil.style.backgroundColor=p.c;chip.dataset.icon=p.icon;chip.dataset.phase=p.name;chip.textContent=p.icon+' '+p.name+(chip.dataset.suffix||'')}
  setInterval(tick,1000);tick();
+
+ /* Weather: visual only (v0.37) */
+ const wc=document.createElement('canvas');wc.id='sc37Weather';wc.setAttribute('aria-hidden','true');wc.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:41';document.body.append(wc);
+ const KINDS=['Clear','Clear','Cloudy','Rain','Clear','Fog','Cloudy','Rain'];let wForced=null,drops=[];
+ function weatherNow(){if(wForced)return wForced;const slot=Math.floor((performance.now()/1000)/90);return KINDS[Math.floor(h(slot,5.5)*KINDS.length)]}
+ function drawWeather(){const kind=weatherNow();wc.width=innerWidth;wc.height=innerHeight;const g=wc.getContext('2d');g.clearRect(0,0,wc.width,wc.height);
+  if(kind==='Rain'){g.fillStyle='rgba(60,80,100,.14)';g.fillRect(0,0,wc.width,wc.height);g.strokeStyle='rgba(200,220,235,.55)';g.lineWidth=1;g.beginPath();for(let i=0;i<160;i++){const x=(h(i,1)*wc.width+performance.now()/12)%wc.width,y=(h(i,2)*wc.height+performance.now()/3)%wc.height;g.moveTo(x,y);g.lineTo(x-3,y+12)}g.stroke()}
+  else if(kind==='Fog'){const k=g.createLinearGradient(0,0,0,wc.height);k.addColorStop(0,'rgba(215,225,225,.22)');k.addColorStop(1,'rgba(215,225,225,.10)');g.fillStyle=k;g.fillRect(0,0,wc.width,wc.height)}
+  else if(kind==='Cloudy'){g.fillStyle='rgba(90,100,110,.10)';g.fillRect(0,0,wc.width,wc.height)}
+  const c=document.getElementById('sc36Clock');if(c){const ic={Clear:'',Cloudy:' · ☁️ Cloudy',Rain:' · 🌧 Rain',Fog:' · 🌫 Fog'}[kind];c.dataset.suffix=ic;c.textContent=(c.dataset.icon||'')+' '+(c.dataset.phase||'')+ic;c.dataset.weather=kind}}
+ setInterval(drawWeather,250);
+ window.scWeather={state:()=>weatherNow(),set(k){wForced=k;drawWeather()},clear(){wForced=null;drawWeather()},kinds:['Clear','Cloudy','Rain','Fog']};
  window.scDayNight={phase:()=>chip.dataset.phase,setTime(t){forced=t;tick()},clear(){forced=null;tick()},dayLength:DAY};
 })();
 /* v0.35 Survivors start: a short journey prologue that decides who arrives and with what. */
@@ -7829,7 +7845,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <!-- Version display fix: single authoritative visible release label. -->
 <script id="sc1406VersionFix">
 (()=>{'use strict';
- const version='0.36.0';
+ const version='0.37.0';
  function sync(){
   document.title='Shattered Crowns — v'+version;
   const badge=document.getElementById('sc179Version');
