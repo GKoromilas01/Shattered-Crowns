@@ -35,3 +35,9 @@ test('Night is lighter and every kingdom has stone and gold within a short walk'
   assert.ok(d.stone<280&&d.gold<280&&d.tree<280,id+' '+JSON.stringify(d));
  }
 });
+
+test('A farm foundation placed with no workers selected tells the player what to do, and the opening food lasts',async t=>{
+ const p=await game(t);
+ const f=await p.evaluate(()=>scCityEconomy.snapshot().food.stock);assert.ok(f>=200,'home opening food '+f);
+ const g=await p.evaluate(()=>document.getElementById('scGuideText').textContent);assert.match(g,/Click one of your workers/);
+});

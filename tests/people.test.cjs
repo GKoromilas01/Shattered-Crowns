@@ -15,7 +15,7 @@ test('Working residents match filled jobs and the day turns through dawn, day, d
  await p.evaluate(()=>{});const seen=await p.evaluate(()=>{const o={};for(const t of [10,60,200,230,300,340]){scDayNight.setTime(t);o[t]=scDayNight.phase()}scDayNight.clear();return o});
  assert.deepEqual(Object.values(seen),['Dawn','Day','Dusk','Night','Night','Pre-dawn']);
  await p.evaluate(()=>scDayNight.setTime(300));assert.notEqual(await p.locator('#sc36Daylight').evaluate(e=>getComputedStyle(e).pointerEvents),'auto');
- assert.equal(await p.locator('#sc36Clock').innerText().then(s=>/Night/.test(s)),true);
+ assert.equal(await p.locator('#sc36Daylight').evaluate(e=>getComputedStyle(e).backgroundColor),'rgba(0, 0, 0, 0)','night no longer darkens the map');assert.doesNotMatch(await p.locator('#sc36Clock').textContent(),/Night/);
 });
 test('People list has a summary, filters and household families that grow up',async t=>{
  const p=await game(t);await p.locator('#sc36PeopleBtn').click();
