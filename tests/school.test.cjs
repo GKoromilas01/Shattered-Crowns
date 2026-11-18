@@ -41,3 +41,9 @@ test('A farm foundation placed with no workers selected tells the player what to
  const f=await p.evaluate(()=>scCityEconomy.snapshot().food.stock);assert.ok(f>=200,'home opening food '+f);
  const g=await p.evaluate(()=>document.getElementById('scGuideText').textContent);assert.match(g,/Click one of your workers/);
 });
+
+test('Rank promotions never push a unit above its maximum health (saves stay valid)',async t=>{
+ const p=await game(t);
+ const r=await p.evaluate(()=>{const u=scRTSUnits.find(x=>x.team===0&&x.type==='soldier');u.hp=u.max-5;for(let i=0;i<10;i++)scEarnKill(u);const ok=u.hp<=u.max;return {ok,hp:u.hp,max:u.max,exp:scSavedCity.exportText().ok}});
+ assert.ok(r.ok,JSON.stringify(r));assert.equal(r.exp,true);
+});
