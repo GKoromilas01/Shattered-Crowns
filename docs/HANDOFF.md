@@ -85,5 +85,5 @@ See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; mul
 - Placing a building by UI click now auto-sends up to 3 nearest free workers (`scStartConstruction`); selected workers still take priority. Tests that need unassigned foundations call `__constructionTest.release()` / `__livingCityTest.release()`.
 - `sc39SiteMarkers` draws a gold ring and a label with builder count and ETA (rate measured per second); `scFocusRing` flashes a ring for Show home/workplace.
 - Survivors' start (`window.scSmallKeep`) draws `campArt` in the v026 renderer instead of a small Keep.
-- `sc40Weather` (rain with gusting slant, first at 8 s, 25 s every 90 s) and a 🌧/☀ toggle `#scWeatherQuick` saved in localStorage `sc-weather-v1`. Night mode stays dropped.
+- `sc40Weather` (rain with gusting slant, first at 8 s, 25 s every 90 s) and a ☂/☀ toggle `#scWeatherQuick` saved in localStorage `sc-weather-v1`. Night mode stays dropped.
 - No new music themes (8 tracks) by the owner's request.
