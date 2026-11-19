@@ -1079,11 +1079,15 @@ function cityEvolveHomes(homes){
 // Occupants stay in their homes when services lapse. New residents and displaced
 // households may use only vacant, serviced housing; lost capacity is visible.
 function cityCanMigrate(h,context){const t=houseTier(h,context);return t.foodReady&&t.water&&t.access;}
-function cityReconcileOccupancy(context){
- const homes=(context?.owned||cityOwned()).filter(b=>b.type==='house');let remaining=Math.max(0,population-8);
+function cityReconcileOccupancy(context,relocate){
+ // v0.43: during each growth cycle (relocate=true) families move out of the Keep into houses they can use; only the ruler household (2) stays,
+ // plus overflow up to 8 seats. Reads (saves, inspectors) keep the legacy rule so they never change state by being looked at.
+ const homes=(context?.owned||cityOwned()).filter(b=>b.type==='house'),rulers=Math.min(2,population);let remaining=Math.max(0,population-rulers);
  for(const h of homes){h.cityResidents=Math.min(remaining,cityHouseCapacity(h),h.cityResidents||0);remaining-=h.cityResidents;}
- for(const h of homes){if(remaining<=0)break;if(!cityCanMigrate(h,context))continue;const assigned=Math.min(remaining,cityHouseCapacity(h)-h.cityResidents);h.cityResidents+=assigned;remaining-=assigned;}
- return {keepResidents:Math.min(8,population),displaced:remaining};
+ let placed=homes.reduce((n,h)=>n+(h.cityResidents||0),0);const target=relocate?Math.max(0,population-rulers):Math.max(0,population-8);
+ for(const h of homes){if(placed>=target)break;if(!cityCanMigrate(h,context))continue;const assigned=Math.min(target-placed,cityHouseCapacity(h)-h.cityResidents);h.cityResidents+=assigned;placed+=assigned;remaining-=assigned;}
+ const keepExtra=Math.min(remaining,Math.max(0,8-rulers));
+ return {keepResidents:rulers+keepExtra,displaced:remaining-keepExtra};
 }
 function cityMigrationReadiness(homes,context,occupancy){
  context??={owned:cityOwned(),network:getRoadNetwork()};occupancy??=cityReconcileOccupancy(context);
@@ -1102,7 +1106,7 @@ function cityMigrationReadiness(homes,context,occupancy){
  const ready=checks.every(c=>c.met);return {ready,measured:!!cityLedger,checks,capacity,eligibleVacancies,nextResidentSeconds:ready?Math.max(0,15-cityGrowth.progress):null};
 }
 function cityGrow(homes){
- const context={owned:cityOwned(),network:getRoadNetwork()},occupancy=cityReconcileOccupancy(context),readiness=cityMigrationReadiness(homes,context,occupancy);
+ const context={owned:cityOwned(),network:getRoadNetwork()},occupancy=cityReconcileOccupancy(context,true),readiness=cityMigrationReadiness(homes,context,occupancy);
  const cap=readiness.capacity,eligible=readiness.eligibleVacancies>0;
  cityGrowth.reason=cityLedger.shortfall>0?'Food shortage: restore farm or fishery production.':occupancy.displaced>0?'Residents are displaced: rebuild serviced housing.':population>=cap?'Housing is full: build another house.':!eligible?'Migration needs vacant housing with a food reserve, nearby water and connected roads.':happiness<45?'Improve food and services until happiness reaches 45.':'A new resident can arrive after 15 seconds of stable services.';
  if(cityLedger.shortfall>0||occupancy.displaced>0){cityGrowth.progress=0;cityGrowth.departure=Math.min(15,cityGrowth.departure+5);if(cityGrowth.departure>=15&&population>4){population--;cityGrowth.departure=0;}return;}
@@ -1279,11 +1283,12 @@ window.scStoryCards=(function(){
   {id:'ten',title:'Ten Hearths Warm',text:'Ten residents now call this place home. A village is becoming a town.',test:(s)=>(s.population||0)>=10}
  ];
  const prev={},shown=new Set();let primed=false,box=null,timer=0;
- function show(d){close();box=document.createElement('div');box.id='scStoryCard';box.setAttribute('role','status');box.setAttribute('aria-live','polite');
+ const queue=[];function show(d){if(box){queue.push(d);return}draw(d)}
+ function draw(d){box=document.createElement('div');box.id='scStoryCard';box.setAttribute('role','status');box.setAttribute('aria-live','polite');
   box.style.cssText='position:fixed;left:50%;top:108px;transform:translateX(-50%);z-index:720;width:min(420px,92vw);box-sizing:border-box;padding:14px 18px 14px 74px;background:#f0e3c2;color:#3b2a1a;border:2px solid #8a6a36;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.45);font:14px/1.35 Georgia,serif;cursor:pointer';
   box.innerHTML='<svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true" style="position:absolute;left:14px;top:14px"><circle cx="24" cy="24" r="22" fill="#6b3f2a" stroke="#c9a24b" stroke-width="3"/><path d="M12 32l3-14 6 7 3-10 3 10 6-7 3 14z" fill="#e9c35a" stroke="#8a6a36" stroke-width="1.5"/></svg><div style="font:bold 16px Georgia,serif;margin-bottom:3px"></div><div></div>';
   box.children[1].textContent=d.title;box.children[2].textContent=d.text;box.onclick=close;document.body.appendChild(box);timer=setTimeout(close,7000)}
- function close(){clearTimeout(timer);if(box){box.remove();box=null}}
+ function close(){clearTimeout(timer);if(box){box.remove();box=null}if(queue.length){const n=queue.shift();setTimeout(()=>{if(!box)draw(n)},400)}}
  function poll(){let s,b;try{s=window.scCityEconomy.snapshot();b=s.buildings||[]}catch(e){return}if(!s)return;
   for(const d of defs){let now=false;try{now=!!d.test(s,b)}catch(e){}
    if(!now&&prev[d.id])shown.delete(d.id);
@@ -1291,10 +1296,10 @@ window.scStoryCards=(function(){
    prev[d.id]=now}
   primed=true}
  setInterval(poll,1000);
- return {poll,show:id=>{const d=defs.find(x=>x.id===id);if(d)show(d)},ids:defs.map(d=>d.id),close};
+ return {poll,show:id=>{const d=defs.find(x=>x.id===id);if(d)show(d)},card:(title,text)=>show({title,text}),ids:defs.map(d=>d.id),close};
 })();
 window.scEvents=(function(){
- let elapsed=0,next=40,count=0,box=null,timer=0;const KINDS=['trader','refugees'];
+ let elapsed=0,next=40,count=0,box=null,timer=0;const KINDS=['trader','refugees','sickness'];
  function close(){clearTimeout(timer);if(box){box.remove();box=null}}
  function card(title,text,buttons){close();box=document.createElement('div');box.id='scEventCard';box.setAttribute('role','dialog');box.setAttribute('aria-label',title);
   box.style.cssText='position:fixed;left:50%;top:108px;transform:translateX(-50%);z-index:725;width:min(440px,92vw);box-sizing:border-box;padding:14px 18px;background:#efe0bb;color:#3b2a1a;border:2px solid #8a6a36;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.5);font:14px/1.35 Georgia,serif';
@@ -1306,9 +1311,31 @@ window.scEvents=(function(){
   {id:'buy',label:'Buy 40 stone ('+price+' gold)',primary:true,disabled:gold<price,run:()=>{if(gold>=price){gold-=price;stone+=40;msg('You bought 40 stone from the trader.');updateUI()}}},{id:'decline',label:'Send him on'}])}
  function refugees(){const k=keep();if(!k)return;card('A Family at the Gate','A tired family of three asks to stay. They will work, but they are hungry (they eat 15 of your food).',[
   {id:'accept',label:'Welcome them',primary:true,run:()=>{const kk=keep();if(!kk)return;for(let i=0;i<2;i++)addUnit(0,'worker',kk.x+50+i*18,kk.y+60);population+=3;food=Math.max(0,food-15);msg('A family of three joined your settlement.');updateUI()}},{id:'decline',label:'Turn them away'}])}
- function fire(kind){count++;(kind==='refugees'?refugees:trader)()}
- setInterval(()=>{if(ended&&box)close();const wl=document.getElementById('sc1310Welcome');if(paused||ended||scScenario!=='city'||scOverview||document.hidden||box||tutorialVisible||(wl&&wl.offsetParent!==null))return;if(!keep())return;elapsed++;if(elapsed>=next){fire(KINDS[count%2]);next=elapsed+150+Math.floor((count*37)%60)}},1000);
+ function sickness(){const bs=buildings.filter(b=>b.team===0&&alive(b)),healer=bs.some(b=>b.type==='clinic'),chapel=bs.some(b=>b.type==='chapel');const base=healer?3:chapel?7:12;const hit=n=>{happiness=Math.max(0,happiness-n);msg('Fever in the lanes: the mood of your people dipped by '+n+' and will recover.');updateUI()};
+  card('Fever in the Lanes','Several residents have fallen ill and the mood is low. '+(healer?'Your Healer is already tending them.':chapel?'The Chapel offers prayers and broth.':'You have no Healer or Chapel to help.')+' Herbs from the market would ease it (30 gold).',[
+  {id:'herbs',label:'Buy herbs (30 gold)',primary:true,disabled:gold<30,run:()=>{if(gold>=30){gold-=30;hit(Math.min(base,4))}}},{id:'pass',label:'Let it pass',run:()=>hit(base)}])}
+ function fire(kind){count++;(kind==='refugees'?refugees:kind==='sickness'?sickness:trader)()}
+ setInterval(()=>{if(ended&&box)close();const wl=document.getElementById('sc1310Welcome');if(paused||ended||scScenario!=='city'||scOverview||document.hidden||box||tutorialVisible||(wl&&wl.offsetParent!==null))return;if(!keep())return;elapsed++;if(elapsed>=next){fire(KINDS[count%3]);next=elapsed+150+Math.floor((count*37)%60)}},1000);
  return {fire,close,count:()=>count,state:()=>({elapsed,next,count,open:!!box})};
+})();
+window.scChapters=(function(){
+ const n=(b,t)=>b.filter(x=>x.type===t).length;
+ const defs=[
+  {id:1,title:'Chapter 1 · A Hearth for Every Family',goals:[['3 houses',(s,b)=>n(b,'house')>=3],['a farm',(s,b)=>n(b,'farm')>=1]],done:'Three homes line the road and the fields are sown. The settlement has a heart.'},
+  {id:2,title:'Chapter 2 · Trade and Bread',goals:[['a market',(s,b)=>n(b,'market')>=1],['a granary',(s,b)=>n(b,'granary')>=1],['a bakery',(s,b)=>n(b,'bakery')>=1]],done:'Bread, grain and bargains. Travellers now speak well of this place.'},
+  {id:3,title:'Chapter 3 · Faith and Learning',goals:[['a School',(s,b)=>n(b,'school')>=1],['a Chapel',(s,b)=>n(b,'chapel')>=1]],done:'Bells and lessons fill the lanes. The settlement is becoming a town.'}
+ ];
+ let box=null,doneSet=new Set(),primed=false,last='';
+ function state(){let s,b;try{s=window.scCityEconomy.snapshot();b=s.buildings||[]}catch(e){return null}if(!s)return null;return defs.map(d=>({d,goals:d.goals.map(([l,f])=>({l,ok:!!f(s,b)}))}))}
+ function render(st){const cur=st.find(x=>!x.goals.every(g=>g.ok));
+  if(!cur){if(box){box.remove();box=null}return}
+  if(!box){box=document.createElement('div');box.id='scChapters';box.setAttribute('aria-label','Chapter goals');box.style.cssText='position:fixed;left:12px;top:186px;z-index:640;width:min(210px,56vw);box-sizing:border-box;padding:8px 10px;background:rgba(20,34,30,.88);color:#f2dfae;border:1px solid #d9a93c;border-radius:8px;font:12px/1.35 system-ui;pointer-events:none';document.body.appendChild(box)}
+  const html='<b>'+cur.d.title+'</b>'+cur.goals.map(g=>'<div>'+(g.ok?'✓':'○')+' '+g.l+'</div>').join('');if(html!==last){box.innerHTML=html;last=html}}
+ function poll(){const st=window.scCampaign&&scScenario==='city'?state():null;if(!st)return;
+  for(const x of st){const ok=x.goals.every(g=>g.ok);if(ok&&!doneSet.has(x.d.id)){doneSet.add(x.d.id);if(primed&&window.scStoryCards)window.scStoryCards.card(x.d.title.split(' · ')[0]+' complete',x.d.done)}if(!ok&&doneSet.has(x.d.id))doneSet.delete(x.d.id)}
+  primed=true;render(st)}
+ setInterval(()=>{try{poll()}catch(e){}},1000);
+ return {poll,state:()=>(state()||[]).map(x=>({id:x.d.id,done:x.goals.every(g=>g.ok)})),current:()=>box?box.innerText:''};
 })();
 window.scFocusRing=null;
 const sc40Eta=new WeakMap();function sc39SiteMarkers(){const t=performance.now();ctx.save();for(const site of scConstructionSites){const pulse=Math.sin(t/260+site.id)*.5+.5;ctx.strokeStyle='rgba(240,200,90,'+(.55+pulse*.4)+')';ctx.lineWidth=3;ctx.setLineDash([8,6]);ctx.beginPath();ctx.arc(site.x,site.y+4,site.radius+12+pulse*5,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);const busy=units.some(u=>u.order&&u.order.type==='build'&&u.order.target===site);const nb=units.filter(u=>u.order&&u.order.type==='build'&&u.order.target===site).length;let m=sc40Eta.get(site);if(!m){m={t:0,p:0,r:0};sc40Eta.set(site,m)}if(!m.t||t-m.t>1000){if(m.t)m.r=(site.progress-m.p)/((t-m.t)/1000);m.t=t;m.p=site.progress}const eta=nb&&m.r>0?Math.ceil((site.required-site.progress)/m.r):0;const txt=site.type.toUpperCase()+' '+Math.floor(site.progress/site.required*100)+'%'+(busy?' · '+nb+' builder'+(nb>1?'s':'')+(eta?' · ~'+(eta>=60?Math.ceil(eta/60)+' min':eta+' s'):''):' · needs workers');ctx.font='bold 12px system-ui';const w=ctx.measureText(txt).width+12;ctx.fillStyle='rgba(20,34,30,.88)';ctx.fillRect(site.x-w/2,site.y-site.radius-34,w,18);ctx.strokeStyle='#d9a93c';ctx.lineWidth=1;ctx.setLineDash([]);ctx.strokeRect(site.x-w/2,site.y-site.radius-34,w,18);ctx.fillStyle='#f2dfae';ctx.textAlign='center';ctx.fillText(txt,site.x,site.y-site.radius-21)}
@@ -3627,12 +3654,12 @@ const scPlayerSteps=[
  {text:'Gather more wood and gold, then build a Market. Markets let you trade for what you are missing.',check:()=>!!buildings.find(b=>b.team===0&&b.type==='market'&&alive(b))}
 ];
 const scTesterSteps=[
- {text:'Pick School (🎓) in the build menu and move over the map: a green rectangle follows you. Left-click to place it. Do workers walk over and build it?',manual:true},
- {text:'Do the same with the Chapel (⛪). When it finishes, a card "The Chapel Bell" appears. Click the card to close it. Does it work?',manual:true},
- {text:'Click your finished School: the info box shows Teachers and how many children attend. Do you see it?',manual:true},
- {text:'Build a Farm. After the first harvest a card "The First Harvest" appears. Do you see it?',manual:true},
- {text:'People: click a resident, press 📍 Show home. A gold ring flashes on the building. Does it?',manual:true},
- {text:'There should be no rain, fog or "Cloudy" label anywhere on the map. Is the map clean?',manual:true}
+ {text:'Look under the minimap: a Chapter 1 box lists "3 houses" and "a farm". Build them: a card says Chapter 1 complete and Chapter 2 appears. Does it?',manual:true},
+ {text:'Build a House with a Well and a short Road beside it. After a minute, open People: some residents live in "House #". Do they?',manual:true},
+ {text:'In People click a resident and press 📍 Show home: a gold ring flashes on their house (not the castle). Does it?',manual:true},
+ {text:'If a resident still lives in the Keep, their page says why (needs a well, road and food). Is the note there?',manual:true},
+ {text:'Play ~1 minute: a Wandering Trader card, later a Family at the Gate, later "Fever in the Lanes" (with Buy herbs / Let it pass). Do the choices work?',manual:true},
+ {text:'Build a School and a Chapel: Chapter 3 completes with a card. Does it?',manual:true}
 ];
 let scAdvisorMode='player';try{const m=localStorage.getItem('shattered-crowns-advisor-mode-v1');if(m==='tester'||m==='player')scAdvisorMode=m}catch(e){}
 const versionTests=[...(scAdvisorMode==='tester'?scTesterSteps:scPlayerSteps)];
@@ -4338,7 +4365,7 @@ function scPrepareCity(input){
  if(data.schema>=5){list(s.construction,5000);if(data.schema===5&&!s.construction.length)fail();for(const b of s.construction){
   if(data.schema<9&&['workshop','loadingyard'].includes(b.type))fail();keys(b,['id','team','type','x','y','radius','progress','required','cost']);id(b.id);if(used.has(b.id)||b.id>=s.nextId)fail();used.add(b.id);if(b.team!==0||!Object.hasOwn(scConstructionTimes,b.type))fail();number(b.x,0,W);number(b.y,0,H);if(b.radius!==scConstructionRadii[b.type]||b.required!==scConstructionTimes[b.type])fail();number(b.progress,0,b.required);if(b.progress>=b.required)fail();keys(b.cost,['gold','wood','stone']);for(const k of ['gold','wood','stone'])if(b.cost[k]!== (civicCosts[b.type][k]||0))fail();preparedSites.push({...b,cost:{...b.cost}});
  }}
- if(s.buildings.filter(b=>b.type==='house').reduce((n,b)=>n+b.cityResidents,0)>Math.max(0,s.people.population-8))fail();
+ if(s.buildings.filter(b=>b.type==='house').reduce((n,b)=>n+b.cityResidents,0)>Math.max(0,s.people.population-Math.min(2,s.people.population)))fail();
  if(!s.ended&&(!s.buildings.some(b=>b.type==='keep'&&b.team===0)||(data.schema===1&&!s.buildings.some(b=>b.type==='keep'&&b.team===1))))fail();
  for(const n of s.nodes){keys(n,['type','x','y','amount','radius','renew']);choice(n.type,['tree','stone','gold']);number(n.x,0,W);number(n.y,0,H);number(n.amount);number(n.radius,.1,1000);number(n.renew,0,1e9);}
  const rebuiltUnits=s.units.map(u=>({...u})),rebuiltBuildings=s.buildings.map(b=>({...b})),rebuiltNodes=s.nodes.map(n=>({...n})),byId=new Map([...rebuiltUnits,...rebuiltBuildings].map(e=>[e.id,e]));
@@ -4464,7 +4491,7 @@ setInterval(paint,300);paint()})();
  const css=document.createElement('style');css.textContent='#sc36People{position:fixed;left:50%;top:104px;transform:translateX(-50%);width:min(520px,94vw);max-height:calc(100vh - 104px - 100px);overflow-y:auto;overflow-x:hidden;box-sizing:border-box;scrollbar-width:thin;z-index:960;background:#1f3a38;color:#d7c4a8;border:2px solid #a07250;border-radius:10px;padding:12px;font:14px Georgia,serif;box-shadow:0 8px 30px #000a}#sc36People h3{margin:0 0 6px;color:#d9a93c}#sc36People button.sc36Row{display:grid;grid-template-columns:1.4fr 1.2fr .5fr;gap:6px;width:100%;text-align:left;margin:2px 0;padding:6px 8px;background:#2b4a46;color:#d7c4a8;border:1px solid #466d62;border-radius:5px;cursor:pointer;font:13px system-ui}#sc36People button.sc36Row:hover,#sc36People button.sc36Row:focus-visible{border-color:#d9a93c}.sc36Bar{display:grid;grid-template-columns:90px 1fr 30px;gap:6px;align-items:center;margin:3px 0;font:12px system-ui}.sc36Bar i{display:block;height:8px;background:#433121;border-radius:4px;overflow:hidden}.sc36Bar b{display:block;height:100%;background:#d9a93c}#sc36Close{float:right;padding:3px 9px;background:#6d4a31;color:#d7c4a8;border:1px solid #d9a93c;border-radius:5px;cursor:pointer}#sc36Back{padding:4px 10px;margin-bottom:8px;background:#433121;color:#d7c4a8;border:1px solid #a07250;border-radius:5px;cursor:pointer}';document.head.append(css);
  let panel=null;
  function close(){if(panel){panel.remove();panel=null}const b=document.getElementById('sc36PeopleBtn');if(b)b.setAttribute('aria-expanded','false')}
- function detail(p){panel.querySelector('#sc36Body').innerHTML='';const body=panel.querySelector('#sc36Body');const back=document.createElement('button');back.id='sc36Back';back.type='button';back.textContent='← All residents';back.onclick=()=>list();const t=document.createElement('h3');t.textContent=p.name+' · '+p.age;const meta=document.createElement('p');meta.id='sc36Meta';meta.textContent=p.role+(p.site?' at '+p.site:'')+(p.attends?' · attends '+p.attends:'')+' · lives in '+p.home+' · '+p.traits.join(', ')+' · experience '+p.experience;body.append(back,t,meta);const fam=document.createElement('p');fam.id='sc36Family';fam.style.cssText='font:13px system-ui;margin:6px 0';fam.textContent=p.household.length?'Household: '+p.household.map(q=>q.name+' ('+q.age+', '+q.role+')').join(', '):'Lives alone.';body.append(fam);{const row=document.createElement('div');row.style.cssText='margin:6px 0';for(const [lab,place,id] of [['📍 Show home',p.home,'sc39ShowHome'],['📍 Show workplace',p.site,'sc39ShowWork']]){if(!place)continue;const bt=document.createElement('button');bt.type='button';bt.id=id;bt.textContent=lab;bt.style.cssText='margin:0 6px 4px 0;padding:4px 10px;background:#6d4a31;color:#d7c4a8;border:1px solid #a07250;border-radius:12px;cursor:pointer;font:12px system-ui';bt.onclick=()=>{if(focusPlace(place))close()};row.append(bt)}body.append(row)}for(const [k,v] of Object.entries(p.stats)){const d=document.createElement('div');d.className='sc36Bar';d.innerHTML='<span>'+k[0].toUpperCase()+k.slice(1)+'</span><i><b style="width:'+v+'%"></b></i><span>'+v+'</span>';body.append(d)}back.focus()}
+ function detail(p){panel.querySelector('#sc36Body').innerHTML='';const body=panel.querySelector('#sc36Body');const back=document.createElement('button');back.id='sc36Back';back.type='button';back.textContent='← All residents';back.onclick=()=>list();const t=document.createElement('h3');t.textContent=p.name+' · '+p.age;const meta=document.createElement('p');meta.id='sc36Meta';meta.textContent=p.role+(p.site?' at '+p.site:'')+(p.attends?' · attends '+p.attends:'')+' · lives in '+p.home+' · '+p.traits.join(', ')+' · experience '+p.experience;body.append(back,t,meta);if(p.home==='the Keep'&&(window.scHoverBuildings||[]).some(b=>b.team===0&&b.type==='house'&&b.hp>0)){const hint=document.createElement('p');hint.id='sc43HomeHint';hint.style.cssText='font:12px system-ui;margin:4px 0;color:#caa87b';hint.textContent='Still in the Keep: families only move into a house that has a well, a connected road and food.';body.append(hint)}const fam=document.createElement('p');fam.id='sc36Family';fam.style.cssText='font:13px system-ui;margin:6px 0';fam.textContent=p.household.length?'Household: '+p.household.map(q=>q.name+' ('+q.age+', '+q.role+')').join(', '):'Lives alone.';body.append(fam);{const row=document.createElement('div');row.style.cssText='margin:6px 0';for(const [lab,place,id] of [['📍 Show home',p.home,'sc39ShowHome'],['📍 Show workplace',p.site,'sc39ShowWork']]){if(!place)continue;const bt=document.createElement('button');bt.type='button';bt.id=id;bt.textContent=lab;bt.style.cssText='margin:0 6px 4px 0;padding:4px 10px;background:#6d4a31;color:#d7c4a8;border:1px solid #a07250;border-radius:12px;cursor:pointer;font:12px system-ui';bt.onclick=()=>{if(focusPlace(place))close()};row.append(bt)}body.append(row)}for(const [k,v] of Object.entries(p.stats)){const d=document.createElement('div');d.className='sc36Bar';d.innerHTML='<span>'+k[0].toUpperCase()+k.slice(1)+'</span><i><b style="width:'+v+'%"></b></i><span>'+v+'</span>';body.append(d)}back.focus()}
  function focusPlace(label){const bs=window.scHoverBuildings||[];let b=null;if(/^the Keep/i.test(label||''))b=bs.find(x=>x.team===0&&x.type==='keep');else{const m=/#(\d+)/.exec(label||'');if(m)b=bs.find(x=>x.id===+m[1])||((window.scCityEconomy.snapshot().buildings||[]).find(x=>x.id===+m[1]));}if(!b)return null;const cv=document.getElementById('field'),vp=cv&&cv.parentElement;if(vp){const r=cv.getBoundingClientRect();vp.scrollLeft+=0;const nx=b.x*r.width/cv.width-vp.clientWidth/2,ny=b.y*r.height/cv.height-vp.clientHeight/2;vp.scrollLeft=nx;vp.scrollTop=ny}window.scPeople.lastFocus={x:Math.round(b.x),y:Math.round(b.y),label};window.scFocusRing={x:b.x,y:b.y,until:performance.now()+2500,text:label.replace(/^the Keep.*/i,'The Keep')};return window.scPeople.lastFocus}
  let filter='all';
  const kind=p=>p.role==='Child'?'children':p.role==='Elder'?'elders':'workers';
@@ -7907,7 +7934,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <!-- Version display fix: single authoritative visible release label. -->
 <script id="sc1406VersionFix">
 (()=>{'use strict';
- const version='0.41.0';
+ const version='0.43.0';
  function sync(){
   document.title='Shattered Crowns — v'+version;
   const badge=document.getElementById('sc179Version');

@@ -114,7 +114,8 @@ test('Story cards appear once at milestones and the School inspect panel shows i
  await p.locator('#scStoryCard').click();assert.equal(await p.locator('#scStoryCard').count(),0);
  await p.evaluate(()=>__sc38.seed('chapel',820,420));
  await p.waitForFunction(()=>document.querySelector('#scStoryCard'),null,{timeout:6000});
- assert.match(await p.locator('#scStoryCard').innerText(),/Chapel Bell/);
+ const seen=[await p.locator('#scStoryCard').innerText()];await p.locator('#scStoryCard').click();await p.waitForFunction(()=>document.querySelector('#scStoryCard'),null,{timeout:6000});seen.push(await p.locator('#scStoryCard').innerText());
+ assert.ok(seen.some(x=>/Chapel Bell/.test(x)),'Chapel card shown (cards queue instead of replacing each other): '+seen.join(' | '));
  await p.evaluate(()=>{__sc38.advance(2)});
  const info=await p.evaluate(()=>__sc38.inspect('school'));
  assert.match(info,/SCHOOL: \d+ Teacher/);
@@ -137,5 +138,34 @@ test('Events: refugees can be welcomed, a trader sells stone, saves stay valid, 
  assert.equal(await p.locator('#scEventCard').count(),0);
  await p.evaluate(()=>scPeople.open());
  assert.match(await p.locator('.sc36Row').first().innerText(),/·\s*\S+/);
+ assert.deepEqual(errs,[]);
+});
+test('Families move out of the Keep into a house with a well and road, and Show home targets that house',async t=>{
+ const p=await game(t,'home',1366,640);const errs=[];p.on('pageerror',e=>errs.push(e.message));
+ const base=await p.evaluate(()=>scPeople.list().filter(x=>x.home==='the Keep').length);
+ assert.ok(base>=6,'at the start nearly everyone lives in the Keep: '+base);
+ const k=await p.evaluate(()=>{const b=scHoverBuildings.find(x=>x.type==='keep'&&x.team===0);return {x:b.x,y:b.y}});
+ await p.evaluate(({x,y})=>{__sc38.seed('house',x+170,y+70);__sc38.seed('well',x+170,y+10);for(const dx of [90,134,178,222])__sc38.seed('road',x+dx,y+130)},k);
+ await p.evaluate(()=>__sc38.advance(40));
+ const r=await p.evaluate(()=>{const l=scPeople.list();return {keep:l.filter(x=>x.home==='the Keep').length,house:l.filter(x=>/^House #/.test(x.home)).length,sample:l.find(x=>/^House #/.test(x.home))}});
+ assert.ok(r.house>=1,'someone moved into the house: '+JSON.stringify(r));assert.ok(r.keep<base);
+ await p.evaluate(()=>scPeople.open());
+ assert.deepEqual(errs,[]);
+});
+test('Chapters show goals, advance when built, and sickness dips the mood with a real choice',async t=>{
+ const p=await game(t,'home',1366,640);const errs=[];p.on('pageerror',e=>errs.push(e.message));
+ await p.waitForFunction(()=>document.querySelector('#scChapters'),null,{timeout:5000});
+ assert.match(await p.locator('#scChapters').innerText(),/Chapter 1[\s\S]*3 houses[\s\S]*a farm/);
+ assert.equal(await p.locator('#scChapters').evaluate(e=>getComputedStyle(e).pointerEvents),'none');
+ await p.evaluate(()=>{for(const [t,x,y] of [['house',560,300],['house',560,360],['house',560,420],['farm',760,300]])__sc38.seed(t,x,y)});
+ await p.waitForFunction(()=>/Chapter 2/.test(document.querySelector('#scChapters')?.innerText||''),null,{timeout:6000});
+ await p.waitForFunction(()=>/Chapter 1 complete/.test(document.querySelector('#scStoryCard')?.innerText||''),null,{timeout:6000});
+ const mood=()=>p.evaluate(()=>scCitySave.capture().state.people.happiness);
+ const m0=await mood();await p.evaluate(()=>scEvents.fire('sickness'));
+ await p.locator('#scEventCard [data-choice="pass"]').click();const m1=await mood();
+ assert.ok(m1<m0-5,'mood dips without help: '+m0+' -> '+m1);
+ const g0=await p.evaluate(()=>scCitySave.capture().state.resources.gold);
+ await p.evaluate(()=>scEvents.fire('sickness'));await p.locator('#scEventCard [data-choice="herbs"]').click();
+ const g1=await p.evaluate(()=>scCitySave.capture().state.resources.gold);assert.equal(g1,g0-30);
  assert.deepEqual(errs,[]);
 });
