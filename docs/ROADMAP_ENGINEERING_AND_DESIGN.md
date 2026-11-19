@@ -62,3 +62,6 @@ KEEP (core, staged): market with a few goods + supply/demand prices by region (s
 LATER (after multiplayer/AI villages): regions/continents map with neighbouring cultures; political systems as modifiers; religion power; assassins/guard; hidden non-playable sites to conquer; colosseum/hippodrome with betting in game gold.
 PARK / NEEDS CONVERSATION: cryptocurrency (legal, platform and trust risk; in-game currency only for now); the graphic-suite/AI-pricing research (separate ask).
 DISCARD: sexual violence, sadism and torture-as-entertainment cutscenes (hurts audience, store/payment ratings; we will not build); brothel menu with drug-addict tiers (replace with an abstract "tavern informants" spy mechanic if wanted); full real-economy jobs bought/sold per citizen; per-citizen AI conversations (cost, balance, unpredictability); 30 anthems up front.
+
+## Idea intake: stables and shipyards for trading ships (owner, 2026-11-19)
+Owner prefers starting with a stable or a shipyard for trading ships. Claude's view: best paired with the market (needs goods and regional prices to be worth anything), so it goes right after the market version; a shipyard also fits island starts (fish, sea trade). Decide together before that version.

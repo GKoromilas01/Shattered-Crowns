@@ -97,3 +97,12 @@ See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; mul
 - v0.42 content: `window.scEvents` (trader, refugees; v0.43 adds sickness), building-registry test (`tests/building-registry.test.cjs`), `test:quick` + `quick` CI job, trait in People rows, roadmap notes.
 - v0.43: families move from the Keep into houses that have food, a well and road access (`cityReconcileOccupancy`: only 2 ruler residents stay in the Keep, overflow up to 8 seats; total capacity unchanged), person page explains why someone is still in the Keep; `window.scChapters` (3 chapters, panel `#scChapters`, pointer-events none, story card on completion); sickness event (mood dip via `happiness`, less with Healer/Chapel or herbs).
 - Owner feedback: Show workplace worked; Show home used to point at the Keep because the first 8 residents were always counted there.
+
+## v0.44.0 — The Advisor's Table
+- Events are decisions: each card has 2-4 choices, a ★ on the advisor's counsel, a 30 s countdown (counts only while unpaused) and a cautious default on timeout. `scEvents.fire(kind, seconds)` lets tests shorten the countdown.
+- New events: bandits (pay / stand firm / hide; the Keep and people are never lost, only small resource losses) and a feast request. Trader can also buy wood; refugees can be taken as workers only; fever can be met with prayer (needs Chapel) or quarantine.
+- Advisor record: counsel is judged at decision time (is the advised option safe for the stockpile afterwards?) and shown as "n of m counsels proved sound" in the event card and the chapter box.
+- Chapters 4 (Well, Clinic, 6 houses) and 5 (Plaza, Theater, Garden).
+- "Retreat instead of wipe-out": the city mode has no raids yet (only skirmish has enemy attacks), so it was delivered as the bandit event; real raid retreat belongs with defence waves.
+- Tests: tests/school.test.cjs (events decisions, chapters 4-5). The test helper clicks #sc154Pause, so tests that rely on the countdown must unpause first.
+- Docs merged: idea intake (base building, anti-snowball, subgenres, asymmetry, big vision triage). Owner idea recorded: stable / shipyard for trading ships.

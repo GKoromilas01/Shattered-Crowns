@@ -169,3 +169,40 @@ test('Chapters show goals, advance when built, and sickness dips the mood with a
  const g1=await p.evaluate(()=>scCitySave.capture().state.resources.gold);assert.equal(g1,g0-30);
  assert.deepEqual(errs,[]);
 });
+
+test('Events are decisions: advisor star, countdown default, advisor record, bandits never destroy the Keep',async t=>{
+ const p=await game(t,'home',1366,640);const errs=[];p.on('pageerror',e=>errs.push(e.message));
+ const res=()=>p.evaluate(()=>scCitySave.capture().state.resources);
+ await p.evaluate(()=>scEvents.fire('trader'));
+ assert.match(await p.locator('#scEventCard').innerText(),/Decide within 30 s, otherwise: Send him on/);
+ assert.equal(await p.locator('#scEventCard button:has-text("★")').count(),1,'exactly one advised option');
+ assert.match(await p.locator('#scAdvisorRecord').innerText(),/no counsel given yet/);
+ const r0=await res();await p.locator('#scEventCard [data-choice="sell"]').click();
+ const r1=await res();assert.equal(r1.wood,r0.wood-40);assert.equal(r1.gold,r0.gold+55);
+ assert.equal(await p.evaluate(()=>scEvents.advisor().total),1);
+ await p.evaluate(()=>scEvents.fire('refugees'));await p.locator('#scEventCard [data-choice="workers"]').click();
+ const r2=await res();assert.equal(r2.food,r1.food-8);
+ await p.evaluate(()=>scEvents.fire('feast'));await p.locator('#scEventCard [data-choice="prayer"]').click();
+ await p.evaluate(()=>scEvents.fire('sickness'));
+ assert.equal(await p.locator('#scEventCard [data-choice="pray"]').isDisabled(),true,'no Chapel, no prayer');
+ await p.locator('#scEventCard [data-choice="quarantine"]').click();assert.equal((await res()).wood,r1.wood-20);
+ await p.evaluate(()=>scEvents.fire('bandits'));
+ const keepBefore=await p.evaluate(()=>scHoverBuildings.filter(b=>b.type==='keep'&&b.team===0).length);
+ await p.locator('#scEventCard [data-choice="stand"]').click();
+ assert.equal(await p.evaluate(()=>scHoverBuildings.filter(b=>b.type==='keep'&&b.team===0).length),keepBefore);
+ assert.ok(keepBefore>=1,'the Keep is still standing after the bandits');
+ await p.locator('#sc154Pause').click();await p.evaluate(()=>scEvents.fire('bandits',2));
+ await p.waitForFunction(()=>!document.querySelector('#scEventCard'),null,{timeout:6000});
+ assert.equal(await p.evaluate(()=>scEvents.advisor().total),6,'timeout also records the advisor counsel');
+ assert.deepEqual(errs,[]);
+});
+test('Chapters 4 and 5 follow chapter 3',async t=>{
+ const p=await game(t,'home',1366,640);const errs=[];p.on('pageerror',e=>errs.push(e.message));
+ await p.evaluate(()=>{for(const [t,x,y] of [['house',560,300],['house',560,360],['house',560,420],['house',640,300],['house',640,360],['house',640,420],['farm',760,300],['market',760,380],['granary',860,300],['bakery',860,380],['school',700,520],['chapel',820,520]])__sc38.seed(t,x,y)});
+ await p.waitForFunction(()=>/Chapter 4/.test(document.querySelector('#scChapters')?.innerText||''),null,{timeout:8000});
+ assert.match(await p.locator('#scChapters').innerText(),/a Well[\s\S]*a Clinic[\s\S]*6 houses/);
+ await p.evaluate(()=>{for(const [t,x,y] of [['well',980,300],['clinic',980,380]])__sc38.seed(t,x,y)});
+ await p.waitForFunction(()=>/Chapter 5/.test(document.querySelector('#scChapters')?.innerText||''),null,{timeout:8000});
+ assert.match(await p.locator('#scChapters').innerText(),/a Plaza[\s\S]*a Theater[\s\S]*a Garden/);
+ assert.deepEqual(errs,[]);
+});
