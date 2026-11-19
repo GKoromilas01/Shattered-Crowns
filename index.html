@@ -3590,11 +3590,11 @@ const scPlayerSteps=[
  {text:'Gather more wood and gold, then build a Market. Markets let you trade for what you are missing.',check:()=>!!buildings.find(b=>b.team===0&&b.type==='market'&&alive(b))}
 ];
 const scTesterSteps=[
- {text:'Build a School: open the build menu, press School (🎓), click empty ground near your houses. A pulsing gold ring and a label like "SCHOOL 0% · 3 builders · ~20 s" appear, and nearby workers walk over by themselves. It should finish without you selecting anyone. Tell me if it does.',manual:true},
- {text:'Build a Chapel (⛪) the same way. When finished, open People: one adult shows as Priest. Tell me if it works.',manual:true},
- {text:'People: click a resident, press 📍 Show home. The panel closes and a gold ring flashes on their house, even when the whole map is on screen. Tell me if you see it.',manual:true},
- {text:'Weather: within about 10 s of starting, a light rain slants across the map for ~25 s and then stops. Press the ☂ button in the top bar to switch it off (it becomes ☀). Tell me if it looks right.',manual:true},
- {text:'Survivors: start a new game with Begin as survivors (journey). You should see a small camp with tents, a palisade and a campfire, labelled SURVIVORS\' CAMP, not a castle. Tell me if it feels like a refugee start.',manual:true}
+ {text:'Build a School (🎓 in the build menu) near your houses. A gold ring with builders and time appears and workers come by themselves. Does it finish?',manual:true},
+ {text:'Build a Chapel (⛪) the same way. When done, open People: one adult is a Priest. Does it work?',manual:true},
+ {text:'People: click a resident, press 📍 Show home. A gold ring flashes on their house. Do you see it?',manual:true},
+ {text:'Weather: within ~10 s light rain falls for ~25 s. The ☂ button in the top bar turns it off. Does it look right?',manual:true},
+ {text:'Survivors: start with Begin as survivors. You should see a small camp with tents and a campfire, not a castle. Does it feel like a refugee start?',manual:true}
 ];
 let scAdvisorMode='player';try{const m=localStorage.getItem('shattered-crowns-advisor-mode-v1');if(m==='tester'||m==='player')scAdvisorMode=m}catch(e){}
 const versionTests=[...(scAdvisorMode==='tester'?scTesterSteps:scPlayerSteps)];
