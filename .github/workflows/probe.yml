@@ -21,7 +21,7 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
-      - run: npx playwright install-deps chromium
+      - run: npx playwright install-deps chromium && npx playwright install chromium
       - name: Apply variant
         run: |
           case "${{ matrix.variant }}" in
