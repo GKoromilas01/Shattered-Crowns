@@ -151,7 +151,7 @@ const sc1328PreviewSize=(type)=>{
  const art={
   house:[40,47],farm:[64,45],fishery:[61,43],market:[65,48],
   well:[42,48],lumberyard:[64,46],granary:[62,61],
-  bakery:[61,53],theater:[70,56],school:[66,54],clinic:[62,61],garden:[60,38],plaza:[58,39],
+  bakery:[61,53],theater:[70,56],school:[66,54],chapel:[60,62],clinic:[62,61],garden:[60,38],plaza:[58,39],
   road:[30,17],tower:[55,75],fortress:[95,88],wall:[84,45]
  };
  const dims=art[type]||[65,48];
