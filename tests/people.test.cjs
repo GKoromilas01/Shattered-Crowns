@@ -25,14 +25,3 @@ test('People list has a summary, filters and household families that grow up',as
  await p.locator('.sc36Filter[data-filter="all"]').click();await p.locator('.sc36Row').first().click();assert.match(await p.locator('#sc36Family').innerText(),/Household:|Lives alone/);
  const r=await p.evaluate(()=>{const a=scPeople.list();const kids=a.filter(x=>x.role==='Child');return {kids:kids.length,hh:a.some(x=>x.household.length>0)}});assert.equal(r.hh,true);
 });
-test('Weather changes the screen overlay and the clock label',async t=>{
- const p=await game(t);const seen=await p.evaluate(()=>{const o={};for(const k of scWeather.kinds){scWeather.set(k);o[k]=document.getElementById('sc36Clock').textContent}scWeather.clear();return o});
- assert.match(seen.Rain,/Rain/);assert.match(seen.Fog,/Fog/);assert.match(seen.Cloudy,/Cloudy/);assert.doesNotMatch(seen.Clear,/Rain|Fog|Cloudy/);
- assert.equal(await p.locator('#sc37Weather').evaluate(c=>getComputedStyle(c).pointerEvents),'none');
-});
-test('Weather overlay never hides the map (transparent canvas, map still drawn)',async t=>{
- const p=await game(t);await p.evaluate(()=>scWeather.set('Cloudy'));await p.waitForTimeout(400);
- assert.equal(await p.locator('#sc37Weather').evaluate(c=>getComputedStyle(c).backgroundColor),'rgba(0, 0, 0, 0)');
- const shot=await p.screenshot();const {PNG}=(()=>{try{return require('pngjs')}catch(e){return {}}})();
- if(PNG){const img=PNG.sync.read(shot);const set=new Set();for(let y=250;y<img.height-200;y+=40)for(let x=150;x<img.width-150;x+=40){const i=(y*img.width+x)*4;set.add(img.data[i]+','+img.data[i+1]+','+img.data[i+2])}assert.ok(set.size>20,'map area has detail, colours '+set.size)}
-});

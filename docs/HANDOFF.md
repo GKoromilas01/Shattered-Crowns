@@ -65,10 +65,10 @@ See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; mul
 
 ## v0.37
 - People: summary line, filters (All/Working age/Children/Elders), Household line in the person detail, ages advance +1 per 60 economy cycles (children can become workers).
-- Weather (visual only): `window.scWeather` (Clear/Cloudy/Rain/Fog changing every ~90s, canvas overlay `#sc37Weather`, label in the clock chip). No gameplay effect yet.
+- (Weather was added here and REMOVED in v0.41 by the owner's decision.)
 
 ## v0.37.1 hotfix
-- The weather canvas inherited the global `canvas{background:#31523b}` rule and hid the whole map. Now `background:transparent!important`. Lesson: any new canvas must override the global canvas style; always screenshot new overlays at a large viewport.
+- (Weather canvas hotfix note obsolete: weather removed in v0.41.) Lesson that still holds: any new canvas must override the global `canvas{background:#31523b}` rule.
 
 ## Owner working rules (2026-11-18)
 - Each release should bundle several new things; avoid one-small-fix versions that cost an hour of CI each. Batch non-urgent fixes into the next feature version (urgent bugs excepted, like the v0.37.1 blank map).
@@ -85,5 +85,10 @@ See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; mul
 - Placing a building by UI click now auto-sends up to 3 nearest free workers (`scStartConstruction`); selected workers still take priority. Tests that need unassigned foundations call `__constructionTest.release()` / `__livingCityTest.release()`.
 - `sc39SiteMarkers` draws a gold ring and a label with builder count and ETA (rate measured per second); `scFocusRing` flashes a ring for Show home/workplace.
 - Survivors' start (`window.scSmallKeep`) draws `campArt` in the v026 renderer instead of a small Keep.
-- `sc40Weather` (rain with gusting slant, first at 8 s, 25 s every 90 s) and a ☂/☀ toggle `#scWeatherQuick` saved in localStorage `sc-weather-v1`. Night mode stays dropped.
+- Weather was tried in v0.40 and removed again in v0.41 (see below). Night mode stays dropped.
 - No new music themes (8 tracks) by the owner's request.
+
+## v0.41.0
+- OWNER DECISION: no weather effects at all (rain, snow, fog, clouds) and nothing weather-related that touches crops. Removed `sc40Weather`, the ☂ toggle, `window.scWeather`, the `#sc37Weather` canvas and the clock-chip label. Do not re-add without the owner asking.
+- ROOT CAUSE of "School/Chapel cannot be built" (v0.38-v0.40): the placement-rectangle mode list in the overlay (`['tower',...,'theater','school','chapel','workshop'].includes(mode)`, in src/v026/overlays.js and the hand-edited copies in index.html) did not contain school/chapel, so no rectangle appeared. New buildings must be added to EVERY mode list; grep for `'theater'` and `'clinic'` when adding a building.
+- Added in v0.41: `window.scStoryCards` (story cards on first harvest, first School, first Chapel, 10 residents; polls the economy snapshot each second, primed on first poll so existing state never pops a card, shows each once per city, click or 7 s to close, `#scStoryCard`); School/Chapel inspector line (Teachers/Priest, children attending, parish size) in `describeBuilding`.

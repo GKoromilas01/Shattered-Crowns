@@ -1,6 +1,6 @@
 const {test,before,after}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),http=require('node:http');
 const {launchBrowser,browserPage}=require('./support/browser.cjs');
-const adapter=`window.__sc38={seed(type,x,y){const b=addBuilding(0,type,x,y);updateUI();return !!b},advance(s){for(let left=s;left>1e-8;left-=.25)tick(Math.min(.25,left));}};`;
+const adapter=`window.__sc38={inspect(type){inspectedBuilding=buildings.find(b=>b.team===0&&b.type===type);selected=[];updateUI();return el('buildingInspector').textContent},seed(type,x,y){const b=addBuilding(0,type,x,y);updateUI();return !!b},advance(s){for(let left=s;left>1e-8;left-=.25)tick(Math.min(.25,left));}};`;
 let browser,server,url;
 before(async()=>{server=http.createServer((q,r)=>{r.setHeader('Content-Type','text/html');r.end(fs.readFileSync('index.html','utf8').replace('window.scHoverBuildings=buildings;function frame',adapter+'window.scHoverBuildings=buildings;function frame'))});await new Promise(r=>server.listen(0,'127.0.0.1',r));url='http://127.0.0.1:'+server.address().port;browser=await launchBrowser()});
 after(async()=>{await browser?.close();server?.close()});
@@ -93,12 +93,30 @@ test('Survivors camp and the focus ring render without errors',async t=>{
  await p.evaluate(()=>{scApplyJourney({survivors:5,gold:200,wood:150,stone:40,food:90});scFocusRing={x:400,y:300,until:performance.now()+2500,text:'House #1'}});
  await p.waitForTimeout(700);assert.deepEqual(errs,[]);
 });
-test('Foundation label shows builders and weather toggle works without errors',async t=>{
+test('School and Chapel show a placement rectangle and no weather exists',async t=>{
  const p=await game(t,'home',1366,640);const errs=[];p.on('pageerror',e=>errs.push(e.message));
- await p.locator('#sc140Build').click();await p.locator('#sc140Commands button',{hasText:'School'}).first().click();
- await p.mouse.click(700,350);await p.waitForTimeout(1500);
- assert.equal(await p.locator('#scWeatherQuick').count(),1);
- const on=await p.evaluate(()=>scWeatherOn);await p.locator('#scWeatherQuick').click();
- assert.equal(await p.evaluate(()=>scWeatherOn),!on);await p.locator('#scWeatherQuick').click();
- await p.evaluate(()=>{window.scWeatherOn=true});await p.waitForTimeout(600);assert.deepEqual(errs,[]);
+ for(const name of ['School','Chapel']){
+  await p.locator('#sc140Build').click();await p.locator('#sc140Commands button',{hasText:name}).first().click();
+  await p.mouse.move(700,350);await p.waitForTimeout(150);await p.mouse.move(708,354);await p.waitForTimeout(250);
+  const px=await p.evaluate(()=>{const c=document.querySelector('#field'),r=c.getBoundingClientRect(),g=c.getContext('2d');const x=Math.round((708-r.x)*c.width/r.width),y=Math.round((354-r.y)*c.height/r.height);const d=g.getImageData(x-6,y-6,12,12).data;let light=0;for(let i=0;i<d.length;i+=4)if(d[i]>150&&d[i+1]>150&&d[i+2]>130)light++;return light});
+  assert.ok(px>10,name+' placement rectangle is drawn under the pointer ('+px+')');
+  await p.keyboard.press('Escape');
+ }
+ assert.equal(await p.evaluate(()=>typeof window.scWeather),'undefined');assert.equal(await p.locator('#sc37Weather').count(),0);assert.equal(await p.locator('#scWeatherQuick').count(),0);
+ assert.deepEqual(errs,[]);
+});
+test('Story cards appear once at milestones and the School inspect panel shows its staff',async t=>{
+ const p=await game(t,'home',1366,640);const errs=[];p.on('pageerror',e=>errs.push(e.message));
+ await p.waitForTimeout(1500);assert.equal(await p.locator('#scStoryCard').count(),0,'no card for the starting state');
+ await p.evaluate(()=>__sc38.seed('school',700,420));
+ await p.waitForFunction(()=>document.querySelector('#scStoryCard'),null,{timeout:6000});
+ assert.match(await p.locator('#scStoryCard').innerText(),/School Opens/);
+ await p.locator('#scStoryCard').click();assert.equal(await p.locator('#scStoryCard').count(),0);
+ await p.evaluate(()=>__sc38.seed('chapel',820,420));
+ await p.waitForFunction(()=>document.querySelector('#scStoryCard'),null,{timeout:6000});
+ assert.match(await p.locator('#scStoryCard').innerText(),/Chapel Bell/);
+ await p.evaluate(()=>{__sc38.advance(2)});
+ const info=await p.evaluate(()=>__sc38.inspect('school'));
+ assert.match(info,/SCHOOL: \d+ Teacher/);
+ assert.deepEqual(errs,[]);
 });
