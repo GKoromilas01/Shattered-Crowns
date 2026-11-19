@@ -1,7 +1,7 @@
 const {chromium}=require('playwright');const fs=require('node:fs');const path=require('node:path');const assert=require('node:assert/strict');const {safeName}=require('../../scripts/artifacts.cjs');
 function launchBrowser(){return chromium.launch({executablePath:process.env.CHROMIUM_PATH||chromium.executablePath(),args:['--no-sandbox']})}
-async function browserPage(t,browser,options={}){
- const context=await browser.newContext(options);await context.tracing.start({screenshots:false,snapshots:true,sources:true});const page=await context.newPage();const errors=[],consoleMessages=[];
+async function browserPage(t,browser,options0={}){
+ const {autoBuilders,...options}=options0;const context=await browser.newContext(options);await context.tracing.start({screenshots:false,snapshots:true,sources:true});const page=await context.newPage();if(!autoBuilders)await page.addInitScript(()=>{window.scNoAutoBuilders=true});const errors=[],consoleMessages=[];
  page.on('pageerror',e=>errors.push(e.stack||e.message));page.on('console',m=>{if(['error','warning'].includes(m.type()))consoleMessages.push(m.text())});
  const dir=path.join(process.env.TEST_ARTIFACT_DIR||'test-results',safeName(t.name));fs.mkdirSync(dir,{recursive:true});
  t.after(async()=>{
