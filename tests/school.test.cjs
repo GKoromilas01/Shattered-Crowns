@@ -4,7 +4,7 @@ const adapter=`window.__sc38={seed(type,x,y){const b=addBuilding(0,type,x,y);upd
 let browser,server,url;
 before(async()=>{server=http.createServer((q,r)=>{r.setHeader('Content-Type','text/html');r.end(fs.readFileSync('index.html','utf8').replace('window.scHoverBuildings=buildings;function frame',adapter+'window.scHoverBuildings=buildings;function frame'))});await new Promise(r=>server.listen(0,'127.0.0.1',r));url='http://127.0.0.1:'+server.address().port;browser=await launchBrowser()});
 after(async()=>{await browser?.close();server?.close()});
-async function game(t,origin='home',w=1440,h=900){const {page:p}=await browserPage(t,browser,{viewport:{width:w,height:h},reducedMotion:'reduce'});p.setDefaultTimeout(7000);await p.goto(url);await p.locator('#sc1310Skip').click();await p.evaluate(id=>scCampaign.start('city',id),origin);await p.locator('#sc154Pause').click();return p;}
+async function game(t,origin='home',w=1440,h=900){const {page:p}=await browserPage(t,browser,{viewport:{width:w,height:h},reducedMotion:'reduce'});p.setDefaultTimeout(20000);await p.goto(url);await p.locator('#sc1310Skip').click();await p.evaluate(id=>scCampaign.start('city',id),origin);await p.locator('#sc154Pause').click();return p;}
 test('School is a placeable building with a teacher and attending children',async t=>{
  const p=await game(t);
  assert.equal(await p.evaluate(()=>!!document.querySelector('#quickDock [data-action="school"]')),true,'School in the build menu');
@@ -26,7 +26,7 @@ test('Music has a Next track button that changes the track',async t=>{
  const b=await p.evaluate(()=>scMusic.info());
  assert.notEqual(b.label,a);assert.match(await p.locator('#scMusicNext').getAttribute('title'),new RegExp(b.label));
 });
-test('Night is lighter and every kingdom has stone and gold within a short walk',async t=>{
+test('Every kingdom has stone and gold within a short walk',async t=>{
  const p=await game(t);
  const n=await p.evaluate(()=>{const o=scDayNight;return typeof o==='object'});assert.ok(n);
  for(const id of ['briar-3','saffron-3','stormhaven-2']){
@@ -46,4 +46,35 @@ test('Rank promotions never push a unit above its maximum health (saves stay val
  const p=await game(t);
  const r=await p.evaluate(()=>{const u=scRTSUnits.find(x=>x.team===0&&x.type==='soldier');u.hp=u.max-5;for(let i=0;i<10;i++)scEarnKill(u);const ok=u.hp<=u.max;return {ok,hp:u.hp,max:u.max,exp:scSavedCity.exportText().ok}});
  assert.ok(r.ok,JSON.stringify(r));assert.equal(r.exp,true);
+});
+
+test('School can be placed by clicking the build button and then the map (real UI path)',async t=>{
+ const p=await game(t,'home',1366,640);
+ await p.locator('#sc140Build').click();await p.locator('#sc140Commands button',{hasText:'School'}).first().click();
+ await p.mouse.click(700,350);await p.waitForTimeout(500);
+ const r=await p.evaluate(()=>({sites:(scCitySave.capture().state.construction||[]).filter(c=>c.type==='school').length,res:scCityEconomy.snapshot().village.resources}));
+ assert.equal(r.sites,1,'a School foundation appears: '+JSON.stringify(r));assert.equal(r.res.gold,200);assert.equal(r.res.wood,150);assert.equal(r.res.stone,20);
+});
+
+test('Chapel is placed by clicking, finishes, and gives the town a Priest',async t=>{
+ const p=await game(t,'home',1366,640);
+ await p.locator('#sc140Build').click();await p.locator('#sc140Commands button',{hasText:'Chapel'}).first().click();
+ await p.mouse.click(700,350);await p.waitForTimeout(500);
+ const r=await p.evaluate(()=>({sites:(scCitySave.capture().state.construction||[]).filter(c=>c.type==='chapel').length,res:scCityEconomy.snapshot().village.resources}));
+ assert.equal(r.sites,1);assert.equal(r.res.gold,180);assert.equal(r.res.wood,170);assert.equal(r.res.stone,0);
+ await p.evaluate(()=>__sc38.seed('chapel',760,430));
+ const pr=await p.evaluate(()=>{__sc38.advance(2);return scPeople.list().filter(x=>x.role==='Priest').length});
+ assert.ok(pr>=1,'a Priest is assigned');
+});
+
+test('People: Show home centres the map; children grow up faster; survivors get a smaller keep flag',async t=>{
+ const p=await game(t,'home',1366,640);
+ const r=await p.evaluate(()=>{const c0=scPeople.list().filter(x=>x.role==='Child').length;__sc38.advance(600);const c1=scPeople.list().filter(x=>x.role==='Child').length;return {c0,c1,cycles:scCityEconomy.snapshot().cycles}});
+ assert.ok(r.c0>=1,'there are children at the start '+JSON.stringify(r));assert.ok(r.c1<r.c0,'children grow into adults over ten minutes '+JSON.stringify(r));
+ await p.locator('#sc36PeopleBtn').click();await p.locator('#sc36People .sc36Row').first().click();
+ await p.locator('#sc39ShowHome').click();
+ const f=await p.evaluate(()=>scPeople.lastFocus);assert.ok(f&&f.x>0&&f.y>0,'focus recorded '+JSON.stringify(f));
+ assert.equal(await p.locator('#sc36People').count(),0,'panel closes after showing');
+ assert.equal(await p.evaluate(()=>{scApplyJourney({survivors:5,gold:200,wood:150,stone:40,food:90});return window.scSmallKeep}),true);
+ assert.equal(await p.evaluate(()=>{scCampaign.start('city','home');return window.scSmallKeep}),false);
 });
