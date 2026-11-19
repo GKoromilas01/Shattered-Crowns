@@ -120,3 +120,22 @@ test('Story cards appear once at milestones and the School inspect panel shows i
  assert.match(info,/SCHOOL: \d+ Teacher/);
  assert.deepEqual(errs,[]);
 });
+test('Events: refugees can be welcomed, a trader sells stone, saves stay valid, traits show in People',async t=>{
+ const p=await game(t,'home',1366,640);const errs=[];p.on('pageerror',e=>errs.push(e.message));
+ const before=await p.evaluate(()=>({w:scCitySave.capture().state.units.filter(u=>u.type==='worker').length,food:scCitySave.capture().state.resources.food,stone:scCitySave.capture().state.resources.stone,gold:scCitySave.capture().state.resources.gold}));
+ await p.evaluate(()=>scEvents.fire('refugees'));
+ await p.locator('#scEventCard [data-choice="accept"]').click();
+ const a=await p.evaluate(()=>scCitySave.capture());
+ assert.equal(a.state.units.filter(u=>u.type==='worker').length,before.w+2);
+ assert.equal(a.state.resources.food,before.food-15);
+ assert.equal((await p.evaluate(s=>scCitySave.restore(s),a)).ok,true,'a save with refugees restores');
+ await p.evaluate(()=>scEvents.fire('trader'));
+ await p.locator('#scEventCard [data-choice="buy"]').click();
+ const b=await p.evaluate(()=>scCitySave.capture().state.resources);
+ assert.equal(b.stone,before.stone+40);assert.equal(b.gold,before.gold-60);
+ await p.evaluate(()=>scEvents.fire('refugees'));await p.locator('#scEventCard [data-choice="decline"]').click();
+ assert.equal(await p.locator('#scEventCard').count(),0);
+ await p.evaluate(()=>scPeople.open());
+ assert.match(await p.locator('.sc36Row').first().innerText(),/·\s*\S+/);
+ assert.deepEqual(errs,[]);
+});
