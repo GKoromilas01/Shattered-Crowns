@@ -35,3 +35,16 @@ Engineering in parallel: one data table per building (a few buildings per versio
 - Honest scope: today the local map holds one city (2450x900) plus the classic skirmish enemy. Needs: a larger or world-map-based layout for 8 villages, AI villages that build economies (not only raid), trade/envoys/alliances/war between them (see docs/DESIGN_GROWTH_AND_WAR.md: slow-start war), and a performance budget for 8 simulated villages in a browser.
 - Staging: 1 AI village, then 3, then 7, checking speed each step; difficulty levels; AI personalities (trader, warlord, builder).
 - Moves into step 4 of the version order ("player abstraction + bots; single-player with up to 7 AI villages").
+
+## Idea intake: base building that matters (owner-supplied, not yet prioritised)
+Source: video notes "Making Base Building Meaningful in RTS Games". Recorded only; nothing built until agreed.
+1. Economy forces layout: resources deplete and need drop-off logistics (Age of Empires 2), so where you place farms, lumberyards and storage matters.
+2. Production pace: slow builds + need to spend means several production buildings are a real decision (StarCraft), not one of each.
+3. Placement vs paths: walls, gates and buildings block movement; choke points change fights.
+4. Utility and vulnerability per building: dual-use buildings (garrison + tech), ways to capture, repair, sabotage (C&C, Warcraft 3 shops).
+5. Worker opportunity cost: a builder busy building is not gathering/repairing/defending (Company of Heroes); fragile workers invite raids.
+6. Scouting tied to buildings: what an enemy builds reveals its plan; hiding/countering it is a layer.
+7. Adjacency bonuses only with trade-offs (avoid "one optimal grid" like Supreme Commander); StarCraft 2 add-ons that can be moved are the good model.
+
+## Idea intake: King of Avalon review (owner-supplied, inspiration only)
+Ad page: dark, warm interior art (cabin, firelight, frost window) with "Play for free". Game: FunPlus mobile MMORTS, Arthurian setting, alliance PvP, dragons/heroes, counter-based troops, heavy pay-to-win pressure (Steam Mixed). Take the mood and alliance/chat ideas; no assets, no pay-to-win.
