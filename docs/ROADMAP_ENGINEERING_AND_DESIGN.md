@@ -35,3 +35,30 @@ Engineering in parallel: one data table per building (a few buildings per versio
 - Honest scope: today the local map holds one city (2450x900) plus the classic skirmish enemy. Needs: a larger or world-map-based layout for 8 villages, AI villages that build economies (not only raid), trade/envoys/alliances/war between them (see docs/DESIGN_GROWTH_AND_WAR.md: slow-start war), and a performance budget for 8 simulated villages in a browser.
 - Staging: 1 AI village, then 3, then 7, checking speed each step; difficulty levels; AI personalities (trader, warlord, builder).
 - Moves into step 4 of the version order ("player abstraction + bots; single-player with up to 7 AI villages").
+
+## Idea intake: base building that matters (owner-supplied, not yet prioritised)
+Source: video notes "Making Base Building Meaningful in RTS Games". Recorded only; nothing built until agreed.
+1. Economy forces layout: resources deplete and need drop-off logistics (Age of Empires 2), so where you place farms, lumberyards and storage matters.
+2. Production pace: slow builds + need to spend means several production buildings are a real decision (StarCraft), not one of each.
+3. Placement vs paths: walls, gates and buildings block movement; choke points change fights.
+4. Utility and vulnerability per building: dual-use buildings (garrison + tech), ways to capture, repair, sabotage (C&C, Warcraft 3 shops).
+5. Worker opportunity cost: a builder busy building is not gathering/repairing/defending (Company of Heroes); fragile workers invite raids.
+6. Scouting tied to buildings: what an enemy builds reveals its plan; hiding/countering it is a layer.
+7. Adjacency bonuses only with trade-offs (avoid "one optimal grid" like Supreme Commander); StarCraft 2 add-ons that can be moved are the good model.
+
+## Idea intake: King of Avalon review (owner-supplied, inspiration only)
+Ad page: dark, warm interior art (cabin, firelight, frost window) with "Play for free". Game: FunPlus mobile MMORTS, Arthurian setting, alliance PvP, dragons/heroes, counter-based troops, heavy pay-to-win pressure (Steam Mixed). Take the mood and alliance/chat ideas; no assets, no pay-to-win.
+
+## Idea intake: anti-snowball, subgenres, asymmetry (owner-supplied, not yet prioritised)
+Sources: three RTS design video notes. Recorded only; proposals await the owner's agreement.
+- Anti-snowball: diminishing returns, vulnerable economy, upkeep on big armies/settlements, retreat instead of annihilation, caps, defender advantage that fades, alternative victory conditions.
+- Subgenre: Shattered Crowns = city-builder RTS with survival and hero/story elements. "Single player quotient" (calm build-up time before PvP) is a tunable multiplayer setting; our long calm opening suits it.
+- Asymmetry: factions differ in how they grow (economy/rules), not stripped-down copies; maps complement them; avoid balancing by removal.
+- Proposal: origins become the asymmetric factions; protection period + raids/events as pacing; upkeep via food/morale; retreat; non-military victory (prosperity/legacy). See chat of 2026-11-19 for the reasoning.
+
+## Idea intake: big vision list (owner, 2026-11-19) and triage
+Owner asked Claude to keep only what adds value to an addictive, balanced game, and discard excess. Triage:
+KEEP (core, staged): market with a few goods + supply/demand prices by region (start with 3-4 goods, gold only); advisor with choices, deadlines and efficiency track record (extends events/chapters); culture as a building-driven score (theater, school, chapel already exist); small random misfortunes (already: events); ownership/inheritance in light form (families have a house and savings); revolts at very low happiness; taxation choices with consequences; festivals (2-3 per year); ravens bringing messages as the cutscene carrier; named historical advisors as flavour; regional anthems per region (after music decision).
+LATER (after multiplayer/AI villages): regions/continents map with neighbouring cultures; political systems as modifiers; religion power; assassins/guard; hidden non-playable sites to conquer; colosseum/hippodrome with betting in game gold.
+PARK / NEEDS CONVERSATION: cryptocurrency (legal, platform and trust risk; in-game currency only for now); the graphic-suite/AI-pricing research (separate ask).
+DISCARD: sexual violence, sadism and torture-as-entertainment cutscenes (hurts audience, store/payment ratings; we will not build); brothel menu with drug-addict tiers (replace with an abstract "tavern informants" spy mechanic if wanted); full real-economy jobs bought/sold per citizen; per-citizen AI conversations (cost, balance, unpredictability); 30 anthems up front.
