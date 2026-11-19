@@ -47,3 +47,11 @@ test('Rank promotions never push a unit above its maximum health (saves stay val
  const r=await p.evaluate(()=>{const u=scRTSUnits.find(x=>x.team===0&&x.type==='soldier');u.hp=u.max-5;for(let i=0;i<10;i++)scEarnKill(u);const ok=u.hp<=u.max;return {ok,hp:u.hp,max:u.max,exp:scSavedCity.exportText().ok}});
  assert.ok(r.ok,JSON.stringify(r));assert.equal(r.exp,true);
 });
+
+test('School can be placed by clicking the build button and then the map (real UI path)',async t=>{
+ const p=await game(t,'home',1366,640);
+ await p.locator('#sc140Build').click();await p.locator('#sc140Commands button',{hasText:'School'}).first().click();
+ await p.mouse.click(700,350);await p.waitForTimeout(500);
+ const r=await p.evaluate(()=>({sites:(scCitySave.capture().state.construction||[]).filter(c=>c.type==='school').length,res:scCityEconomy.snapshot().village.resources}));
+ assert.equal(r.sites,1,'a School foundation appears: '+JSON.stringify(r));assert.equal(r.res.gold,200);assert.equal(r.res.wood,150);assert.equal(r.res.stone,20);
+});
