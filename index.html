@@ -1299,38 +1299,75 @@ window.scStoryCards=(function(){
  return {poll,show:id=>{const d=defs.find(x=>x.id===id);if(d)show(d)},card:(title,text)=>show({title,text}),ids:defs.map(d=>d.id),close};
 })();
 window.scEvents=(function(){
- let elapsed=0,next=40,count=0,box=null,timer=0;const KINDS=['trader','refugees','sickness'];
- function close(){clearTimeout(timer);if(box){box.remove();box=null}}
- function card(title,text,buttons){close();box=document.createElement('div');box.id='scEventCard';box.setAttribute('role','dialog');box.setAttribute('aria-label',title);
-  box.style.cssText='position:fixed;left:50%;top:108px;transform:translateX(-50%);z-index:725;width:min(440px,92vw);box-sizing:border-box;padding:14px 18px;background:#efe0bb;color:#3b2a1a;border:2px solid #8a6a36;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.5);font:14px/1.35 Georgia,serif';
-  const h=document.createElement('div');h.style.cssText='font:bold 16px Georgia,serif;margin-bottom:4px';h.textContent=title;const p=document.createElement('div');p.textContent=text;const row=document.createElement('div');row.style.cssText='display:flex;gap:8px;margin-top:10px;flex-wrap:wrap';
-  for(const b of buttons){const e=document.createElement('button');e.type='button';e.textContent=b.label;e.dataset.choice=b.id;e.style.cssText='padding:6px 12px;border-radius:6px;border:1px solid #6b4a2a;background:'+(b.primary?'#8a5a2b':'#d7c4a0')+';color:'+(b.primary?'#fff3d8':'#3b2a1a')+';font:13px system-ui;cursor:pointer';if(b.disabled){e.disabled=true;e.style.opacity='.55'}e.onclick=()=>{try{if(!ended)b.run&&b.run()}finally{close()}};row.append(e)}
-  box.append(h,p,row);document.body.appendChild(box);timer=setTimeout(close,45000)}
+ let elapsed=0,next=40,count=0,box=null,timer=0,dlOverride=0;const KINDS=['trader','refugees','sickness','bandits','feast'];
+ const advisor={good:0,total:0};
+ function record(sound){advisor.total++;if(sound)advisor.good++}
+ function recordLine(){return advisor.total?'Advisor record: '+advisor.good+' of '+advisor.total+' counsels proved sound':'Advisor record: no counsel given yet'}
+ function close(){clearInterval(timer);if(box){box.remove();box=null}}
+ function card(title,text,buttons,opt){close();opt=opt||{};const deadline=dlOverride||opt.deadline||30;dlOverride=0;let left=deadline;
+  box=document.createElement('div');box.id='scEventCard';box.setAttribute('role','dialog');box.setAttribute('aria-label',title);
+  box.style.cssText='position:fixed;left:50%;top:108px;transform:translateX(-50%);z-index:725;width:min(460px,92vw);box-sizing:border-box;padding:14px 18px;background:#efe0bb;color:#3b2a1a;border:2px solid #8a6a36;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.5);font:14px/1.35 Georgia,serif';
+  const h=document.createElement('div');h.style.cssText='font:bold 16px Georgia,serif;margin-bottom:4px';h.textContent=title;const p=document.createElement('div');p.textContent=text;
+  const row=document.createElement('div');row.style.cssText='display:flex;gap:8px;margin-top:10px;flex-wrap:wrap';
+  const def=buttons.find(b=>b.id===opt.def)||buttons[buttons.length-1];
+  const clock=document.createElement('div');clock.id='scEventClock';clock.style.cssText='margin-top:8px;font:12px system-ui;color:#5a4328';
+  const rec=document.createElement('div');rec.id='scAdvisorRecord';rec.style.cssText='margin-top:2px;font:12px system-ui;color:#5a4328';rec.textContent='★ marks your Advisor’s counsel. '+recordLine();
+  const paint=()=>{clock.textContent='Decide within '+left+' s, otherwise: '+def.label.replace(/^★ /,'')};
+  let settled=false;
+  const settle=b=>{if(settled)return;settled=true;try{if(opt.sound!==undefined&&opt.advised)record(!!opt.sound);if(!ended&&b.run)b.run()}finally{close()}};
+  for(const b of buttons){const e=document.createElement('button');e.type='button';e.textContent=(b.id===opt.advised?'★ ':'')+b.label;e.dataset.choice=b.id;e.style.cssText='padding:6px 12px;border-radius:6px;border:1px solid #6b4a2a;background:'+(b.primary?'#8a5a2b':'#d7c4a0')+';color:'+(b.primary?'#fff3d8':'#3b2a1a')+';font:13px system-ui;cursor:pointer';if(b.disabled){e.disabled=true;e.style.opacity='.55'}e.onclick=()=>settle(b);row.append(e)}
+  def.label=(def.id===opt.advised?'★ ':'')+def.label;
+  box.append(h,p,row,clock,rec);document.body.appendChild(box);paint();
+  timer=setInterval(()=>{if(paused||document.hidden)return;left--;if(left<=0){msg('You took too long: the default was chosen.');settle(def)}else paint()},1000)}
  function keep(){return buildings.find(b=>b.team===0&&b.type==='keep'&&alive(b))}
- function trader(){const price=60;card('A Wandering Trader','A trader with a laden cart offers 40 stone for '+price+' gold. He leaves at dusk.',[
-  {id:'buy',label:'Buy 40 stone ('+price+' gold)',primary:true,disabled:gold<price,run:()=>{if(gold>=price){gold-=price;stone+=40;msg('You bought 40 stone from the trader.');updateUI()}}},{id:'decline',label:'Send him on'}])}
- function refugees(){const k=keep();if(!k)return;card('A Family at the Gate','A tired family of three asks to stay. They will work, but they are hungry (they eat 15 of your food).',[
-  {id:'accept',label:'Welcome them',primary:true,run:()=>{const kk=keep();if(!kk)return;for(let i=0;i<2;i++)addUnit(0,'worker',kk.x+50+i*18,kk.y+60);population+=3;food=Math.max(0,food-15);msg('A family of three joined your settlement.');updateUI()}},{id:'decline',label:'Turn them away'}])}
+ function soldiers(){return units.filter(u=>u.team===0&&u.type!=='worker'&&alive(u)).length}
+ function trader(){const price=60,sellWood=40,sellPrice=55;const canBuy=gold>=price;const advised=canBuy?'buy':wood>=sellWood?'sell':'decline';const sound=advised==='buy'?gold-price>=40:true;
+  card('A Wandering Trader','A trader with a laden cart offers 40 stone for '+price+' gold, or will pay '+sellPrice+' gold for '+sellWood+' wood. He leaves at dusk.',[
+  {id:'buy',label:'Buy 40 stone ('+price+' gold)',primary:true,disabled:gold<price,run:()=>{if(gold>=price){gold-=price;stone+=40;msg('You bought 40 stone from the trader.');updateUI()}}},
+  {id:'sell',label:'Sell '+sellWood+' wood (+'+sellPrice+' gold)',disabled:wood<sellWood,run:()=>{if(wood>=sellWood){wood-=sellWood;gold+=sellPrice;msg('You sold '+sellWood+' wood for '+sellPrice+' gold.');updateUI()}}},
+  {id:'decline',label:'Send him on'}],{def:'decline',advised,sound})}
+ function refugees(){const k=keep();if(!k)return;const sound=food-15>=25;
+  card('A Family at the Gate','A tired family of three asks to stay. The adults will work, but all of them are hungry.',[
+  {id:'accept',label:'Welcome all three (-15 food)',primary:true,run:()=>{const kk=keep();if(!kk)return;for(let i=0;i<2;i++)addUnit(0,'worker',kk.x+50+i*18,kk.y+60);population+=3;food=Math.max(0,food-15);msg('A family of three joined your settlement.');updateUI()}},
+  {id:'workers',label:'Take the two adults only (-8 food)',run:()=>{const kk=keep();if(!kk)return;for(let i=0;i<2;i++)addUnit(0,'worker',kk.x+50+i*18,kk.y+60);population+=2;food=Math.max(0,food-8);msg('Two workers joined; the child was sent to kin nearby.');updateUI()}},
+  {id:'decline',label:'Turn them away'}],{def:'decline',advised:'accept',sound})}
  function sickness(){const bs=buildings.filter(b=>b.team===0&&alive(b)),healer=bs.some(b=>b.type==='clinic'),chapel=bs.some(b=>b.type==='chapel');const base=healer?3:chapel?7:12;const hit=n=>{happiness=Math.max(0,happiness-n);msg('Fever in the lanes: the mood of your people dipped by '+n+' and will recover.');updateUI()};
-  card('Fever in the Lanes','Several residents have fallen ill and the mood is low. '+(healer?'Your Healer is already tending them.':chapel?'The Chapel offers prayers and broth.':'You have no Healer or Chapel to help.')+' Herbs from the market would ease it (30 gold).',[
-  {id:'herbs',label:'Buy herbs (30 gold)',primary:true,disabled:gold<30,run:()=>{if(gold>=30){gold-=30;hit(Math.min(base,4))}}},{id:'pass',label:'Let it pass',run:()=>hit(base)}])}
- function fire(kind){count++;(kind==='refugees'?refugees:kind==='sickness'?sickness:trader)()}
- setInterval(()=>{if(ended&&box)close();const wl=document.getElementById('sc1310Welcome');if(paused||ended||scScenario!=='city'||scOverview||document.hidden||box||tutorialVisible||(wl&&wl.offsetParent!==null))return;if(!keep())return;elapsed++;if(elapsed>=next){fire(KINDS[count%3]);next=elapsed+150+Math.floor((count*37)%60)}},1000);
- return {fire,close,count:()=>count,state:()=>({elapsed,next,count,open:!!box})};
+  const advised=chapel?'pray':'herbs';const sound=advised==='pray'?true:gold-30>=30;
+  card('Fever in the Lanes','Several residents have fallen ill and the mood is low. '+(healer?'Your Healer is already tending them.':chapel?'The Chapel offers prayers and broth.':'You have no Healer or Chapel to help.')+' Choose how to respond.',[
+  {id:'herbs',label:'Buy herbs (30 gold)',primary:true,disabled:gold<30,run:()=>{if(gold>=30){gold-=30;hit(Math.min(base,4))}}},
+  {id:'pray',label:'Pray at the Chapel (free)',disabled:!chapel,run:()=>hit(Math.min(base,5))},
+  {id:'quarantine',label:'Quarantine the lanes (-20 wood)',disabled:wood<20,run:()=>{if(wood>=20){wood-=20;hit(Math.min(base,3))}}},
+  {id:'pass',label:'Let it pass',run:()=>hit(base)}],{def:'pass',advised,sound})}
+ function bandits(){const tribute=60;const advised=gold>=tribute?'pay':'hide';const sound=advised==='pay'?gold-tribute>=30:true;
+  card('Bandits on the Road','A gang blocks the road and demands '+tribute+' gold to let your carts pass. Whatever you choose, the Keep stands and no one is lost.',[
+  {id:'pay',label:'Pay the tribute ('+tribute+' gold)',primary:true,disabled:gold<tribute,run:()=>{if(gold>=tribute){gold-=tribute;msg('You paid the bandits. They rode away.');updateUI()}}},
+  {id:'stand',label:'Stand firm',run:()=>{if(soldiers()>=2){msg('Your soldiers held the road. The bandits fled with nothing.')}else{const w=Math.min(wood,30),f=Math.min(food,20);wood-=w;food-=f;msg('Without soldiers the bandits looted '+w+' wood and '+f+' food, then left.')}updateUI()}},
+  {id:'hide',label:'Hide behind the walls',run:()=>{const w=Math.min(wood,10),f=Math.min(food,10);wood-=w;food-=f;msg('You waited it out. Small losses: '+w+' wood and '+f+' food.');updateUI()}}],{def:'hide',advised,sound})}
+ function feast(){const cost=25;const advised=food>=60?'feast':'prayer';const sound=advised==='feast'?food-cost>=35:true;
+  card('The People Ask for a Feast','Neighbours gather at the Keep and ask for a small feast to lift their spirits after hard weeks.',[
+  {id:'feast',label:'Hold a feast (-'+cost+' food, mood +6)',primary:true,disabled:food<cost,run:()=>{if(food>=cost){food-=cost;happiness=Math.min(100,happiness+6);msg('The feast lifted spirits across the village.');updateUI()}}},
+  {id:'prayer',label:'A modest prayer (mood +2)',run:()=>{happiness=Math.min(100,happiness+2);msg('A short prayer eased some worries.');updateUI()}},
+  {id:'decline',label:'Not now (mood -2)',run:()=>{happiness=Math.max(0,happiness-2);msg('The people went home grumbling.');updateUI()}}],{def:'prayer',advised,sound})}
+ const FN={trader,refugees,sickness,bandits,feast};
+ function fire(kind,seconds){count++;dlOverride=seconds||0;(FN[kind]||trader)()}
+ setInterval(()=>{if(ended&&box)close();const wl=document.getElementById('sc1310Welcome');if(paused||ended||scScenario!=='city'||scOverview||document.hidden||box||tutorialVisible||(wl&&wl.offsetParent!==null))return;if(!keep())return;elapsed++;if(elapsed>=next){fire(KINDS[count%KINDS.length]);next=elapsed+150+Math.floor((count*37)%60)}},1000);
+ return {fire,close,count:()=>count,advisor:()=>({...advisor,line:recordLine()}),state:()=>({elapsed,next,count,open:!!box,advisor:{...advisor}})};
 })();
 window.scChapters=(function(){
  const n=(b,t)=>b.filter(x=>x.type===t).length;
  const defs=[
   {id:1,title:'Chapter 1 · A Hearth for Every Family',goals:[['3 houses',(s,b)=>n(b,'house')>=3],['a farm',(s,b)=>n(b,'farm')>=1]],done:'Three homes line the road and the fields are sown. The settlement has a heart.'},
   {id:2,title:'Chapter 2 · Trade and Bread',goals:[['a market',(s,b)=>n(b,'market')>=1],['a granary',(s,b)=>n(b,'granary')>=1],['a bakery',(s,b)=>n(b,'bakery')>=1]],done:'Bread, grain and bargains. Travellers now speak well of this place.'},
-  {id:3,title:'Chapter 3 · Faith and Learning',goals:[['a School',(s,b)=>n(b,'school')>=1],['a Chapel',(s,b)=>n(b,'chapel')>=1]],done:'Bells and lessons fill the lanes. The settlement is becoming a town.'}
+  {id:3,title:'Chapter 3 · Faith and Learning',goals:[['a School',(s,b)=>n(b,'school')>=1],['a Chapel',(s,b)=>n(b,'chapel')>=1]],done:'Bells and lessons fill the lanes. The settlement is becoming a town.'},
+  {id:4,title:'Chapter 4 · Clean Water, Healthy People',goals:[['a Well',(s,b)=>n(b,'well')>=1],['a Clinic',(s,b)=>n(b,'clinic')>=1],['6 houses',(s,b)=>n(b,'house')>=6]],done:'Fresh water and a healer. Fever no longer frightens the lanes.'},
+  {id:5,title:'Chapter 5 · A Town With Pride',goals:[['a Plaza',(s,b)=>n(b,'plaza')>=1],['a Theater',(s,b)=>n(b,'theater')>=1],['a Garden',(s,b)=>n(b,'garden')>=1]],done:'Songs in the square and flowers by the road. People now speak of this town with pride.'}
  ];
  let box=null,doneSet=new Set(),primed=false,last='';
  function state(){let s,b;try{s=window.scCityEconomy.snapshot();b=s.buildings||[]}catch(e){return null}if(!s)return null;return defs.map(d=>({d,goals:d.goals.map(([l,f])=>({l,ok:!!f(s,b)}))}))}
  function render(st){const cur=st.find(x=>!x.goals.every(g=>g.ok));
   if(!cur){if(box){box.remove();box=null}return}
   if(!box){box=document.createElement('div');box.id='scChapters';box.setAttribute('aria-label','Chapter goals');box.style.cssText='position:fixed;left:12px;top:186px;z-index:640;width:min(210px,56vw);box-sizing:border-box;padding:8px 10px;background:rgba(20,34,30,.88);color:#f2dfae;border:1px solid #d9a93c;border-radius:8px;font:12px/1.35 system-ui;pointer-events:none';document.body.appendChild(box)}
-  const html='<b>'+cur.d.title+'</b>'+cur.goals.map(g=>'<div>'+(g.ok?'✓':'○')+' '+g.l+'</div>').join('');if(html!==last){box.innerHTML=html;last=html}}
+  const ar=window.scEvents&&window.scEvents.advisor().total?'<div style="margin-top:4px;opacity:.8">'+window.scEvents.advisor().line+'</div>':'';const html='<b>'+cur.d.title+'</b>'+cur.goals.map(g=>'<div>'+(g.ok?'✓':'○')+' '+g.l+'</div>').join('')+ar;if(html!==last){box.innerHTML=html;last=html}}
  function poll(){const st=window.scCampaign&&scScenario==='city'?state():null;if(!st)return;
   for(const x of st){const ok=x.goals.every(g=>g.ok);if(ok&&!doneSet.has(x.d.id)){doneSet.add(x.d.id);if(primed&&window.scStoryCards)window.scStoryCards.card(x.d.title.split(' · ')[0]+' complete',x.d.done)}if(!ok&&doneSet.has(x.d.id))doneSet.delete(x.d.id)}
   primed=true;render(st)}
@@ -3654,12 +3691,11 @@ const scPlayerSteps=[
  {text:'Gather more wood and gold, then build a Market. Markets let you trade for what you are missing.',check:()=>!!buildings.find(b=>b.team===0&&b.type==='market'&&alive(b))}
 ];
 const scTesterSteps=[
- {text:'Look under the minimap: a Chapter 1 box lists "3 houses" and "a farm". Build them: a card says Chapter 1 complete and Chapter 2 appears. Does it?',manual:true},
- {text:'Build a House with a Well and a short Road beside it. After a minute, open People: some residents live in "House #". Do they?',manual:true},
- {text:'In People click a resident and press 📍 Show home: a gold ring flashes on their house (not the castle). Does it?',manual:true},
- {text:'If a resident still lives in the Keep, their page says why (needs a well, road and food). Is the note there?',manual:true},
- {text:'Play ~1 minute: a Wandering Trader card, later a Family at the Gate, later "Fever in the Lanes" (with Buy herbs / Let it pass). Do the choices work?',manual:true},
- {text:'Build a School and a Chapel: Chapter 3 completes with a card. Does it?',manual:true}
+ {text:'Play about 40 seconds: an event card appears with 2 to 4 choices, a ★ on your Advisor\'s counsel and a line "Decide within 30 s, otherwise: …". Is it there?',manual:true},
+ {text:'Pick any choice: the message log says what happened, and under the minimap the Chapter box shows "Advisor record: 1 of 1 counsels proved sound" (or 0 of 1). Does it?',manual:true},
+ {text:'When the next card appears, do nothing and watch the countdown: at 0 the cautious default is chosen and the log says "You took too long". Does it?',manual:true},
+ {text:'Over a few minutes you also meet Bandits on the Road (the Keep always stands, only small losses) and The People Ask for a Feast. Do their choices work?',manual:true},
+ {text:'Build a Well, a Clinic and 6 houses: Chapter 4 completes with a card and Chapter 5 (Plaza, Theater, Garden) appears. Does it?',manual:true}
 ];
 let scAdvisorMode='player';try{const m=localStorage.getItem('shattered-crowns-advisor-mode-v1');if(m==='tester'||m==='player')scAdvisorMode=m}catch(e){}
 const versionTests=[...(scAdvisorMode==='tester'?scTesterSteps:scPlayerSteps)];
@@ -7934,7 +7970,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <!-- Version display fix: single authoritative visible release label. -->
 <script id="sc1406VersionFix">
 (()=>{'use strict';
- const version='0.43.0';
+ const version='0.44.0';
  function sync(){
   document.title='Shattered Crowns — v'+version;
   const badge=document.getElementById('sc179Version');
