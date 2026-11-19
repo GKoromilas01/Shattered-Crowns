@@ -59,7 +59,7 @@ See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; mul
 
 ## v0.36 (living society, step 1)
 - `window.scPeople`: residents are derived deterministically from the economy snapshot (no save changes): name, age, role from filled workplace slots, home, traits, six stats that grow with experience. People button (top bar) lists and inspects them; a selected worker shows a person name and role.
-- `window.scDayNight`: 6-minute day (dawn, day, dusk, night, pre-dawn), soft tint overlay and clock chip. Real-time, not tied to pause.
+- `window.scDayNight`: phase names only; the tint was REMOVED in v0.38 (owner: night looks like a pause). The chip now shows only the weather.
 - Next steps (see docs/ROADMAP_LONG_TERM.md section 11): building hubs (Stables, School, Monastery), crime and law, court and council.
 - v0.36 also: survivors journey now opens with three code-drawn story pages (peace, raid, ashes; skippable) and a trail picture for each stage by terrain (`story`, `trail` in the journey IIFE). Real cut scenes to replace them later.
 
@@ -69,3 +69,12 @@ See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; mul
 
 ## v0.37.1 hotfix
 - The weather canvas inherited the global `canvas{background:#31523b}` rule and hid the whole map. Now `background:transparent!important`. Lesson: any new canvas must override the global canvas style; always screenshot new overlays at a large viewport.
+
+## Owner working rules (2026-11-18)
+- Each release should bundle several new things; avoid one-small-fix versions that cost an hour of CI each. Batch non-urgent fixes into the next feature version (urgent bugs excepted, like the v0.37.1 blank map).
+- When the owner suggests new features, do not drop current work or follow the order given. Read the roadmap docs (ROADMAP_IDEAS.md, ROADMAP_LONG_TERM.md, DESIGN_GROWTH_AND_WAR.md), set the priorities, and build in the order that is best for the game. Errors/bugs reported by the owner are handled first.
+- Before starting each new version (including fix-only ones), tell the owner what it will contain and wait for his agreement before building. Urgent breakages may be fixed first but still tell him the plan. Also tell him the full time to live (~2 hours from push: PR checks ~50 min, main checks ~50 min, release + his approval click).
+
+- v0.38 (owner-approved plan): School building (🎓, 90 wood/60 gold/30 stone; drawn in code in `schoolArt` in src/v026/renderer.js, not in the atlas; one adult becomes Teacher, children "attend" and gain knowledge in People); Ruler card at the top of People (portrait via `scJourney.portrait`, leader from localStorage `shattered-crowns-leader-v1`); music Next-track button `#scMusicNext` and `scMusic.info()/next()`; People panel moved below the top bar with its own scroll; night overlay lightened (night rgba(20,35,85,.2)); new-origin deposits pulled closer to the keep (briar/saffron/stormhaven). Edits to building width/size tables live in src/v026/*.js (re-run `node scripts/embed-v026.cjs`). Tests: tests/school.test.cjs.
+
+- v0.38 follow-ups from owner play: night tint removed entirely; guide step 1 explains selecting workers and right-clicking the foundation; foundation placed with no workers selected shows a hint; Marches home opens with 220 food (100 ran out in two minutes without a farm).
