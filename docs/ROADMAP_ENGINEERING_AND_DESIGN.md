@@ -28,3 +28,10 @@ Each version still needs the owner's agreement on its exact contents before buil
 5. Second village from the world map; telegraphed defence waves.
 6. Dynasty (heir, marriages), replay value (score, daily challenge), demo and store page.
 Engineering in parallel: one data table per building (a few buildings per version), reviewer helpers on bigger versions, real art early.
+
+## Single-player vs AI villages (owner request, 2026-11-19)
+- Single-player must let the player try the game against up to 7 AI villages (8 settlements in total), in addition to the peaceful city mode.
+- Design link: use ONE "player" abstraction (human, AI bot, later a remote human) so the same AI that runs a village in single-player also fills empty seats in multiplayer rooms and serves as the multiplayer test bot.
+- Honest scope: today the local map holds one city (2450x900) plus the classic skirmish enemy. Needs: a larger or world-map-based layout for 8 villages, AI villages that build economies (not only raid), trade/envoys/alliances/war between them (see docs/DESIGN_GROWTH_AND_WAR.md: slow-start war), and a performance budget for 8 simulated villages in a browser.
+- Staging: 1 AI village, then 3, then 7, checking speed each step; difficulty levels; AI personalities (trader, warlord, builder).
+- Moves into step 4 of the version order ("player abstraction + bots; single-player with up to 7 AI villages").
