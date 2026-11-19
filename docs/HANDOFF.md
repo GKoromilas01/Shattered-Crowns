@@ -80,3 +80,10 @@ See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; mul
 - v0.38 follow-ups from owner play: night tint removed entirely; guide step 1 explains selecting workers and right-clicking the foundation; foundation placed with no workers selected shows a hint; Marches home opens with 220 food (100 ran out in two minutes without a farm).
 
 - v0.39 (owner-approved): School placement fixed (click-handler type list was missing 'school'); Chapel (⛪ 70 wood/80 gold/50 stone, `chapelArt` in src/v026/renderer.js, Priest role, counts like a theater for homes within 240 units); two new music themes organ ('Cathedral organ') and pastoral ('Shepherd pipes') in `modalDefs` (8 tracks total; owner: STOP adding themes for now, revisit near theme #30); People detail has Show home / Show workplace buttons (`scPeople.lastFocus`); children age 10x faster than adults (`age0<16 ? cycles/6 : cycles/60`); survivors' journey sets `window.scSmallKeep` (localStorage `shattered-crowns-small-keep`) so the keep renders at width 80; planning-focus and caravan held-activation tests made race-proof. New building checklist: src/v026 width+size tables, src/v027 icon keys, index.html costs maps (`const costs={...}` x6), civicCosts, times, radii, dock button HTML, build menu array, `scBuildingTypes`, map-click type list in the pointerup handler (the one that was missed), ROLE/SKILL in People, role text.
+
+## v0.40.0
+- Placing a building by UI click now auto-sends up to 3 nearest free workers (`scStartConstruction`); selected workers still take priority. Tests that need unassigned foundations call `__constructionTest.release()` / `__livingCityTest.release()`.
+- `sc39SiteMarkers` draws a gold ring and a label with builder count and ETA (rate measured per second); `scFocusRing` flashes a ring for Show home/workplace.
+- Survivors' start (`window.scSmallKeep`) draws `campArt` in the v026 renderer instead of a small Keep.
+- `sc40Weather` (rain with gusting slant, first at 8 s, 25 s every 90 s) and a 🌧/☀ toggle `#scWeatherQuick` saved in localStorage `sc-weather-v1`. Night mode stays dropped.
+- No new music themes (8 tracks) by the owner's request.

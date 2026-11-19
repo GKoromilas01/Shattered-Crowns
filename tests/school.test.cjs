@@ -93,3 +93,12 @@ test('Survivors camp and the focus ring render without errors',async t=>{
  await p.evaluate(()=>{scApplyJourney({survivors:5,gold:200,wood:150,stone:40,food:90});scFocusRing={x:400,y:300,until:performance.now()+2500,text:'House #1'}});
  await p.waitForTimeout(700);assert.deepEqual(errs,[]);
 });
+test('Foundation label shows builders and weather toggle works without errors',async t=>{
+ const p=await game(t,'home',1366,640);const errs=[];p.on('pageerror',e=>errs.push(e.message));
+ await p.locator('#sc140Build').click();await p.locator('#sc140Commands button',{hasText:'School'}).first().click();
+ await p.mouse.click(700,350);await p.waitForTimeout(1500);
+ assert.equal(await p.locator('#scWeatherQuick').count(),1);
+ const on=await p.evaluate(()=>scWeatherOn);await p.locator('#scWeatherQuick').click();
+ assert.equal(await p.evaluate(()=>scWeatherOn),!on);await p.locator('#scWeatherQuick').click();
+ await p.evaluate(()=>{window.scWeatherOn=true});await p.waitForTimeout(600);assert.deepEqual(errs,[]);
+});
