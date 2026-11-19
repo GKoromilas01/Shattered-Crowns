@@ -1,6 +1,6 @@
 const {test,before,after}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),http=require('node:http');
 const {launchBrowser,browserPage}=require('./support/browser.cjs');
-const adapter=`window.__sc38={seed(type,x,y){const b=addBuilding(0,type,x,y);updateUI();return !!b},advance(s){for(let left=s;left>1e-8;left-=.25)tick(Math.min(.25,left));}};`;
+const adapter=`window.__sc38={inspect(type){inspectedBuilding=buildings.find(b=>b.team===0&&b.type===type);selected=[];updateUI();return el('buildingInspector').textContent},seed(type,x,y){const b=addBuilding(0,type,x,y);updateUI();return !!b},advance(s){for(let left=s;left>1e-8;left-=.25)tick(Math.min(.25,left));}};`;
 let browser,server,url;
 before(async()=>{server=http.createServer((q,r)=>{r.setHeader('Content-Type','text/html');r.end(fs.readFileSync('index.html','utf8').replace('window.scHoverBuildings=buildings;function frame',adapter+'window.scHoverBuildings=buildings;function frame'))});await new Promise(r=>server.listen(0,'127.0.0.1',r));url='http://127.0.0.1:'+server.address().port;browser=await launchBrowser()});
 after(async()=>{await browser?.close();server?.close()});
@@ -103,5 +103,20 @@ test('School and Chapel show a placement rectangle and no weather exists',async 
   await p.keyboard.press('Escape');
  }
  assert.equal(await p.evaluate(()=>typeof window.scWeather),'undefined');assert.equal(await p.locator('#sc37Weather').count(),0);assert.equal(await p.locator('#scWeatherQuick').count(),0);
+ assert.deepEqual(errs,[]);
+});
+test('Story cards appear once at milestones and the School inspect panel shows its staff',async t=>{
+ const p=await game(t,'home',1366,640);const errs=[];p.on('pageerror',e=>errs.push(e.message));
+ await p.waitForTimeout(1500);assert.equal(await p.locator('#scStoryCard').count(),0,'no card for the starting state');
+ await p.evaluate(()=>__sc38.seed('school',700,420));
+ await p.waitForFunction(()=>document.querySelector('#scStoryCard'),null,{timeout:6000});
+ assert.match(await p.locator('#scStoryCard').innerText(),/School Opens/);
+ await p.locator('#scStoryCard').click();assert.equal(await p.locator('#scStoryCard').count(),0);
+ await p.evaluate(()=>__sc38.seed('chapel',820,420));
+ await p.waitForFunction(()=>document.querySelector('#scStoryCard'),null,{timeout:6000});
+ assert.match(await p.locator('#scStoryCard').innerText(),/Chapel Bell/);
+ await p.evaluate(()=>{__sc38.advance(2)});
+ const info=await p.evaluate(()=>__sc38.inspect('school'));
+ assert.match(info,/SCHOOL: \d+ Teacher/);
  assert.deepEqual(errs,[]);
 });

@@ -935,7 +935,7 @@ function describeBuilding(b){
     const missing=requirements.filter(([label,ok])=>!ok).map(([label])=>label);
     detail+=' | NEXT: '+names[t.level+1]+' — '+(missing.length?'Missing: '+missing.join(', '):'All requirements met; development updates during simulation');
   }else detail+=' | MAXIMUM HOUSE LEVEL';
- }if(b.type==='well'||b.type==='clinic')detail+=' | Main road access: '+(civicHasRoadAccess(b)?'YES (happiness bonus)':'NO');
+ }if(b.type==='well'||b.type==='clinic')detail+=' | Main road access: '+(civicHasRoadAccess(b)?'YES (happiness bonus)':'NO');if(b.type==='school'||b.type==='chapel'){try{const ppl=window.scPeople?window.scPeople.list():[],role=b.type==='school'?'Teacher':'Priest',staff=ppl.filter(x=>x.role===role).length;detail=' | '+(b.type==='school'?'SCHOOL: '+staff+' Teacher'+(staff===1?'':'s')+' · '+ppl.filter(x=>x.role==='Child').length+' children attend':'CHAPEL: '+staff+' Priest'+(staff===1?'':'s')+' · '+ppl.length+' residents in the parish')+detail}catch(e){}}
  const diagnostic=cityBuildingDetails(b,hs?[hs]:[],context);
  if(diagnostic){detail=' | NEXT ACTION: '+diagnostic.nextAction+detail;if(diagnostic.house)detail+=' | '+Object.entries(diagnostic.house.services).map(([k,v])=>(k==='health'?'Healthcare':k==='water'?'Water':'Market')+': '+v.status.replaceAll('_',' ')).join(' · ')+' | Satisfaction '+happiness.toFixed(1)+'/100; migration needs 45+ plus food, water and roads';if(diagnostic.service)detail+=' | '+diagnostic.service.message;if(diagnostic.sharedSupply)detail+=' | Shared food '+diagnostic.sharedSupply.food.toFixed(1)+'; trade baskets '+Math.floor(diagnostic.sharedSupply.tradeBaskets)+' (optional exports)';if(diagnostic.storage)detail+=' | Shared reserve allocation: '+diagnostic.storage.stock+'/160 (not an additional stock)';if(diagnostic.coverage)detail+=' | Service coverage: '+diagnostic.coverage.served+'/'+diagnostic.coverage.nearby+' nearby homes; food delivery depends on the shared reserve';if(diagnostic.last){const f=diagnostic.last;detail+=' | LAST CYCLE (5 sec): harvest '+f.harvest+', logistics '+f.logistics+', grain used '+f.consumed+', bread produced '+f.produced+', exported '+f.exported;}}
  return '🔎 '+b.type.toUpperCase()+' | Health '+Math.ceil(b.hp)+'/'+b.max+detail+' | '+(role[b.type]||'Kingdom structure.');
@@ -1271,6 +1271,28 @@ function scStartConstruction(type,p){
  const site={id:nextId++,team:0,type,x:p.x,y:p.y,radius:scConstructionRadii[type],progress:0,required:scConstructionTimes[type],cost:{gold:civicCosts[type].gold||0,wood:civicCosts[type].wood||0,stone:civicCosts[type].stone||0}};
  scConstructionSites.push(site);if(!scConstructionAssign(site.id)&&!window.scNoAutoBuilders){const free=units.filter(u=>u.team===0&&u.type==='worker'&&alive(u)&&!(u.order&&u.order.type==='build')).sort((a,b)=>dist(a,site)-dist(b,site)).slice(0,3);if(free.length){for(const u of free){u.order={type:'build',target:site};u.target=null;u.scHoldPosition=false}msg(free.length+' nearby worker(s) are building the '+site.type+'. Select others and right-click it to add more.')}else msg('Foundation placed, but no free workers. Select workers and right-click the foundation.')}window.dispatchEvent(new Event('sc-construction-changed'));return site;
 }
+window.scStoryCards=(function(){
+ const defs=[
+  {id:'harvest',title:'The First Harvest',text:'The fields have given. Bread will be on every table tonight.',test:(s)=>s.food&&s.food.last&&s.food.last.harvest>0},
+  {id:'school',title:'A School Opens',text:'Children gather around the first teacher. Letters and numbers will outlast any wall.',test:(s,b)=>b.some(x=>x.type==='school')},
+  {id:'chapel',title:'The Chapel Bell',text:'A bell rings over the roofs for the first time. The people have a place to be still.',test:(s,b)=>b.some(x=>x.type==='chapel')},
+  {id:'ten',title:'Ten Hearths Warm',text:'Ten residents now call this place home. A village is becoming a town.',test:(s)=>(s.population||0)>=10}
+ ];
+ const prev={},shown=new Set();let primed=false,box=null,timer=0;
+ function show(d){close();box=document.createElement('div');box.id='scStoryCard';box.setAttribute('role','status');box.setAttribute('aria-live','polite');
+  box.style.cssText='position:fixed;left:50%;top:108px;transform:translateX(-50%);z-index:720;width:min(420px,92vw);box-sizing:border-box;padding:14px 18px 14px 74px;background:#f0e3c2;color:#3b2a1a;border:2px solid #8a6a36;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.45);font:14px/1.35 Georgia,serif;cursor:pointer';
+  box.innerHTML='<svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true" style="position:absolute;left:14px;top:14px"><circle cx="24" cy="24" r="22" fill="#6b3f2a" stroke="#c9a24b" stroke-width="3"/><path d="M12 32l3-14 6 7 3-10 3 10 6-7 3 14z" fill="#e9c35a" stroke="#8a6a36" stroke-width="1.5"/></svg><div style="font:bold 16px Georgia,serif;margin-bottom:3px"></div><div></div>';
+  box.children[1].textContent=d.title;box.children[2].textContent=d.text;box.onclick=close;document.body.appendChild(box);timer=setTimeout(close,7000)}
+ function close(){clearTimeout(timer);if(box){box.remove();box=null}}
+ function poll(){let s,b;try{s=window.scCityEconomy.snapshot();b=s.buildings||[]}catch(e){return}if(!s)return;
+  for(const d of defs){let now=false;try{now=!!d.test(s,b)}catch(e){}
+   if(!now&&prev[d.id])shown.delete(d.id);
+   if(primed&&now&&!prev[d.id]&&!shown.has(d.id)){shown.add(d.id);show(d)}
+   prev[d.id]=now}
+  primed=true}
+ setInterval(poll,1000);
+ return {poll,show:id=>{const d=defs.find(x=>x.id===id);if(d)show(d)},ids:defs.map(d=>d.id),close};
+})();
 window.scFocusRing=null;
 const sc40Eta=new WeakMap();function sc39SiteMarkers(){const t=performance.now();ctx.save();for(const site of scConstructionSites){const pulse=Math.sin(t/260+site.id)*.5+.5;ctx.strokeStyle='rgba(240,200,90,'+(.55+pulse*.4)+')';ctx.lineWidth=3;ctx.setLineDash([8,6]);ctx.beginPath();ctx.arc(site.x,site.y+4,site.radius+12+pulse*5,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);const busy=units.some(u=>u.order&&u.order.type==='build'&&u.order.target===site);const nb=units.filter(u=>u.order&&u.order.type==='build'&&u.order.target===site).length;let m=sc40Eta.get(site);if(!m){m={t:0,p:0,r:0};sc40Eta.set(site,m)}if(!m.t||t-m.t>1000){if(m.t)m.r=(site.progress-m.p)/((t-m.t)/1000);m.t=t;m.p=site.progress}const eta=nb&&m.r>0?Math.ceil((site.required-site.progress)/m.r):0;const txt=site.type.toUpperCase()+' '+Math.floor(site.progress/site.required*100)+'%'+(busy?' · '+nb+' builder'+(nb>1?'s':'')+(eta?' · ~'+(eta>=60?Math.ceil(eta/60)+' min':eta+' s'):''):' · needs workers');ctx.font='bold 12px system-ui';const w=ctx.measureText(txt).width+12;ctx.fillStyle='rgba(20,34,30,.88)';ctx.fillRect(site.x-w/2,site.y-site.radius-34,w,18);ctx.strokeStyle='#d9a93c';ctx.lineWidth=1;ctx.setLineDash([]);ctx.strokeRect(site.x-w/2,site.y-site.radius-34,w,18);ctx.fillStyle='#f2dfae';ctx.textAlign='center';ctx.fillText(txt,site.x,site.y-site.radius-21)}
 const f=window.scFocusRing;if(f&&t<f.until){const k=(f.until-t)/2500;for(let i=0;i<3;i++){const r=20+((1-k)*90+i*28)%84;ctx.strokeStyle='rgba(255,214,110,'+Math.max(0,.9-r/110)+')';ctx.lineWidth=4;ctx.beginPath();ctx.arc(f.x,f.y,r,0,Math.PI*2);ctx.stroke()}ctx.font='bold 13px system-ui';ctx.textAlign='center';ctx.fillStyle='#fff3c8';ctx.strokeStyle='rgba(0,0,0,.7)';ctx.lineWidth=3;ctx.strokeText(f.text,f.x,f.y-48);ctx.fillText(f.text,f.x,f.y-48)}ctx.restore()}
@@ -3588,11 +3610,12 @@ const scPlayerSteps=[
  {text:'Gather more wood and gold, then build a Market. Markets let you trade for what you are missing.',check:()=>!!buildings.find(b=>b.team===0&&b.type==='market'&&alive(b))}
 ];
 const scTesterSteps=[
- {text:'Build a School (🎓 in the build menu) near your houses. A gold ring with builders and time appears and workers come by themselves. Does it finish?',manual:true},
- {text:'Build a Chapel (⛪) the same way. When done, open People: one adult is a Priest. Does it work?',manual:true},
- {text:'People: click a resident, press 📍 Show home. A gold ring flashes on their house. Do you see it?',manual:true},
- {text:'Weather: within ~10 s light rain falls for ~25 s. The ☂ button at the bottom left turns it off. Does it look right?',manual:true},
- {text:'Survivors: start with Begin as survivors. You should see a small camp with tents and a campfire, not a castle. Does it feel like a refugee start?',manual:true}
+ {text:'Pick School (🎓) in the build menu and move over the map: a green rectangle follows you. Left-click to place it. Do workers walk over and build it?',manual:true},
+ {text:'Do the same with the Chapel (⛪). When it finishes, a card "The Chapel Bell" appears. Click the card to close it. Does it work?',manual:true},
+ {text:'Click your finished School: the info box shows Teachers and how many children attend. Do you see it?',manual:true},
+ {text:'Build a Farm. After the first harvest a card "The First Harvest" appears. Do you see it?',manual:true},
+ {text:'People: click a resident, press 📍 Show home. A gold ring flashes on the building. Does it?',manual:true},
+ {text:'There should be no rain, fog or "Cloudy" label anywhere on the map. Is the map clean?',manual:true}
 ];
 let scAdvisorMode='player';try{const m=localStorage.getItem('shattered-crowns-advisor-mode-v1');if(m==='tester'||m==='player')scAdvisorMode=m}catch(e){}
 const versionTests=[...(scAdvisorMode==='tester'?scTesterSteps:scPlayerSteps)];
@@ -7867,7 +7890,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <!-- Version display fix: single authoritative visible release label. -->
 <script id="sc1406VersionFix">
 (()=>{'use strict';
- const version='0.40.0';
+ const version='0.41.0';
  function sync(){
   document.title='Shattered Crowns — v'+version;
   const badge=document.getElementById('sc179Version');
