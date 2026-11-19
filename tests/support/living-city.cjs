@@ -1,6 +1,6 @@
 const fs=require('node:fs'),http=require('node:http'),assert=require('node:assert/strict');
 const {launchBrowser,browserPage}=require('./browser.cjs');
-const adapter=`window.__livingCityTest={
+const adapter=`window.__livingCityTest={release(){for(const u of units)if(u.order&&u.order.type==='build')u.order=null;},
  costs:civicCosts,
  advance(seconds){const rows=[];for(let left=seconds;left>1e-8;left-=.25){const cycle=cityCycleNumber;tick(Math.min(.25,left));if(cityCycleNumber!==cycle){const s=citySnapshot();rows.push({at:elapsed,food:s.food.last,population:s.population,happiness:s.happiness,housing:s.housing,workforce:s.workforce,prosperity:s.prosperity});}}return rows;},
  roadLine(x,y){for(const vertical of [false,true])for(const side of [-1,1])for(const delta of [0,-24,24]){const ps=[-44,0,44].map(n=>({x:x+(vertical?side*76:n+delta),y:y+(vertical?n+delta:side*76)}));const plan=roadPlan(ps[0],ps[2],false);if(plan.length>=3&&plan.every(p=>Math.hypot(p.x-x,p.y-y)<115&&(scRoadExists(p)||canPlace('road',p,null))))return {start:ps[0],end:ps[2]};}return null;},

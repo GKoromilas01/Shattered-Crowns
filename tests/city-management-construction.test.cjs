@@ -12,6 +12,7 @@ for(const width of [390,1440])test('Governor preserves unfinished construction a
  await p.locator('#sc140Build').click();
  await p.locator('#sc140Commands').getByRole('button',{name:/Farm/i}).click();
  const at=await point(p,plot.x,plot.y);await p.mouse.click(at.x,at.y);
+ await p.evaluate(()=>__livingCityTest.release());
  await p.evaluate(()=>sc153UI.exitConstruction());
  let saved=await capture(p),site=saved.state.construction[0];
  assert.ok(site,'Paid placement creates a foundation');

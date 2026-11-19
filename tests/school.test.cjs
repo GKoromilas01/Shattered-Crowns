@@ -78,3 +78,18 @@ test('People: Show home centres the map; children grow up faster; survivors get 
  assert.equal(await p.evaluate(()=>{scApplyJourney({survivors:5,gold:200,wood:150,stone:40,food:90});return window.scSmallKeep}),true);
  assert.equal(await p.evaluate(()=>{scCampaign.start('city','home');return window.scSmallKeep}),false);
 });
+
+test('Placing a School by clicking sends free workers to build it, and it finishes without selecting anyone',async t=>{
+ const p=await game(t,'home',1366,640);
+ await p.locator('#sc140Build').click();await p.locator('#sc140Commands button',{hasText:'School'}).first().click();
+ await p.mouse.click(700,350);await p.waitForTimeout(400);
+ const a=await p.evaluate(()=>({builders:scCitySave.capture().state.units.filter(u=>u.order&&u.order.type==='build').length,sites:(scCitySave.capture().state.construction||[]).length}));
+ assert.ok(a.builders>=1,'free workers are sent: '+JSON.stringify(a));
+ const b=await p.evaluate(()=>{__sc38.advance(240);const st=scCitySave.capture().state;return {done:st.buildings.filter(x=>x.type==='school').length,sites:(st.construction||[]).length}});
+ assert.equal(b.done,1,'the School is finished '+JSON.stringify(b));assert.equal(b.sites,0);
+});
+test('Survivors camp and the focus ring render without errors',async t=>{
+ const p=await game(t,'home',1366,640);const errs=[];p.on('pageerror',e=>errs.push(e.message));
+ await p.evaluate(()=>{scApplyJourney({survivors:5,gold:200,wood:150,stone:40,food:90});scFocusRing={x:400,y:300,until:performance.now()+2500,text:'House #1'}});
+ await p.waitForTimeout(700);assert.deepEqual(errs,[]);
+});
