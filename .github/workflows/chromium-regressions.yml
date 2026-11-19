@@ -11,6 +11,25 @@ concurrency:
   group: verify-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  quick:
+    # Early warning (about 5 minutes) so a mistake shows up long before the full suite ends.
+    # Not part of required-ci: the full "verify" job stays the gate.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install-deps chromium
+      - name: Quick regression tier
+        env:
+          TEST_ARTIFACT_DIR: test-results/quick
+        run: npm run test:quick
   verify:
     runs-on: ubuntu-24.04
     # Full regression took 41–43 minutes on v0.25; allow cold-runner variance
