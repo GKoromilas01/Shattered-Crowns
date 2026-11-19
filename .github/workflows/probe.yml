@@ -1,0 +1,34 @@
+name: probe
+on:
+  push:
+    branches: ['probe/**']
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [asis, nobutton, noweather, nomarkers, nonewsteps, base]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install-deps chromium
+      - name: Apply variant
+        run: |
+          case "${{ matrix.variant }}" in
+            nobutton) sed -i 's/if(toolbar)musicQuick.after(wb)//' index.html ;;
+            noweather) sed -i 's/sc39SiteMarkers();sc40Weather();return;/sc39SiteMarkers();return;/' index.html ;;
+            nomarkers) sed -i 's/sc26DrawOverlays();sc39SiteMarkers();sc40Weather();return;/sc26DrawOverlays();return;/' index.html ;;
+            base) git checkout c075cc8 -- index.html src ;;
+          esac
+          git diff --stat | tail -1
+      - name: Kingdom test
+        run: node --test --test-concurrency=1 tests/kingdom.test.cjs 2>&1 | grep -E "^(not ok|ok)|centerY|# (pass|fail)"
