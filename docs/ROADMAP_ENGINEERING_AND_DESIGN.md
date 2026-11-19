@@ -48,3 +48,10 @@ Source: video notes "Making Base Building Meaningful in RTS Games". Recorded onl
 
 ## Idea intake: King of Avalon review (owner-supplied, inspiration only)
 Ad page: dark, warm interior art (cabin, firelight, frost window) with "Play for free". Game: FunPlus mobile MMORTS, Arthurian setting, alliance PvP, dragons/heroes, counter-based troops, heavy pay-to-win pressure (Steam Mixed). Take the mood and alliance/chat ideas; no assets, no pay-to-win.
+
+## Idea intake: anti-snowball, subgenres, asymmetry (owner-supplied, not yet prioritised)
+Sources: three RTS design video notes. Recorded only; proposals await the owner's agreement.
+- Anti-snowball: diminishing returns, vulnerable economy, upkeep on big armies/settlements, retreat instead of annihilation, caps, defender advantage that fades, alternative victory conditions.
+- Subgenre: Shattered Crowns = city-builder RTS with survival and hero/story elements. "Single player quotient" (calm build-up time before PvP) is a tunable multiplayer setting; our long calm opening suits it.
+- Asymmetry: factions differ in how they grow (economy/rules), not stripped-down copies; maps complement them; avoid balancing by removal.
+- Proposal: origins become the asymmetric factions; protection period + raids/events as pacing; upkeep via food/morale; retreat; non-military victory (prosperity/legacy). See chat of 2026-11-19 for the reasoning.
