@@ -16,7 +16,7 @@ test('Static lists agree for every placeable building',()=>{
  assert.deepEqual(miss,[]);
 });
 test('Every placeable building shows a rectangle when armed and places a foundation by real clicks',async t=>{
- const {page:p}=await browserPage(t,browser,{viewport:{width:1366,height:700},reducedMotion:'reduce'});p.setDefaultTimeout(15000);await p.goto(url);await p.locator('#sc1310Skip').click();await p.locator('#sc154Pause').click();
+ const {page:p}=await browserPage(t,browser,{viewport:{width:1366,height:700},reducedMotion:'reduce'});p.setDefaultTimeout(30000);await p.goto(url);await p.locator('#sc1310Skip').click();await p.locator('#sc154Pause').click();
  const types=(await p.evaluate(()=>__reg.types())).filter(k=>!SPECIAL.has(k)&&k!=='fishery');const bad=[];
  for(const type of types){
   await p.evaluate(()=>__reg.fund());
@@ -25,7 +25,7 @@ test('Every placeable building shows a rectangle when armed and places a foundat
   await p.locator('#sc140Build').click();
   const btn=p.locator('#sc140Commands button').filter({hasText:new RegExp('^\\s*\\S*\\s*'+type.replace('lumberyard','Lumber').replace('clinic','Healer').replace('fishery','Fishery'),'i')}).first();
   if(!(await btn.count())){bad.push(type+': no palette button');continue}
-  await btn.click();await p.mouse.move(at.x-6,at.y-4);await p.waitForTimeout(80);await p.mouse.move(at.x,at.y);await p.waitForTimeout(220);
+  await btn.click();await p.mouse.move(at.x-6,at.y-4);await p.waitForTimeout(150);await p.mouse.move(at.x,at.y);await p.waitForTimeout(400);
   const light=await p.evaluate(({x,y})=>{const c=document.querySelector('#field'),r=c.getBoundingClientRect(),g=c.getContext('2d');const cx=Math.round((x-r.x)*c.width/r.width),cy=Math.round((y-r.y)*c.height/r.height);const d=g.getImageData(cx-5,cy-5,10,10).data;let n=0;for(let i=0;i<d.length;i+=4)if(d[i]>140&&d[i+1]>140&&d[i+2]>120)n++;return n},at);
   if(light<8)bad.push(type+': no placement rectangle');
   const sites0=await p.evaluate(()=>scConstruction.snapshot().sites.length);

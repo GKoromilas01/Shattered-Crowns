@@ -1299,7 +1299,7 @@ window.scEvents=(function(){
  function card(title,text,buttons){close();box=document.createElement('div');box.id='scEventCard';box.setAttribute('role','dialog');box.setAttribute('aria-label',title);
   box.style.cssText='position:fixed;left:50%;top:108px;transform:translateX(-50%);z-index:725;width:min(440px,92vw);box-sizing:border-box;padding:14px 18px;background:#efe0bb;color:#3b2a1a;border:2px solid #8a6a36;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.5);font:14px/1.35 Georgia,serif';
   const h=document.createElement('div');h.style.cssText='font:bold 16px Georgia,serif;margin-bottom:4px';h.textContent=title;const p=document.createElement('div');p.textContent=text;const row=document.createElement('div');row.style.cssText='display:flex;gap:8px;margin-top:10px;flex-wrap:wrap';
-  for(const b of buttons){const e=document.createElement('button');e.type='button';e.textContent=b.label;e.dataset.choice=b.id;e.style.cssText='padding:6px 12px;border-radius:6px;border:1px solid #6b4a2a;background:'+(b.primary?'#8a5a2b':'#d7c4a0')+';color:'+(b.primary?'#fff3d8':'#3b2a1a')+';font:13px system-ui;cursor:pointer';if(b.disabled){e.disabled=true;e.style.opacity='.55'}e.onclick=()=>{try{b.run&&b.run()}finally{close()}};row.append(e)}
+  for(const b of buttons){const e=document.createElement('button');e.type='button';e.textContent=b.label;e.dataset.choice=b.id;e.style.cssText='padding:6px 12px;border-radius:6px;border:1px solid #6b4a2a;background:'+(b.primary?'#8a5a2b':'#d7c4a0')+';color:'+(b.primary?'#fff3d8':'#3b2a1a')+';font:13px system-ui;cursor:pointer';if(b.disabled){e.disabled=true;e.style.opacity='.55'}e.onclick=()=>{try{if(!ended)b.run&&b.run()}finally{close()}};row.append(e)}
   box.append(h,p,row);document.body.appendChild(box);timer=setTimeout(close,45000)}
  function keep(){return buildings.find(b=>b.team===0&&b.type==='keep'&&alive(b))}
  function trader(){const price=60;card('A Wandering Trader','A trader with a laden cart offers 40 stone for '+price+' gold. He leaves at dusk.',[
@@ -1307,7 +1307,7 @@ window.scEvents=(function(){
  function refugees(){const k=keep();if(!k)return;card('A Family at the Gate','A tired family of three asks to stay. They will work, but they are hungry (they eat 15 of your food).',[
   {id:'accept',label:'Welcome them',primary:true,run:()=>{const kk=keep();if(!kk)return;for(let i=0;i<2;i++)addUnit(0,'worker',kk.x+50+i*18,kk.y+60);population+=3;food=Math.max(0,food-15);msg('A family of three joined your settlement.');updateUI()}},{id:'decline',label:'Turn them away'}])}
  function fire(kind){count++;(kind==='refugees'?refugees:trader)()}
- setInterval(()=>{if(paused||ended||scScenario!=='city'||scOverview||document.hidden||box)return;if(!keep())return;elapsed++;if(elapsed>=next){fire(KINDS[count%2]);next=elapsed+150+Math.floor((count*37)%60)}},1000);
+ setInterval(()=>{if(ended&&box)close();const wl=document.getElementById('sc1310Welcome');if(paused||ended||scScenario!=='city'||scOverview||document.hidden||box||tutorialVisible||(wl&&wl.offsetParent!==null))return;if(!keep())return;elapsed++;if(elapsed>=next){fire(KINDS[count%2]);next=elapsed+150+Math.floor((count*37)%60)}},1000);
  return {fire,close,count:()=>count,state:()=>({elapsed,next,count,open:!!box})};
 })();
 window.scFocusRing=null;
