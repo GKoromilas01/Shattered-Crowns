@@ -15,6 +15,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -31,4 +32,4 @@ jobs:
           esac
           git diff --stat | tail -1
       - name: Kingdom test
-        run: node --test --test-concurrency=1 tests/kingdom.test.cjs 2>&1 | grep -E "^(not ok|ok)|centerY|# (pass|fail)"
+        run: node --test --test-concurrency=1 --test-reporter=spec tests/kingdom.test.cjs 2>&1 | grep -E "✔|✖|centerY|^ℹ (pass|fail)" | head -40; exit ${PIPESTATUS[0]}
