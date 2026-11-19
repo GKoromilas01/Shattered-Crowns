@@ -93,12 +93,15 @@ test('Survivors camp and the focus ring render without errors',async t=>{
  await p.evaluate(()=>{scApplyJourney({survivors:5,gold:200,wood:150,stone:40,food:90});scFocusRing={x:400,y:300,until:performance.now()+2500,text:'House #1'}});
  await p.waitForTimeout(700);assert.deepEqual(errs,[]);
 });
-test('Foundation label shows builders and weather toggle works without errors',async t=>{
+test('School and Chapel show a placement rectangle and no weather exists',async t=>{
  const p=await game(t,'home',1366,640);const errs=[];p.on('pageerror',e=>errs.push(e.message));
- await p.locator('#sc140Build').click();await p.locator('#sc140Commands button',{hasText:'School'}).first().click();
- await p.mouse.click(700,350);await p.waitForTimeout(1500);
- assert.equal(await p.locator('#scWeatherQuick').count(),1);
- const on=await p.evaluate(()=>scWeatherOn);await p.locator('#scWeatherQuick').click();
- assert.equal(await p.evaluate(()=>scWeatherOn),!on);await p.locator('#scWeatherQuick').click();
- await p.evaluate(()=>{window.scWeatherOn=true});await p.waitForTimeout(600);assert.deepEqual(errs,[]);
+ for(const name of ['School','Chapel']){
+  await p.locator('#sc140Build').click();await p.locator('#sc140Commands button',{hasText:name}).first().click();
+  await p.mouse.move(700,350);await p.waitForTimeout(150);await p.mouse.move(708,354);await p.waitForTimeout(250);
+  const px=await p.evaluate(()=>{const c=document.querySelector('#field'),r=c.getBoundingClientRect(),g=c.getContext('2d');const x=Math.round((708-r.x)*c.width/r.width),y=Math.round((354-r.y)*c.height/r.height);const d=g.getImageData(x-6,y-6,12,12).data;let light=0;for(let i=0;i<d.length;i+=4)if(d[i]>150&&d[i+1]>150&&d[i+2]>130)light++;return light});
+  assert.ok(px>10,name+' placement rectangle is drawn under the pointer ('+px+')');
+  await p.keyboard.press('Escape');
+ }
+ assert.equal(await p.evaluate(()=>typeof window.scWeather),'undefined');assert.equal(await p.locator('#sc37Weather').count(),0);assert.equal(await p.locator('#scWeatherQuick').count(),0);
+ assert.deepEqual(errs,[]);
 });
