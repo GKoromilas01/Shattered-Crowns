@@ -1374,6 +1374,16 @@ window.scChapters=(function(){
  setInterval(()=>{try{poll()}catch(e){}},1000);
  return {poll,state:()=>(state()||[]).map(x=>({id:x.d.id,done:x.goals.every(g=>g.ok)})),current:()=>box?box.innerText:''};
 })();
+window.scBuildingMenus=(function(){
+ // Each building type can register a menu that lives inside the Selected building panel (not as a floating box).
+ const menus={};let host=null,last='';
+ function ensure(){const panel=document.getElementById('scCityInspection');if(!panel)return null;if(!host||!panel.contains(host)){host=document.createElement('div');host.id='scBuildingMenu';host.style.cssText='margin:6px 0;padding:6px 0;border-top:1px solid rgba(240,234,210,.25);border-bottom:1px solid rgba(240,234,210,.25)';const h=panel.querySelector(':scope > strong');if(h)h.after(host);else panel.append(host)}return host}
+ function render(force){const h=ensure();if(!h)return;const panel=h.parentElement,b=inspectedBuilding,m=b&&alive(b)&&b.team===0&&menus[b.type];
+  if(!m||panel.hidden||ended){if(h.innerHTML){h.innerHTML='';last=''}h.hidden=true;panel.style.maxHeight='';return}
+  h.hidden=false;panel.style.maxHeight='min(360px,calc(100vh - 220px))';const out=m(b);if(force||out.html!==last){h.innerHTML=out.html;last=out.html;if(out.bind)out.bind(h)}}
+ setInterval(()=>{try{render(false)}catch(e){}},250);
+ return {register:(type,fn)=>{menus[type]=fn},render,has:t=>!!menus[t]};
+})();
 window.scMarket=(function(){
  const GOODS=[{id:'food',label:'Food',base:1.2},{id:'wood',label:'Planks',base:1.45},{id:'stone',label:'Stone',base:1.5}];
  const REGION={home:{food:1,wood:1,stone:1},brookstead:{food:.8,wood:1,stone:1.3}};
@@ -1393,18 +1403,16 @@ window.scMarket=(function(){
   if(side==='buy'){const cost=buyPrice(id,n);if(gold<cost)return {ok:false,why:'not enough gold'};if(id==='food'&&food+n>foodCap())return {ok:false,why:'storage full'};
    gold-=cost;setStock(id,stock(id)+n);prices[id]=Math.min(baseOf(id)*HIGH,prices[id]*(1+STEP));trend[id]=1;msg('Bought '+n+' '+id+' for '+cost+' gold.')}
   else{if(stock(id)<n)return {ok:false,why:'not enough stock'};const gain=sellPrice(id,n);setStock(id,stock(id)-n);gold+=gain;prices[id]=Math.max(baseOf(id)*LOW,prices[id]*(1-STEP));trend[id]=-1;msg('Sold '+n+' '+id+' for '+gain+' gold.')}
-  traded+=n;updateUI();render(true);return {ok:true}}
+  traded+=n;updateUI();window.scBuildingMenus.render(true);return {ok:true}}
  function recover(){for(const g of GOODS){const b=baseOf(g.id),p=prices[g.id];const q=p+(b-p)*.06;trend[g.id]=Math.abs(q-b)<.01?0:(q>b?-1:1)*0+trend[g.id];prices[g.id]=Math.abs(q-b)<.005?b:q}}
  function hint(){let cheap=null,dear=null;for(const g of GOODS){const r=price(g.id)/g.base;if(!cheap||r<cheap.r)cheap={g,r};if(!dear||r>dear.r)dear={g,r}}
   if(cheap.r<.9)return 'Advisor: '+cheap.g.label+' is cheap here. Buy and keep a reserve.';if(dear.r>1.15)return 'Advisor: '+dear.g.label+' sells high. Sell any surplus.';return 'Advisor: prices are steady.'}
  const arrow=id=>{const r=price(id)/baseOf(id);return r>1.02?'▲':r<.98?'▼':'■'};
- function render(force){const m=inspectedBuilding;const show=!ended&&m&&alive(m)&&m.team===0&&m.type==='market';
-  if(!show){if(box){box.remove();box=null;last=''}return}
-  if(!box){box=document.createElement('div');box.id='scMarketPanel';box.setAttribute('aria-label','Market prices');box.style.cssText='position:fixed;right:12px;top:340px;z-index:660;width:min(290px,70vw);max-height:calc(100vh - 450px);overflow:auto;box-sizing:border-box;padding:10px 12px;background:rgba(32,24,14,.94);color:#f3e6c8;border:1px solid #b99a5b;border-radius:8px;font:12px/1.35 system-ui';document.body.appendChild(box);last=''}
+ function menu(){
   const rows=GOODS.map(g=>'<div style="margin:6px 0" data-good="'+g.id+'"><div><b>'+g.label+'</b> <span class="scPrice">'+price(g.id).toFixed(2)+'</span> '+arrow(g.id)+' <small style="opacity:.75">(you have '+Math.floor(stock(g.id))+')</small></div><div style="display:flex;gap:6px;margin-top:3px"><button data-side="buy" data-good="'+g.id+'" style="flex:1;padding:3px 6px">Buy '+LOT+' · '+buyPrice(g.id,LOT)+'</button><button data-side="sell" data-good="'+g.id+'" style="flex:1;padding:3px 6px">Sell '+LOT+' · '+sellPrice(g.id,LOT)+'</button></div></div>').join('');
-  const html='<b>Market · prices in gold</b>'+rows+'<div style="margin-top:6px;opacity:.85">'+hint()+'</div><div style="opacity:.6;margin-top:2px">Goods traded: '+traded+'</div>';
-  if(force||html!==last){box.innerHTML=html;last=html;for(const b of box.querySelectorAll('button[data-side]'))b.onclick=()=>trade(b.dataset.side,b.dataset.good)}}
- setInterval(()=>{if(!paused&&!document.hidden)recover()},5000);setInterval(()=>{try{render(false)}catch(e){}},250);
+  return {html:'<b>Trade · prices in gold</b>'+rows+'<div style="margin-top:6px;opacity:.85">'+hint()+'</div><div style="opacity:.6;margin-top:2px">Goods traded: '+traded+'</div>',bind:h=>{for(const b of h.querySelectorAll('button[data-side]'))b.onclick=()=>trade(b.dataset.side,b.dataset.good)}}}
+ setInterval(()=>{if(!paused&&!document.hidden)recover()},5000);
+ window.scBuildingMenus.register('market',menu);
  return {price,base:baseOf,buyPrice,sellPrice,trade,traded:()=>traded,reset,recover,hint,goods:()=>GOODS.map(g=>g.id),state:()=>({prices:{...prices},traded})};
 })();
 window.scFocusRing=null;
@@ -3724,7 +3732,7 @@ const scPlayerSteps=[
  {text:'Gather more wood and gold, then build a Market. Markets let you trade for what you are missing.',check:()=>!!buildings.find(b=>b.team===0&&b.type==='market'&&alive(b))}
 ];
 const scTesterSteps=[
- {text:'Build a Market (Construction → Market), then click it: a price panel appears on the right with Food, Planks and Stone. Is it there, with an Advisor line?',manual:true},
+ {text:'Build a Market (Construction → Market), then click it: the Selected building panel has a Trade menu with Food, Planks and Stone and an Advisor line, and it closes with the ✕. Does it?',manual:true},
  {text:'Press "Sell 10" on Planks: your gold goes up, planks go down 10, and the Planks price drops (▼). Does it?',manual:true},
  {text:'Press "Buy 10" on Stone: gold goes down and the Stone price rises. Then buy and sell the same good back and forth: you always lose a little. Is that so?',manual:true},
  {text:'Chapter 2 now asks you to "trade 20 goods at the Market". Trade twice and see it tick over. Does it?',manual:true},
@@ -9622,8 +9630,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  musicInput.addEventListener('change',()=>configure({music:musicInput.checked}));effectInput.addEventListener('change',()=>configure({effects:effectInput.checked}));muteInput.addEventListener('change',()=>configure({muted:muteInput.checked}));volumeInput.addEventListener('input',()=>configure({volume:Number(volumeInput.value)}));
  function activateOpening(event){if(!event?.isTrusted||document.getElementById('sc1310Welcome')?.hidden!==false)return;if(!openingActivated){openingActivated=true;if(!restoredBeforeEntry&&!settings.music)configure({music:true});}void unlock();}
  window.addEventListener('sc-opening-interaction',e=>{if(e.detail instanceof KeyboardEvent)activateOpening(e.detail);});
+ document.addEventListener('pointerup',e=>{if(e.isTrusted&&e.target.closest?.('#field,#sc140Commands,#sc140Dock'))lastCanvas=performance.now()},true);
  document.addEventListener('pointerdown',e=>{if(!e.isTrusted)return;if(document.getElementById('sc1310Welcome')?.hidden===false){activateOpening(e);return;}if(e.target.closest?.('#field,#sc140Commands,#sc140Dock'))lastCanvas=performance.now();void unlock();},true);
- document.addEventListener('keydown',e=>{if(!e.isTrusted||e.repeat||e.ctrlKey||e.altKey||e.metaKey||e.target.closest?.('input,select,textarea,[contenteditable=true]')||window.scCampaign?.status().overview)return;const key=e.key.toLowerCase();if(['w','e','k','q'].includes(key)){const kind=key==='q'?'army':'worker';if(window.scRTSUnits?.some(u=>u.team===0&&(kind==='worker'?u.type==='worker':u.type!=='worker')))void unlock().then(()=>cue(kind));}});
+ document.addEventListener('keydown',e=>{if(!e.isTrusted||e.repeat||e.ctrlKey||e.altKey||e.metaKey||e.target.closest?.('input,select,textarea,[contenteditable=true]')||window.scCampaign?.status().overview)return;const key=e.key.toLowerCase();if(['z','o','i','n'].includes(key))lastCanvas=performance.now();if(['w','e','k','q'].includes(key)){lastCanvas=performance.now();const kind=key==='q'?'army':'worker';if(window.scRTSUnits?.some(u=>u.team===0&&(kind==='worker'?u.type==='worker':u.type!=='worker')))void unlock().then(()=>cue(kind));}});
  window.addEventListener('sc-selection-changed',e=>{if(e.detail?.source==='restore'||performance.now()-lastCanvas>1000)return;const selected=e.detail?.units||[];if(selected.length){cue(selected.every(u=>u.type==='worker')?'worker':'army');if(unlocked&&context?.state==='running'&&!window.scCampaign?.status().overview)speakLine(selected.every(u=>u.type==='worker')?'worker':selected.some(u=>u.type==='soldier')?'soldier':selected.some(u=>u.type==='archer')?'archer':'soldier');}});
  document.addEventListener('click',e=>{if(!e.isTrusted||window.scCampaign?.status().overview)return;const b=e.target.closest?.('button');if(!b)return;const id=b.id,command=b.dataset.command;if(id==='sc1310Skip'||id==='sc1310Try'||id==='scStartGovern'){if(!entered&&!restoredBeforeEntry&&!settings.music)configure({music:true});entered=true;void unlock();return;}if(id==='selectWorkers'||command==='selectWorkers'||b.closest('#sc140Commands')&&/Worker/.test(b.textContent))void unlock().then(()=>cue('worker'));else if(id==='selectArmy'||command==='selectArmy'||id==='sc140Keep'||b.closest('#sc140Commands')&&/Soldier|Archer/.test(b.textContent))void unlock().then(()=>cue('army'));});
  document.addEventListener('visibilitychange',()=>{if(document.hidden){stop();if(context?.state==='running')void context.suspend().catch(()=>{});}else if(unlocked)void unlock();});window.addEventListener('pagehide',()=>{stop();if(context?.state==='running')void context.suspend().catch(()=>{});});
