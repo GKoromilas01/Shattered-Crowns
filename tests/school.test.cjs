@@ -199,6 +199,7 @@ test('Events are decisions: advisor star, countdown default, advisor record, ban
 test('Chapters 4 and 5 follow chapter 3',async t=>{
  const p=await game(t,'home',1366,640);const errs=[];p.on('pageerror',e=>errs.push(e.message));
  await p.evaluate(()=>{for(const [t,x,y] of [['house',560,300],['house',560,360],['house',560,420],['house',640,300],['house',640,360],['house',640,420],['farm',760,300],['market',760,380],['granary',860,300],['bakery',860,380],['school',700,520],['chapel',820,520]])__sc38.seed(t,x,y)});
+ await p.evaluate(()=>{scMarket.trade('sell','wood',10);scMarket.trade('sell','wood',10)});
  await p.waitForFunction(()=>/Chapter 4/.test(document.querySelector('#scChapters')?.innerText||''),null,{timeout:8000});
  assert.match(await p.locator('#scChapters').innerText(),/a Well[\s\S]*a Clinic[\s\S]*6 houses/);
  await p.evaluate(()=>{for(const [t,x,y] of [['well',980,300],['clinic',980,380]])__sc38.seed(t,x,y)});

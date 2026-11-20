@@ -1321,7 +1321,7 @@ window.scEvents=(function(){
   timer=setInterval(()=>{if(paused||document.hidden)return;left--;if(left<=0){msg('You took too long: the default was chosen.');settle(def)}else paint()},1000)}
  function keep(){return buildings.find(b=>b.team===0&&b.type==='keep'&&alive(b))}
  function soldiers(){return units.filter(u=>u.team===0&&u.type!=='worker'&&alive(u)).length}
- function trader(){const price=60,sellWood=40,sellPrice=55;const canBuy=gold>=price;const advised=canBuy?'buy':wood>=sellWood?'sell':'decline';const sound=advised==='buy'?gold-price>=40:true;
+ function trader(){const price=Math.round(40*window.scMarket.price('stone')),sellWood=40,sellPrice=Math.round(40*window.scMarket.price('wood')*.95);const canBuy=gold>=price;const advised=canBuy?'buy':wood>=sellWood?'sell':'decline';const sound=advised==='buy'?gold-price>=40:true;
   card('A Wandering Trader','A trader with a laden cart offers 40 stone for '+price+' gold, or will pay '+sellPrice+' gold for '+sellWood+' wood. He leaves at dusk.',[
   {id:'buy',label:'Buy 40 stone ('+price+' gold)',primary:true,disabled:gold<price,run:()=>{if(gold>=price){gold-=price;stone+=40;msg('You bought 40 stone from the trader.');updateUI()}}},
   {id:'sell',label:'Sell '+sellWood+' wood (+'+sellPrice+' gold)',disabled:wood<sellWood,run:()=>{if(wood>=sellWood){wood-=sellWood;gold+=sellPrice;msg('You sold '+sellWood+' wood for '+sellPrice+' gold.');updateUI()}}},
@@ -1357,7 +1357,7 @@ window.scChapters=(function(){
  const n=(b,t)=>b.filter(x=>x.type===t).length;
  const defs=[
   {id:1,title:'Chapter 1 · A Hearth for Every Family',goals:[['3 houses',(s,b)=>n(b,'house')>=3],['a farm',(s,b)=>n(b,'farm')>=1]],done:'Three homes line the road and the fields are sown. The settlement has a heart.'},
-  {id:2,title:'Chapter 2 · Trade and Bread',goals:[['a market',(s,b)=>n(b,'market')>=1],['a granary',(s,b)=>n(b,'granary')>=1],['a bakery',(s,b)=>n(b,'bakery')>=1]],done:'Bread, grain and bargains. Travellers now speak well of this place.'},
+  {id:2,title:'Chapter 2 · Trade and Bread',goals:[['a market',(s,b)=>n(b,'market')>=1],['a granary',(s,b)=>n(b,'granary')>=1],['a bakery',(s,b)=>n(b,'bakery')>=1],['trade 20 goods at the Market',()=>window.scMarket.traded()>=20]],done:'Bread, grain and bargains. Travellers now speak well of this place.'},
   {id:3,title:'Chapter 3 · Faith and Learning',goals:[['a School',(s,b)=>n(b,'school')>=1],['a Chapel',(s,b)=>n(b,'chapel')>=1]],done:'Bells and lessons fill the lanes. The settlement is becoming a town.'},
   {id:4,title:'Chapter 4 · Clean Water, Healthy People',goals:[['a Well',(s,b)=>n(b,'well')>=1],['a Clinic',(s,b)=>n(b,'clinic')>=1],['6 houses',(s,b)=>n(b,'house')>=6]],done:'Fresh water and a healer. Fever no longer frightens the lanes.'},
   {id:5,title:'Chapter 5 · A Town With Pride',goals:[['a Plaza',(s,b)=>n(b,'plaza')>=1],['a Theater',(s,b)=>n(b,'theater')>=1],['a Garden',(s,b)=>n(b,'garden')>=1]],done:'Songs in the square and flowers by the road. People now speak of this town with pride.'}
@@ -1373,6 +1373,39 @@ window.scChapters=(function(){
   primed=true;render(st)}
  setInterval(()=>{try{poll()}catch(e){}},1000);
  return {poll,state:()=>(state()||[]).map(x=>({id:x.d.id,done:x.goals.every(g=>g.ok)})),current:()=>box?box.innerText:''};
+})();
+window.scMarket=(function(){
+ const GOODS=[{id:'food',label:'Food',base:1.2},{id:'wood',label:'Planks',base:1.45},{id:'stone',label:'Stone',base:1.5}];
+ const REGION={home:{food:1,wood:1,stone:1},brookstead:{food:.8,wood:1,stone:1.3}};
+ const LOT=10,SPREAD=.15,STEP=.04,LOW=.5,HIGH=2;
+ let prices={},traded=0,box=null,last='',trend={};
+ const region=()=>REGION[scOriginId]||REGION.home;
+ const baseOf=id=>GOODS.find(g=>g.id===id).base*(region()[id]||1);
+ function reset(){for(const g of GOODS){prices[g.id]=baseOf(g.id);trend[g.id]=0}}
+ reset();
+ const price=id=>prices[id]===undefined?baseOf(id):prices[id];
+ const buyPrice=(id,n)=>Math.max(1,Math.round(n*price(id)*(1+SPREAD))),sellPrice=(id,n)=>Math.max(1,Math.round(n*price(id)*(1-SPREAD)));
+ const stock=id=>id==='food'?food:id==='wood'?wood:stone;
+ const setStock=(id,v)=>{if(id==='food')food=v;else if(id==='wood')wood=v;else stone=v};
+ const foodCap=()=>90+buildings.filter(b=>b.team===0&&b.type==='granary'&&alive(b)).length*160;
+ function market(){return buildings.find(b=>b.team===0&&b.type==='market'&&alive(b))}
+ function trade(side,id,n){n=n||LOT;if(ended||!market()||!GOODS.some(g=>g.id===id)||(side!=='buy'&&side!=='sell'))return {ok:false,why:'no market'};
+  if(side==='buy'){const cost=buyPrice(id,n);if(gold<cost)return {ok:false,why:'not enough gold'};if(id==='food'&&food+n>foodCap())return {ok:false,why:'storage full'};
+   gold-=cost;setStock(id,stock(id)+n);prices[id]=Math.min(baseOf(id)*HIGH,prices[id]*(1+STEP));trend[id]=1;msg('Bought '+n+' '+id+' for '+cost+' gold.')}
+  else{if(stock(id)<n)return {ok:false,why:'not enough stock'};const gain=sellPrice(id,n);setStock(id,stock(id)-n);gold+=gain;prices[id]=Math.max(baseOf(id)*LOW,prices[id]*(1-STEP));trend[id]=-1;msg('Sold '+n+' '+id+' for '+gain+' gold.')}
+  traded+=n;updateUI();render(true);return {ok:true}}
+ function recover(){for(const g of GOODS){const b=baseOf(g.id),p=prices[g.id];const q=p+(b-p)*.06;trend[g.id]=Math.abs(q-b)<.01?0:(q>b?-1:1)*0+trend[g.id];prices[g.id]=Math.abs(q-b)<.005?b:q}}
+ function hint(){let cheap=null,dear=null;for(const g of GOODS){const r=price(g.id)/g.base;if(!cheap||r<cheap.r)cheap={g,r};if(!dear||r>dear.r)dear={g,r}}
+  if(cheap.r<.9)return 'Advisor: '+cheap.g.label+' is cheap here. Buy and keep a reserve.';if(dear.r>1.15)return 'Advisor: '+dear.g.label+' sells high. Sell any surplus.';return 'Advisor: prices are steady.'}
+ const arrow=id=>{const r=price(id)/baseOf(id);return r>1.02?'▲':r<.98?'▼':'■'};
+ function render(force){const m=inspectedBuilding;const show=!ended&&m&&alive(m)&&m.team===0&&m.type==='market';
+  if(!show){if(box){box.remove();box=null;last=''}return}
+  if(!box){box=document.createElement('div');box.id='scMarketPanel';box.setAttribute('aria-label','Market prices');box.style.cssText='position:fixed;right:12px;top:340px;z-index:660;width:min(290px,70vw);max-height:calc(100vh - 450px);overflow:auto;box-sizing:border-box;padding:10px 12px;background:rgba(32,24,14,.94);color:#f3e6c8;border:1px solid #b99a5b;border-radius:8px;font:12px/1.35 system-ui';document.body.appendChild(box);last=''}
+  const rows=GOODS.map(g=>'<div style="margin:6px 0" data-good="'+g.id+'"><div><b>'+g.label+'</b> <span class="scPrice">'+price(g.id).toFixed(2)+'</span> '+arrow(g.id)+' <small style="opacity:.75">(you have '+Math.floor(stock(g.id))+')</small></div><div style="display:flex;gap:6px;margin-top:3px"><button data-side="buy" data-good="'+g.id+'" style="flex:1;padding:3px 6px">Buy '+LOT+' · '+buyPrice(g.id,LOT)+'</button><button data-side="sell" data-good="'+g.id+'" style="flex:1;padding:3px 6px">Sell '+LOT+' · '+sellPrice(g.id,LOT)+'</button></div></div>').join('');
+  const html='<b>Market · prices in gold</b>'+rows+'<div style="margin-top:6px;opacity:.85">'+hint()+'</div><div style="opacity:.6;margin-top:2px">Goods traded: '+traded+'</div>';
+  if(force||html!==last){box.innerHTML=html;last=html;for(const b of box.querySelectorAll('button[data-side]'))b.onclick=()=>trade(b.dataset.side,b.dataset.good)}}
+ setInterval(()=>{if(!paused&&!document.hidden)recover()},5000);setInterval(()=>{try{render(false)}catch(e){}},250);
+ return {price,base:baseOf,buyPrice,sellPrice,trade,traded:()=>traded,reset,recover,hint,goods:()=>GOODS.map(g=>g.id),state:()=>({prices:{...prices},traded})};
 })();
 window.scFocusRing=null;
 const sc40Eta=new WeakMap();function sc39SiteMarkers(){const t=performance.now();ctx.save();for(const site of scConstructionSites){const pulse=Math.sin(t/260+site.id)*.5+.5;ctx.strokeStyle='rgba(240,200,90,'+(.55+pulse*.4)+')';ctx.lineWidth=3;ctx.setLineDash([8,6]);ctx.beginPath();ctx.arc(site.x,site.y+4,site.radius+12+pulse*5,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);const busy=units.some(u=>u.order&&u.order.type==='build'&&u.order.target===site);const nb=units.filter(u=>u.order&&u.order.type==='build'&&u.order.target===site).length;let m=sc40Eta.get(site);if(!m){m={t:0,p:0,r:0};sc40Eta.set(site,m)}if(!m.t||t-m.t>1000){if(m.t)m.r=(site.progress-m.p)/((t-m.t)/1000);m.t=t;m.p=site.progress}const eta=nb&&m.r>0?Math.ceil((site.required-site.progress)/m.r):0;const txt=site.type.toUpperCase()+' '+Math.floor(site.progress/site.required*100)+'%'+(busy?' · '+nb+' builder'+(nb>1?'s':'')+(eta?' · ~'+(eta>=60?Math.ceil(eta/60)+' min':eta+' s'):''):' · needs workers');ctx.font='bold 12px system-ui';const w=ctx.measureText(txt).width+12;ctx.fillStyle='rgba(20,34,30,.88)';ctx.fillRect(site.x-w/2,site.y-site.radius-34,w,18);ctx.strokeStyle='#d9a93c';ctx.lineWidth=1;ctx.setLineDash([]);ctx.strokeRect(site.x-w/2,site.y-site.radius-34,w,18);ctx.fillStyle='#f2dfae';ctx.textAlign='center';ctx.fillText(txt,site.x,site.y-site.radius-21)}
@@ -3691,11 +3724,12 @@ const scPlayerSteps=[
  {text:'Gather more wood and gold, then build a Market. Markets let you trade for what you are missing.',check:()=>!!buildings.find(b=>b.team===0&&b.type==='market'&&alive(b))}
 ];
 const scTesterSteps=[
- {text:'Play about 40 seconds: an event card appears with 2 to 4 choices, a ★ on your Advisor\'s counsel and a line "Decide within 30 s, otherwise: …". Is it there?',manual:true},
- {text:'Pick any choice: the message log says what happened, and under the minimap the Chapter box shows "Advisor record: 1 of 1 counsels proved sound" (or 0 of 1). Does it?',manual:true},
- {text:'When the next card appears, do nothing and watch the countdown: at 0 the cautious default is chosen and the log says "You took too long". Does it?',manual:true},
- {text:'Over a few minutes you also meet Bandits on the Road (the Keep always stands, only small losses) and The People Ask for a Feast. Do their choices work?',manual:true},
- {text:'Build a Well, a Clinic and 6 houses: Chapter 4 completes with a card and Chapter 5 (Plaza, Theater, Garden) appears. Does it?',manual:true}
+ {text:'Build a Market (Construction → Market), then click it: a price panel appears on the right with Food, Planks and Stone. Is it there, with an Advisor line?',manual:true},
+ {text:'Press "Sell 10" on Planks: your gold goes up, planks go down 10, and the Planks price drops (▼). Does it?',manual:true},
+ {text:'Press "Buy 10" on Stone: gold goes down and the Stone price rises. Then buy and sell the same good back and forth: you always lose a little. Is that so?',manual:true},
+ {text:'Chapter 2 now asks you to "trade 20 goods at the Market". Trade twice and see it tick over. Does it?',manual:true},
+ {text:'Start a Brookstead game: food is cheaper and stone dearer than in your city. Do the prices differ?',manual:true},
+ {text:'When a Wandering Trader appears, his stone and wood prices follow the market prices. Do they?',manual:true}
 ];
 let scAdvisorMode='player';try{const m=localStorage.getItem('shattered-crowns-advisor-mode-v1');if(m==='tester'||m==='player')scAdvisorMode=m}catch(e){}
 const versionTests=[...(scAdvisorMode==='tester'?scTesterSteps:scPlayerSteps)];
@@ -4126,7 +4160,7 @@ window.scCampaign={
  snapshot:()=>{const city=citySnapshot(),criteria=scReadiness(city),ready=scScenario==='city'&&criteria.every(r=>r.met)&&scReadyCycles>=12;return {scenario:scScenario,criteria,stableCycles:scReadyCycles,requiredCycles:12,ready,phase:ready?'prosperous':'settling',description:'Readiness never starts an attack. This campaign remains peaceful; warfare is a later milestone.'};},
  origins:()=>scCityOrigins,
  governor:()=>{const p=scOriginProfile();return {originId:p.id,settlementId:p.settlementId,kingdomId:p.kingdomId,name:p.name,biome:p.biome,role:scScenario==='city'?'Governor':'Commander'};},
- start:(scenario,originId='home')=>{if(!['city','skirmish'].includes(scenario)||!scCityOrigins.some(p=>p.id===originId)||scenario==='skirmish'&&originId!=='home')return {ok:false};scScenario=scenario;scOriginId=originId;window.scSmallKeep=false;try{localStorage.removeItem('shattered-crowns-small-keep')}catch(e){}el('restart').click();return {ok:true};},
+ start:(scenario,originId='home')=>{if(!['city','skirmish'].includes(scenario)||!scCityOrigins.some(p=>p.id===originId)||scenario==='skirmish'&&originId!=='home')return {ok:false};scScenario=scenario;scOriginId=originId;window.scMarket&&window.scMarket.reset();window.scSmallKeep=false;try{localStorage.removeItem('shattered-crowns-small-keep')}catch(e){}el('restart').click();return {ok:true};},
  selectLocation:id=>{if(!scKingdomLocations.includes(id))return false;scSelectedLocation=id;return true;},
  setOverview:open=>{if(typeof open!=='boolean')return false;scOverview=open;return true;}
 };
@@ -7970,7 +8004,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <!-- Version display fix: single authoritative visible release label. -->
 <script id="sc1406VersionFix">
 (()=>{'use strict';
- const version='0.44.0';
+ const version='0.45.0';
  function sync(){
   document.title='Shattered Crowns — v'+version;
   const badge=document.getElementById('sc179Version');
