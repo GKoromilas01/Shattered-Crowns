@@ -21,10 +21,10 @@ def cut(n,w):
     cand=(((sat<0.13)&(mx>0.30))|(dist<0.09))
     lab,k=ndi.label(cand)
     border=set(np.unique(np.concatenate([lab[0],lab[-1],lab[:,0],lab[:,-1]])))-{0}
-    bg=np.isin(lab,list(border));fg=~bg
+    bg=cand if n=='bridge' else np.isin(lab,list(border));fg=~bg
     fg=ndi.binary_opening(fg,iterations=2)
     lab2,k2=ndi.label(fg);sizes=ndi.sum(fg,lab2,range(1,k2+1));fg=lab2==(1+int(np.argmax(sizes)))
-    fg=ndi.binary_fill_holes(fg);fg=ndi.binary_erosion(fg,iterations=1)
+    fg=fg if n=='bridge' else ndi.binary_fill_holes(fg);fg=ndi.binary_erosion(fg,iterations=1)
     al=ndi.gaussian_filter(fg.astype(float),0.9);al=np.clip((al-0.15)/0.7,0,1)
     out=Image.fromarray(np.dstack([np.asarray(im),(al*255).astype(np.uint8)]),'RGBA')
     bb=out.getchannel('A').point(lambda v:255 if v>20 else 0).getbbox();out=out.crop(bb)
