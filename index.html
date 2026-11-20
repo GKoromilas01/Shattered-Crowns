@@ -1378,9 +1378,9 @@ window.scBuildingMenus=(function(){
  // Each building type can register a menu that lives inside the Selected building panel (not as a floating box).
  const menus={};let host=null,last='';
  function ensure(){const panel=document.getElementById('scCityInspection');if(!panel)return null;if(!document.getElementById('scBuildingMenuStyle')){const st=document.createElement('style');st.id='scBuildingMenuStyle';st.textContent='#scBuildingMenu button{position:static!important;float:none!important;display:inline-block!important;margin:2px 0;padding:3px 8px;border-radius:5px;border:1px solid #a07250;background:#433121;color:#f0ead2;font:600 12px system-ui;cursor:pointer}#scBuildingMenu button:disabled{opacity:.55;cursor:default}#scBuildingMenu .scTaxOn{background:#8a5a2b!important;color:#fff3d8!important}';document.head.appendChild(st)}if(!host||!panel.contains(host)){host=document.createElement('div');host.id='scBuildingMenu';host.style.cssText='margin:6px 0;padding:6px 0;border-top:1px solid rgba(240,234,210,.25);border-bottom:1px solid rgba(240,234,210,.25)';const h=panel.querySelector(':scope > strong');if(h)h.after(host);else panel.append(host)}return host}
- function render(force){const h=ensure();if(!h)return;const panel=h.parentElement,b=inspectedBuilding,m=b&&alive(b)&&b.team===0&&menus[b.type];
+ function render(force){const h=ensure();if(!h)return;const panel=document.getElementById('scCityInspection'),b=inspectedBuilding,m=b&&alive(b)&&b.team===0&&menus[b.type];
   if(!m||panel.hidden||ended){if(h.innerHTML){h.innerHTML='';last=''}h.hidden=true;panel.style.maxHeight='';return}
-  h.hidden=false;panel.style.maxHeight='min(360px,calc(100vh - 220px))';const out=m(b);if(force||out.html!==last){h.innerHTML=out.html;last=out.html;if(out.bind)out.bind(h)}}
+  h.hidden=false;{const ops=panel.querySelector('#sc19BuildingControls:not([hidden]) .sc19Operations'),want=ops||panel.querySelector(':scope > strong');if(want&&h.previousElementSibling!==want)want.after(h)}panel.style.maxHeight='min(360px,calc(100vh - 220px))';const out=m(b);if(force||out.html!==last){h.innerHTML=out.html;last=out.html;if(out.bind)out.bind(h)}}
  setInterval(()=>{try{render(false)}catch(e){}},250);
  return {register:(type,fn)=>{menus[type]=fn},render,has:t=>!!menus[t]};
 })();
