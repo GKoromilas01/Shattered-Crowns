@@ -114,3 +114,11 @@ See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; mul
 - Trader event quotes live prices (stone: 40 x price, wood: 40 x price x 0.95). Chapter 2 gained the goal "trade 20 goods at the Market".
 - Deliberately not done: separate wheat/fish stocks and bread trading (food is one stock; bakery bread still auto-sells at 4 gold each), the special game currency (name chosen: Florin; gold stays the only currency), stable and shipyard (planned next).
 - Tests: tests/market.test.cjs (quick tier). The test helper pauses the game, so the 5 s price recovery is not exercised there.
+
+## v0.46.0 — Every Building Has Its Own Menu
+- `window.scBuildingMenus.register(type, fn)`: a building type's menu lives in `#scBuildingMenu` inside the Selected building panel (`#scCityInspection`), right under its heading. `fn(building)` returns `{html, bind(host)}`; the host re-renders only when the html string changes. Menu buttons need the `#scBuildingMenuStyle` rules (the panel has global `float:right` button CSS).
+- Menus now: Market (trade), Keep (taxes), Theater (festival), Bakery (community feast), Granary, Lumberyard, Farm and Fishery (status, suggestion, sell shortcuts). Add new buildings by registering a menu; keep the global Advisor and floating panels light.
+- `window.scTax` (Low/Normal/High): gold factor 0.6/1/1.4 on the population part of tax income (`window.scTaxFactor`) and mood target +2/0/-3 (`window.scTaxMood`, added to the "Meal policy" modifier). Not saved (resets to Normal on start/load), like meal policy.
+- Festival and feast reuse the existing `window.scFestival` rules (Theater / Bakery, 90 s cooldown, saved).
+- Voice: group selections now speak after slow box drags and hotkey selections (`lastCanvas` is also refreshed on pointerup in the field and on selection hotkeys).
+- Tests: tests/menus.test.cjs and tests/market.test.cjs (quick tier), tests/voices.test.cjs.

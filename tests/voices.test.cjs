@@ -16,3 +16,12 @@ test('Voice lines are throttled and can be switched off and stay off after reloa
  await p.waitForTimeout(1900);await p.mouse.click(600,400);await pick(p,['soldier']);assert.equal((await p.evaluate(()=>window.__said)).length,1);
  await p.reload();await p.waitForFunction(()=>!!window.scVoice);assert.equal(await p.evaluate(()=>window.scVoice.status().on),false);
 });
+test('A slow box selection of a whole group still gets an acknowledgement',async t=>{
+ const p=await ready(t);await p.waitForTimeout(2000);
+ const scr=await p.evaluate(()=>{const c=document.querySelector('#field'),r=c.getBoundingClientRect(),sx=r.width/c.width,sy=r.height/c.height;return scRTSUnits.filter(u=>u.team===0&&u.type==='soldier').map(u=>({x:r.x+u.x*sx,y:r.y+u.y*sy}))});
+ assert.ok(scr.length>=3,'the city starts with a group of soldiers');
+ const xs=scr.map(u=>u.x),ys=scr.map(u=>u.y),before=await p.evaluate(()=>window.__said.length);
+ await p.mouse.move(Math.min(...xs)-40,Math.min(...ys)-40);await p.mouse.down();await p.waitForTimeout(1300);await p.mouse.move(Math.max(...xs)+40,Math.max(...ys)+40,{steps:4});await p.mouse.up();await p.waitForTimeout(300);
+ assert.ok((await p.evaluate(()=>scRTSSelected.length))>=3,'the whole group is selected');
+ assert.ok((await p.evaluate(()=>window.__said.length))>before,'the group answered');
+});

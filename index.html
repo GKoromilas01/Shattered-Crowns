@@ -1041,7 +1041,7 @@ function citySatisfactionDetails(context={owned:cityOwned(),network:getRoadNetwo
   {label:'Amenities & culture',max:5,points:Math.min(5,5*amenity+care),reason:'Occupied-home beauty, a theater within 240 map units and existing road-connected civic care.'}
  ];
  for(const f of factors)f.points=Math.round(clamp(f.points,0,f.max)*10)/10;
- const modifier={label:'Meal policy',points:Number(window.scRationMood)||0,reason:'Conserve supplies: target −2. Generous meals: target +1.5. Satisfaction moves gradually toward this target.'};
+ const modifier={label:'Meal policy',points:(Number(window.scRationMood)||0)+(Number(window.scTaxMood)||0),reason:'Conserve supplies: target −2. Generous meals: target +1.5. Satisfaction moves gradually toward this target.'};
  const target=Math.round(clamp(factors.reduce((n,f)=>n+f.points,0)+modifier.points,0,100)*10)/10;
  return {score:Math.round(happiness*10)/10,target,maxChange:2,migrationThreshold:45,factors,modifier,last:citySatisfactionLast?{...citySatisfactionLast,factors:citySatisfactionLast.factors.map(f=>({...f}))}:null};
 }
@@ -1374,6 +1374,16 @@ window.scChapters=(function(){
  setInterval(()=>{try{poll()}catch(e){}},1000);
  return {poll,state:()=>(state()||[]).map(x=>({id:x.d.id,done:x.goals.every(g=>g.ok)})),current:()=>box?box.innerText:''};
 })();
+window.scBuildingMenus=(function(){
+ // Each building type can register a menu that lives inside the Selected building panel (not as a floating box).
+ const menus={};let host=null,last='';
+ function ensure(){const panel=document.getElementById('scCityInspection');if(!panel)return null;if(!document.getElementById('scBuildingMenuStyle')){const st=document.createElement('style');st.id='scBuildingMenuStyle';st.textContent='#scBuildingMenu button{position:static!important;float:none!important;display:inline-block!important;margin:2px 0;padding:3px 8px;border-radius:5px;border:1px solid #a07250;background:#433121;color:#f0ead2;font:600 12px system-ui;cursor:pointer}#scBuildingMenu button:disabled{opacity:.55;cursor:default}#scBuildingMenu .scTaxOn{background:#8a5a2b!important;color:#fff3d8!important}';document.head.appendChild(st)}if(!host||!panel.contains(host)){host=document.createElement('div');host.id='scBuildingMenu';host.style.cssText='margin:6px 0;padding:6px 0;border-top:1px solid rgba(240,234,210,.25);border-bottom:1px solid rgba(240,234,210,.25)';const h=panel.querySelector(':scope > strong');if(h)h.after(host);else panel.append(host)}return host}
+ function render(force){const h=ensure();if(!h)return;const panel=document.getElementById('scCityInspection'),b=inspectedBuilding,m=b&&alive(b)&&b.team===0&&menus[b.type];
+  if(!m||panel.hidden||ended){if(h.innerHTML){h.innerHTML='';last=''}h.hidden=true;panel.style.maxHeight='';return}
+  h.hidden=false;{const ops=panel.querySelector('#sc19BuildingControls:not([hidden]) .sc19Operations'),want=ops||panel.querySelector(':scope > strong');if(want&&h.previousElementSibling!==want)want.after(h)}panel.style.maxHeight='min(360px,calc(100vh - 220px))';const out=m(b);if(force||out.html!==last){h.innerHTML=out.html;last=out.html;if(out.bind)out.bind(h)}}
+ setInterval(()=>{try{render(false)}catch(e){}},250);
+ return {register:(type,fn)=>{menus[type]=fn},render,has:t=>!!menus[t]};
+})();
 window.scMarket=(function(){
  const GOODS=[{id:'food',label:'Food',base:1.2},{id:'wood',label:'Planks',base:1.45},{id:'stone',label:'Stone',base:1.5}];
  const REGION={home:{food:1,wood:1,stone:1},brookstead:{food:.8,wood:1,stone:1.3}};
@@ -1393,19 +1403,61 @@ window.scMarket=(function(){
   if(side==='buy'){const cost=buyPrice(id,n);if(gold<cost)return {ok:false,why:'not enough gold'};if(id==='food'&&food+n>foodCap())return {ok:false,why:'storage full'};
    gold-=cost;setStock(id,stock(id)+n);prices[id]=Math.min(baseOf(id)*HIGH,prices[id]*(1+STEP));trend[id]=1;msg('Bought '+n+' '+id+' for '+cost+' gold.')}
   else{if(stock(id)<n)return {ok:false,why:'not enough stock'};const gain=sellPrice(id,n);setStock(id,stock(id)-n);gold+=gain;prices[id]=Math.max(baseOf(id)*LOW,prices[id]*(1-STEP));trend[id]=-1;msg('Sold '+n+' '+id+' for '+gain+' gold.')}
-  traded+=n;updateUI();render(true);return {ok:true}}
+  traded+=n;updateUI();window.scBuildingMenus.render(true);return {ok:true}}
  function recover(){for(const g of GOODS){const b=baseOf(g.id),p=prices[g.id];const q=p+(b-p)*.06;trend[g.id]=Math.abs(q-b)<.01?0:(q>b?-1:1)*0+trend[g.id];prices[g.id]=Math.abs(q-b)<.005?b:q}}
  function hint(){let cheap=null,dear=null;for(const g of GOODS){const r=price(g.id)/g.base;if(!cheap||r<cheap.r)cheap={g,r};if(!dear||r>dear.r)dear={g,r}}
   if(cheap.r<.9)return 'Advisor: '+cheap.g.label+' is cheap here. Buy and keep a reserve.';if(dear.r>1.15)return 'Advisor: '+dear.g.label+' sells high. Sell any surplus.';return 'Advisor: prices are steady.'}
  const arrow=id=>{const r=price(id)/baseOf(id);return r>1.02?'▲':r<.98?'▼':'■'};
- function render(force){const m=inspectedBuilding;const show=!ended&&m&&alive(m)&&m.team===0&&m.type==='market';
-  if(!show){if(box){box.remove();box=null;last=''}return}
-  if(!box){box=document.createElement('div');box.id='scMarketPanel';box.setAttribute('aria-label','Market prices');box.style.cssText='position:fixed;right:12px;top:340px;z-index:660;width:min(290px,70vw);max-height:calc(100vh - 450px);overflow:auto;box-sizing:border-box;padding:10px 12px;background:rgba(32,24,14,.94);color:#f3e6c8;border:1px solid #b99a5b;border-radius:8px;font:12px/1.35 system-ui';document.body.appendChild(box);last=''}
+ function menu(){
   const rows=GOODS.map(g=>'<div style="margin:6px 0" data-good="'+g.id+'"><div><b>'+g.label+'</b> <span class="scPrice">'+price(g.id).toFixed(2)+'</span> '+arrow(g.id)+' <small style="opacity:.75">(you have '+Math.floor(stock(g.id))+')</small></div><div style="display:flex;gap:6px;margin-top:3px"><button data-side="buy" data-good="'+g.id+'" style="flex:1;padding:3px 6px">Buy '+LOT+' · '+buyPrice(g.id,LOT)+'</button><button data-side="sell" data-good="'+g.id+'" style="flex:1;padding:3px 6px">Sell '+LOT+' · '+sellPrice(g.id,LOT)+'</button></div></div>').join('');
-  const html='<b>Market · prices in gold</b>'+rows+'<div style="margin-top:6px;opacity:.85">'+hint()+'</div><div style="opacity:.6;margin-top:2px">Goods traded: '+traded+'</div>';
-  if(force||html!==last){box.innerHTML=html;last=html;for(const b of box.querySelectorAll('button[data-side]'))b.onclick=()=>trade(b.dataset.side,b.dataset.good)}}
- setInterval(()=>{if(!paused&&!document.hidden)recover()},5000);setInterval(()=>{try{render(false)}catch(e){}},250);
+  return {html:'<b>Trade · prices in gold</b>'+rows+'<div style="margin-top:6px;opacity:.85">'+hint()+'</div><div style="opacity:.6;margin-top:2px">Goods traded: '+traded+'</div>',bind:h=>{for(const b of h.querySelectorAll('button[data-side]'))b.onclick=()=>trade(b.dataset.side,b.dataset.good)}}}
+ setInterval(()=>{if(!paused&&!document.hidden)recover()},5000);
+ window.scBuildingMenus.register('market',menu);
  return {price,base:baseOf,buyPrice,sellPrice,trade,traded:()=>traded,reset,recover,hint,goods:()=>GOODS.map(g=>g.id),state:()=>({prices:{...prices},traded})};
+})();
+window.scTax=(function(){
+ const LV={low:{label:'Low',gold:.6,mood:2,note:'gold ×0.6, mood target +2'},normal:{label:'Normal',gold:1,mood:0,note:'standard income and mood'},high:{label:'High',gold:1.4,mood:-3,note:'gold ×1.4, mood target −3'}};
+ let level='normal';
+ function apply(){window.scTaxFactor=LV[level].gold;window.scTaxMood=LV[level].mood}
+ function set(l,quiet){if(!LV[l])return false;level=l;apply();if(!quiet)msg('Taxes set to '+LV[l].label+': '+LV[l].note+'.');if(window.scBuildingMenus)window.scBuildingMenus.render(true);return true}
+ apply();
+ return {level:()=>level,set,reset:()=>{level='normal';apply()},levels:()=>Object.keys(LV),info:l=>LV[l]};
+})();
+(function(){
+ // Building menus: status, one suggestion and the actions that belong to the building, all inside the Selected building panel.
+ let snapAt=0,snapVal=null;
+ function entry(b){const now=performance.now();if(!snapVal||now-snapAt>800){try{snapVal=window.scCityEconomy.snapshot()}catch(e){snapVal=null}snapAt=now}return snapVal&&snapVal.buildings.find(x=>x.id===b.id)||null}
+ const esc=t=>String(t).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+ const btn=(act,label,off,extra)=>'<button data-act="'+act+'"'+(extra?' data-arg="'+extra+'"':'')+(off?' disabled style="opacity:.55;padding:3px 8px"':' style="padding:3px 8px"')+'>'+label+'</button>';
+ const sec=(title,body)=>({html:'<b>'+title+'</b>'+body});
+ const marketBuilt=()=>buildings.some(x=>x.team===0&&x.type==='market'&&alive(x));
+ const line=t=>'<div style="margin:3px 0">'+t+'</div>';
+ const tip=t=>'<div style="margin-top:5px;opacity:.85">Suggestion: '+esc(t)+'</div>';
+ function staff(b){const e=entry(b);return e&&e.staff?'Staff '+e.staff.filled+' / '+e.staff.need:'Staff n/a'}
+ function suggestion(b,fallback){const e=entry(b);return (e&&e.blockers&&e.blockers[0])||fallback}
+ const bindActs=(fn)=>h=>{for(const x of h.querySelectorAll('button[data-act]'))x.onclick=()=>fn(x.dataset.act,x.dataset.arg)};
+ const R=()=>window.scBuildingMenus.render(true);
+ const M=window.scBuildingMenus;
+ // Keep: taxes
+ M.register('keep',()=>{const lv=window.scTax.level(),m=Math.round(happiness);
+  const row=window.scTax.levels().map(l=>'<button data-act="tax" data-arg="'+l+'" style="padding:3px 8px;'+(l===lv?'background:#8a5a2b;color:#fff3d8;font-weight:700':'')+'">'+window.scTax.info(l).label+'</button>').join(' ');
+  const hintText=m<50?'Mood is low. Consider Low taxes or a festival at the Theater.':(m>80&&gold<100?'Spirits are high and the treasury is thin: Normal or High taxes will help.':'Balanced. Keep an eye on mood and gold.');
+  return {html:'<b>Taxes</b>'+line('Rate: '+row)+line('<small>'+window.scTax.info(lv).label+': '+window.scTax.info(lv).note+'. Mood now '+m+'.</small>')+tip(hintText),bind:bindActs((a,x)=>{if(a==='tax')window.scTax.set(x)})}});
+ // Theater: festival; Bakery: community feast (existing rules in window.scFestival)
+ const eventMenu=(kind,title,call,cost)=>()=>{const s=window.scFestival.status();const wait=s.cooldown>0;
+  return {html:'<b>'+title+'</b>'+line('Cost: '+cost+'.')+line(wait?'Next one in '+s.cooldown+' s.':'Ready.')+line(btn('go',title.startsWith('Festival')?'Hold festival':'Host feast',wait))+tip(wait?'Let the cooldown pass; mood recovers on its own.':(s.happiness<60?'Mood is low: this is a good moment.':'Save it for when mood dips.')),bind:bindActs(a=>{if(a!=='go')return;const r=window.scFestival[call]();if(r&&r.message&&!r.ok)msg(r.message);R()})}};
+ M.register('theater',eventMenu('festival','Festival','hold','35 gold, 12 food; mood +8, prosperity +4'));
+ M.register('bakery',eventMenu('feast','Community feast','feast','20 gold, 20 food; mood +5'));
+ // Granary
+ M.register('granary',b=>{const cap=90+buildings.filter(x=>x.team===0&&x.type==='granary'&&alive(x)).length*160,f=Math.floor(food),pct=Math.round(100*f/cap);
+  const t=pct>=90?'Storage is nearly full. Build another granary or sell surplus food at the Market.':(f<30?'Food is low. Add a farm or fishery, and keep the granary staffed.':suggestion(b,'Stock is healthy.'));
+  return {html:'<b>Granary</b>'+line('Stock: '+f+' / '+cap+' food ('+pct+'%)')+line(staff(b))+(marketBuilt()?line(btn('sell','Sell 10 food',f<10)):'<div style="opacity:.7;margin:3px 0">Build a Market to sell surplus.</div>')+tip(t),bind:bindActs(a=>{if(a==='sell'){const r=window.scMarket.trade('sell','food',10);if(!r.ok)msg('Cannot sell: '+r.why+'.');R()}})}});
+ // Lumberyard
+ M.register('lumberyard',b=>{const w=Math.floor(wood);
+  return {html:'<b>Lumberyard</b>'+line(staff(b)+' · up to 5 wood per cycle')+line('Wood in store: '+w+(marketBuilt()?' · Market price '+window.scMarket.price('wood').toFixed(2):''))+(marketBuilt()?line(btn('sell','Sell 10 planks',w<10)):'')+tip(w<80?'Wood is running low. Keep it staffed before starting big builds.':(marketBuilt()?'You have spare wood. Selling a few planks is a quick source of gold.':suggestion(b,'Wood supply looks fine.'))),bind:bindActs(a=>{if(a==='sell'){const r=window.scMarket.trade('sell','wood',10);if(!r.ok)msg('Cannot sell: '+r.why+'.');R()}})}});
+ // Farm and Fishery
+ for(const type of ['farm','fishery'])M.register(type,b=>{const e=entry(b),h=e&&e.last?e.last.harvest:0;
+  return {html:'<b>'+(type==='farm'?'Farm':'Fishery')+'</b>'+line(staff(b))+line('Harvest this cycle: '+Math.round(h*10)/10+(e&&e.last&&e.last.logistics?' (+'+Math.round(e.last.logistics*10)/10+' by road)':''))+tip(suggestion(b,'Well supplied. Keep it staffed.'))}});
 })();
 window.scFocusRing=null;
 const sc40Eta=new WeakMap();function sc39SiteMarkers(){const t=performance.now();ctx.save();for(const site of scConstructionSites){const pulse=Math.sin(t/260+site.id)*.5+.5;ctx.strokeStyle='rgba(240,200,90,'+(.55+pulse*.4)+')';ctx.lineWidth=3;ctx.setLineDash([8,6]);ctx.beginPath();ctx.arc(site.x,site.y+4,site.radius+12+pulse*5,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);const busy=units.some(u=>u.order&&u.order.type==='build'&&u.order.target===site);const nb=units.filter(u=>u.order&&u.order.type==='build'&&u.order.target===site).length;let m=sc40Eta.get(site);if(!m){m={t:0,p:0,r:0};sc40Eta.set(site,m)}if(!m.t||t-m.t>1000){if(m.t)m.r=(site.progress-m.p)/((t-m.t)/1000);m.t=t;m.p=site.progress}const eta=nb&&m.r>0?Math.ceil((site.required-site.progress)/m.r):0;const txt=site.type.toUpperCase()+' '+Math.floor(site.progress/site.required*100)+'%'+(busy?' · '+nb+' builder'+(nb>1?'s':'')+(eta?' · ~'+(eta>=60?Math.ceil(eta/60)+' min':eta+' s'):''):' · needs workers');ctx.font='bold 12px system-ui';const w=ctx.measureText(txt).width+12;ctx.fillStyle='rgba(20,34,30,.88)';ctx.fillRect(site.x-w/2,site.y-site.radius-34,w,18);ctx.strokeStyle='#d9a93c';ctx.lineWidth=1;ctx.setLineDash([]);ctx.strokeRect(site.x-w/2,site.y-site.radius-34,w,18);ctx.fillStyle='#f2dfae';ctx.textAlign='center';ctx.fillText(txt,site.x,site.y-site.radius-21)}
@@ -1922,7 +1974,7 @@ let marketEfficiency=owned.filter(b=>b.type==='market').reduce((v,b)=>v+(employm
 // Each supplied market gives a modest trade bonus; no benefit from empty staffing.
 let suppliedMarkets=owned.filter(m=>m.type==='market'&&marketHasTradeAccess(m)&&(employment.byId.get(m.id)?.count||0)>0&&granaries.some(g=>alive(g)&&dist(g,m)<170));
 let supplyTradeBonus=suppliedMarkets.reduce((n,m)=>n+(employment.byId.get(m.id)?.efficiency||0)*.12,0);
-let taxMultiplier=1+marketEfficiency*.35+connectedEfficiency*.2+supplyTradeBonus;gold+=Math.floor(population*.7*(happiness/100)*taxMultiplier+owned.filter(b=>b.type==='house').reduce((n,h)=>n+(houseTier(h).level-1)*.65+homeBeauty(h).score*.025,0));const cityTarget=cityProsperityDetails().target;cityProsperity=clamp(cityProsperity+clamp(cityTarget-cityProsperity,-2,2),0,100);
+let taxMultiplier=1+marketEfficiency*.35+connectedEfficiency*.2+supplyTradeBonus;gold+=Math.floor(population*.7*(window.scTaxFactor||1)*(happiness/100)*taxMultiplier+owned.filter(b=>b.type==='house').reduce((n,h)=>n+(houseTier(h).level-1)*.65+homeBeauty(h).score*.025,0));const cityTarget=cityProsperityDetails().target;cityProsperity=clamp(cityProsperity+clamp(cityTarget-cityProsperity,-2,2),0,100);
 // V14.01: Announce actual residential development when service conditions improve.
 // Baseline each new home silently; only announce subsequent level increases.
 const homeNames=['','Cottage','Homestead','Townhouse','Manor'];
@@ -3724,12 +3776,11 @@ const scPlayerSteps=[
  {text:'Gather more wood and gold, then build a Market. Markets let you trade for what you are missing.',check:()=>!!buildings.find(b=>b.team===0&&b.type==='market'&&alive(b))}
 ];
 const scTesterSteps=[
- {text:'Build a Market (Construction → Market), then click it: a price panel appears on the right with Food, Planks and Stone. Is it there, with an Advisor line?',manual:true},
- {text:'Press "Sell 10" on Planks: your gold goes up, planks go down 10, and the Planks price drops (▼). Does it?',manual:true},
- {text:'Press "Buy 10" on Stone: gold goes down and the Stone price rises. Then buy and sell the same good back and forth: you always lose a little. Is that so?',manual:true},
- {text:'Chapter 2 now asks you to "trade 20 goods at the Market". Trade twice and see it tick over. Does it?',manual:true},
- {text:'Start a Brookstead game: food is cheaper and stone dearer than in your city. Do the prices differ?',manual:true},
- {text:'When a Wandering Trader appears, his stone and wood prices follow the market prices. Do they?',manual:true}
+ {text:'Click your Keep: the Selected building panel starts with a Taxes menu (Low, Normal, High). Press High: the note changes to "gold ×1.4, mood target −3". Does it?',manual:true},
+ {text:'Build a Theater and click it: a Festival menu shows the cost and a "Hold festival" button. Press it: gold drops by 35 and the button says "Next one in … s". Does it?',manual:true},
+ {text:'Click a Granary, a Lumberyard and a Farm: each shows its own numbers and a "Suggestion:" line. With a Market built, "Sell 10" works. Does it?',manual:true},
+ {text:'Click a Market: the Trade menu is inside the same panel and closes with the ✕. Does it?',manual:true},
+ {text:'Drag a big box slowly around all your soldiers: they answer with a line. Do they?',manual:true}
 ];
 let scAdvisorMode='player';try{const m=localStorage.getItem('shattered-crowns-advisor-mode-v1');if(m==='tester'||m==='player')scAdvisorMode=m}catch(e){}
 const versionTests=[...(scAdvisorMode==='tester'?scTesterSteps:scPlayerSteps)];
@@ -4160,7 +4211,7 @@ window.scCampaign={
  snapshot:()=>{const city=citySnapshot(),criteria=scReadiness(city),ready=scScenario==='city'&&criteria.every(r=>r.met)&&scReadyCycles>=12;return {scenario:scScenario,criteria,stableCycles:scReadyCycles,requiredCycles:12,ready,phase:ready?'prosperous':'settling',description:'Readiness never starts an attack. This campaign remains peaceful; warfare is a later milestone.'};},
  origins:()=>scCityOrigins,
  governor:()=>{const p=scOriginProfile();return {originId:p.id,settlementId:p.settlementId,kingdomId:p.kingdomId,name:p.name,biome:p.biome,role:scScenario==='city'?'Governor':'Commander'};},
- start:(scenario,originId='home')=>{if(!['city','skirmish'].includes(scenario)||!scCityOrigins.some(p=>p.id===originId)||scenario==='skirmish'&&originId!=='home')return {ok:false};scScenario=scenario;scOriginId=originId;window.scMarket&&window.scMarket.reset();window.scSmallKeep=false;try{localStorage.removeItem('shattered-crowns-small-keep')}catch(e){}el('restart').click();return {ok:true};},
+ start:(scenario,originId='home')=>{if(!['city','skirmish'].includes(scenario)||!scCityOrigins.some(p=>p.id===originId)||scenario==='skirmish'&&originId!=='home')return {ok:false};scScenario=scenario;scOriginId=originId;window.scMarket&&window.scMarket.reset();window.scTax&&window.scTax.reset();window.scSmallKeep=false;try{localStorage.removeItem('shattered-crowns-small-keep')}catch(e){}el('restart').click();return {ok:true};},
  selectLocation:id=>{if(!scKingdomLocations.includes(id))return false;scSelectedLocation=id;return true;},
  setOverview:open=>{if(typeof open!=='boolean')return false;scOverview=open;return true;}
 };
@@ -8004,7 +8055,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <!-- Version display fix: single authoritative visible release label. -->
 <script id="sc1406VersionFix">
 (()=>{'use strict';
- const version='0.45.0';
+ const version='0.46.0';
  function sync(){
   document.title='Shattered Crowns — v'+version;
   const badge=document.getElementById('sc179Version');
@@ -9622,8 +9673,9 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  musicInput.addEventListener('change',()=>configure({music:musicInput.checked}));effectInput.addEventListener('change',()=>configure({effects:effectInput.checked}));muteInput.addEventListener('change',()=>configure({muted:muteInput.checked}));volumeInput.addEventListener('input',()=>configure({volume:Number(volumeInput.value)}));
  function activateOpening(event){if(!event?.isTrusted||document.getElementById('sc1310Welcome')?.hidden!==false)return;if(!openingActivated){openingActivated=true;if(!restoredBeforeEntry&&!settings.music)configure({music:true});}void unlock();}
  window.addEventListener('sc-opening-interaction',e=>{if(e.detail instanceof KeyboardEvent)activateOpening(e.detail);});
+ document.addEventListener('pointerup',e=>{if(e.isTrusted&&e.target.closest?.('#field,#sc140Commands,#sc140Dock'))lastCanvas=performance.now()},true);
  document.addEventListener('pointerdown',e=>{if(!e.isTrusted)return;if(document.getElementById('sc1310Welcome')?.hidden===false){activateOpening(e);return;}if(e.target.closest?.('#field,#sc140Commands,#sc140Dock'))lastCanvas=performance.now();void unlock();},true);
- document.addEventListener('keydown',e=>{if(!e.isTrusted||e.repeat||e.ctrlKey||e.altKey||e.metaKey||e.target.closest?.('input,select,textarea,[contenteditable=true]')||window.scCampaign?.status().overview)return;const key=e.key.toLowerCase();if(['w','e','k','q'].includes(key)){const kind=key==='q'?'army':'worker';if(window.scRTSUnits?.some(u=>u.team===0&&(kind==='worker'?u.type==='worker':u.type!=='worker')))void unlock().then(()=>cue(kind));}});
+ document.addEventListener('keydown',e=>{if(!e.isTrusted||e.repeat||e.ctrlKey||e.altKey||e.metaKey||e.target.closest?.('input,select,textarea,[contenteditable=true]')||window.scCampaign?.status().overview)return;const key=e.key.toLowerCase();if(['z','o','i','n'].includes(key))lastCanvas=performance.now();if(['w','e','k','q'].includes(key)){lastCanvas=performance.now();const kind=key==='q'?'army':'worker';if(window.scRTSUnits?.some(u=>u.team===0&&(kind==='worker'?u.type==='worker':u.type!=='worker')))void unlock().then(()=>cue(kind));}});
  window.addEventListener('sc-selection-changed',e=>{if(e.detail?.source==='restore'||performance.now()-lastCanvas>1000)return;const selected=e.detail?.units||[];if(selected.length){cue(selected.every(u=>u.type==='worker')?'worker':'army');if(unlocked&&context?.state==='running'&&!window.scCampaign?.status().overview)speakLine(selected.every(u=>u.type==='worker')?'worker':selected.some(u=>u.type==='soldier')?'soldier':selected.some(u=>u.type==='archer')?'archer':'soldier');}});
  document.addEventListener('click',e=>{if(!e.isTrusted||window.scCampaign?.status().overview)return;const b=e.target.closest?.('button');if(!b)return;const id=b.id,command=b.dataset.command;if(id==='sc1310Skip'||id==='sc1310Try'||id==='scStartGovern'){if(!entered&&!restoredBeforeEntry&&!settings.music)configure({music:true});entered=true;void unlock();return;}if(id==='selectWorkers'||command==='selectWorkers'||b.closest('#sc140Commands')&&/Worker/.test(b.textContent))void unlock().then(()=>cue('worker'));else if(id==='selectArmy'||command==='selectArmy'||id==='sc140Keep'||b.closest('#sc140Commands')&&/Soldier|Archer/.test(b.textContent))void unlock().then(()=>cue('army'));});
  document.addEventListener('visibilitychange',()=>{if(document.hidden){stop();if(context?.state==='running')void context.suspend().catch(()=>{});}else if(unlocked)void unlock();});window.addEventListener('pagehide',()=>{stop();if(context?.state==='running')void context.suspend().catch(()=>{});});

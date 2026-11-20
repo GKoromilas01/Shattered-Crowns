@@ -7,18 +7,20 @@ after(async()=>{await browser?.close();server?.close()});
 async function game(t,origin='home',w=1440,h=900){const {page:p}=await browserPage(t,browser,{viewport:{width:w,height:h},reducedMotion:'reduce',autoBuilders:true});p.setDefaultTimeout(20000);await p.goto(url);await p.locator('#sc1310Skip').click();await p.evaluate(id=>scCampaign.start('city',id),origin);await p.locator('#sc154Pause').click();return p;}
 test('Market panel shows prices, trading moves prices and gold, and cycling never prints gold',async t=>{
  const p=await game(t,'home',1366,700);const errs=[];p.on('pageerror',e=>errs.push(e.message));
- assert.equal(await p.locator('#scMarketPanel').count(),0,'no panel without a market');
+ assert.equal(await p.locator('#scBuildingMenu').isVisible().catch(()=>false),false,'no menu without a market');
  await p.evaluate(()=>__sc38.seed('market',700,420));
- await p.evaluate(()=>__sc38.inspect('market'));
- await p.waitForSelector('#scMarketPanel',{timeout:3000});
- const txt=await p.locator('#scMarketPanel').innerText();
+ const pos=await p.evaluate(()=>{const b=scHoverBuildings.find(x=>x.type==='market'&&x.team===0),c=document.querySelector('#field'),r=c.getBoundingClientRect();return {x:r.x+b.x*r.width/c.width,y:r.y+b.y*r.height/c.height}});
+ await p.mouse.click(pos.x,pos.y);
+ await p.waitForFunction(()=>{const m=document.querySelector('#scCityInspection #scBuildingMenu');return m&&!m.hidden&&/Trade/.test(m.innerText)},null,{timeout:3000});
+ assert.equal(await p.locator('#scMarketPanel').count(),0,'no floating panel any more');
+ const txt=await p.locator('#scBuildingMenu').innerText();
  assert.match(txt,/Food[\s\S]*Planks[\s\S]*Stone/);assert.match(txt,/Advisor:/);
  const st=()=>p.evaluate(()=>({g:scCitySave.capture().state.resources,p:scMarket.state().prices}));
  const a=await st();
- await p.locator('#scMarketPanel [data-side="sell"][data-good="wood"]').click();
+ await p.locator('#scBuildingMenu [data-side="sell"][data-good="wood"]').click();
  const b=await st();
  assert.ok(b.g.gold>a.g.gold,'selling gives gold');assert.equal(b.g.wood,a.g.wood-10);assert.ok(b.p.wood<a.p.wood,'selling lowers the price');
- await p.locator('#scMarketPanel [data-side="buy"][data-good="stone"]').click();
+ await p.locator('#scBuildingMenu [data-side="buy"][data-good="stone"]').click();
  const c=await st();assert.equal(c.g.stone,b.g.stone+10);assert.ok(c.p.stone>b.p.stone,'buying raises the price');assert.ok(c.g.gold<b.g.gold);
  // no gold printing: buy and sell the same good repeatedly, total wealth (gold + goods at base value) must never grow
  const result=await p.evaluate(()=>{const w=()=>{const s=scCitySave.capture().state.resources;return s.gold+s.food*1.2+s.wood*1.45+s.stone*1.5};const start=w();let max=start;
@@ -27,6 +29,8 @@ test('Market panel shows prices, trading moves prices and gold, and cycling neve
  assert.ok(result.max<=result.start+1e-6,'cycling trades never gains wealth: '+JSON.stringify(result));
  const lim=await p.evaluate(()=>{for(let i=0;i<80;i++)scMarket.trade('sell','wood',10);return {low:scMarket.state().prices.wood,base:scMarket.base('wood')}});
  assert.ok(lim.low>=lim.base*.5-1e-9,'price never falls below half of its base: '+JSON.stringify(lim));
+ await p.getByRole('button',{name:'Close building inspector',exact:true}).click();
+ await p.waitForFunction(()=>{const m=document.querySelector('#scBuildingMenu');return !m||m.hidden||!m.offsetParent},null,{timeout:2000});
  assert.deepEqual(errs,[]);
 });
 test('Regions differ, the trader follows prices, and trading counts toward chapter 2',async t=>{
