@@ -1459,6 +1459,33 @@ window.scTax=(function(){
  for(const type of ['farm','fishery'])M.register(type,b=>{const e=entry(b),h=e&&e.last?e.last.harvest:0;
   return {html:'<b>'+(type==='farm'?'Farm':'Fishery')+'</b>'+line(staff(b))+line('Harvest this cycle: '+Math.round(h*10)/10+(e&&e.last&&e.last.logistics?' (+'+Math.round(e.last.logistics*10)/10+' by road)':''))+tip(suggestion(b,'Well supplied. Keep it staffed.'))}});
 })();
+
+/* sc47-uplift-start */
+(function(){
+ if(window.sc47Uplift)return;
+ const css=document.createElement('style');css.id='sc47UpliftStyle';
+ css.textContent='#field{filter:sepia(.10) saturate(1.10) contrast(1.05) brightness(.99)}#sc47Vignette{position:absolute;inset:0;pointer-events:none;z-index:3;background:radial-gradient(ellipse at 50% 50%,rgba(0,0,0,0) 58%,rgba(24,14,6,.26) 100%);box-shadow:inset 0 0 0 1px rgba(217,169,60,.35),inset 0 0 40px rgba(20,12,4,.35);border-radius:6px}#sc47Vignette::after{content:"";position:absolute;inset:0;opacity:.07;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns=%27http://www.w3.org/2000/svg%27 width=%27120%27 height=%27120%27><filter id=%27n%27><feTurbulence type=%27fractalNoise%27 baseFrequency=%27.9%27 numOctaves=%272%27/></filter><rect width=%27120%27 height=%27120%27 filter=%27url(%23n)%27/></svg>")}';
+ document.head.appendChild(css);
+ function ensureVignette(){const f=document.getElementById('field');if(!f||document.getElementById('sc47Vignette'))return;const host=f.parentElement&&f.parentElement.parentElement;if(!host)return;if(getComputedStyle(host).position==='static')host.style.position='relative';const v=document.createElement('div');v.id='sc47Vignette';v.setAttribute('aria-hidden','true');host.appendChild(v)}
+ addEventListener('load',ensureVignette);setTimeout(ensureVignette,1500);
+ const width={keep:115,house:59,market:82,wall:74,fortress:100,tower:58,well:38,garden:40,plaza:44,clinic:48,bakery:52,granary:70,farm:66,fishery:66,lumberyard:65,theater:72,school:66,chapel:62,workshop:64,loadingyard:64};
+ const smoky={house:1,bakery:1,keep:1,workshop:1,clinic:1};
+ const flagged={keep:1,fortress:1,tower:1,theater:1,market:1};
+ window.sc47Uplift=function(ctx,o){try{
+  const bs=(o.buildings||[]).filter(b=>b&&b.hp>0&&b.type!=='road'&&width[b.type]);
+  const t=o.visualTime||0;
+  ctx.save();ctx.globalCompositeOperation='multiply';
+  for(const b of bs){const w=width[b.type];ctx.fillStyle='rgba(120,100,86,.55)';ctx.beginPath();ctx.ellipse(b.x+w*.10,b.y+10,w*.40,w*.11,-.08,0,Math.PI*2);ctx.fill()}
+  ctx.restore();
+  ctx.save();
+  for(const b of bs){const w=width[b.type];
+   if(smoky[b.type]&&b.team===0){for(let i=0;i<4;i++){const ph=(t*.35+i*.25+b.id*.37)%1,x=b.x+w*.18+Math.sin(t*1.3+i+b.x)*3+ph*8,y=b.y-w*.55-ph*26;ctx.globalAlpha=.28*(1-ph);ctx.fillStyle='#d9d3c6';ctx.beginPath();ctx.arc(x,y,2+ph*5,0,Math.PI*2);ctx.fill()}}
+   if(flagged[b.type]){const px=b.x-w*.18,py=b.y-w*.62,wave=Math.sin(t*3+b.x*.1)*2.5;ctx.globalAlpha=1;ctx.strokeStyle='#433121';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(px,py+14);ctx.lineTo(px,py-6);ctx.stroke();ctx.fillStyle=b.team===1?'#7a3a30':'#8e2f2a';ctx.beginPath();ctx.moveTo(px,py-6);ctx.quadraticCurveTo(px+7,py-8+wave,px+14,py-4+wave*1.4);ctx.quadraticCurveTo(px+7,py-1+wave,px,py+1);ctx.closePath();ctx.fill();ctx.fillStyle='#d9a93c';ctx.fillRect(px-1,py-8,2,2)}
+  }
+  ctx.restore();
+ }catch(e){}};
+})();
+/* sc47-uplift-end */
 window.scFocusRing=null;
 const sc40Eta=new WeakMap();function sc39SiteMarkers(){const t=performance.now();ctx.save();for(const site of scConstructionSites){const pulse=Math.sin(t/260+site.id)*.5+.5;ctx.strokeStyle='rgba(240,200,90,'+(.55+pulse*.4)+')';ctx.lineWidth=3;ctx.setLineDash([8,6]);ctx.beginPath();ctx.arc(site.x,site.y+4,site.radius+12+pulse*5,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);const busy=units.some(u=>u.order&&u.order.type==='build'&&u.order.target===site);const nb=units.filter(u=>u.order&&u.order.type==='build'&&u.order.target===site).length;let m=sc40Eta.get(site);if(!m){m={t:0,p:0,r:0};sc40Eta.set(site,m)}if(!m.t||t-m.t>1000){if(m.t)m.r=(site.progress-m.p)/((t-m.t)/1000);m.t=t;m.p=site.progress}const eta=nb&&m.r>0?Math.ceil((site.required-site.progress)/m.r):0;const txt=site.type.toUpperCase()+' '+Math.floor(site.progress/site.required*100)+'%'+(busy?' · '+nb+' builder'+(nb>1?'s':'')+(eta?' · ~'+(eta>=60?Math.ceil(eta/60)+' min':eta+' s'):''):' · needs workers');ctx.font='bold 12px system-ui';const w=ctx.measureText(txt).width+12;ctx.fillStyle='rgba(20,34,30,.88)';ctx.fillRect(site.x-w/2,site.y-site.radius-34,w,18);ctx.strokeStyle='#d9a93c';ctx.lineWidth=1;ctx.setLineDash([]);ctx.strokeRect(site.x-w/2,site.y-site.radius-34,w,18);ctx.fillStyle='#f2dfae';ctx.textAlign='center';ctx.fillText(txt,site.x,site.y-site.radius-21)}
 const f=window.scFocusRing;if(f&&t<f.until){const k=(f.until-t)/2500;for(let i=0;i<3;i++){const r=20+((1-k)*90+i*28)%84;ctx.strokeStyle='rgba(255,214,110,'+Math.max(0,.9-r/110)+')';ctx.lineWidth=4;ctx.beginPath();ctx.arc(f.x,f.y,r,0,Math.PI*2);ctx.stroke()}ctx.font='bold 13px system-ui';ctx.textAlign='center';ctx.fillStyle='#fff3c8';ctx.strokeStyle='rgba(0,0,0,.7)';ctx.lineWidth=3;ctx.strokeText(f.text,f.x,f.y-48);ctx.fillText(f.text,f.x,f.y-48)}ctx.restore()}
@@ -2261,7 +2288,7 @@ ctx.clearRect(0,0,W,H);
 const circle=(x,y,r,fill,stroke)=>{ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke()}};
 const line=(x,y,xx,yy,color,width=2)=>{ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(xx,yy);ctx.stroke()};
 const label=(t,x,y,size=11,color='#f6edd6')=>{ctx.textAlign='center';ctx.font=`bold ${size}px system-ui`;ctx.fillStyle='#152029';ctx.fillText(t,x+1,y+1);ctx.fillStyle=color;ctx.fillText(t,x,y)};
-if(window.sc26WorldRenderer?.render(ctx,{W,H,buildings,nodes,units,sites:scConstructionSites,selected,inspected:inspectedBuilding,visualTime,running:!paused&&!scOverview&&!ended&&!tutorialVisible&&document.getElementById('sc1310Welcome')?.hidden!==false,biome:scOriginProfile().biome,labels:showLabels,combat:scScenario==='skirmish'})){sc26DrawOverlays();sc39SiteMarkers();return;}
+if(window.sc26WorldRenderer?.render(ctx,{W,H,buildings,nodes,units,sites:scConstructionSites,selected,inspected:inspectedBuilding,visualTime,running:!paused&&!scOverview&&!ended&&!tutorialVisible&&document.getElementById('sc1310Welcome')?.hidden!==false,biome:scOriginProfile().biome,labels:showLabels,combat:scScenario==='skirmish'})){window.sc47Uplift&&window.sc47Uplift(ctx,{W,H,buildings,visualTime,paused});sc26DrawOverlays();sc39SiteMarkers();return;}
 // Static meadow is cached once; water, units and construction remain live.
 const groundBiome=scOriginProfile().biome;
 if(!sc16GroundSurface||sc16GroundBiome!==groundBiome){sc16GroundSurface=document.createElement('canvas');sc16GroundSurface.width=W;sc16GroundSurface.height=H;sc16PaintGround(sc16GroundSurface.getContext('2d'),W,H,groundBiome);sc16GroundBiome=groundBiome;}
@@ -8055,7 +8082,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <!-- Version display fix: single authoritative visible release label. -->
 <script id="sc1406VersionFix">
 (()=>{'use strict';
- const version='0.46.0';
+ const version='0.47.0';
  function sync(){
   document.title='Shattered Crowns — v'+version;
   const badge=document.getElementById('sc179Version');
