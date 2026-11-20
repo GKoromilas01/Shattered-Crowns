@@ -23,4 +23,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install-deps chromium
-      - run: node --test --test-concurrency=1 --test-reporter=spec tests/caravan-ui.test.cjs tests/caravan-followup-ui.test.cjs
+      - run: npx playwright install chromium
+      - name: Run caravan keyboard tests
+        run: |
+          export CHROMIUM_PATH=$(node -e "console.log(require('playwright').chromium.executablePath())")
+          node --test --test-concurrency=1 --test-reporter=spec tests/caravan-ui.test.cjs tests/caravan-followup-ui.test.cjs
