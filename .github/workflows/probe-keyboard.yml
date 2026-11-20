@@ -1,0 +1,26 @@
+name: Probe keyboard tests
+on:
+  push:
+    branches: ['probe/**']
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        ref: [ce0da57cc31a571b7f3fb2e5c287a42b6835dcfd, 5ca9b145e67433c983eec360833189cd667fb0a9]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install-deps chromium
+      - run: node --test --test-concurrency=1 --test-reporter=spec tests/caravan-ui.test.cjs tests/caravan-followup-ui.test.cjs
