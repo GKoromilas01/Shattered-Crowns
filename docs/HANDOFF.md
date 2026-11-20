@@ -106,3 +106,11 @@ See `docs/DESIGN_GROWTH_AND_WAR.md`: everyone starts as a village and grows; mul
 - "Retreat instead of wipe-out": the city mode has no raids yet (only skirmish has enemy attacks), so it was delivered as the bandit event; real raid retreat belongs with defence waves.
 - Tests: tests/school.test.cjs (events decisions, chapters 4-5). The test helper clicks #sc154Pause, so tests that rely on the countdown must unpause first.
 - Docs merged: idea intake (base building, anti-snowball, subgenres, asymmetry, big vision triage). Owner idea recorded: stable / shipyard for trading ships.
+
+## v0.45.0 — The Market Square
+- `window.scMarket`: three goods (Food, Planks, Stone) traded at a built Market in lots of 10 for gold. Buy price = price +15%, sell = price -15%; each trade moves the price 4% (clamped 50%-200% of the regional base); prices drift back to base every 5 s (only while unpaused). Because of the spread, cycling trades can never gain wealth (tested).
+- Regional base prices: `REGION` table keyed by origin id (home: all 1.0; brookstead: food 0.8, stone 1.3). Add a row for each new origin. Prices are NOT saved (reset to regional base on start/load) to avoid touching the strict save validator; revisit if prices become long-lived.
+- Panel `#scMarketPanel` appears at right (top:340px, below the Guide) when a player Market is inspected; includes an Advisor hint (cheap/dear/steady) and a traded-goods counter.
+- Trader event quotes live prices (stone: 40 x price, wood: 40 x price x 0.95). Chapter 2 gained the goal "trade 20 goods at the Market".
+- Deliberately not done: separate wheat/fish stocks and bread trading (food is one stock; bakery bread still auto-sells at 4 gold each), the special game currency (name chosen: Florin; gold stays the only currency), stable and shipyard (planned next).
+- Tests: tests/market.test.cjs (quick tier). The test helper pauses the game, so the 5 s price recovery is not exercised there.

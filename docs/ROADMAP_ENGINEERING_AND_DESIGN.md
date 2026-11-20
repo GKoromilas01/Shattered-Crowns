@@ -65,3 +65,6 @@ DISCARD: sexual violence, sadism and torture-as-entertainment cutscenes (hurts a
 
 ## Idea intake: stables and shipyards for trading ships (owner, 2026-11-19)
 Owner prefers starting with a stable or a shipyard for trading ships. Claude's view: best paired with the market (needs goods and regional prices to be worth anything), so it goes right after the market version; a shipyard also fits island starts (fish, sea trade). Decide together before that version.
+
+## Decision: currency name (owner + Claude, 2026-11-20)
+Future game currency is called the Florin (real medieval gold coin). Dinar may later be the coin of the eastern regions. Not built yet; gold remains the only currency until the owner agrees to the currency version.
