@@ -28,3 +28,10 @@ Painterly medieval realism, warm natural light, slightly muted/desaturated, soft
 2. Add the palette prompt suffix above.
 3. Check the result for brand-like or watermark-like text. Do not use it if it resembles a real brand.
 4. Send the image to Claude; Claude logs generator, plan, privacy mode and date in docs/ASSET_LOG.md.
+
+## Long-term visual target (owner idea, 2026-11-20 — recorded, NOT scheduled)
+The owner shared a screenshot of a mobile-strategy ad: stylised 3D-looking medieval map (towers with orange roofs, river, snowy mountains, blue enemy keep), dark rounded UI panels with gold buttons and level pips, a minimap in the corner.
+- Treat it as a "later on" target, not a version item. The ad is almost certainly pre-rendered or AI-made marketing art, not real gameplay footage.
+- What is reachable without a rewrite: richer building sprites drawn in code, warmer palette and lighting, soft shadows, a consistent panel style (dark rounded cards, gold accent, level pips) for building menus, a minimap.
+- What needs a big decision first: real 3D or pre-rendered isometric assets (new engine or an asset pipeline), and licensed or commissioned art. Decide together before any version touches it.
+- Reminder before any key image generation: Private Mode on a paid plan, check commercial-use terms, log it in docs/ASSET_LOG.md.
