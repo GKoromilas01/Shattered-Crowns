@@ -30,3 +30,8 @@ Policy for this project: key assets that define the game's identity (main portra
 - Checked: no brand text or watermarks. Ship scene not used yet.
 - Earlier free-plan and icon tests were for evaluation only and are not shipped.
 - Legal: AI-generated art may not be copyrightable; recommend a lawyer review before commercial launch.
+
+### v0.47 additions (2026-11-20)
+- All map art (buildings, units, trees, deposits, road and grass textures, camp, journey and event scenes, resource icons) generated with Leonardo (GPT Image 2, Medium), Essential monthly plan, Private Mode ON. Originals in `assets/v047/originals/`; cutouts built by `scripts/process-v047-art.py`.
+- Still missing (use old sprites): plaza, shrub, bridge, stone icon.
+- Test anthem: Leonardo Music, 1 min, instrumental, Private Mode ON, 700 tokens (4,844 -> 4,144). NOT in the game; owner reviews first. Commercial-use terms to be confirmed before shipping.
