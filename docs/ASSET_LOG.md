@@ -35,3 +35,4 @@ Policy for this project: key assets that define the game's identity (main portra
 - All map art (buildings, units, trees, deposits, road and grass textures, camp, journey and event scenes, resource icons) generated with Leonardo (GPT Image 2, Medium), Essential monthly plan, Private Mode ON. Originals in `assets/v047/originals/`; cutouts built by `scripts/process-v047-art.py`.
 - Still missing (use old sprites): plaza, shrub, bridge, stone icon.
 - Test anthem: Leonardo Music, 1 min, instrumental, Private Mode ON, 700 tokens (4,844 -> 4,144). NOT in the game; owner reviews first. Commercial-use terms to be confirmed before shipping.
+- Plaza, shrub, bridge and a paved town-road texture: Leonardo GPT Image 2 Medium, Private Mode ON, 4 x 65 tokens (4,144 -> 3,884). Awaiting owner download.
