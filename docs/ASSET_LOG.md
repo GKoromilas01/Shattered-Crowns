@@ -36,3 +36,8 @@ Policy for this project: key assets that define the game's identity (main portra
 - Still missing (use old sprites): plaza, shrub, bridge, stone icon.
 - Test anthem: Leonardo Music, 1 min, instrumental, Private Mode ON, 700 tokens (4,844 -> 4,144). NOT in the game; owner reviews first. Commercial-use terms to be confirmed before shipping.
 - Plaza, shrub, bridge and a paved town-road texture: Leonardo GPT Image 2 Medium, Private Mode ON, 4 x 65 tokens (4,144 -> 3,884). Awaiting owner download.
+
+## v0.48 batch (folded into v0.47 release)
+- Tool: Leonardo gpt-image-2, 1:1, Medium, Private Mode ON, 65 tokens each, 10 images (650 tokens).
+- Images: tex_wood, tex_dry, tex_shore (biome ground textures), site_village, site_town, site_city (map settlement icons), por_merchant, por_captain, por_healer, por_scholar (portraits).
+- Balance after batch: 3,234 tokens (before: 3,884).
