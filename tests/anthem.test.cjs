@@ -19,8 +19,12 @@ test('Playlist plays the city theme, fades out, then fades in the anthem',async 
  await p.waitForFunction(()=>window.scAudio.status().contextState==='running'&&window.scAudio.status().musicVoices>0);
  assert.equal(await p.evaluate(()=>window.scPlaylist.status().track),'city');
  await p.waitForFunction(()=>window.scPlaylist.status().fading===true);
+ await p.waitForFunction(()=>window.scPlaylist.status().track==='leo_dawn');
+ await p.evaluate(()=>window.scMusic.next());
  await p.waitForFunction(()=>window.scPlaylist.status().track==='anthem');
  await p.waitForFunction(()=>window.scPlaylist.status().fading===false&&window.scAudio.status().musicVoices>0);
  await p.waitForFunction(()=>window.scPlaylist.status().gain>0.5);
+ await p.waitForFunction(()=>window.scPlaylist.status().track==='leo_march');
+ await p.evaluate(()=>window.scMusic.next());
  await p.waitForFunction(()=>window.scPlaylist.status().track==='celtic');
 });

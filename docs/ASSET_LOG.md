@@ -41,3 +41,6 @@ Policy for this project: key assets that define the game's identity (main portra
 - Tool: Leonardo gpt-image-2, 1:1, Medium, Private Mode ON, 65 tokens each, 10 images (650 tokens).
 - Images: tex_wood, tex_dry, tex_shore (biome ground textures), site_village, site_town, site_city (map settlement icons), por_merchant, por_captain, por_healer, por_scholar (portraits).
 - Balance after batch: 3,234 tokens (before: 3,884).
+- Anthems (Leonardo Music, instrumental, 1 min, Private Mode ON, 700 tokens each): "war anthem" (marching, brass, frame drums) and "settlement theme" (lute, flute, harp, fiddle). Balance after: 1,834. Licence for commercial use of Leonardo music still to be confirmed in ToS before release.
+- Anthems in game (v0.47): Heroic Dawn (test anthem), March of the Crown, Hearthfire Morning, Roads and Caravans, compressed to 72 kbps MP3 and embedded (sc47Music); interleaved with the synthesized themes, which all stay. Originals in assets/v048/music-originals/. 4th track cost 700 tokens; balance 1,134.
+- Biome ground textures tex_wood/tex_dry/tex_shore integrated per biome. Settlement icons and portraits (assets/v048/originals) not yet integrated.

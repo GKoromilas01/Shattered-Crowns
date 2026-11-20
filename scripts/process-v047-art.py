@@ -5,7 +5,7 @@ from scipy import ndimage as ndi
 O='assets/v047/originals/';R='assets/v047/runtime/'
 os.makedirs(R,exist_ok=True)
 SCENES={'trader':960,'bandits':960,'refugees':960,'ship':960,'story_peace':960,'story_raid':960,'story_ash':960,'trail_woodland':960,'trail_coastal':960,'trail_dryland':960,'arrival':960,'feast':960,'sickness':960,'advisor':480}
-TEX={'tex_road':256,'tex_grass':256}
+TEX={'tex_road':256,'tex_grass':256,'tex_wood':256,'tex_dry':256,'tex_shore':256}
 CUT={'keep':320,'house':220,'farm':300,'oak':240,'birch':170,'pine':170,'stone':200,'gold':200,'icon_gold':96,'icon_food':96,'icon_trade':96,'icon_wood':96,'icon_stone':96,
  'market':260,'granary':220,'lumberyard':240,'bakery':220,'fishery':240,'theater':260,'school':240,'chapel':220,'workshop':230,'clinic':220,'fortress':360,'tower':200,'wall':260,'well':140,'garden':160,'plaza':200,'loadingyard':240,'shipyard':260,'stable':240,'camp':240,'bush':110,'bridge':220,
  'unit_worker':120,'unit_soldier':120,'unit_archer':120,'unit_raider':120}
