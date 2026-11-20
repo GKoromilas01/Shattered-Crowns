@@ -26,5 +26,7 @@ jobs:
       - run: npx playwright install chromium
       - name: Run caravan keyboard tests
         run: |
+          export TEST_ARTIFACT_DIR=$PWD/test-results/probe
+          mkdir -p $TEST_ARTIFACT_DIR
           export CHROMIUM_PATH=$(node -e "console.log(require('playwright').chromium.executablePath())")
           node --test --test-concurrency=1 --test-reporter=spec tests/caravan-ui.test.cjs tests/caravan-followup-ui.test.cjs
