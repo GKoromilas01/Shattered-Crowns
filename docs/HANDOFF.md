@@ -1,3 +1,9 @@
+## v0.50 camera/camp/story follow-up
+
+Owner requested a visible centred starting settlement, the smaller camp graphic, and a richer story. New Game framing lives in `src/v050/entry.js` and runs before/after the movie with restore-generation protection. `src/v026/renderer.js` uses the existing painted camp for friendly unreinforced peaceful Keeps; reinforcement uses existing max-health state to show the castle. No resource/stat/footprint/schema changes; legacy basic Keeps also get the camp appearance.
+
+`src/v050/opening-story.js` contains seven clip captions and five original prose passages (309 narration words); `intro.js` plays them automatically with optional Pause/Continue/Skip, hidden-tab timing, keyboard containment and early shortcut blocking. House/market footage is explicitly a future hope; final riders are a memory, not a scheduled attack. `docs/STORY_V050_OPENING.md` records the full text. All media remains unchanged and embedded. Focused checks18/18, final keyboard1/1, packaged smoke7/7; final CI in PR73. Owner/Claude retains merge and production decisions.
+
 ## v0.50 approved entry follow-up
 
 The final owner decision supersedes first-time-only videos: **New Game → Enter city / Advisor → village map → videos on every New Game → city**. **Return to Game** loads the newest valid manual/autosave without videos. A named profile is browser-local. New sources `src/v050/intro.js` and `src/v050/entry.js`; existing paid video/media blocks unchanged, old route/death/supply cards removed, ruler portrait compatibility retained.

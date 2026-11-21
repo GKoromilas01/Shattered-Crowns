@@ -1,5 +1,7 @@
 # v0.50.0 — A Clearer Town (candidate)
 
+New villages now begin with the existing painted camp in view. The normal reinforcement upgrade reveals the castle. A fuller original story connects the seven existing clips with automatically paced prose, with Pause/Continue/Skip for reading; no supply, route or death choices return.
+
 New Game now chooses a village on the world map, plays the existing videos, then enters the city with optional Advisor guidance. Return to Game loads the newest valid save without videos. A named browser profile, three five-minute active-play autosaves, separate manual saves/exports and clear save status support returning players. The obsolete illustrated journey and its supply/death choices are removed.
 
 Routine milestones, sayings, trade offers and shipment notices move into an on-demand town journal. Timed decisions retain their real countdown and default in a compact notice; Guide and chapter details open when requested. Native panels close cleanly when switching context, and construction labels follow the selected worksite.

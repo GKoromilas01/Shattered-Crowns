@@ -42,3 +42,13 @@ Run 44945738109 exposed nine full-suite regressions and a live-stable compatibil
 New save captures previously retained a hard-coded 0.28.0 createdWith tag. The native visible version and new captures now use the same runtime version; schemas and loaded simulation state remain unchanged. Genuine v0.7/v0.8.1 migration assertions pass.
 
 The new entry-flow smoke case is mandatory for a packaged candidate and for v0.50-or-newer live metadata. It is skipped only when testing an older deployed stable release that lacks the feature. A local server serving the actual released e0b65bb bytes confirmed this compatibility path (one feature-specific skip, zero failures); the candidate's seven packaged smoke checks pass. Release scripts, digest checks and required CI gates are unchanged. Final-head CI is linked from PR73.
+
+## Owner camera, camp and narrative follow-up
+
+Reproduced the offscreen initial Keep and missing camp appearance before changing the implementation. New games now frame the authoritative Keep both after title layout and after the film; framing uses actual canvas scale and bounded zoom, with city/generation guards. Restore/Return keeps its saved camera. Centring passed at 390, 1366 and 1920 pixels wide after deliberately scrolling a previous game away from the Keep.
+
+The existing painted camp is selected for a friendly unreinforced peaceful Keep. This is cosmetic and follows existing saved maximum health, so legacy basic Keeps also use the camp; normal paid reinforcement displays the castle. Footprints, initial resources, stats and save schemas are unchanged. No unpersisted camp flag is needed.
+
+Seven existing clips now have 309 words of original narration in five automatically paced passages. Houses/market are explicitly a hoped-for future; riders are a memory, and gameplay begins peacefully at camp. Optional Pause/Continue/Skip, a reading progress indicator, keyboard-contained focus, early gameplay-shortcut blocking, hidden-tab timing and reduced-motion transitions support readability without route/resource choices. [Full text](../STORY_V050_OPENING.md).
+
+Focused entry/story/settlement/graphics/integrity tests passed **18/18**, followed by a final keyboard check **1/1**. Packaged smoke passed **7/7** on the updated game. A fresh focused review caught keyboard focus escaping after Continue and outdated ambiguous Skip selectors; both were corrected and tested. Existing painted art/audio/video payloads match the prior candidate byte-for-byte. Final-head CI is tracked in PR73; no merge or deployment.
