@@ -18,7 +18,7 @@ async function manifest(context,expected){
 async function game(t){
  const {context,page}=await browserPage(t,browser,{viewport:{width:1440,height:900}});page.setDefaultTimeout(12000);
  const m=await manifest(context,process.env.EXPECTED_RELEASE_SHA);const response=await page.goto(base+'?smoke='+Date.now(),{waitUntil:'load'});assert.equal(response.status(),200);
- if(m){assert.match(m.sourceSha,/^[a-f0-9]{40}$/);assert.equal(digest(await response.body()),m.files['index.html'],'Live game bytes must match verified release');}
+ if(m){assert.match(m.sourceSha,/^[a-f0-9]{40}$/);const raw=await context.request.get(base+'?bytes='+Date.now());assert.equal(digest(await raw.body()),m.files['index.html'],'Live game bytes must match verified release');}
  await page.waitForFunction(()=>window.sc140UI&&window.scCityEconomy&&window.scHoverBuildings?.length);await page.locator('#sc1310Skip').click();await page.mouse.move(700,400);return page;
 }
 async function point(p,x,y,center=false){return p.evaluate(({x,y,center})=>{const c=document.querySelector('#field'),v=c.parentElement;if(center){v.scrollLeft=x*c.getBoundingClientRect().width/c.width-v.clientWidth/2;v.scrollTop=y*c.getBoundingClientRect().height/c.height-v.clientHeight/2;}const r=c.getBoundingClientRect();return{x:r.left+x*r.width/c.width,y:r.top+y*r.height/c.height}},{x,y,center})}
