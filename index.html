@@ -4467,7 +4467,7 @@ function scFrontierPrepare(q,data){
 window.scFrontiers=Object.freeze({snapshot:scFrontierSnapshot,survey:scFrontierSurvey,dispatch:scFrontierDispatch,refuse:scFrontierRefuse,reopen:scFrontierReopen,sign:scFrontierSign});
 
 /* sc26-engine-end */
-const scSaveFormat='shattered-crowns-city' ,scSaveLimit=1048576;
+const scSaveFormat='shattered-crowns-city' ,scSaveLimit=1048576;window.scGameVersion='0.50.0';
 const scUnitTypes=['worker','soldier','archer'];
 const scBuildingTypes=['keep','house','farm','fishery','road','market','well','lumberyard','granary','bakery','theater','school','chapel','clinic','garden','plaza','tower','fortress','wall','workshop','loadingyard'];
 const scUnitNumbers=['id','team','x','y','hp','max','speed','damage','range','radius','cool','carry'];
@@ -4489,7 +4489,7 @@ function scCaptureCity(){
  });
   const buildingRows=liveBuildings.map(b=>({...Object.fromEntries(scBuildingNumbers.map(k=>[k,k==='cityTier'?(b[k]||1):(b[k]??0)])),type:b.type,scLastNotifiedTier:b.scLastNotifiedTier??null,...(typeof b.cityWorkPaused==='boolean'?{cityWorkPaused:b.cityWorkPaused}:{}),...(typeof b.cityWorkPriority==='boolean'?{cityWorkPriority:b.cityWorkPriority}:{})}));
  const zoom=window.scMapZoom?.get()||1;
- return {format:scSaveFormat,schema:scScenario==='city'?(scFrontierState?11:scEnvoyState?10:scTownState?9:scRegional?8:scChapter?6:scConstructionSites.length?5:scNewOriginIds.includes(scOriginId)?4:scOriginId==='brookstead'?3:2):1,...(scScenario==='city'?{campaign:{mode:'city',stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,...(scOriginId!=='home'?{originId:scOriginId}:{})}}:{}),createdWith:'0.28.0',cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
+ return {format:scSaveFormat,schema:scScenario==='city'?(scFrontierState?11:scEnvoyState?10:scTownState?9:scRegional?8:scChapter?6:scConstructionSites.length?5:scNewOriginIds.includes(scOriginId)?4:scOriginId==='brookstead'?3:2):1,...(scScenario==='city'?{campaign:{mode:'city',stableCycles:scReadyCycles,selectedLocation:scSelectedLocation,...(scOriginId!=='home'?{originId:scOriginId}:{})}}:{}),createdWith:window.scGameVersion,cityId:scCityIdentity,savedAt:Date.now(),world:{version:1,width:W,height:H},view:{zoom,centerX:clamp((mapViewport.scrollLeft+mapViewport.clientWidth/2)/zoom,0,W),centerY:clamp((mapViewport.scrollTop+mapViewport.clientHeight/2)/zoom,0,H)},state:{
   resources:{gold,wood,stone,food,tradeGoods,goodsSold,aiGold,aiWood},people:{population,happiness,prosperity:cityProsperity},
   clock:{elapsed,cityTimer,cityCycleNumber,aiTimer,resourceTimer,aiDecision,aiAttackTimer,aiTrainTimer,trainTimer,scFestivalCooldown},
   options:{difficulty,formation,eventFoodReserve:scEventFoodReserve,showLabels,showMinimap,serviceOverlay,ration:window.scRationPolicy?.capture()||{mode:el('sc1303Mode')?.value||'normal',emergency:window.scRationFactor===.75},breadExport:window.scBreadExportEnabled!==false,breadReserveCycles:window.scBreadReserveCycles??2},
@@ -8060,7 +8060,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <!-- Version display fix: single authoritative visible release label. -->
 <script id="sc1406VersionFix">
 (()=>{'use strict';
- const version='0.50.0';
+ const version=window.scGameVersion;
  function sync(){
   document.title='Shattered Crowns — v'+version;
   const badge=document.getElementById('sc179Version');
@@ -10376,12 +10376,15 @@ window.sc50Intro={play,cancel};for(const event of ['sc-city-restored','sc-city-s
  const style=document.createElement('style');style.textContent=`
  body:has(#sc50Journal:not([hidden])) #sc1311PauseOverlay{visibility:hidden}
  #scCityInspection:has([data-sc50-menu="workshop"]) #sc26WorkshopStock{display:none!important}
+ /* Pan guidance remains in the zoom tooltip; its delayed inline hint resized the map. */
+ #sc21PanHint{display:none!important}
  #scChapters,#sc24Saying,#sc25Receipt,#sc24Offer{display:none!important}
  #scGuide:not([data-sc50-open]),#scStoryCard:not([data-sc50-open]),#scEventCard:not([data-sc50-open]){display:none!important}
  #sc50Journal[hidden],#sc50DecisionButton[hidden]{display:none!important}
  #sc50Journal{position:fixed;right:12px;top:calc(var(--sc-hud-height,100px) + 12px);width:min(370px,calc(100vw - 24px));max-height:calc(100dvh - var(--sc-hud-height,100px) - 110px);overflow:auto;box-sizing:border-box;padding:16px;z-index:30010;background:#203a32;color:#f2e6c6;border:1px solid #b99a65;border-radius:8px;font:13px/1.5 system-ui}
  #sc50Journal [data-objective]{white-space:pre-line}#sc50Journal h2{margin:0 0 8px;font-size:17px}#sc50Journal h3{font-size:14px}#sc50Journal button,#sc50MinimizeDecision{background:#3e5140;color:#fff0c5;border:1px solid #b99a65;border-radius:5px;padding:6px;cursor:pointer}
  #sc50JournalButton,#sc50DecisionButton{position:static!important;font:600 11px system-ui;padding:5px 8px;color:#fff0c5;background:#28473e;border:1px solid #b7a16d;border-radius:5px;cursor:pointer}
+ #sc50JournalButton{white-space:nowrap;flex:none}
  #sc50DecisionButton{max-width:350px;white-space:normal;text-align:left;border-color:#efc867}
  @media(max-width:650px){#sc50DecisionButton{max-width:210px;font-size:10px}}
  `;document.head.append(style);

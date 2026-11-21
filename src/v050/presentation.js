@@ -3,12 +3,15 @@
  const style=document.createElement('style');style.textContent=`
  body:has(#sc50Journal:not([hidden])) #sc1311PauseOverlay{visibility:hidden}
  #scCityInspection:has([data-sc50-menu="workshop"]) #sc26WorkshopStock{display:none!important}
+ /* Pan guidance remains in the zoom tooltip; its delayed inline hint resized the map. */
+ #sc21PanHint{display:none!important}
  #scChapters,#sc24Saying,#sc25Receipt,#sc24Offer{display:none!important}
  #scGuide:not([data-sc50-open]),#scStoryCard:not([data-sc50-open]),#scEventCard:not([data-sc50-open]){display:none!important}
  #sc50Journal[hidden],#sc50DecisionButton[hidden]{display:none!important}
  #sc50Journal{position:fixed;right:12px;top:calc(var(--sc-hud-height,100px) + 12px);width:min(370px,calc(100vw - 24px));max-height:calc(100dvh - var(--sc-hud-height,100px) - 110px);overflow:auto;box-sizing:border-box;padding:16px;z-index:30010;background:#203a32;color:#f2e6c6;border:1px solid #b99a65;border-radius:8px;font:13px/1.5 system-ui}
  #sc50Journal [data-objective]{white-space:pre-line}#sc50Journal h2{margin:0 0 8px;font-size:17px}#sc50Journal h3{font-size:14px}#sc50Journal button,#sc50MinimizeDecision{background:#3e5140;color:#fff0c5;border:1px solid #b99a65;border-radius:5px;padding:6px;cursor:pointer}
  #sc50JournalButton,#sc50DecisionButton{position:static!important;font:600 11px system-ui;padding:5px 8px;color:#fff0c5;background:#28473e;border:1px solid #b7a16d;border-radius:5px;cursor:pointer}
+ #sc50JournalButton{white-space:nowrap;flex:none}
  #sc50DecisionButton{max-width:350px;white-space:normal;text-align:left;border-color:#efc867}
  @media(max-width:650px){#sc50DecisionButton{max-width:210px;font-size:10px}}
  `;document.head.append(style);
