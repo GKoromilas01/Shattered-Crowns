@@ -1491,7 +1491,7 @@ window.scTax=(function(){
  if(navigator.webdriver&&!force)return;
  let seen=false;try{seen=localStorage.getItem(KEY)==='1'}catch(_){}
  if(seen&&!force)return;
- const steps=[['march','The war is over. The survivors have lost their homes, but not each other.'],['hill','They climb a hill above a quiet valley. Here, they decide, a new kingdom begins.'],['house','Timber by timber, the first home rises.'],['market','Soon roads, trade and neighbours follow.'],['raiders','But every settlement is watched. Be ready.']];
+ const steps=[['village','Once, we had a home: a quiet village, full harvests and good neighbours.'],['attack','Then the barbarians came, and everything we loved burned.'],['march','The war is over. The survivors have lost their homes, but not each other.'],['hill','They climb a hill above a quiet valley. Here, they decide, a new kingdom begins.'],['house','Timber by timber, the first home rises.'],['market','Soon roads, trade and neighbours follow.'],['raiders','But every settlement is watched. Be ready.']].filter(x=>window.sc47Video&&window.sc47Video[x[0]]);
  let shown=false;
  document.addEventListener('click',e=>{if(shown)return;const b=e.target.closest&&e.target.closest('#sc1310Skip,#sc1310Try,#scStartGovern');if(!b||b.disabled||!window.sc47Video)return;shown=true;setTimeout(run,80)},true);
  function run(){
