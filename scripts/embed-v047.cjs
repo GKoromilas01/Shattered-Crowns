@@ -3,7 +3,8 @@ const fs=require('fs'),path=require('path');const root=path.join(__dirname,'..')
 const dir=path.join(root,'assets/v047/runtime'),art={};
 for(const f of fs.readdirSync(dir).sort())if(f.endsWith('.webp'))art[f.slice(0,-5)]='data:image/webp;base64,'+fs.readFileSync(path.join(dir,f)).toString('base64');
 const mdir=path.join(root,'assets/v047/music'),mus={};
-if(fs.existsSync(mdir))for(const f of fs.readdirSync(mdir).sort())if(f.endsWith('.mp3'))mus[f.slice(0,-4)]='data:audio/mpeg;base64,'+fs.readFileSync(path.join(mdir,f)).toString('base64');
+const ldir=path.join(root,'assets/v049/music-longer');
+for(const d of [mdir,ldir])if(fs.existsSync(d))for(const f of fs.readdirSync(d).sort())if(f.endsWith('.mp3'))mus[f.slice(0,-4).replace(/-long$/,'')]='data:audio/mpeg;base64,'+fs.readFileSync(path.join(d,f)).toString('base64');
 const vdir=path.join(root,'assets/v047/video'),vid={};
 if(fs.existsSync(vdir))for(const f of fs.readdirSync(vdir).sort())if(f.endsWith('.webm'))vid[f.slice(0,-5)]='data:video/webm;base64,'+fs.readFileSync(path.join(vdir,f)).toString('base64');
 const tag='<script id="sc47Art">window.sc47Art='+JSON.stringify(art)+';</script>'+
