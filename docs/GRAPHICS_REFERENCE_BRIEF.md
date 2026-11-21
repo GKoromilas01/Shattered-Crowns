@@ -78,6 +78,19 @@ See [MARKET_VISUAL_BRIEF.md](MARKET_VISUAL_BRIEF.md).
 
 See [CHAPEL_VISUAL_BRIEF.md](CHAPEL_VISUAL_BRIEF.md).
 
+## 7. Advisor meetings / council chamber
+
+**Owner references:** a small council gathered around a timber table in a stone room, plus a closer view of one speaker across the table.
+
+- Create an intimate, practical meeting room appropriate to the settlement's prosperity: rough local stone and simple timber furnishings at first; richer chairs and fittings only with later growth.
+- Seat a few distinct advisors around a shared table. Use original faces, varied ages, practical garments and clear silhouettes to distinguish their responsibilities.
+- Show listening, discussion and restrained gestures. The meeting should feel like people considering the settlement's affairs.
+- Combine cool daylight from a small window with warm candle or hearth light. Preserve the atmosphere while making faces, hands and important objects readable; do not reproduce the reference's very dark exposure.
+- Use a restrained selection of papers, a simple map, cups and candles. Keep the table and composition clear rather than filling the image with ornaments or food.
+- Prepare a readable group composition for a council illustration and, if requested, individual advisor portraits with consistent clothing, light and palette. Leave quiet space for interface text without baking labels into the art.
+- Match the established painted style. Do not copy actors, recognizable costumes, chair designs, franchise symbols or the reference's exact staging.
+- Advisor imagery belongs in the existing Advisor/City Life context, opened when wanted. This reference does not request a permanent overlay, recurring interruption or a new council simulation.
+
 ## Shared production checks
 
 1. The result belongs beside the existing painted world, buildings and portraits.
