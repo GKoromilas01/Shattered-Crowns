@@ -33,4 +33,4 @@ jobs:
           export TEST_ARTIFACT_DIR=$PWD/test-results/probe
           mkdir -p $TEST_ARTIFACT_DIR
           export CHROMIUM_PATH=$(node -e "console.log(require('playwright').chromium.executablePath())")
-          for i in 1 2; do node --test --test-concurrency=1 --test-reporter=spec tests/caravan-ui.test.cjs tests/caravan-followup-ui.test.cjs 2>&1 | grep -E "✖|ℹ (pass|fail)"; done
+          node --test --test-concurrency=1 --test-reporter=spec --test-name-pattern="City Life keeps diplomacy" tests/caravan-followup-ui.test.cjs 2>&1 | head -60
