@@ -1,0 +1,31 @@
+name: probe live bytes
+on:
+  push:
+    branches: [probe/live-bytes]
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Compare live bytes with the stable release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download stable-run-44864060304 --repo "$GITHUB_REPOSITORY" --pattern index.html --dir stable
+          cat > p.mjs <<'EOF'
+          import fs from 'node:fs';import crypto from 'node:crypto';
+          const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+          const stable=fs.readFileSync('stable/index.html');console.log('stable',stable.length,sha(stable));
+          const S='https://gkoromilas01.github.io/Shattered-Crowns/';
+          for(const [name,url,h] of [['script-style',S+'?preflight='+Date.now(),{'Cache-Control':'no-cache'}],['plain',S,{}],['query-only',S+'?x='+Date.now(),{}]]){
+            const r=await fetch(url,{headers:h,signal:AbortSignal.timeout(60000)});const b=Buffer.from(await r.arrayBuffer());
+            let d=-1;for(let i=0;i<Math.min(b.length,stable.length);i++){if(b[i]!==stable[i]){d=i;break}}
+            console.log(name,r.status,b.length,sha(b),'enc='+r.headers.get('content-encoding'),'firstDiff='+d,'x-cache='+r.headers.get('x-cache'),'age='+r.headers.get('age'));
+            if(d>=0){console.log('live ctx',JSON.stringify(b.subarray(Math.max(0,d-40),d+80).toString()));console.log('stable ctx',JSON.stringify(stable.subarray(Math.max(0,d-40),d+80).toString()))}
+          }
+          EOF
+          node p.mjs
