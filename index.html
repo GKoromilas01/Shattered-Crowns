@@ -61,7 +61,7 @@ function object(g,o,s){const {kind,value:b}=o;
   if(b.type==='tree'){sprite(g,['oak','birch','pine'][Math.abs(Math.round(b.x+b.y))%3],b.x,b.y+7,60);return;}
   sprite(g,b.type,b.x,b.y+7,52);return;
  }
- if(kind==='site'){const ratio=Math.max(0,Math.min(1,b.progress/b.required));sprite(g,ratio<.25?'foundation':ratio<.65?'frame':'roof',b.x,b.y+7,b.type==='house'?59:b.type==='market'?82:Math.max(43,b.radius*2+15));g.fillStyle='#253e31';g.fillRect(b.x-21,b.y+18,42,3);g.fillStyle='#d6bb7b';g.fillRect(b.x-21,b.y+18,42*ratio,3);text(g,Math.floor(ratio*100)+'%',b.x,b.y+32);return;}
+ if(kind==='site'){const ratio=Math.max(0,Math.min(1,b.progress/b.required));if(!(window.sc47PaintSite&&window.sc47PaintSite(g,b,ratio)))sprite(g,ratio<.25?'foundation':ratio<.65?'frame':'roof',b.x,b.y+7,b.type==='house'?59:b.type==='market'?82:Math.max(43,b.radius*2+15));g.fillStyle='#253e31';g.fillRect(b.x-21,b.y+18,42,3);g.fillStyle='#d6bb7b';g.fillRect(b.x-21,b.y+18,42*ratio,3);text(g,Math.floor(ratio*100)+'%',b.x,b.y+32);return;}
  if(kind==='building'){
   const width=({keep:(window.scSmallKeep?80:115),house:59,market:82,wall:74,fortress:100,tower:58,well:38,garden:40,plaza:44,clinic:48,bakery:52,granary:70,farm:66,fishery:66,lumberyard:65,theater:72,school:66,chapel:62,workshop:64,loadingyard:64})[b.type]||52;
   if(b.type==='keep'&&window.scSmallKeep){if(!(window.sc47Paint&&window.sc47Paint(g,b,100,'camp')))campArt(g,b.x,b.y+10);health(g,b,s,b.y-40,52);text(g,'SURVIVORS\' CAMP',b.x,b.y+34);}else if(b.type==='school'){schoolArt(g,b.x,b.y+8);health(g,b,s,b.y-38,Math.min(60,width));}else if(b.type==='chapel'){chapelArt(g,b.x,b.y+8);health(g,b,s,b.y-50,Math.min(60,width));}else{if(!(window.sc47Paint&&window.sc47Paint(g,b,width)))sprite(g,b.type,b.x,b.y+10,width);health(g,b,s,b.y+2-frames[b.type][5]*width/frames[b.type][2],Math.min(60,width));}if(b.team===1){g.save();const x=b.x+width*.3,y=b.y-width*.75;line(g,x,y,x,y-14,'#b99864',1.5);g.fillStyle='#c15f4d';g.beginPath();g.moveTo(x,y-14);g.lineTo(x+11,y-11);g.lineTo(x,y-7);g.fill();g.restore();}
@@ -1279,7 +1279,7 @@ function scStartConstruction(type,p){
 }
 window.scStoryCards=(function(){
  const defs=[
-  {id:'harvest',title:'The First Harvest',text:'The fields have given. Bread will be on every table tonight.',test:(s)=>s.food&&s.food.last&&s.food.last.harvest>0},
+  {id:'harvest',title:'The First Harvest',text:'The fields have given. Bread will be on every table tonight.',test:(s,b)=>{if(window.sc49BaseFarms==null)window.sc49BaseFarms=b.filter(x=>x.type==='farm').length;return !!(s.food&&s.food.last&&s.food.last.harvest>0&&b.filter(x=>x.type==='farm').length>window.sc49BaseFarms)}},
   {id:'school',title:'A School Opens',text:'Children gather around the first teacher. Letters and numbers will outlast any wall.',test:(s,b)=>b.some(x=>x.type==='school')},
   {id:'chapel',title:'The Chapel Bell',text:'A bell rings over the roofs for the first time. The people have a place to be still.',test:(s,b)=>b.some(x=>x.type==='chapel')},
   {id:'ten',title:'Ten Hearths Warm',text:'Ten residents now call this place home. A village is becoming a town.',test:(s)=>(s.population||0)>=10}
@@ -1352,7 +1352,7 @@ window.scEvents=(function(){
   {id:'decline',label:'Not now (mood -2)',run:()=>{happiness=Math.max(0,happiness-2);msg('The people went home grumbling.');updateUI()}}],{def:'prayer',advised,sound})}
  const FN={trader,refugees,sickness,bandits,feast};
  function fire(kind,seconds){count++;dlOverride=seconds||0;(FN[kind]||trader)()}
- setInterval(()=>{if(ended&&box)close();const wl=document.getElementById('sc1310Welcome');if(paused||ended||scScenario!=='city'||scOverview||document.hidden||box||tutorialVisible||(wl&&wl.offsetParent!==null))return;if(!keep())return;elapsed++;if(elapsed>=next){fire(KINDS[count%KINDS.length]);next=elapsed+150+Math.floor((count*37)%60)}},1000);
+ setInterval(()=>{if(ended&&box)close();const wl=document.getElementById('sc1310Welcome');if(paused||ended||scScenario!=='city'||scOverview||document.hidden||box||tutorialVisible||(wl&&wl.offsetParent!==null))return;if(!keep())return;elapsed++;let nb=-1;try{nb=window.scCityEconomy.snapshot().buildings.length}catch(e){}if(window.sc49BaseBuild==null&&nb>=0)window.sc49BaseBuild=nb;const built=nb>=0&&window.sc49BaseBuild!=null?nb-window.sc49BaseBuild:0;if(elapsed>=next&&(count>0||built>=2||window.scEventsTest)){fire(KINDS[count%KINDS.length]);next=elapsed+150+Math.floor((count*37)%60)}},1000);
  return {fire,close,count:()=>count,advisor:()=>({...advisor,line:recordLine()}),state:()=>({elapsed,next,count,open:!!box,advisor:{...advisor}})};
 })();
 window.scChapters=(function(){
@@ -1476,6 +1476,7 @@ window.scTax=(function(){
  // Painted art width on the map (the image is a tight crop of the building).
  const paintW={keep:132,house:68,farm:96,market:90,granary:74,lumberyard:76,bakery:64,fishery:80,theater:86,school:76,chapel:68,workshop:72,clinic:64,fortress:132,tower:62,wall:80,well:42,garden:52,plaza:66,loadingyard:78,shipyard:92,stable:80,camp:100,bridge:80};
  window.sc47Paint=function(g,b,w0,key){key=key||b.type;const iw=paintW[key];if(!iw)return false;const im=img(key);if(!im)return false;const w=iw,h=w*im.naturalHeight/im.naturalWidth;g.drawImage(im,b.x-w/2,b.y+17-h,w,h);return true};
+ window.sc49PaintSite=1;window.sc47PaintSite=function(g,b,ratio){const iw=paintW[b.type];if(!iw)return false;const im=img(b.type);if(!im)return false;const w=iw,h=w*im.naturalHeight/im.naturalWidth,top=b.y+17-h,rise=Math.max(.16,Math.min(1,ratio)),vh=h*rise;g.save();g.fillStyle='rgba(88,72,48,.5)';g.beginPath();g.ellipse(b.x,b.y+15,w*.42,Math.max(6,w*.1),0,0,Math.PI*2);g.fill();g.beginPath();g.rect(b.x-w/2-2,top+h-vh,w+4,vh+3);g.clip();g.globalAlpha=.5+.5*rise;g.drawImage(im,b.x-w/2,top,w,h);g.restore();if(rise<1){g.save();g.strokeStyle='rgba(120,90,50,.7)';g.lineWidth=1.5;g.beginPath();g.moveTo(b.x-w*.42,b.y+15);g.lineTo(b.x-w*.42,top+h-vh);g.moveTo(b.x+w*.42,b.y+15);g.lineTo(b.x+w*.42,top+h-vh);g.stroke();g.restore()}return true};
  const nodeH={oak:62,birch:76,pine:84,stone:50,gold:52};
  window.sc47PaintNode=function(g,b){const key=b.type==='tree'?['oak','birch','pine'][Math.abs(Math.round(b.x+b.y))%3]:b.type;const h=nodeH[key];if(!h)return false;const im=img(key);if(!im)return false;const w=h*im.naturalWidth/im.naturalHeight;g.drawImage(im,b.x-w/2,b.y+10-h,w,h);return true};
  const unitKey={worker:'unit_worker',soldier:'unit_soldier',archer:'unit_archer'};
@@ -4790,7 +4791,8 @@ setInterval(paint,300);paint()})();
   const close=()=>{o.remove();open=false;setTimeout(show,800)};o.querySelector('button').onclick=close;setTimeout(()=>{if(o.isConnected)close()},14000)}
  function trigger(id){if(!defs[id]||seen[id])return false;seen[id]=1;try{localStorage.setItem(KEY,JSON.stringify(seen))}catch(e){}queue.push(id);show();return true}
  function check(){if(document.hidden||(navigator.webdriver&&!window.scMilestoneTest))return;let s;try{s=window.scCityEconomy&&window.scCityEconomy.snapshot()}catch(e){return}if(!s)return;const bs=s.buildings||[],n=t=>bs.filter(b=>b.type===t).length;
-  if(n('house')>=3)trigger('homes');if(s.food&&s.food.last)trigger('harvest');if(n('market')>=1)trigger('market');if(s.population>=20)trigger('growth');if(s.trade&&s.trade.goodsSold>0)trigger('caravan')}
+  if(window.sc49BaseFarms==null)window.sc49BaseFarms=n('farm');
+  if(n('house')>=3)trigger('homes');if(s.food&&s.food.last&&n('farm')>window.sc49BaseFarms)trigger('harvest');if(n('market')>=1)trigger('market');if(s.population>=20)trigger('growth');if(s.trade&&s.trade.goodsSold>0)trigger('caravan')}
  window.scMilestones={trigger,defs:Object.keys(defs),reset(){seen={};try{localStorage.removeItem(KEY)}catch(e){}}};
  setInterval(check,3000)})();
 /* v0.33 collapsible building details */
