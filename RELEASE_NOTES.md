@@ -1,3 +1,9 @@
+# v0.50.0 — A Clearer Town (candidate)
+
+Routine milestones, sayings, trade offers and shipment notices move into an on-demand town journal. Timed decisions retain their real countdown and default in a compact notice; Guide and chapter details open when requested. Native panels close cleanly when switching context, and construction labels follow the selected worksite.
+
+Workshop and School inspectors gain useful stock/production and teacher/pupil information using existing gameplay and workplace controls. Painted art, embedded media, economic terms and save schemas are preserved. [Scope and quick playtest](docs/MILESTONE50.md). Feature-branch candidate; not merged or deployed.
+
 # v0.28.0 — Beyond the Town Gates: Valewatch prototype
 
 Explore a northern woodland route, meet Warden Mira, supply real goods and earn a permanent better-paying pact. Diplomacy begins in every peaceful city. Original portrait artwork and an atlas route reflect actual discoveries. Strict schema 11 preserves older saves without inventing progress. [Prototype scope and economics](docs/MILESTONE28.md) · [Validation](docs/validation/v028-prototype.md).

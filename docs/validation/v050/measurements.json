@@ -1,0 +1,28 @@
+{
+  "environment": {
+    "node": "v24.19.0",
+    "chromium": "154.0.8037.57",
+    "viewport": "1366×768",
+    "cpuThrottle": 1
+  },
+  "scenes": {
+    "opening": {
+      "medianMs": 16.699999999999818,
+      "p95Ms": 16.800000000000182,
+      "p99Ms": 33.29999999999927,
+      "heapBytes": 52186991
+    },
+    "developed": {
+      "medianMs": 16.69999999999891,
+      "p95Ms": 16.799999999999272,
+      "p99Ms": 33.399999999999636,
+      "heapBytes": 49830668
+    }
+  },
+  "errors": [],
+  "embeddedMedia": {
+    "sc47Art": "170ff4c4bf3a2d7a406864bcc4bb146b669fe8ab71e58ed3f4bba0d5e64b981d",
+    "sc47Media": "8c2398502c2124f4713c4ba81bfe176749efe88959e646fee56ad7f4d005aff9",
+    "sc47MediaLoader": "4102354e9aad3885042045c0bc3d74778f052ec353cd78a67fb404d29257bcef"
+  }
+}

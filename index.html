@@ -1285,12 +1285,12 @@ window.scStoryCards=(function(){
   {id:'ten',title:'Ten Hearths Warm',text:'Ten residents now call this place home. A village is becoming a town.',test:(s)=>(s.population||0)>=10}
  ];
  const prev={},shown=new Set();let primed=false,box=null,timer=0;
- const queue=[];function show(d){if(box){queue.push(d);return}draw(d)}
- function draw(d){box=document.createElement('div');box.id='scStoryCard';box.setAttribute('role','status');box.setAttribute('aria-live','polite');
+ let storyEpoch=0;const queue=[];function show(d,requested=false){if(!requested&&window.sc50UI){window.sc50UI.notify(d.title,d.text);return}if(box){queue.push(d);return}draw(d)}
+ function draw(d){box=document.createElement('div');box.id='scStoryCard';if(window.sc50UI)box.setAttribute('data-sc50-open','');box.setAttribute('role','status');box.setAttribute('aria-live','polite');
   box.style.cssText='position:fixed;left:50%;top:108px;transform:translateX(-50%);z-index:720;width:min(420px,92vw);box-sizing:border-box;padding:14px 18px 14px 74px;background:#f0e3c2;color:#3b2a1a;border:2px solid #8a6a36;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.45);font:14px/1.35 Georgia,serif;cursor:pointer';
   box.innerHTML='<svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true" style="position:absolute;left:14px;top:14px"><circle cx="24" cy="24" r="22" fill="#6b3f2a" stroke="#c9a24b" stroke-width="3"/><path d="M12 32l3-14 6 7 3-10 3 10 6-7 3 14z" fill="#e9c35a" stroke="#8a6a36" stroke-width="1.5"/></svg><div style="font:bold 16px Georgia,serif;margin-bottom:3px"></div><div></div>';
   box.children[1].textContent=d.title;box.children[2].textContent=d.text;box.onclick=close;document.body.appendChild(box);timer=setTimeout(close,7000)}
- function close(){clearTimeout(timer);if(box){box.remove();box=null}if(queue.length){const n=queue.shift();setTimeout(()=>{if(!box)draw(n)},400)}}
+ function close(){clearTimeout(timer);if(box){box.remove();box=null}if(queue.length){const n=queue.shift(),version=storyEpoch;setTimeout(()=>{if(version===storyEpoch&&!box)draw(n)},400)}}
  function poll(){let s,b;try{s=window.scCityEconomy.snapshot();b=s.buildings||[]}catch(e){return}if(!s)return;
   for(const d of defs){let now=false;try{now=!!d.test(s,b)}catch(e){}
    if(!now&&prev[d.id])shown.delete(d.id);
@@ -1298,14 +1298,14 @@ window.scStoryCards=(function(){
    prev[d.id]=now}
   primed=true}
  setInterval(poll,1000);
- return {poll,show:id=>{const d=defs.find(x=>x.id===id);if(d)show(d)},card:(title,text)=>show({title,text}),ids:defs.map(d=>d.id),close};
+ return {poll,show:id=>{const d=defs.find(x=>x.id===id);if(d)show(d,true)},card:(title,text)=>show({title,text},true),ids:defs.map(d=>d.id),close,reset:()=>{storyEpoch++;queue.length=0;close();primed=false;shown.clear();for(const k of Object.keys(prev))delete prev[k]}};
 })();
 window.scEvents=(function(){
- let elapsed=0,next=40,count=0,box=null,timer=0,dlOverride=0;const KINDS=['trader','refugees','sickness','bandits','feast'];
+ let elapsed=0,next=40,count=0,box=null,timer=0,dlOverride=0,eventEpoch=0;const KINDS=['trader','refugees','sickness','bandits','feast'];
  const advisor={good:0,total:0};
  function record(sound){advisor.total++;if(sound)advisor.good++}
  function recordLine(){return advisor.total?'Advisor record: '+advisor.good+' of '+advisor.total+' counsels proved sound':'Advisor record: no counsel given yet'}
- function close(){clearInterval(timer);if(box){box.remove();box=null}}
+ function close(){eventEpoch++;clearInterval(timer);if(box){box.remove();box=null}}
  function card(title,text,buttons,opt){close();opt=opt||{};const deadline=dlOverride||opt.deadline||30;dlOverride=0;let left=deadline;
   box=document.createElement('div');box.id='scEventCard';box.setAttribute('role','dialog');box.setAttribute('aria-label',title);
   box.style.cssText='position:fixed;left:50%;top:108px;transform:translateX(-50%);z-index:725;width:min(460px,92vw);box-sizing:border-box;padding:14px 18px;background:#efe0bb;color:#3b2a1a;border:2px solid #8a6a36;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.5);font:14px/1.35 Georgia,serif';
@@ -1315,12 +1315,12 @@ window.scEvents=(function(){
   const clock=document.createElement('div');clock.id='scEventClock';clock.style.cssText='margin-top:8px;font:12px system-ui;color:#5a4328';
   const rec=document.createElement('div');rec.id='scAdvisorRecord';rec.style.cssText='margin-top:2px;font:12px system-ui;color:#5a4328';rec.textContent='★ marks your Advisor’s counsel. '+recordLine();
   const paint=()=>{clock.textContent='Decide within '+left+' s, otherwise: '+def.label.replace(/^★ /,'')};
-  let settled=false;
-  const settle=b=>{if(settled)return;settled=true;try{if(opt.sound!==undefined&&opt.advised)record(!!opt.sound);if(!ended&&b.run)b.run()}finally{close()}};
+  const cityAtOpen=scCityIdentity,eventAtOpen=eventEpoch;let settled=false;
+  const settle=b=>{if(settled||eventAtOpen!==eventEpoch||cityAtOpen!==scCityIdentity||!box||!box.isConnected)return;settled=true;try{if(opt.sound!==undefined&&opt.advised)record(!!opt.sound);if(!ended&&b.run)b.run()}finally{close()}};
   for(const b of buttons){const e=document.createElement('button');e.type='button';e.textContent=(b.id===opt.advised?'★ ':'')+b.label;e.dataset.choice=b.id;e.style.cssText='padding:6px 12px;border-radius:6px;border:1px solid #6b4a2a;background:'+(b.primary?'#8a5a2b':'#d7c4a0')+';color:'+(b.primary?'#fff3d8':'#3b2a1a')+';font:13px system-ui;cursor:pointer';if(b.disabled){e.disabled=true;e.style.opacity='.55'}e.onclick=()=>settle(b);row.append(e)}
   def.label=(def.id===opt.advised?'★ ':'')+def.label;
   if(window.sc47Art&&window.sc47Art.advisor){const pt=document.createElement('img');pt.src=window.sc47Art.advisor;pt.alt='Your Advisor';pt.style.cssText='width:34px;height:34px;border-radius:50%;object-fit:cover;object-position:50% 25%;border:2px solid #8a6a36;vertical-align:middle;margin-right:8px;float:left';rec.prepend(pt);rec.style.minHeight='36px'}box.append(...(scene?[scene]:[]),h,p,row,clock,rec);document.body.appendChild(box);paint();
-  timer=setInterval(()=>{if(paused||document.hidden)return;left--;if(left<=0){msg('You took too long: the default was chosen.');settle(def)}else paint()},1000)}
+  timer=setInterval(()=>{if(paused||scOverview||document.hidden)return;left--;if(left<=0){msg('You took too long: the default was chosen.');settle(def)}else paint()},1000)}
  function keep(){return buildings.find(b=>b.team===0&&b.type==='keep'&&alive(b))}
  function soldiers(){return units.filter(u=>u.team===0&&u.type!=='worker'&&alive(u)).length}
  function trader(){const price=Math.round(40*window.scMarket.price('stone')),sellWood=40,sellPrice=Math.round(40*window.scMarket.price('wood')*.95);const canBuy=gold>=price;const advised=canBuy?'buy':wood>=sellWood?'sell':'decline';const sound=advised==='buy'?gold-price>=40:true;
@@ -1371,7 +1371,7 @@ window.scChapters=(function(){
   if(!box){box=document.createElement('div');box.id='scChapters';box.setAttribute('aria-label','Chapter goals');box.style.cssText='position:fixed;left:12px;top:186px;z-index:640;width:min(210px,56vw);box-sizing:border-box;padding:8px 10px;background:rgba(20,34,30,.88);color:#f2dfae;border:1px solid #d9a93c;border-radius:8px;font:12px/1.35 system-ui;pointer-events:none';document.body.appendChild(box)}
   const ar=window.scEvents&&window.scEvents.advisor().total?'<div style="margin-top:4px;opacity:.8">'+window.scEvents.advisor().line+'</div>':'';const html='<b>'+cur.d.title+'</b>'+cur.goals.map(g=>'<div>'+(g.ok?'✓':'○')+' '+g.l+'</div>').join('')+ar;if(html!==last){box.innerHTML=html;last=html}}
  function poll(){const st=window.scCampaign&&scScenario==='city'?state():null;if(!st)return;
-  for(const x of st){const ok=x.goals.every(g=>g.ok);if(ok&&!doneSet.has(x.d.id)){doneSet.add(x.d.id);if(primed&&window.scStoryCards)window.scStoryCards.card(x.d.title.split(' · ')[0]+' complete',x.d.done)}if(!ok&&doneSet.has(x.d.id))doneSet.delete(x.d.id)}
+  for(const x of st){const ok=x.goals.every(g=>g.ok);if(ok&&!doneSet.has(x.d.id)){doneSet.add(x.d.id);if(primed){if(window.sc50UI)window.sc50UI.notify(x.d.title.split(' · ')[0]+' complete',x.d.done);else if(window.scStoryCards)window.scStoryCards.card(x.d.title.split(' · ')[0]+' complete',x.d.done)}}if(!ok&&doneSet.has(x.d.id))doneSet.delete(x.d.id)}
   primed=true;render(st)}
  setInterval(()=>{try{poll()}catch(e){}},1000);
  return {poll,state:()=>(state()||[]).map(x=>({id:x.d.id,done:x.goals.every(g=>g.ok)})),current:()=>box?box.innerText:''};
@@ -1533,7 +1533,7 @@ window.scTax=(function(){
 /* sc47-uplift-end */
 try{setInterval(function(){var A=window.sc47Art;if(!A)return;document.querySelectorAll('.sc1408Resource').forEach(function(s){var k=({Gold:'icon_gold',Wood:'icon_wood',Food:'icon_food',Stone:'icon_stone','Trade Goods':'icon_trade'})[(s.textContent||'').trim().split(':')[0]];var f=s.firstElementChild;if(k&&A[k]&&f&&f.tagName==='svg'){var i=document.createElement('img');i.src=A[k];i.alt='';i.style.cssText='width:20px;height:20px;object-fit:contain;vertical-align:middle;flex:none';s.replaceChild(i,f)}})},700)}catch(e){}
 window.scFocusRing=null;
-const sc40Eta=new WeakMap();function sc39SiteMarkers(){const t=performance.now();ctx.save();for(const site of scConstructionSites){const pulse=Math.sin(t/260+site.id)*.5+.5;ctx.strokeStyle='rgba(240,200,90,'+(.55+pulse*.4)+')';ctx.lineWidth=3;ctx.setLineDash([8,6]);ctx.beginPath();ctx.arc(site.x,site.y+4,site.radius+12+pulse*5,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);const busy=units.some(u=>u.order&&u.order.type==='build'&&u.order.target===site);const nb=units.filter(u=>u.order&&u.order.type==='build'&&u.order.target===site).length;let m=sc40Eta.get(site);if(!m){m={t:0,p:0,r:0};sc40Eta.set(site,m)}if(!m.t||t-m.t>1000){if(m.t)m.r=(site.progress-m.p)/((t-m.t)/1000);m.t=t;m.p=site.progress}const eta=nb&&m.r>0?Math.ceil((site.required-site.progress)/m.r):0;const txt=site.type.toUpperCase()+' '+Math.floor(site.progress/site.required*100)+'%'+(busy?' · '+nb+' builder'+(nb>1?'s':'')+(eta?' · ~'+(eta>=60?Math.ceil(eta/60)+' min':eta+' s'):''):' · needs workers');ctx.font='bold 12px system-ui';const w=ctx.measureText(txt).width+12;ctx.fillStyle='rgba(20,34,30,.88)';ctx.fillRect(site.x-w/2,site.y-site.radius-34,w,18);ctx.strokeStyle='#d9a93c';ctx.lineWidth=1;ctx.setLineDash([]);ctx.strokeRect(site.x-w/2,site.y-site.radius-34,w,18);ctx.fillStyle='#f2dfae';ctx.textAlign='center';ctx.fillText(txt,site.x,site.y-site.radius-21)}
+const sc40Eta=new WeakMap();function sc39SiteMarkers(){const t=performance.now();ctx.save();for(const site of scConstructionSites){const pulse=Math.sin(t/260+site.id)*.5+.5;ctx.strokeStyle='rgba(240,200,90,'+(.55+pulse*.4)+')';ctx.lineWidth=3;ctx.setLineDash([8,6]);ctx.beginPath();ctx.arc(site.x,site.y+4,site.radius+12+pulse*5,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);const busy=units.some(u=>u.order&&u.order.type==='build'&&u.order.target===site);const nb=units.filter(u=>u.order&&u.order.type==='build'&&u.order.target===site).length;let m=sc40Eta.get(site);if(!m){m={t:0,p:0,r:0};sc40Eta.set(site,m)}if(!m.t||t-m.t>1000){if(m.t)m.r=(site.progress-m.p)/((t-m.t)/1000);m.t=t;m.p=site.progress}const eta=nb&&m.r>0?Math.ceil((site.required-site.progress)/m.r):0;if(window.sc50UI&&!window.sc50UI.siteDetails(site.id))continue;const txt=site.type.toUpperCase()+' '+Math.floor(site.progress/site.required*100)+'%'+(busy?' · '+nb+' builder'+(nb>1?'s':'')+(eta?' · ~'+(eta>=60?Math.ceil(eta/60)+' min':eta+' s'):''):' · needs workers');ctx.font='bold 12px system-ui';const w=ctx.measureText(txt).width+12;ctx.fillStyle='rgba(20,34,30,.88)';ctx.fillRect(site.x-w/2,site.y-site.radius-34,w,18);ctx.strokeStyle='#d9a93c';ctx.lineWidth=1;ctx.setLineDash([]);ctx.strokeRect(site.x-w/2,site.y-site.radius-34,w,18);ctx.fillStyle='#f2dfae';ctx.textAlign='center';ctx.fillText(txt,site.x,site.y-site.radius-21)}
 const f=window.scFocusRing;if(f&&t<f.until){const k=(f.until-t)/2500;for(let i=0;i<3;i++){const r=20+((1-k)*90+i*28)%84;ctx.strokeStyle='rgba(255,214,110,'+Math.max(0,.9-r/110)+')';ctx.lineWidth=4;ctx.beginPath();ctx.arc(f.x,f.y,r,0,Math.PI*2);ctx.stroke()}ctx.font='bold 13px system-ui';ctx.textAlign='center';ctx.fillStyle='#fff3c8';ctx.strokeStyle='rgba(0,0,0,.7)';ctx.lineWidth=3;ctx.strokeText(f.text,f.x,f.y-48);ctx.fillText(f.text,f.x,f.y-48)}ctx.restore()}
 function scConstructionAssign(id){
  if(!scVillageActionReady()||!Number.isSafeInteger(id))return false;
@@ -3849,11 +3849,11 @@ const scPlayerSteps=[
  {text:'Gather more wood and gold, then build a Market. Markets let you trade for what you are missing.',check:()=>!!buildings.find(b=>b.team===0&&b.type==='market'&&alive(b))}
 ];
 const scTesterSteps=[
- {text:'Click your Keep: the Selected building panel starts with a Taxes menu (Low, Normal, High). Press High: the note changes to "gold ×1.4, mood target −3". Does it?',manual:true},
- {text:'Build a Theater and click it: a Festival menu shows the cost and a "Hold festival" button. Press it: gold drops by 35 and the button says "Next one in … s". Does it?',manual:true},
- {text:'Click a Granary, a Lumberyard and a Farm: each shows its own numbers and a "Suggestion:" line. With a Market built, "Sell 10" works. Does it?',manual:true},
- {text:'Click a Market: the Trade menu is inside the same panel and closes with the ✕. Does it?',manual:true},
- {text:'Drag a big box slowly around all your soldiers: they answer with a line. Do they?',manual:true}
+ {text:'v0.50: start a peaceful city. The map stays clear; open Journal & objectives to read the current chapter and recent updates, then close it with Escape.',manual:true},
+ {text:'Open the Guide from the Journal. Press Escape to return to the map. Open People or City Life: only one main detail panel should remain.',manual:true},
+ {text:'When a decision arrives, open its compact notice. Read later minimizes it without stopping the deadline. Pause and World map freeze the countdown.',manual:true},
+ {text:'Select a completed Workshop. Review timber, planks and real staffing; use its existing pause/priority controls and compare food staffing in Employment.',manual:true},
+ {text:'Select a completed School. Read its actual teacher and pupil list, then View residents. Select a foundation: only the selected worksite shows its map label.',manual:true}
 ];
 let scAdvisorMode='player';try{const m=localStorage.getItem('shattered-crowns-advisor-mode-v1');if(m==='tester'||m==='player')scAdvisorMode=m}catch(e){}
 const versionTests=[...(scAdvisorMode==='tester'?scTesterSteps:scPlayerSteps)];
@@ -8131,7 +8131,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <!-- Version display fix: single authoritative visible release label. -->
 <script id="sc1406VersionFix">
 (()=>{'use strict';
- const version='0.47.0';
+ const version='0.50.0';
  function sync(){
   document.title='Shattered Crowns — v'+version;
   const badge=document.getElementById('sc179Version');
@@ -10191,7 +10191,7 @@ body.sc24Trading #scCityInspection{visibility:hidden!important}
   const next=s.reasons[0]||(s.wood<40?'Gather 40 wood.':'Await the next economy cycle.');
   const suffix=phase==='offer'?(isFollow?'Follow-up offer available':'Offer available'):phase==='outbound'?'Outbound':phase==='returning'?'Returning':phase==='complete'?'Agreement fulfilled':next;put(market,'Diplomacy & Neighbour trade · Ironmere'+(q?' — '+suffix:''));put(city,'Diplomacy & Neighbour trade · Ironmere'+(q?' — '+suffix:''));
   const receiptBusy=!!activeReceipt||s.receipts.some(r=>!r.shown);
-  if(q?.phase==='offer'&&!q.noticed&&!unavailable&&!receiptBusy&&panel.hidden&&api.notice())offerOpen=true;
+  if(q?.phase==='offer'&&!q.noticed&&!unavailable&&!receiptBusy&&panel.hidden&&api.notice()){offerOpen=!window.sc50UI;if(window.sc50UI)window.sc50UI.notify('Neighbour trade offer','Ironmere has a request ready. Open Diplomacy & neighbour trade to review the terms.');}
   if(phase!=='offer')offerOpen=false;offer.hidden=!offerOpen||unavailable||receiptBusy||!panel.hidden;if(!offer.hidden||!panel.hidden||unavailable)suspendSaying();
   if(!offer.hidden)put(offerText,isFollow?'Ironmere offers a follow-up order: send 20 wood or 15 gold for 18 stone on return. Later costs nothing.':(s.charterComplete?'Your First Charter is recorded. ':'')+'Ironmere requests 40 wood and offers 36 stone on return. View the terms or leave the request for later.');
   put(offerTitle,isFollow?'Follow-up request from Ironmere':'Trade request from Ironmere');put(heading,phase==='complete'?'Neighbour trade · Ironmere':isFollow?'Ironmere’s follow-up':'Trade with Ironmere');put(terms,isFollow?'20 wood or 15 gold → 18 stone · 2 game minutes':'40 wood → 36 stone · 2 game minutes');
@@ -10377,4 +10377,87 @@ new MutationObserver(refresh).observe(host,{childList:true,subtree:true});refres
  const interactive='#sc28Frontiers button,button.sc28AtlasCard,.sc28AtlasCard button,#sc28Frontiers summary,#sc28Frontiers select';window.addEventListener('keydown',e=>{const b=e.target.closest?.(interactive);if(!b)return;if(e.code==='Space'||e.key==='Enter'){if(e.repeat)e.preventDefault();else held.set(b,epoch);e.stopImmediatePropagation();}},true);window.addEventListener('pointerdown',e=>{const b=e.target.closest?.(interactive);if(b&&e.button===0)held.set(b,epoch);},true);
  for(const e of ['sc-city-started','sc-city-restored'])window.addEventListener(e,()=>{epoch++;chooser.value='valewatch';built.forEach(x=>x.reset());refreshAll();});for(const e of ['sc-frontier-changed','sc-trade-town-changed','sc-workplace-changed'])window.addEventListener(e,refreshAll);setInterval(refreshAll,500);refreshAll();
  }if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();})();
+</script><script id="sc50Presentation">
+/* v0.50: presentation only. Native producers own progress, deadlines and payments. */
+(()=>{'use strict';
+ const style=document.createElement('style');style.textContent=`
+ body:has(#sc50Journal:not([hidden])) #sc1311PauseOverlay{visibility:hidden}
+ #scCityInspection:has([data-sc50-menu="workshop"]) #sc26WorkshopStock{display:none!important}
+ #scChapters,#sc24Saying,#sc25Receipt,#sc24Offer{display:none!important}
+ #scGuide:not([data-sc50-open]),#scStoryCard:not([data-sc50-open]),#scEventCard:not([data-sc50-open]){display:none!important}
+ #sc50Journal[hidden],#sc50DecisionButton[hidden]{display:none!important}
+ #sc50Journal{position:fixed;right:12px;top:calc(var(--sc-hud-height,100px) + 12px);width:min(370px,calc(100vw - 24px));max-height:calc(100dvh - var(--sc-hud-height,100px) - 110px);overflow:auto;box-sizing:border-box;padding:16px;z-index:30010;background:#203a32;color:#f2e6c6;border:1px solid #b99a65;border-radius:8px;font:13px/1.5 system-ui}
+ #sc50Journal [data-objective]{white-space:pre-line}#sc50Journal h2{margin:0 0 8px;font-size:17px}#sc50Journal h3{font-size:14px}#sc50Journal button,#sc50MinimizeDecision{background:#3e5140;color:#fff0c5;border:1px solid #b99a65;border-radius:5px;padding:6px;cursor:pointer}
+ #sc50JournalButton,#sc50DecisionButton{position:static!important;font:600 11px system-ui;padding:5px 8px;color:#fff0c5;background:#28473e;border:1px solid #b7a16d;border-radius:5px;cursor:pointer}
+ #sc50DecisionButton{max-width:350px;white-space:normal;text-align:left;border-color:#efc867}
+ @media(max-width:650px){#sc50DecisionButton{max-width:210px;font-size:10px}}
+ `;document.head.append(style);
+ const journal=document.createElement('section');journal.id='sc50Journal';journal.hidden=true;journal.setAttribute('role','region');journal.setAttribute('aria-label','Town journal');
+ journal.innerHTML='<button type="button" data-close style="float:right" aria-label="Close town journal">✕</button><h2 tabindex="-1">Town journal</h2><h3>Current objective</h3><p data-objective></p><h3>Recent updates</h3><ol data-updates></ol><button type="button" data-chronicle>Full Chronicle</button> <button type="button" data-guide>Open guide</button> <button type="button" data-trade>Diplomacy & neighbour trade</button>';
+ document.body.append(journal);
+ const button=document.createElement('button');button.id='sc50JournalButton';button.type='button';button.textContent='Journal & objectives';button.setAttribute('aria-expanded','false');button.setAttribute('aria-controls',journal.id);
+ const decision=document.createElement('button');decision.id='sc50DecisionButton';decision.type='button';decision.hidden=true;decision.setAttribute('aria-controls','scEventCard');decision.setAttribute('aria-expanded','false');
+ const toolbar=document.getElementById('sc149Status')||document.body;toolbar.append(button);toolbar.prepend(decision);function placeDecision(){const hud=document.getElementById('scResponsiveHud');if(hud&&toolbar.parentNode===hud)hud.insertBefore(decision,toolbar)}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',placeDecision,{once:true});else placeDecision();
+ let entries=[],returnFocus=null,current=null,epoch=0,heldEpoch=null;
+ const seen=new WeakSet(),noticeText=new Map();
+ const closeControls={scConstructionPanel:'#scConstructionClose',sc24TradePanel:'#sc24TradeClose',scCityInspection:'[aria-label="Close building inspector"]',sc159Pulse:'#scCityLifeClose',sc1310AdvisorPanel:'#sc1310AdvisorClose',sc190ChroniclePanel:'#sc190Close',sc36People:'#sc36Close'};
+ function activate(id){for(const [key,selector] of Object.entries(closeControls)){const p=document.getElementById(key);if(key!==id&&!(id==='sc24TradePanel'&&['sc159Pulse','scCityInspection'].includes(key))&&p&&!p.hidden)document.querySelector(selector)?.click()}if(id!==journal.id)hideJournal(false);document.getElementById('scGuide')?.removeAttribute('data-sc50-open');if(id!=='scEventCard')minimize();}
+ function refresh(){journal.querySelector('[data-objective]').textContent=[...(document.getElementById('scChapters')?.children||[])].map(n=>n.textContent).join('\n')||'Build a sustainable town. Open the guide for help.';const list=journal.querySelector('[data-updates]');list.replaceChildren();for(const entry of entries){const li=document.createElement('li');const strong=document.createElement('strong');strong.textContent=entry.title+': ';li.append(strong,document.createTextNode(entry.text));list.append(li)}if(!entries.length){const li=document.createElement('li');li.textContent='No new updates in this town yet.';list.append(li)}}
+ function notify(title,text){entries.unshift({title:String(title),text:String(text)});entries.length=Math.min(entries.length,40);button.textContent='Journal & objectives · '+entries.length;if(!journal.hidden)refresh()}
+ function hideJournal(focus=true){if(journal.hidden)return;journal.hidden=true;button.setAttribute('aria-expanded','false');if(focus&&returnFocus?.isConnected)returnFocus.focus()}
+ function openJournal(){returnFocus=document.activeElement;activate(journal.id);refresh();journal.hidden=false;button.setAttribute('aria-expanded','true');journal.querySelector('h2').focus()}
+ function minimize(){const card=document.getElementById('scEventCard');card?.removeAttribute('data-sc50-open');decision.setAttribute('aria-expanded','false')}
+ function openDecision(){const card=document.getElementById('scEventCard');if(!card)return;returnFocus=document.activeElement;activate('scEventCard');card.setAttribute('data-sc50-open','');decision.setAttribute('aria-expanded','true');card.querySelector('button')?.focus()}
+ button.onclick=()=>journal.hidden?openJournal():hideJournal();decision.onclick=openDecision;journal.querySelector('[data-close]').onclick=()=>hideJournal();
+ journal.querySelector('[data-chronicle]').onclick=()=>{activate('sc190ChroniclePanel');document.getElementById('sc190ChronicleBtn')?.click()};
+ journal.querySelector('[data-trade]').onclick=()=>{activate('sc24TradePanel');window.scCaravanUI.open()};
+ journal.querySelector('[data-guide]').onclick=()=>{returnFocus=button;activate('scGuide');document.getElementById('scGuideOpen')?.click();document.getElementById('scGuide')?.setAttribute('data-sc50-open','');document.getElementById('scGuideClose')?.focus()};
+ document.addEventListener('click',e=>{const ids={sc1312CityLifeBtn:'sc159Pulse',sc1310AdvisorBtn:'sc1310AdvisorPanel',sc190ChronicleBtn:'sc190ChroniclePanel',sc36PeopleBtn:'sc36People',sc189HelpButton:'sc189HelpPanel',scGuideOpen:'scGuide',sc24MarketTrade:'sc24TradePanel',sc24CityTrade:'sc24TradePanel',scConstructionOpen:'scConstructionPanel'};const b=e.target.closest?.('button');if(b&&ids[b.id]){activate(ids[b.id]);if(b.id==='scGuideOpen')document.getElementById('scGuide')?.setAttribute('data-sc50-open','')}},true);
+ window.addEventListener('sc-building-inspected',()=>activate('scCityInspection'));window.addEventListener('sc-building-selected',()=>activate('scCityInspection'));window.addEventListener('sc-selection-changed',e=>{if(e.detail?.building)activate('scCityInspection')});
+ const controls='#sc50Journal,#sc50JournalButton,#sc50DecisionButton,#sc50MinimizeDecision,#scEventCard,#scGuide,#scBuildingMenu [data-sc50-menu]';
+ window.addEventListener('pointerdown',e=>{if(e.target.closest?.(controls))heldEpoch=epoch},true);
+ window.addEventListener('pointerup',()=>setTimeout(()=>heldEpoch=null,0),true);
+ window.addEventListener('keyup',e=>{if(e.code==='Space'||e.key==='Enter')setTimeout(()=>heldEpoch=null,0)},true);
+ window.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+   if(document.querySelector('dialog[open]')||['scKingdomPanel','sc189HelpPanel'].some(id=>{const n=document.getElementById(id);return n&&!n.hidden&&n.getClientRects().length}))return;
+   const card=document.getElementById('scEventCard'),guide=document.getElementById('scGuide');
+   if(!journal.hidden||card?.hasAttribute('data-sc50-open')||guide?.hasAttribute('data-sc50-open')){e.preventDefault();e.stopImmediatePropagation();hideJournal();minimize();guide?.removeAttribute('data-sc50-open');if(returnFocus?.isConnected)returnFocus.focus()}return;
+  }
+  if(e.target.closest?.(controls)&&!e.ctrlKey&&!e.metaKey&&!e.altKey){if(e.code==='Space'||e.key==='Enter'){if(e.repeat)e.preventDefault();else heldEpoch=epoch}e.stopPropagation()}
+ },true);
+ const kingdomOpen=window.scKingdomUI.open;window.scKingdomUI.open=function(...args){activate('scKingdomPanel');return kingdomOpen.apply(this,args)};
+ const constructionOpen=window.scConstructionUI.open;window.scConstructionUI.open=function(...args){activate('scConstructionPanel');return constructionOpen.apply(this,args)};
+ function scan(){for(const [id,title] of [['sc24Saying','Words for the road'],['sc25Receipt','Shipment returned'],['sc24Offer','Neighbour trade offer']]){const n=document.getElementById(id);if(n&&!n.hidden&&noticeText.get(id)!==n.textContent){noticeText.set(id,n.textContent);notify(title,n.textContent)}}const story=document.getElementById('scStoryCard');if(story&&!seen.has(story)){seen.add(story);notify(story.children[1]?.textContent||'Town update',story.children[2]?.textContent||'')}
+ const card=document.getElementById('scEventCard');if(card!==current){current=card;if(card){const minimizeButton=document.createElement('button');minimizeButton.id='sc50MinimizeDecision';minimizeButton.type='button';minimizeButton.textContent='Read later · timer continues';minimizeButton.onclick=()=>{minimize();decision.focus()};card.append(minimizeButton);if(card.hasAttribute('data-sc50-open')){activate('scEventCard');card.setAttribute('data-sc50-open','')}}}
+ decision.hidden=!card;if(card)decision.textContent=(card.getAttribute('aria-label')||'Decision')+' · '+(document.getElementById('scEventClock')?.textContent||'Open decision');else decision.setAttribute('aria-expanded','false');}
+ // Explicit API calls remain explicit requests. Automatic producer calls stay quiet.
+ const fire=window.scEvents.fire;window.scEvents.fire=function(...args){const result=fire.apply(this,args);document.getElementById('scEventCard')?.setAttribute('data-sc50-open','');scan();return result};
+ for(const name of ['show','card']){const original=window.scStoryCards[name];window.scStoryCards[name]=function(...args){const result=original.apply(this,args);document.getElementById('scStoryCard')?.setAttribute('data-sc50-open','');scan();return result}}
+ for(const name of ['sc-city-started','sc-city-restored'])window.addEventListener(name,()=>{epoch++;entries=[];noticeText.clear();window.scEvents.close();window.scStoryCards.reset?.();hideJournal(false);current=null;scan();button.textContent='Journal & objectives'});
+ setInterval(scan,250);
+ window.sc50UI={openJournal,openDecision,activate,notify,snapshot:()=>({entries:entries.map(x=>({...x})),epoch,decision:!!document.getElementById('scEventCard')}),activationAllowed:()=>heldEpoch===null||heldEpoch===epoch,siteDetails:id=>{const p=document.getElementById('scConstructionPanel');return !!p&&!p.hidden&&document.getElementById('scConstructionSite')?.value===String(id)}};scan();
+})();
+
+</script><script id="sc50BuildingMenus">
+/* Native inspector menus; all workplace changes use the existing economy API. */
+(()=>{'use strict';
+ let epoch=0;for(const event of ['sc-city-started','sc-city-restored'])window.addEventListener(event,()=>epoch++);
+ const identity=()=>window.scCitySave.status().cityId;
+ function menu(type,b){
+ const host=document.getElementById('scBuildingMenu');
+ if(host?.dataset.sc50Building===String(b.id))update(host,type,b.id);
+ return {html:'<div data-sc50-menu="'+type+'" data-building="'+b.id+'" data-epoch="'+epoch+'"><b>'+(type==='workshop'?'Carpenters’ Workshop':'School')+'</b><p data-facts></p>'+(type==='workshop'?'<details><summary>Production & staffing</summary><p>At full staffing: 4 wood → 1 plank per five-second cycle. Shared storage: 200 planks. Priority can draw staff away from food producers. Map builders are separate from civilian jobs.</p></details><button type="button" data-residents>Review employment</button>':'<details><summary>Learning & attendance</summary><p>These are the residents currently listed as teaching or attending this School. Teachers are assigned from available working-age residents after production jobs. This view adds no jobs or production bonuses.</p></details><button type="button" data-residents>View residents</button>')+'</div>',bind:h=>{
+ h.dataset.sc50Building=String(b.id);const city=identity(),version=epoch;let held=null;
+ h.firstElementChild.addEventListener('pointerdown',()=>held=epoch);h.firstElementChild.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')held=epoch});
+ const valid=()=>window.scCaravan.activationAllowed()&&window.sc50UI.activationAllowed()&&version===epoch&&city===identity()&&(held===null||held===epoch)&&window.scRTSInspectedBuilding?.id===b.id;
+ h.querySelector('[data-residents]').onclick=()=>{if(!valid())return;if(type==='school'){window.sc50UI.activate('sc36People');document.getElementById('sc36PeopleBtn')?.click()}else{window.sc50UI.activate('sc159Pulse');document.getElementById('sc1312CityLifeBtn')?.click()}};update(h,type,b.id);
+ }};
+ }
+ function update(h,type,id){const facts=h.querySelector('[data-facts]');if(!facts)return;
+ if(type==='workshop'){const s=window.scCityEconomy.snapshot().workforce.sites.find(x=>x.id===id),stock=window.scTradeTown.snapshot();if(!s)return;facts.textContent='Staff: '+s.filled+'/'+s.need+' · '+(s.paused?'Paused':'Open')+' · Wood: '+Math.floor(stock.wood)+' · Planks: '+Math.floor(stock.planks)+'/200';}
+ else{const people=window.scPeople.list(),site='school #'+id,teachers=people.filter(p=>p.role==='Teacher'&&p.site.toLowerCase()===site),pupils=people.filter(p=>p.attends?.toLowerCase()===site);facts.textContent='Teacher: '+(teachers.map(p=>p.name).join(', ')||'No available teacher')+' · Pupils: '+pupils.length+(pupils.length?' — '+pupils.map(p=>p.name).join(', '):'');}}
+ for(const type of ['workshop','school'])window.scBuildingMenus.register(type,b=>menu(type,b));
+})();
+
 </script></body></html>

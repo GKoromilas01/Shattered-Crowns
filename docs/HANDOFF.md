@@ -1,3 +1,9 @@
+## v0.50 candidate — A Clearer Town
+
+Owner authorized quiet, on-demand information plus useful existing building menus. Branch `ui/v050-clearer-town` continues from released `e0b65bb`. See [Milestone 50](MILESTONE50.md) and [validation](validation/v050-clearer-town.md). New sources: `src/v050/presentation.js`, `src/v050/building-menus.js`; embed-v026 includes both. Small native producer hooks stay in the non-generated core of index.html. All sc47 art/media blocks are preserved byte-for-byte.
+
+Routine updates go to the bounded session journal; native Chronicle remains authoritative for persistent history. Automatic timed decisions minimize without canceling deadlines; old event callbacks cannot transact across restore. Native close controls coordinate panels. Workshop reuses existing workplace operations; School reads actual scPeople entries. No new simulation or schema. Owner/Claude retains merge/release responsibility.
+
 # Handoff: where each version stands
 
 Read this first when continuing. Newest at top. Details are in `docs/MILESTONE*.md`.

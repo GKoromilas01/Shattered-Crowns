@@ -22,18 +22,18 @@
 ### Task1: On-demand presentation
 **Files:** src/v050/presentation.js, scripts/embed-v026.cjs, minimal index hooks, tests/quiet-town.test.cjs.
 **Interfaces:** window.sc50UI.{openJournal(),openDecision(),activate(kind),notify(title,text),snapshot()}; consumes existing scEvents/scStoryCards/scChapters/native buttons, no economic mutation.
-- [ ] Native RED: clean opening; queue simultaneous routine notices, browse objectives/history on request, automatic decision compact with clock and original expiry; explicit fire API still usable; focus/Escape/one-context/390px; restore discards stale choices.
-- [ ] Implement bounded journal and coordinator with stable nodes; selected-only construction detail. Preserve event semantics and add minimal overview/reset protections.
-- [ ] GREEN new and existing relevant event/panel/input/save tests, actual screenshots. Commit.
+- [x] Native RED: clean opening; queue simultaneous routine notices, browse objectives/history on request, automatic decision compact with clock and original expiry; explicit fire API still usable; focus/Escape/one-context/390px; restore discards stale choices.
+- [x] Implement bounded journal and coordinator with stable nodes; selected-only construction detail. Preserve event semantics and add minimal overview/reset protections.
+- [x] GREEN new and existing relevant event/panel/input/save tests, actual screenshots. Commit.
 
 ### Task2: Useful building menus
 **Files:** src/v050/building-menus.js, embedding, tests/clearer-menus.test.cjs.
 **Interfaces:** existing scBuildingMenus.register and scCityEconomy workplace APIs; scPeople.list/open; Task1 activate for context switching.
-- [ ] RED actual Workshop stock/staff/pause/priority/trade; actual School teacher/attending child data and People navigation; held input/restore guard/focus/narrow.
-- [ ] Implement inside existing inspector, preserve stable controls between updates, no fake School pause API or new bonuses.
-- [ ] GREEN relevant menus/school/workplace/trade tests; commit.
+- [x] RED actual Workshop stock/staff/pause/priority/trade; actual School teacher/attending child data and People navigation; held input/restore guard/focus/narrow.
+- [x] Implement inside existing inspector, preserve stable controls between updates, no fake School pause API or new bonuses.
+- [x] GREEN relevant menus/school/workplace/trade tests; commit.
 
 ### Task3: Preview and final validation
-- [ ] Actual normal-clock opening/developed/event-pressure walkthrough, keyboard/narrow screenshots, essential feedback/performance and no lost deadlines/history; preserve media hashes/asset integrity, package smoke.
-- [ ] Update metadata0.50, tester steps, milestone/handoff/validation; one fresh whole-branch reviewer on most capable available model; Important/Critical fixes reproduced RED→GREEN, relevant suite green.
+- [x] Actual normal-clock opening/developed/event-pressure walkthrough, keyboard/narrow screenshots, essential feedback/performance and no lost deadlines/history; preserve media hashes/asset integrity, package smoke.
+- [x] Update metadata0.50, tester steps, milestone/handoff/validation; one fresh whole-branch reviewer on most capable available model; Important/Critical fixes reproduced RED→GREEN, relevant suite green.
 - [ ] Feature PR/playable immutable preview, full final-headCI independently (no repeated polling/unchanged runs); no merge/deploy. Report blockers/timing honestly.
