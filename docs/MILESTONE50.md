@@ -20,3 +20,9 @@ Simulation, footprints, placement, camera, resource access, media, shipments and
 6. Select a foundation to see its progress label; switch to Journal/People and back. Save/resume and confirm stock, shipments and the quiet opening survive.
 
 No new art, audio, video, warfare, caravan system or broad economy rebalance is included.
+
+## Final approved entry and saving flow (supersedes the earlier opening notes)
+
+The owner approved New Game / Return to Game. New Game offers Enter city / Begin with the Advisor, then map-based village selection, then the existing seven videos on **every new game**, then the chosen village (Advisor opens afterward when requested). Return loads the newest valid browser checkpoint without videos. No replay checkbox or sign-up/password. One named profile is stored on this browser, with clear local-only wording.
+
+Autosave every five minutes of active foreground play, three rotating autosaves separate from manual primary/backup checkpoints. Manual Save now and Export remain available. Return sorts validated manual/autosave candidates by actual save time and skips damaged candidates; no load mutates the city before validation. Starting a new game requires confirmation when existing saves are present, and preserves them until subsequent explicitly permitted autosaves rotate. Clear status reports the newest save and failures. Storage exceptions must preserve existing data and offer export. Cross-tab changes suspend automatic writes until the player chooses what to resume or save. Browser cleanup can remove these saves; downloaded exports are the portable backup. No schema change or external service.

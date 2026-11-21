@@ -1,3 +1,9 @@
+## v0.50 approved entry follow-up
+
+The final owner decision supersedes first-time-only videos: **New Game → Enter city / Advisor → village map → videos on every New Game → city**. **Return to Game** loads the newest valid manual/autosave without videos. A named profile is browser-local. New sources `src/v050/intro.js` and `src/v050/entry.js`; existing paid video/media blocks unchanged, old route/death/supply cards removed, ruler portrait compatibility retained.
+
+Autosave: five active foreground minutes, three independent rotating slots, manual checkpoint/backup unchanged. New Game confirms preservation/replacement when stored data exists. Return skips corrupt candidates. Storage failures preserve prior slots and warn through native save feedback. Cross-tab writes pause autosave; only explicit successful save/restore rearms it. File imports and movie fades are invalidated across city replacement/restore. Existing engine/component test fixtures bootstrap native controls; `entryFlow:true` tests and the new packaged-smoke case exercise the actual new title/map/return path.
+
 ## v0.50 candidate — A Clearer Town
 
 Owner authorized quiet, on-demand information plus useful existing building menus. Branch `ui/v050-clearer-town` continues from released `e0b65bb`. See [Milestone 50](MILESTONE50.md) and [validation](validation/v050-clearer-town.md). New sources: `src/v050/presentation.js`, `src/v050/building-menus.js`; embed-v026 includes both. Small native producer hooks stay in the non-generated core of index.html. All sc47 art/media blocks are preserved byte-for-byte.

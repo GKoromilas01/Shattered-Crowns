@@ -1,5 +1,7 @@
 # v0.50.0 — A Clearer Town (candidate)
 
+New Game now chooses a village on the world map, plays the existing videos, then enters the city with optional Advisor guidance. Return to Game loads the newest valid save without videos. A named browser profile, three five-minute active-play autosaves, separate manual saves/exports and clear save status support returning players. The obsolete illustrated journey and its supply/death choices are removed.
+
 Routine milestones, sayings, trade offers and shipment notices move into an on-demand town journal. Timed decisions retain their real countdown and default in a compact notice; Guide and chapter details open when requested. Native panels close cleanly when switching context, and construction labels follow the selected worksite.
 
 Workshop and School inspectors gain useful stock/production and teacher/pupil information using existing gameplay and workplace controls. Painted art, embedded media, economic terms and save schemas are preserved. [Scope and quick playtest](docs/MILESTONE50.md). Feature-branch candidate; not merged or deployed.
