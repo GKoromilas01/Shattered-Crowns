@@ -1,0 +1,32 @@
+name: Read-only fallback selection diagnostic
+on:
+  push:
+    branches: [probe/fallback-selection-codex]
+    paths:
+      - .github/workflows/probe-fallback-selection.yml
+      - scripts/diagnostics/fallback-selection.cjs
+      - tests/fallback-selection.test.cjs
+permissions:
+  contents: read
+  actions: read
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Regression and existing release-integrity tests
+        run: node --test tests/fallback-selection.test.cjs tests/pipeline.test.cjs
+      - name: Compare exact workflow API selectors and unchanged live safety check
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          EXPECTED_STABLE_RUN_ID: '44864060304'
+          DIAGNOSTIC_RELEASE_RUN_ID: '44898940499'
+        run: node scripts/diagnostics/fallback-selection.cjs
