@@ -6,11 +6,11 @@ async function offer(p){await p.evaluate(()=>{scCampaign.start('city','brookstea
 async function offer(p){await p.evaluate(()=>{scCampaign.start('city','brookstead');__caravanTest.prepare();__caravanTest.advance(5);});if(!await p.evaluate(()=>scCitySave.status().paused))await p.locator('#sc154Pause').click();await p.locator('#sc24Offer').waitFor({state:'visible'});}
 test('DEBUG trade rules summary keyboard',async t=>{
  const p=await game(t);await offer(p);await p.locator('#sc24View').click();
- await p.evaluate(()=>{window.__keys=[];for(const ty of ['keydown','keyup','click'])window.addEventListener(ty,e=>window.__keys.push(ty+':'+(e.key||'')+':'+(e.target.id||e.target.tagName)+':dp='+e.defaultPrevented),true);});
+ await p.evaluate(()=>{window.__f=[];const of=HTMLElement.prototype.focus;HTMLElement.prototype.focus=function(...a){window.__f.push('focus('+(this.id||this.tagName)+') t='+Math.round(performance.now())+' '+(new Error().stack.split('\n').slice(2,4).join('|').replace(/\s+/g,' ').slice(0,200)));return of.apply(this,a)};window.addEventListener('focusin',e=>window.__f.push('focusin '+(e.target.id||e.target.tagName)+' t='+Math.round(performance.now())),true);window.__keys=[];for(const ty of ['keydown','keyup','click'])window.addEventListener(ty,e=>window.__keys.push(ty+':'+(e.key||'')+':'+(e.target.id||e.target.tagName)+':dp='+e.defaultPrevented),true);});
  const rules=p.locator('#sc24TradeRules');await rules.locator('summary').focus();
  const info=async()=>p.evaluate(()=>({active:document.activeElement.id||document.activeElement.tagName,hasFocus:document.hasFocus(),open:document.querySelector('#sc24TradeRules')?.open,vis:document.visibilityState,keys:window.__keys.slice(),long:performance.getEntriesByType('longtask').length}));
  console.log('BEFORE',JSON.stringify(await info()));
  await p.keyboard.press('Space');await p.waitForTimeout(300);
  console.log('AFTER',JSON.stringify(await info()));
- console.log('SAMEEL',await p.evaluate(()=>document.querySelector('#sc24TradeRules summary')===document.activeElement));
+ console.log('FOCUSLOG',JSON.stringify(await p.evaluate(()=>({t:Math.round(performance.now()),f:window.__f,sumDisp:(()=>{const s=document.querySelector('#sc24TradeRules summary');if(!s)return null;const r=s.getBoundingClientRect(),c=getComputedStyle(s);return {w:r.width,h:r.height,vis:c.visibility,disp:c.display}})()}))));console.log('SAMEEL',await p.evaluate(()=>document.querySelector('#sc24TradeRules summary')===document.activeElement));
 });

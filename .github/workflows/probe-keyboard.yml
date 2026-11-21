@@ -34,4 +34,4 @@ jobs:
           export TEST_ARTIFACT_DIR=$PWD/test-results/probe
           mkdir -p $TEST_ARTIFACT_DIR
           export CHROMIUM_PATH=$(node -e "console.log(require('playwright').chromium.executablePath())")
-          for i in 1 2 3; do node --test --test-concurrency=1 --test-reporter=spec tests/zz-debug.test.cjs 2>&1 | grep -E "BEFORE|AFTER|SAMEEL|✖|✔"; done
+          for i in 1 2 3; do node --test --test-concurrency=1 --test-reporter=spec tests/zz-debug.test.cjs 2>&1 | grep -E "BEFORE|AFTER|SAMEEL|FOCUSLOG|✖|✔"; done
