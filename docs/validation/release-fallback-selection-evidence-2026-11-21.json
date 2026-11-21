@@ -1,0 +1,79 @@
+{
+  "purpose": "Evidence only; no release or approval action",
+  "controllerCommit": "5feb2bf349a8a6d9920c3e63694cd4be9d117c9e",
+  "expectedStableRun": 44864060304,
+  "excludedReleaseRun": 44898940499,
+  "queriedAt": "2026-11-21T12:24:13.233Z",
+  "queries": {
+    "old": {
+      "path": "actions/workflows/verified-pages-release.yml/runs?status=success&per_page=100",
+      "date": "Sat, 21 Nov 2026 12:24:12 GMT",
+      "link": null,
+      "total": 32
+    },
+    "proposed": {
+      "path": "actions/workflows/verified-pages-release.yml/runs?status=completed&per_page=100",
+      "date": "Sat, 21 Nov 2026 12:24:12 GMT",
+      "link": null,
+      "total": 37
+    },
+    "unfiltered": {
+      "path": "actions/workflows/verified-pages-release.yml/runs?per_page=100",
+      "date": "Sat, 21 Nov 2026 12:24:12 GMT",
+      "link": null,
+      "total": 38
+    }
+  },
+  "old": {
+    "count": 32,
+    "containsExpected": false,
+    "selected": 44777198395
+  },
+  "proposed": {
+    "count": 37,
+    "containsExpected": false,
+    "selected": 44777198395
+  },
+  "provesExpectedSelection": false,
+  "unfiltered": {
+    "count": 38,
+    "containsExpected": true,
+    "selected": 44864060304
+  },
+  "unfilteredProvesExpectedSelection": true,
+  "stable": {
+    "run": 44864060304,
+    "sourceSha": "fe428d3b363a0dcac7cacb59c7b6315c7aed94ba",
+    "manifest": {
+      "format": 1,
+      "version": "0.28.0",
+      "sourceSha": "fe428d3b363a0dcac7cacb59c7b6315c7aed94ba",
+      "verificationRunId": "44852284231",
+      "files": {
+        "index.html": "b65a3942c280981001f60b9bb09fae9a4574be0a512985f3dd3eafe8f6c6dfcf",
+        "release.json": "e05c047c08685701f341c7c1a24cf6d5985247bd46d17b9d0b4c6b89baca1073"
+      }
+    },
+    "archive": {
+      "url": "https://github.com/GKoromilas01/Shattered-Crowns/releases/download/stable-run-44864060304/index.html",
+      "status": 200,
+      "bytes": 13666996,
+      "sha256": "b65a3942c280981001f60b9bb09fae9a4574be0a512985f3dd3eafe8f6c6dfcf",
+      "contentEncoding": null,
+      "contentLength": "13666996",
+      "elapsedMs": 325
+    },
+    "apiAssetDigest": "sha256:b65a3942c280981001f60b9bb09fae9a4574be0a512985f3dd3eafe8f6c6dfcf"
+  },
+  "live": {
+    "url": "https://gkoromilas01.github.io/Shattered-Crowns/?preflight=1795263852902",
+    "status": 200,
+    "bytes": 13666996,
+    "sha256": "b65a3942c280981001f60b9bb09fae9a4574be0a512985f3dd3eafe8f6c6dfcf",
+    "contentEncoding": "gzip",
+    "contentLength": "9786728",
+    "elapsedMs": 286,
+    "matchesStable": true,
+    "error": null
+  }
+}
