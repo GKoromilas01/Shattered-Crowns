@@ -12,7 +12,7 @@ async function preflight(read=getJson){
  const branch=await read('repos/'+repo+'/branches/main');demand(branch.protected===true,'Main branch protection is not active; refuse release until safeguards are enabled');
  const main=await read('repos/'+repo+'/git/ref/heads/main');assertPromotion({sourceSha:sha,currentMain:main.object.sha,rollback:process.env.ROLLBACK==='true'});
  if(!rollback){const artifacts=await read('repos/'+repo+'/actions/runs/'+runId+'/artifacts');selectArtifact(artifacts.artifacts,'verified-site');}
- const history=await read('repos/'+repo+'/actions/workflows/verified-pages-release.yml/runs?status=completed&per_page=100');
+ const history=await read('repos/'+repo+'/actions/workflows/verified-pages-release.yml/runs?per_page=100');
  const previous=history.workflow_runs.find(r=>r.conclusion==='success'&&r.head_branch==='main'&&r.event==='workflow_dispatch'&&String(r.id)!==process.env.GITHUB_RUN_ID);
  let fallbackRun='';if(previous){assertStableReleaseRun(previous,{repository:repo,runId:String(previous.id)});fallbackRun=String(previous.id)}
  fs.writeFileSync('release-approval.json',JSON.stringify({candidateRun:runId,candidateSha:sha,rollback,fallbackRun,bootstrap:!previous},null,2));output({candidate_run_id:runId,fallback_run:fallbackRun,bootstrap:String(!previous),rollback:String(rollback)});
