@@ -3,7 +3,7 @@
 **Recorded:** 22 November 2026  
 **For:** Claude and any graphics artist/AI working on Shattered Crowns  
 **Source:** the owner's supplied visual references in the development conversation  
-**Status:** approved visual direction; reference recording only. No new art has been generated, purchased or integrated by writing this document.
+**Status:** future visual references only; explicitly not deliverables for the next version. No new art has been generated, purchased or integrated by writing this document.
 
 ## Read this first
 
@@ -91,6 +91,29 @@ See [CHAPEL_VISUAL_BRIEF.md](CHAPEL_VISUAL_BRIEF.md).
 - Match the established painted style. Do not copy actors, recognizable costumes, chair designs, franchise symbols or the reference's exact staging.
 - Advisor imagery belongs in the existing Advisor/City Life context, opened when wanted. This reference does not request a permanent overlay, recurring interruption or a new council simulation.
 
+## 8. Northern regions and winter travellers — future reference only
+
+The owner supplied a wide snowy mountain landscape with a small travelling party and pack animals, followed by closer views of travellers wearing heavy dark winter layers.
+
+- Broad snowfields, distant rugged ridges and cool blue-grey daylight; keep natural terrain forms legible rather than covering everything with uniform white.
+- Exposed dark rock faces, steep snow-covered cliffs, high passes and long blue-grey ridgelines should break up the snow. A restrained peach dawn/dusk horizon may add warmth without losing the cold atmosphere.
+- Small ridge-top groups or a simple temporary camp can provide scale in future illustrations; keep equipment sparse and paths understandable.
+- Sparse human figures and pack animals provide scale, with a clear route and generous visual space. This is atmosphere guidance, not authorization for a new travel or animal system.
+- Original northern clothing: heavy wool, weathered leather, layered cloaks, gloves and restrained fur trim; distinct, readable silhouettes against snow. Do not copy actors, recognizable uniforms or franchise emblems.
+- Keep faces and equipment readable in close portraits. Match the existing painted style rather than film photography.
+- These references are for later northern-region artwork, not v0.51 deliverables. No new assets or paid generation are authorized by this note.
+
+## 9. Eastern court / queens — future reference only
+
+Owner caption: “oriental queens.” Treat the supplied images as guidance for the game's fictional eastern courts, not as historical evidence or a single generic real-world culture.
+
+- Original adult queens, court members and attendants with distinct faces, hairstyles, roles and personalities; avoid copying actors or recognizable franchise costumes.
+- Flowing, light layered fabrics, graceful folds, restrained jewellery and clear silhouettes. Clothing should express the character's own role and realm; do not simply reproduce the reference's revealing garments.
+- Warm pale stone, patterned fabrics, carved timber, flowers and leafy courtyard views; soft daylight filtered through hanging cloth or screens.
+- A restrained palette of cream, muted blue/teal, earth and warm gold, consistent with the existing painted game. Keep textile patterns readable rather than visually busy.
+- Portraits should communicate thoughtful authority, composure and individual character. Leave quiet areas for interface text; keep faces readable at small sizes.
+- Future art direction only: no queen/court system, portraits or paid generation added to v0.51 by this reference.
+
 ## Shared production checks
 
 1. The result belongs beside the existing painted world, buildings and portraits.
@@ -104,4 +127,4 @@ See [CHAPEL_VISUAL_BRIEF.md](CHAPEL_VISUAL_BRIEF.md).
 
 ## Current implementation boundary
 
-v0.51 work is **From Village to Town**: an earned charter and a real mixed-cargo progression through existing production and Market controls. This brief records the owner's art direction for that work and later waterfront/chapel asset production. It does not authorize expanding the release into ships, warfare, religious systems, new crowds or paid asset generation without following the owner's scope and the repository rules.
+v0.51 work is **From Village to Town**: an earned charter and a real mixed-cargo progression through existing production and Market controls. The owner clarified that all screenshots in this brief are for later builds, not the next version. Store this direction for future asset production. It does not authorize expanding the release into ships, warfare, religious systems, new crowds or paid asset generation without following the owner's scope and the repository rules.

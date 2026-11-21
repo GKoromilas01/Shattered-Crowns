@@ -1,3 +1,11 @@
+## v0.51 candidate — From Village to Town
+
+Owner's guiding purpose: immerse yourself in a medieval town, make decisions that affect it, and think deeply about their consequences. Recorded in DESIGN_GROWTH_AND_WAR.md.
+
+New work on `ui/v051-village-to-town`, based on v0.50 PR #73 (`0dac78c`), not main or deployed. `src/v051/growth-engine.js` owns one explicit paid Town charter; `src/v051/presentation.js` keeps progress in Keep/City Life/Advisor and manual mixed orders in Market → Neighbour trade. Existing trade-town engine owns production, reservations, yard construction and the new `town-mixed` cargo kind. Schema 12 validates incoming recognition; older schemas retain their terms and no Town progress is invented. See [Milestone 51](MILESTONE51.md) and the committed design/plan under `docs/superpowers/`.
+
+All owner screenshots (waterfront, chapel, market, advisors, northern snow scenes) are **future visual references, not next-version deliverables**. Claude/graphics AI should read [GRAPHICS_REFERENCE_BRIEF.md](GRAPHICS_REFERENCE_BRIEF.md) when that later asset work is commissioned. No paid art generated or integrated here.
+
 ## v0.50 camera/camp/story follow-up
 
 Owner requested a visible centred starting settlement, the smaller camp graphic, and a richer story. New Game framing lives in `src/v050/entry.js` and runs before/after the movie with restore-generation protection. `src/v026/renderer.js` uses the existing painted camp for friendly unreinforced peaceful Keeps; reinforcement uses existing max-health state to show the castle. No resource/stat/footprint/schema changes; legacy basic Keeps also get the camp appearance.

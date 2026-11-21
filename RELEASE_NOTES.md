@@ -1,3 +1,11 @@
+# v0.51.0 — From Village to Town (candidate)
+
+Earn a permanent Town charter through residents, serviced housing, happiness, a staffed connected Market and food security. Inspect the Keep to see requirements and explicitly pay 80 gold plus 8 real planks. Recognition appears in City Life, Advisor and the player's atlas settlement.
+
+Town recognition opens the existing builder-funded Market loading yard without requiring Ironmere's old agreements. Once built, manually send 8 planks plus 12 reserved bread baskets for 110 gold over the existing two-minute shared cargo route. Original contracts, production and food-reserve policies retain their terms.
+
+Strict schema 12 records earned recognition and new orders. Schemas 1–11 remain loadable without invented progress. Older versions cannot load schema 12; retain an earlier exported checkpoint to downgrade. No new artwork, ships, winter systems or council simulation. [Scope and tester steps](docs/MILESTONE51.md). Candidate only; not merged or deployed.
+
 # v0.50.0 — A Clearer Town (candidate)
 
 New villages now begin with the existing painted camp in view. The normal reinforcement upgrade reveals the castle. A fuller original story connects the seven existing clips with automatically paced prose, with Pause/Continue/Skip for reading; no supply, route or death choices return.

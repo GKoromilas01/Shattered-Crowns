@@ -1,3 +1,9 @@
+## Owner's guiding purpose — 22 November 2026
+
+“Immerse yourself in a medieval town, take decisions that impact it, and think deep.”
+
+Build a lived-in medieval town where understandable decisions have visible consequences and invite considered play. Prioritize choices about people, food, work, resources and the town's relationships over adding systems for their own sake. Keep information available when wanted and the map calm enough to inhabit. New features should strengthen this purpose through actual simulation and clear feedback.
+
 # Design direction: everyone starts as a village (owner decision, 16 November 2026)
 
 Owner decisions. Like `FUTURE_WORLD_DIRECTION.md`, these guide later proposals; they are not implemented systems, a schedule, or permission to spend money or open hosting.
