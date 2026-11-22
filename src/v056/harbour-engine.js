@@ -1,9 +1,30 @@
 // Authoritative harbour state. Naval IDs are separate from land entity IDs.
 let scNavalState=null;
-const scNavalFresh=()=>({version:3,nextBoatId:1,orders:[],boats:[]});
+const scNavalFresh=()=>({version:4,nextBoatId:1,orders:[],boats:[],stocks:scNavalFreshStocks()});
 function scNavalEnsure(){scTownEnsure();return scNavalState||(scNavalState=scNavalFresh());}
 const scNavalPlot=p=>!!p&&Number.isFinite(p.x)&&p.x>60&&p.x<W-90&&p.y===755&&!(p.x>445&&p.x<550);
 const scNavalWater=p=>!!p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=35&&p.x<=W-35&&p.y>=820&&p.y<=H-25;
+const scNavalGrounds=Object.freeze([{id:'shoals',name:'Coastal shoals',x:650,y:1030,catch:6,capacity:72,regen:0},{id:'thin',name:'Sparse waters',x:1150,y:1250,catch:3,capacity:30,regen:0},{id:'banks',name:'Deep fishing banks',x:1850,y:1450,catch:9,capacity:120,regen:.1}].map(Object.freeze));
+const scNavalPorts=Object.freeze([{id:'ironmere',name:'Ironmere Landing',x:350,y:1120},{id:'valewatch',name:'Valewatch Harbour',x:2100,y:1450}].map(Object.freeze));
+function scNavalFreshStocks(){return Object.fromEntries(scNavalGrounds.map(g=>[g.id,{stock:g.capacity,discovered:false}]))}
+const scNavalGroundAt=p=>scNavalGrounds.find(g=>Math.hypot(g.x-p.x,g.y-p.y)<=110);
+const scNavalPortAt=p=>scNavalPorts.find(x=>Math.hypot(x.x-p.x,x.y-p.y)<=75);
+const scNavalPortReady=id=>id==='ironmere'?scEnvoyState?.phase==='signed':id==='valewatch'&&scFrontierHasIntro(scFrontierState,'valewatch');
+const scNavalCatch=p=>scNavalGroundAt(p)?.catch||0;
+function scNavalNext(b){const n=b.nextOrder;b.nextOrder=null;if(n)scNavalCommand(b.id,n.point);}
+function scNavalCommand(id,p){if(!scVillageActionReady()||!p||!Number.isFinite(p.x)||!Number.isFinite(p.y))return false;const b=scNavalState?.boats.find(x=>x.id===id);if(!b)return false;
+ const enemy=b.kind==='warship'?scNavalHostiles().find(x=>Math.hypot(x.x-p.x,x.y-p.y)<=55):null;
+ if(!enemy&&!scNavalWater(p))return false;
+ const port=b.kind==='trade'?scNavalPortAt(p):null,ground=b.kind==='fishing'?scNavalGroundAt(p):null;if(port&&!scNavalPortReady(port.id))return false;
+ const point=port?{x:port.x,y:port.y}:{x:p.x,y:p.y};
+ if(ground&&b.mission?.type==='fish'){const m=b.mission;m.destination=point;m.repeat=true;if(!m.cargo){m.phase='outbound';m.progress=0;b.target={...point};}scNavalChanged();return true;}
+ if(b.mission?.cargo){b.nextOrder={point};b.mission.repeat=false;b.mission.phase='home';b.target={...b.mission.origin};scNavalChanged();return true;}
+ b.mission=null;b.nextOrder=null;
+ if(enemy)return scNavalDispatch(id,'attack',{x:enemy.x,y:enemy.y});
+ if(ground)return scNavalDispatch(id,'fish',point);
+ if(port)return scNavalDispatch(id,'trade',point);
+ b.target=point;scNavalChanged();return true;
+}
 const scNavalYard=id=>buildings.find(b=>b.id===id&&b.type==='shipyard'&&b.team===0&&alive(b)&&scNavalPlot(b));
 function scNavalChanged(){window.dispatchEvent(new Event('sc-harbour-changed'));}
 function scNavalPlace(p){
@@ -21,15 +42,17 @@ function scNavalOrder(id,kind){
 }
 function scNavalCancel(id){if(!scVillageActionReady()||!scNavalState)return false;const q=scNavalState,i=q.orders.findIndex(o=>o.yardId===id);if(i<0)return false;const def=scNavalKinds[q.orders[i].kind];q.orders.splice(i,1);wood+=def.wood;gold+=def.gold;updateUI();scNavalChanged();return true;}
 function scNavalFisheryBase(b){return 9+(scNavalState?.boats.filter(x=>x.homeId===b.id&&x.mission?.type==='fish'&&x.mission.phase==='unloading').reduce((n,x)=>n+x.mission.cargo,0)||0);}
-function scNavalUnload(){for(const b of scNavalState?.boats||[])if(b.mission?.phase==='unloading'&&scNavalFacility(b.homeId)&&(employment.byId.get(b.homeId)?.efficiency||0)>0){b.mission=null;scNavalChanged();}}
+function scNavalUnload(){for(const b of scNavalState?.boats||[])if(b.mission?.phase==='unloading'&&scNavalFacility(b.homeId)&&(employment.byId.get(b.homeId)?.efficiency||0)>0){const m=b.mission;if(m.repeat){m.phase='outbound';m.progress=0;m.cargo=0;m.cargoType=null;b.target={...m.destination};}else{b.mission=null;scNavalNext(b);}scNavalChanged();}}
 const scNavalHostiles=()=>[...units,...buildings].filter(x=>x.team===1&&alive(x)&&x.y>=660&&x.y<=H);
-function scNavalDispatch(id,type){
+function scNavalDispatch(id,type,point=null){
  if(!scVillageActionReady())return false;const b=scNavalState?.boats.find(x=>x.id===id),home=b&&scNavalFacility(b.homeId);
  if(!b||b.mission||!home||!['fish','trade','guard','attack'].includes(type)||({fish:'fishing',trade:'trade',guard:'warship',attack:'warship'})[type]!==b.kind)return false;
- const enemy=type==='attack'?scNavalHostiles().sort((a,c)=>Math.abs(a.x-b.x)-Math.abs(c.x-b.x))[0]:null;
+ const enemy=type==='attack'?scNavalHostiles().sort((a,c)=>Math.hypot(a.x-(point?.x??b.x),a.y-(point?.y??b.y))-Math.hypot(c.x-(point?.x??b.x),c.y-(point?.y??b.y)))[0]:null;
  if(type==='attack'&&!enemy||type==='trade'&&tradeGoods<10||type==='fish'&&!(employment.byId.get(home.id)?.efficiency>0))return false;
- const origin={x:home.x,y:840},destination={x:Math.max(35,Math.min(W-35,type==='attack'?enemy.x:home.x+(home.x>W/2?-360:360))),y:type==='fish'?Math.min(H-25,920):840};
- b.mission={type,phase:type==='guard'?'patrol':'outbound',progress:0,cargo:type==='trade'?10:0,cargoType:type==='trade'?'goods':null,targetId:enemy?.id||null,origin,destination};
+ const origin={x:home.x,y:840},choice=type==='fish'?scNavalGrounds.reduce((a,c)=>Math.hypot(a.x-home.x,a.y-840)<Math.hypot(c.x-home.x,c.y-840)?a:c):scNavalPorts.reduce((a,c)=>Math.hypot(a.x-home.x,a.y-840)<Math.hypot(c.x-home.x,c.y-840)?a:c),destination=point?{x:point.x,y:point.y}:type==='attack'?{x:Math.max(35,Math.min(W-35,enemy.x)),y:840}:type==='guard'?{...origin}:{x:choice.x,y:choice.y};
+ if(type==='attack')destination.y=840;
+ if(!scNavalWater(destination)||type==='fish'&&!scNavalGroundAt(destination)||type==='trade'&&(!scNavalPortAt(destination)||!scNavalPortReady(scNavalPortAt(destination).id)))return false;
+ b.mission={type,phase:type==='guard'?'patrol':'outbound',progress:0,cargo:type==='trade'?10:0,cargoType:type==='trade'?'goods':null,targetId:enemy?.id||null,origin,destination,repeat:type==='fish'};
  if(type==='trade'){tradeGoods-=10;if(scNavalHostiles().length<2&&!scNavalHostiles().some(e=>Math.abs(e.x-destination.x)<180)){addUnit(1,'soldier',destination.x,740);const raider=units[units.length-1];raider.scHoldPosition=true;msg('Coastal raiders spotted near the exchange. A warship can escort your merchant.');}}b.target=type==='guard'?null:{...destination};updateUI();scNavalChanged();return true;
 }
 function scNavalMissionTick(b,dt){const m=b.mission;if(!m)return;
@@ -42,20 +65,21 @@ function scNavalMissionTick(b,dt){const m=b.mission;if(!m)return;
    return;
   }
  }
- if(m.phase==='outbound'&&!b.target){m.phase='working';m.progress=0;scNavalChanged();}
- if(m.phase==='working'){const home=scNavalFacility(b.homeId);if(!home)return;m.progress=Math.min(m.type==='fish'?10:8,m.progress+dt*(m.type==='fish'?(employment.byId.get(home.id)?.efficiency||0):1));if(m.progress>=(m.type==='fish'?10:8)){m.cargo=m.type==='fish'?6:25;m.cargoType=m.type==='fish'?'food':'gold';m.phase='home';b.target={...m.origin};scNavalChanged();}}
+ if(m.phase==='outbound'&&!b.target){m.phase='working';m.progress=0;if(m.type==='fish'){const ground=scNavalGroundAt(m.destination);if(ground&&!scNavalState.stocks[ground.id].discovered){scNavalState.stocks[ground.id].discovered=true;msg(ground.name+' discovered: '+(ground.catch===9?'rich':ground.catch===6?'normal':'sparse')+' fishing.');}}scNavalChanged();}
+ if(m.phase==='working'){const home=scNavalFacility(b.homeId);if(!home)return;m.progress=Math.min(m.type==='fish'?10:8,m.progress+dt*(m.type==='fish'?(employment.byId.get(home.id)?.efficiency||0):1));if(m.progress>=(m.type==='fish'?10:8)){if(m.type==='fish'){const g=scNavalGroundAt(m.destination),stock=g?scNavalState.stocks[g.id]:null;if(!stock||stock.stock<1){const next=scNavalGrounds.filter(g=>scNavalState.stocks[g.id].stock>=1).sort((a,c)=>Math.hypot(a.x-b.x,a.y-b.y)-Math.hypot(c.x-b.x,c.y-b.y))[0];if(next){m.destination={x:next.x,y:next.y};m.phase='outbound';m.progress=0;b.target={...m.destination};scNavalChanged();}return;}m.cargo=Math.min(g.catch,Math.floor(stock.stock));stock.stock-=m.cargo;}else m.cargo=25;m.cargoType=m.type==='fish'?'food':'gold';m.phase='home';b.target={...m.origin};scNavalChanged();}}
  if(m.phase==='home'&&!b.target&&Math.hypot(b.x-m.origin.x,b.y-m.origin.y)<1&&scNavalFacility(b.homeId)){
-  if(m.type==='fish'&&m.cargo){m.phase='unloading';}else{if(m.cargoType==='goods'&&tradeGoods+m.cargo>80)return;if(m.cargoType==='goods')tradeGoods+=m.cargo;if(m.cargoType==='gold')gold+=m.cargo;b.mission=null;}updateUI();scNavalChanged();
+  if(m.type==='fish'&&m.cargo){m.phase='unloading';}else{if(m.cargoType==='goods'&&tradeGoods+m.cargo>80)return;if(m.cargoType==='goods')tradeGoods+=m.cargo;if(m.cargoType==='gold')gold+=m.cargo;b.mission=null;scNavalNext(b);}updateUI();scNavalChanged();
  }
 }
 function scNavalSail(id,p){if(!scVillageActionReady()||!scNavalWater(p))return false;const b=scNavalState?.boats.find(b=>b.id===id);if(!b||b.mission)return false;b.target={x:p.x,y:p.y};scNavalChanged();return true;}
 function scNavalStop(id){if(!scVillageActionReady())return false;const b=scNavalState?.boats.find(b=>b.id===id);if(!b||b.mission)return false;b.target=null;scNavalChanged();return true;}
-function scNavalBerth(id){if(!scVillageActionReady())return false;const b=scNavalState?.boats.find(b=>b.id===id),yard=b&&scNavalFacility(b.homeId);if(!yard)return false;if(b.mission){if(b.mission.phase==='unloading')return false;b.mission.phase='home';b.target={...b.mission.origin};scNavalChanged();return true;}return scNavalSail(id,{x:yard.x,y:840});}
+function scNavalBerth(id){if(!scVillageActionReady())return false;const b=scNavalState?.boats.find(b=>b.id===id),yard=b&&scNavalFacility(b.homeId);if(!yard)return false;b.nextOrder=null;if(b.mission){b.mission.repeat=false;if(b.mission.phase==='unloading'){scNavalChanged();return true;}b.mission.phase='home';b.target={...b.mission.origin};scNavalChanged();return true;}return scNavalSail(id,{x:yard.x,y:840});}
 function scNavalTick(dt){
  if(!scNavalState||scScenario!=='city'||ended||scOverview||document.hidden)return;const q=scNavalState;
+ for(const g of scNavalGrounds)q.stocks[g.id].stock=Math.min(g.capacity,q.stocks[g.id].stock+g.regen*dt);
  for(const o of [...q.orders]){const y=scNavalFacility(o.yardId),def=scNavalKinds[o.kind];if(!y){q.orders=q.orders.filter(x=>x!==o);wood+=def.wood;gold+=def.gold;scNavalChanged();continue;}
   o.progress=Math.min(def.seconds,o.progress+dt*(employment.byId.get(y.id)?.efficiency||0));
-  if(o.progress>=def.seconds){q.orders=q.orders.filter(x=>x!==o);let x=y.x;for(let i=0;i<40;i++){const candidate=y.x+(i%2?1:-1)*Math.ceil(i/2)*70;if(candidate>=35&&candidate<=W-35&&q.boats.every(b=>Math.hypot(b.x-candidate,b.y-840)>=55)){x=candidate;break;}}q.boats.push({id:q.nextBoatId++,homeId:y.id,x,y:840,target:null,kind:o.kind,hp:def.hp,mission:null});scNavalChanged();}
+  if(o.progress>=def.seconds){q.orders=q.orders.filter(x=>x!==o);let x=y.x;for(let i=0;i<40;i++){const candidate=y.x+(i%2?1:-1)*Math.ceil(i/2)*70;if(candidate>=35&&candidate<=W-35&&q.boats.every(b=>Math.hypot(b.x-candidate,b.y-840)>=55)){x=candidate;break;}}q.boats.push({id:q.nextBoatId++,homeId:y.id,x,y:840,target:null,kind:o.kind,hp:def.hp,mission:null,nextOrder:null});scNavalChanged();}
  }
  for(const enemy of scNavalHostiles().filter(x=>units.includes(x))){const near=q.boats.filter(b=>b.hp>0&&Math.hypot(b.x-enemy.x,b.y-enemy.y)<=180).sort((a,c)=>Math.hypot(a.x-enemy.x,a.y-enemy.y)-Math.hypot(c.x-enemy.x,c.y-enemy.y))[0];if(near)near.hp=Math.max(0,near.hp-4*dt);}
  const sunk=q.boats.filter(b=>b.hp<=0);if(sunk.length){q.boats=q.boats.filter(b=>b.hp>0);msg(sunk.length+' vessel(s) lost to coastal enemies, including any cargo.');scNavalChanged();}
@@ -79,7 +103,7 @@ function scNavalPrepareV2(q,data){
  const strip=row=>{const {kind,...rest}=row;return rest};const base=scNavalPrepareBase({...q,version:1,orders:q.orders.map(strip),boats:q.boats.map(strip)},data,kinds,durations);
  return {...base,version:2,orders:base.orders.map((o,i)=>({...o,kind:q.orders[i].kind})),boats:base.boats.map((b,i)=>({...b,kind:q.boats[i].kind}))};
 }
-function scNavalPrepare(q,data){
+function scNavalPrepareV3(q,data){
  if(data.schema<13)return null;
  if(data.schema<15){const old=scNavalPrepareV2(q,data);return {...old,version:3,boats:old.boats.map(b=>({...b,mission:null,hp:scNavalKinds[b.kind].hp}))};}
  const fail=()=>{throw Error('Invalid fleet mission checkpoint. Your city has not changed.');};
@@ -88,12 +112,19 @@ function scNavalPrepare(q,data){
   const fields=['type','phase','progress','cargo','cargoType','targetId','origin','destination'];if(!m||typeof m!=='object'||Array.isArray(m)||Object.keys(m).length!==fields.length||Object.keys(m).some(k=>!fields.includes(k)))fail();
   if(!['fish','trade','guard','attack'].includes(m.type)||({fish:'fishing',trade:'trade',guard:'warship',attack:'warship'})[m.type]!==b.kind||!scNavalWater(m.origin)||!scNavalWater(m.destination)||Object.keys(m.origin).length!==2||Object.keys(m.destination).length!==2)fail();
   if(!Number.isFinite(m.progress)||m.progress<0||m.progress>(m.type==='fish'?10:8)||!Number.isSafeInteger(m.cargo)||!['outbound','working','home','unloading','patrol'].includes(m.phase))fail();
-  if(m.type==='fish'){if(m.targetId!==null||!['outbound','working','home','unloading'].includes(m.phase)||!((m.cargo===0&&m.cargoType===null&&m.phase!=='unloading')||(m.cargo===6&&m.cargoType==='food'&&['home','unloading'].includes(m.phase))))fail();}
+  if(m.type==='fish'){if(m.targetId!==null||!['outbound','working','home','unloading'].includes(m.phase)||!((m.cargo===0&&m.cargoType===null&&m.phase!=='unloading')||((data.schema>=16?(m.cargo>=1&&m.cargo<=9):m.cargo===6)&&m.cargoType==='food'&&['home','unloading'].includes(m.phase))))fail();}
   else if(m.type==='trade'){if(m.targetId!==null||!['outbound','working','home'].includes(m.phase)||!((m.cargo===10&&m.cargoType==='goods')||(m.cargo===25&&m.cargoType==='gold'&&m.phase==='home')))fail();}
   else if(m.cargo!==0||m.cargoType!==null||m.progress!==0||!['outbound','patrol','home'].includes(m.phase)||m.type==='attack'&&(!Number.isSafeInteger(m.targetId)||m.targetId<1||m.targetId>=data.state.nextId)||m.type==='guard'&&m.targetId!==null)fail();
   if(m.phase==='unloading'&&(b.target!==null||Math.hypot(b.x-m.origin.x,b.y-m.origin.y)>1))fail();
  }
  const old=scNavalPrepareV2({...q,version:2,boats:q.boats.map(({mission,hp,...b})=>b)},data);return {...old,version:3,boats:old.boats.map((b,i)=>({...b,mission:scClone(q.boats[i].mission),hp:q.boats[i].hp}))};
 }
-function scNavalSnapshot(){const factories=buildings.filter(scNavalFacilityEligible).map(b=>({id:b.id,type:b.type,kind:scNavalKindFor(b),x:b.x,y:b.y,staff:employment.byId.get(b.id)?.count||0,efficiency:employment.byId.get(b.id)?.efficiency||0}));return {...scClone(scNavalState||scNavalFresh()),factories,yards:factories.filter(b=>b.type==='shipyard'),width:W,height:H,wood,gold,stone,tradeGoods,coastalHostiles:scNavalHostiles().length};}
-window.scHarbour=Object.freeze({snapshot:scNavalSnapshot,boats:()=>scClone(scNavalState?.boats||[]),kinds:scNavalKinds,dispatch:scNavalDispatch,place:scNavalPlace,order:scNavalOrder,cancel:scNavalCancel,sail:scNavalSail,stop:scNavalStop,berth:scNavalBerth,arm:()=>{if(!scVillageActionReady())return false;mode='shipyard';wallPointer=null;msg('Shipyard: 120 wood, 90 gold, 40 stone. Choose clear south coast ground at the shoreline. Selected workers build it.');return true}});
+function scNavalPrepare(q,data){if(data.schema<13)return null;
+ if(data.schema<16){const old=scNavalPrepareV3(q,data);return {...old,version:4,stocks:scNavalFreshStocks(),boats:old.boats.map(b=>({...b,nextOrder:null,mission:b.mission?{...b.mission,repeat:false}:null}))};}
+ const fail=()=>{throw Error('Invalid sea orders. Your town has not changed.');};
+ if(!q||q.version!==4||!Array.isArray(q.boats)||!q.stocks||Array.isArray(q.stocks)||Object.keys(q.stocks).length!==scNavalGrounds.length)fail();for(const g of scNavalGrounds){const st=q.stocks[g.id];if(!st||Object.keys(st).length!==2||!Number.isFinite(st.stock)||st.stock<0||st.stock>g.capacity||typeof st.discovered!=='boolean')fail();}for(const b of q.boats){if(!Object.hasOwn(b,'nextOrder'))fail();if(b.mission&&typeof b.mission.repeat!=='boolean')fail();const n=b.nextOrder;if(n!==null&&(!n||Object.keys(n).length!==1||!n.point||Object.keys(n.point).length!==2||!scNavalWater(n.point)||!b.mission||!b.mission.cargo))fail();}
+ const {stocks,...bare}=q;const old=scNavalPrepareV3({...bare,version:3,boats:q.boats.map(({nextOrder,...b})=>{if(b.mission){const {repeat,...m}=b.mission;b.mission=m;}return b})},data);
+ return {...old,version:4,stocks:scClone(stocks),boats:old.boats.map((b,i)=>({...b,nextOrder:scClone(q.boats[i].nextOrder),mission:b.mission?{...b.mission,repeat:q.boats[i].mission.repeat}:null}))};
+}
+function scNavalSnapshot(){const factories=buildings.filter(scNavalFacilityEligible).map(b=>({id:b.id,type:b.type,kind:scNavalKindFor(b),x:b.x,y:b.y,staff:employment.byId.get(b.id)?.count||0,efficiency:employment.byId.get(b.id)?.efficiency||0}));return {...scClone(scNavalState||scNavalFresh()),factories,yards:factories.filter(b=>b.type==='shipyard'),width:W,height:H,wood,gold,stone,tradeGoods,coastalHostiles:scNavalHostiles().length,grounds:scNavalGrounds.map(g=>({...g,discovered:scNavalState?.stocks[g.id].discovered||false,stock:scNavalState?.stocks[g.id].stock??g.capacity})),ports:scNavalPorts.map(p=>({...p,ready:!!scNavalPortReady(p.id)}))};}
+window.scHarbour=Object.freeze({snapshot:scNavalSnapshot,boats:()=>scClone(scNavalState?.boats||[]),kinds:scNavalKinds,notify:msg,select:id=>{if(!scVillageActionReady()||!scNavalState?.boats.some(b=>b.id===id))return false;selected=[];inspectedBuilding=null;window.scRTSSelected=[];window.scRTSInspectedBuilding=null;window.scCancelConstruction?.();updateUI();return true;},dispatch:scNavalDispatch,command:scNavalCommand,place:scNavalPlace,order:scNavalOrder,cancel:scNavalCancel,sail:scNavalSail,stop:scNavalStop,berth:scNavalBerth,arm:()=>{if(!scVillageActionReady())return false;mode='shipyard';wallPointer=null;msg('Shipyard: 120 wood, 90 gold, 40 stone. Choose clear south coast ground at the shoreline. Selected workers build it.');return true}});

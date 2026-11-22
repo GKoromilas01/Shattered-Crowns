@@ -1,3 +1,7 @@
+## Latest WIP checkpoint — v0.59
+
+**Continue on remote branch `ui/v059-open-seas`. Read [CONTINUE_V059.md](CONTINUE_V059.md) first.** It records current code, the four known blockers, test evidence, release/auth status and exact remaining work. v059 is unfinished, not verified or released. Owner manually published v058 as test pre-release; its tag remains untouched.
+
 # Continuation checkpoint — 22 November 2026
 
 This is the starting point for Claude, Codex or another assistant. It records implemented work separately from future ideas. Follow ../AGENTS.md and the owner's latest instructions. Update this file after each delivered version.

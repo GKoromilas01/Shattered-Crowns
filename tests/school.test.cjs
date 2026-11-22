@@ -79,12 +79,12 @@ test('People: Show home centres the map; children grow up faster; survivors get 
  assert.equal(await p.evaluate(()=>{scCampaign.start('city','home');return window.scSmallKeep}),false);
 });
 
-test('Placing a School by clicking sends free workers to build it, and it finishes without selecting anyone',async t=>{
+test('School foundation waits for an explicit worker assignment and then finishes',async t=>{
  const p=await game(t,'home',1366,640);
  await p.locator('#sc140Build').click();await p.locator('#sc140Commands button',{hasText:'School'}).first().click();
  await p.mouse.click(700,350);await p.waitForTimeout(400);
  const a=await p.evaluate(()=>({builders:scCitySave.capture().state.units.filter(u=>u.order&&u.order.type==='build').length,sites:(scCitySave.capture().state.construction||[]).length}));
- assert.ok(a.builders>=1,'free workers are sent: '+JSON.stringify(a));
+ assert.equal(a.builders,0,'unselected workers keep their jobs');assert.equal(a.sites,1);await p.keyboard.press('Escape');await p.locator('#selectWorkers').evaluate(b=>b.click());await p.mouse.click(700,350,{button:'right'});assert.ok(await p.evaluate(()=>scCitySave.capture().state.units.some(u=>u.order?.type==='build')),'explicitly selected workers receive the construction order');
  const b=await p.evaluate(()=>{__sc38.advance(240);const st=scCitySave.capture().state;return {done:st.buildings.filter(x=>x.type==='school').length,sites:(st.construction||[]).length}});
  assert.equal(b.done,1,'the School is finished '+JSON.stringify(b));assert.equal(b.sites,0);
 });

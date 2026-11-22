@@ -1,3 +1,7 @@
+## Resume current v0.59 work
+
+See [CONTINUE_V059.md](CONTINUE_V059.md), remote branch `ui/v059-open-seas`. This is a durable WIP checkpoint with known blockers, not a completed release.
+
 ## v0.58 candidate — Working Fleet
 
 Fishing voyages deliver catch through the Food ledger; coastal trading reserves goods and pays on return. Warships escort and attack real coastal raiders; hull damage and sinking make protection meaningful. Opening videos/captions fade smoothly; separate story screens remain. Schema15 preserves missions/hulls and migrates13/14. [Controls, balance and limits](MILESTONE58.md). No merge/deployment.

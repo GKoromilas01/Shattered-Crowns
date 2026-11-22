@@ -150,7 +150,7 @@ const sc1328PreviewSize=(type)=>{
  const compact=window.sc1323CompactBuildings!==false;
  const factor=compact?.82:1;
  const art={
-  house:[40,47],farm:[64,45],fishery:[61,43],market:[65,48],
+  shipyard:[90,75],house:[40,47],farm:[64,45],fishery:[61,43],market:[65,48],
   well:[42,48],lumberyard:[64,46],granary:[62,61],
   bakery:[61,53],theater:[70,56],school:[66,54],chapel:[60,62],clinic:[62,61],garden:[60,38],plaza:[58,39],
   road:[30,17],tower:[55,75],fortress:[95,88],wall:[84,45]

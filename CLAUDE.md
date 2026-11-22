@@ -1,5 +1,3 @@
 # Start here — Shattered Crowns
 
-Read [AGENTS.md](AGENTS.md) for the working agreement, then [CONTINUATION.md](docs/CONTINUATION.md) for the current checkpoint and owner preferences. Read [HANDOFF.md](docs/HANDOFF.md) for version history. These instructions are for Claude and any other assistant continuing this repository.
-
-Do not assume main is the latest playtest: the current game checkpoint and PR branch are recorded in CONTINUATION.md. Preserve existing artwork, music, story and save compatibility. Update the handoff and Advisor Tester whenever shipping new behavior.
+Read [AGENTS.md](AGENTS.md), then [docs/CONTINUE_V059.md](docs/CONTINUE_V059.md) for the exact current WIP and known blockers. Continue branch `ui/v059-open-seas`; main is older. Version history: [docs/HANDOFF.md](docs/HANDOFF.md). The owner requested this checkpoint before credits run out. Preserve existing media, save compatibility and approved design; update Advisor Tester with each version. v059 is not yet verified or released.
