@@ -13,6 +13,8 @@ A connected village-growth milestone and real production/trade reward. Owner aut
 7. **Send 8 planks + 12 baskets → 110 gold**. The manual order shares the existing route with partner cargo. Save outbound and returning; Pause/World map/hidden tabs freeze normal gameplay. A return credits once, then another real batch may be dispatched.
 8. Inspect the player's settlement on the atlas: it is now a **Town**. Other settlements do not gain invented growth.
 
+For a faster test, import `samples/v051/charter-ready.json` through **Menu → Saved city → Import**. It is a resource-funded village ready to claim the charter; the route was accelerated for engineering checks.
+
 ## Economics and compatibility
 
 Workshop: two civilian jobs, four wood per plank per five-second full-staff cycle, unchanged. Yard costs, original Ironmere agreements, charters, Valewatch/Ashford pacts and standing orders are unchanged.
