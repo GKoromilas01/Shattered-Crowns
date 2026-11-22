@@ -1,3 +1,7 @@
+## v060 — existing assets reused
+
+No new media generated or purchased. Existing painted terrain/bridge, buildings, ships, music and videos retained. River/meadow changes use procedural terrain accents in the established palette.
+
 # Asset log
 
 Record every third-party or AI-generated image here: asset, source, plan and privacy, date, prompt, licence/terms note, edits.

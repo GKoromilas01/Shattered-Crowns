@@ -1,3 +1,7 @@
+# v0.60.0 — A Slower Frontier (candidate)
+
+Resources, construction and recruitment now take three times longer. A warned local frontier brings real raids and Keep commands to defend home or attack the rival outpost. Direct ship orders, richer fishing grounds, first-contact trade agreements, a larger sea and winding river complete the preceding naval work. Includes current Advisor Tester instructions and an optional quick raid save. [Scope and limits](docs/MILESTONE60.md). Local checks are recorded separately from pending GitHub CI; no verified release claimed.
+
 # v0.58.0 — Working Fleet (candidate)
 
 Fishing voyages deliver catch through the Food ledger; coastal trading reserves goods and pays on return. Warships escort and attack real coastal raiders; hull damage and sinking make protection meaningful. Opening videos/captions fade smoothly; separate story screens remain. Schema15 preserves missions/hulls and migrates13/14. [Controls, balance and limits](docs/MILESTONE58.md). No merge/deployment.

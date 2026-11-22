@@ -1,3 +1,7 @@
+## Current candidate — v0.60 A Slower Frontier
+
+Continue branch `ui/v060-slower-frontier`. Read [MILESTONE60.md](MILESTONE60.md) and [validation/v060-slower-frontier.md](validation/v060-slower-frontier.md). This includes the completed v059 naval/terrain work and the approved slower pace plus first land-war loop. Historical v059 blockers are resolved. Do not merge main or describe pending CI as verified.
+
 ## Latest WIP checkpoint — v0.59
 
 **Continue on remote branch `ui/v059-open-seas`. Read [CONTINUE_V059.md](CONTINUE_V059.md) first.** It records current code, the four known blockers, test evidence, release/auth status and exact remaining work. v059 is unfinished, not verified or released. Owner manually published v058 as test pre-release; its tag remains untouched.

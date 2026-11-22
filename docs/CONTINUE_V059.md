@@ -1,3 +1,5 @@
+> Historical WIP checkpoint. Its blockers were resolved in 9a92837; current work is v060. Read MILESTONE60.md and CONTINUATION.md first.
+
 # Resume v0.59 Open Seas — WIP checkpoint,22 November2026
 
 This is unfinished development, not a verified release. Resume this branch; do not restart from main or v058. Read ../AGENTS.md, ../CLAUDE.md and the current spec/plan in docs/superpowers/. User requested a durable handoff before credits run out.
