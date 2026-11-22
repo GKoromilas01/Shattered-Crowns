@@ -1,3 +1,7 @@
+## Latest owner feedback — v061 pending
+
+Read [CONTINUE_V061.md](CONTINUE_V061.md) for the full current task and investigation. Branch `fix/v061-town-defenses`. No gameplay fixes implemented yet; owner requested a Claude handoff.
+
 ## Current candidate — v0.60 A Slower Frontier
 
 Continue branch `ui/v060-slower-frontier`. Read [MILESTONE60.md](MILESTONE60.md) and [validation/v060-slower-frontier.md](validation/v060-slower-frontier.md). This includes the completed v059 naval/terrain work and the approved slower pace plus first land-war loop. Historical v059 blockers are resolved. Do not merge main or describe pending CI as verified.
