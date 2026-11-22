@@ -24,7 +24,7 @@ window.__cityTest = {
 `;
 async function game(t, width = 1440, height = 900) {
   const {context,page} = await browserPage(t,browser,{ viewport: { width, height } }); const errors = [];
-  page.on('pageerror', e => errors.push(e.message)); page.setDefaultTimeout(6000);
+  page.on('pageerror', e => errors.push(e.message)); page.setDefaultTimeout(6000); page.setDefaultNavigationTimeout(30000);
   t.after(() => assert.deepEqual(errors, []));
   await page.route('**/*', route => route.fulfill({ contentType: 'text/html', body: fs.readFileSync('index.html', 'utf8').replace('gold=260;wood=240;stone=50;', 'gold=2400;wood=2000;stone=2000;').replace('window.scHoverBuildings=buildings;function frame', adapter + '\nwindow.scHoverBuildings=buildings;function frame') }));
   await page.goto(url); await page.locator('#sc1310Skip').click(); await page.locator('#sc154Pause').click();

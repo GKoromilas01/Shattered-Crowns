@@ -1,3 +1,7 @@
+# v0.58.0 — Working Fleet (candidate)
+
+Fishing voyages deliver catch through the Food ledger; coastal trading reserves goods and pays on return. Warships escort and attack real coastal raiders; hull damage and sinking make protection meaningful. Opening videos/captions fade smoothly; separate story screens remain. Schema15 preserves missions/hulls and migrates13/14. [Controls, balance and limits](docs/MILESTONE58.md). No merge/deployment.
+
 # v0.57.0 — Boat Builders (candidate)
 
 Build fishing boats at the Fishery and warships/trade ships at the Shipyard, with Fleet retained. Shipyard is last in Construction with shared styling; Fleet has ×/Escape close. Typed saved vessels migrate schema13 to14. Combat and cargo routes remain future work. [Scope and tester](docs/MILESTONE57.md). No merge/deployment.

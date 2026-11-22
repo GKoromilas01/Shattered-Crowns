@@ -1,3 +1,7 @@
+## v0.58 candidate — Working Fleet
+
+Fishing voyages deliver catch through the Food ledger; coastal trading reserves goods and pays on return. Warships escort and attack real coastal raiders; hull damage and sinking make protection meaningful. Opening videos/captions fade smoothly; separate story screens remain. Schema15 preserves missions/hulls and migrates13/14. [Controls, balance and limits](MILESTONE58.md). No merge/deployment.
+
 ## Start here for Claude or another assistant
 
 [Current continuation checkpoint](CONTINUATION.md) records the latest playable commit, PR, verification, owner preferences and next steps. Root [CLAUDE.md](../CLAUDE.md) points here for discovery.

@@ -72,3 +72,6 @@ Existing runtime shipyard.webp used as a constructed building and icon; ship.web
 
 ## v0.57 Boat Builders
 Existing painted Shipyard icon and ship art reused; vessel scale varies by kind. No new assets, Leonardo generation, purchases or music/video changes.
+
+## v0.58 Working Fleet
+Existing painted ships, buildings, soldier graphics, original music and all seven clips reused unchanged. Fades are presentation only; no new generated assets, purchases or Leonardo spending.

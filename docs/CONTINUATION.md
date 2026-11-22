@@ -2,7 +2,15 @@
 
 This is the starting point for Claude, Codex or another assistant. It records implemented work separately from future ideas. Follow ../AGENTS.md and the owner's latest instructions. Update this file after each delivered version.
 
-## Latest delivered game
+## Current continuation — v0.58 Working Fleet
+
+Current GitHub topic remains PR77 / branch ui/v056-first-harbour (local branch ui/v058-working-fleet). Read [MILESTONE58.md](MILESTONE58.md) and validation/v058-working-fleet.md first. The exact candidate SHA and immutable ZIP are posted in PR77 and delivery chat. v057 below is historical.
+
+Owner corrected the report: Shipyard war/trade construction works. They requested useful fishing/trade/war orders and cinematic fades. Implemented coastal missions, escrow, catch through ledger, limited holding coastal raiders, protection/attack, hull damage/sinking, schema15 migration and frame-driven fades. Actual fish uses Food, as their latest message says. No new media or credit spending. Overseas maps, enemy fleets, invasions, repairs and full sea-route diplomacy remain future work; do not claim those exist.
+
+Follow latest validation and GitHub CI, not the historical run below. No release approval or self-merge/deployment of v058. Tester contains the new instructions. Continue with owner playtest feedback before adding more scope.
+
+## Previous delivered game
 
 - v0.57.0, Boat Builders, game commit `e4be37a02309890c609089217f5b63ef6869466e`.
 - GitHub branch `ui/v056-first-harbour`, PR [77](https://github.com/GKoromilas01/Shattered-Crowns/pull/77). Local branch was `ui/v057-boat-builders`; local worktree `/workspace/work/v055-continuous-opening`. Fresh clones should use the GitHub branch, not depend on those local paths.
