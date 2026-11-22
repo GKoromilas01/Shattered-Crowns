@@ -1,3 +1,7 @@
+# v0.53.0 — A Seamless Beginning (candidate)
+
+The opening runs without visible Continue, Skip or Pause buttons. Subtitles sit directly over the video with soft text shadows. Longer story passages fade in over each paused final frame, drift gently upward, then fade out before playback continues automatically. Reduced motion removes movement. Existing words, reading times, videos and save behavior remain. Advisor Tester contains the new checks. [Playtest](docs/MILESTONE53.md).
+
 # v0.52.0 — Your Workers, Your Orders (candidate)
 
 Placing a foundation now uses only explicitly selected workers. With none selected it waits, leaving miners and woodcutters on their existing jobs. Explicit assignment, saved orders and builder follow-up are retained.

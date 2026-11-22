@@ -1,3 +1,7 @@
+## v0.53 candidate — A Seamless Beginning
+
+Owner requested no visible opening buttons, subtitles without the dark strip, and narration over the frozen last video frame. Implemented in src/v050/intro.js with gentle fade/upward motion, reduced-motion fades and preserved hidden-tab reading time. Existing media/story/durations unchanged. Keyboard shortcuts remain for accessibility. [Scope and in-game tester](MILESTONE53.md). Based on v052; no merge/deployment.
+
 ## v0.52 candidate — Your Workers, Your Orders
 
 Owner's v0.51 reports drive this build: selected builders only, Leonardo-only one-minute originals, actual painted Chapel/School map/icons, and version-specific Advisor Tester steps. Source branch `ui/v052-player-control` includes PR74's ancestors; nothing merged or deployed. See [Milestone52](MILESTONE52.md). Tester path: **Journal & objectives → Open guide → Guide: Tester**. Future chat playtest instructions must also appear in this mode.
