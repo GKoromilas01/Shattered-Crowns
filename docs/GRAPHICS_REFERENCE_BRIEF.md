@@ -114,6 +114,16 @@ Owner caption: “oriental queens.” Treat the supplied images as guidance for 
 - Portraits should communicate thoughtful authority, composure and individual character. Leave quiet areas for interface text; keep faces readable at small sizes.
 - Future art direction only: no queen/court system, portraits or paid generation added to v0.51 by this reference.
 
+## 10. Eastern priests, warlocks and garden towns — future reference only
+
+The owner added examples of court gatherings in enclosed gardens, ceremonial figures, a robed mystic with a staff and a masked figure.
+
+- Town/court setting: warm stone arches and courtyard walls, shaded garden paths, clipped greenery, flowering plants, patterned vessels and a few hanging lanterns. Use gardens and architecture to frame readable groups rather than a dense crowd.
+- Priests and mystical figures should have their own original ceremonial clothing, posture and restrained accessories, distinct from the humble village priest and from rulers. This is a fictional realm's visual identity, not a claim about a real culture or religion.
+- If a masked figure or ceremonial staff is later commissioned, design a new silhouette, material treatment and motif. Do not reproduce the reference's distinctive full-face geometric mask, bird staff, exact robes or actor likeness.
+- Differentiate individual roles through silhouette, fabric, tools and gestures while preserving the painted palette and small-scale readability.
+- These are optional future illustration/portrait references. They add no magic, priesthood, court or garden-town simulation to v0.51 and authorize no asset spending.
+
 ## Shared production checks
 
 1. The result belongs beside the existing painted world, buildings and portraits.
