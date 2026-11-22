@@ -1,3 +1,7 @@
+## v0.54 candidate — A Quieter Town
+
+Owner confirmed school bell uses game time. Worksite rings/bars/percentages now appear only on hover, selected-builder target or selected Worksites entry. Existing bridge art is reused at the unchanged crossing. Daily town ambience uses saved elapsed time (06:00 start, 24 active minutes/day): School at 08:00, Chapel every 15 active minutes. Sound controls and separate remembered bells toggle apply; no hidden/pause/catch-up bells. Existing seasonal council calendar is independent. [Scope, tester and naval audit](MILESTONE54.md). Ship/shipyard art exists but their gameplay/save registries are not yet implemented; next naval slice is recorded there. Includes v053; no merge/deploy.
+
 ## v0.53 candidate — A Seamless Beginning
 
 Owner requested no visible opening buttons, subtitles without the dark strip, and narration over the frozen last video frame. Implemented in src/v050/intro.js with gentle fade/upward motion, reduced-motion fades and preserved hidden-tab reading time. Existing media/story/durations unchanged. Keyboard shortcuts remain for accessibility. [Scope and in-game tester](MILESTONE53.md). Based on v052; no merge/deployment.

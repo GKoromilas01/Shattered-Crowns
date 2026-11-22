@@ -57,3 +57,7 @@ Policy for this project: key assets that define the game's identity (main portra
 ## v0.52 playback/render integration — 22 November 2026
 
 No new asset generation or purchase. Existing v047 Chapel/School originals/runtime cutouts now used for completed map buildings and command icons, replacing procedural bypasses. Original one-minute v048 music MP3 bytes embedded directly at owner's request; extended v049 copies and old synthesized compositions retained as archives. No audio file edited or re-encoded. Art and video assets unchanged.
+
+## v0.54 reuse audit — 2026-11-22
+
+Existing v047 runtime bridge.webp reused at the original river crossing, with canvas rotation only. Source/runtime asset bytes unchanged. Existing shipyard/ship graphics confirmed present, not yet playable entities. No new generation, purchases or token spending. Town/school bells are original synthesized effects; recorded Leonardo music unchanged.
