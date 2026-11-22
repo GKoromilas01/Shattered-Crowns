@@ -26,6 +26,10 @@ No media changes, purchases, free goods, renderer progression changes, save-sche
 - [ ] Keep synth archive, active Leo-only playlist and migration, file-aware diagnostics; data-only src/v052 tester steps embedded before core uses them. Update old style tests to new authorized behavior while retaining sound assertions.
 - [ ] GREEN audio/opening/guide, existing reinforcement/camp checks. Commit.
 
+### Task2b — existing Chapel/School art (owner follow-up)
+- [ ] RED map and command image sources do not use existing originals.
+- [ ] Prefer existing paid art, retaining fallback and unchanged entities; GREEN both renderer tests.
+
 ### Task3 — delivery
 - [ ] Record scope, tester steps, findings, validation and downgrade unchanged-schema notes; bump all runtime/release metadata0.52.
 - [ ] Fresh reviewer once; Important fixes RED→GREEN; source/media integrity and committed package smoke.

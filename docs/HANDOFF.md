@@ -1,3 +1,11 @@
+## v0.52 candidate — Your Workers, Your Orders
+
+Owner's v0.51 reports drive this build: selected builders only, Leonardo-only one-minute originals, actual painted Chapel/School map/icons, and version-specific Advisor Tester steps. Source branch `ui/v052-player-control` includes PR74's ancestors; nothing merged or deployed. See [Milestone52](MILESTONE52.md). Tester path: **Journal & objectives → Open guide → Guide: Tester**. Future chat playtest instructions must also appear in this mode.
+
+Automatic fallback recruitment previously stole three gatherers when no worker was selected; it is removed. Explicit selections and existing builder follow-up/manual priority remain. Chapel/School paid assets already existed and were bypassed by procedural rendering. Original music files are embedded directly from assets/v048/music-originals; all synth source and extended copies remain archived. No new assets or spending. Reinforcement (100stone/80gold) remains the camp→castle trigger, not chapter completion.
+
+Owner asked about plan alternatives; see [ART_AND_SOUND_OPTIONS.md](ART_AND_SOUND_OPTIONS.md) and [LEONARDO_PLAN_NOTES.md](LEONARDO_PLAN_NOTES.md). These are research, not permission to purchase/generate anything. Same palette, camera, scale, lighting, materials and coherent sound identity remain priorities across providers.
+
 ## v0.51 candidate — From Village to Town
 
 Owner's guiding purpose: immerse yourself in a medieval town, make decisions that affect it, and think deeply about their consequences. Recorded in DESIGN_GROWTH_AND_WAR.md.
