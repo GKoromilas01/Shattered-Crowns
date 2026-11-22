@@ -22,3 +22,8 @@ Musicv1 supports1–10minutes, default1. A future longer composition can be gene
 ## Immediate-work decision
 
 Owner clarified the comparison is about creating more assets right now, not currency or a subscription label. With no verified immediate upgrade token grant, the35,000-token top-up is the predictable immediate-capacity choice while staying on Essential. It is not claimed to beat an actual Premium upgrade quote on value. Reconsider if the confirmation/support establishes a useful immediate grant at lower cost. No purchase performed.
+
+## Longer outputs on Essential
+
+Musicv1 supports1–10whole minutes (including3/4/5), default1; Essential is not intrinsically capped at1minute. Leonardo's public web video information names FLUX3Video up to20seconds, with duration choices/model access checked in the owner's actual selector. Paid plans expose model selection; exact token cost is shown before generation. Refilling tokens does not change a model's length limit. Do not assume the earlier Auto/Hailuo6s model can create20s just because tokens were added. Use existing painted start frames for continuity; make a small quoted pilot before buying/generating a batch. No media generation authorized by this research.
+Sources: https://docs.leonardo.ai/docs/music-v1 ; https://leonardo.ai/text-to-video ; https://intercom.help/leonardo-ai/en/articles/11027827-generating-video-on-leonardo-ai

@@ -1,3 +1,11 @@
+# v0.52.0 — Your Workers, Your Orders (candidate)
+
+Placing a foundation now uses only explicitly selected workers. With none selected it waits, leaving miners and woodcutters on their existing jobs. Explicit assignment, saved orders and builder follow-up are retained.
+
+Music rotates the four unmodified one-minute Leonardo originals. Extended copies and synthesized themes remain archived for later upgrades. Existing sound preferences stay effective. Chapel and School now use their already-created painted artwork on the map and command icons; no new art or credits required.
+
+Advisor Tester contains this version's actions and expected results. Open **Journal & objectives → Open guide → Guide: Tester**. Camp-to-castle remains tied to the paid Reinforce Keep upgrade. No schema or economic changes. [Scope and playtest](docs/MILESTONE52.md). Candidate only; not merged or deployed.
+
 # v0.51.0 — From Village to Town (candidate)
 
 Earn a permanent Town charter through residents, serviced housing, happiness, a staffed connected Market and food security. Inspect the Keep to see requirements and explicitly pay 80 gold plus 8 real planks. Recognition appears in City Life, Advisor and the player's atlas settlement.

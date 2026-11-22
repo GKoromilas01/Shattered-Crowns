@@ -28,6 +28,6 @@ The finished Chapel/School originals and runtime cutouts already existed. Map re
 
 ## Compatibility and continuation
 
-No schema or economic change: current schemas1–12 continue loading normally, and existing selected build orders remain valid. Old music style names/preferences migrate to the Leonardo playlist; original mute, volume, effects and voice settings are retained.
+No schema or economic change: current schemas1–12 continue loading normally, and existing selected build orders remain valid. If an older save already has several workers building, stop/reassign those workers once before testing a fresh foundation; the loader does not invent their lost previous gathering orders. Old music style names/preferences migrate to the Leonardo playlist; original mute, volume, effects and voice settings are retained.
 
 Feature branch ui/v052-player-control includes v0.50/v0.51 ancestors from PR74/a84743d. Owner/Claude decides integration after full final-head CI. See [asset/sound options](ART_AND_SOUND_OPTIONS.md), [plan notes](LEONARDO_PLAN_NOTES.md), and validation record for current gates.
