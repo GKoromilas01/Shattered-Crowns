@@ -1,3 +1,7 @@
+## Owner requirement — Advisor Tester for future versions (22 November 2026)
+
+For future versions, put the same version-specific playtest instructions supplied in chat inside the game's **Advisor Tester**. It should guide the owner through only that version's additions/corrections, with clear actions and expected results, rather than the general Advisor tutorial. Keep chat instructions and the in-game tester consistent. The owner accepts that v0.51 has no dedicated tester; this is a requirement for subsequent builds, not a request for a separate patch release now.
+
 # Handoff: where each version stands
 
 Read this first when continuing. Newest at top. Details are in `docs/MILESTONE*.md`.
