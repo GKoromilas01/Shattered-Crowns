@@ -1,3 +1,7 @@
+## v0.57 candidate — Boat Builders
+
+Build fishing boats at the Fishery and warships/trade ships at the Shipyard, with Fleet retained. Shipyard is last in Construction with shared styling; Fleet has ×/Escape close. Typed saved vessels migrate schema13 to14. Combat and cargo routes remain future work. [Scope and tester](MILESTONE57.md). No merge/deployment.
+
 ## v0.56 candidate — First Harbour
 
 Owner authorized coastal Shipyard and first paid boat. Selected map workers build the120wood/90gold/40stone foundation; two resident shipwright jobs finish80wood/40gold boats in30full-staff seconds. Fleet has explicit sea-only east/west/stop/berth controls, one boat/order peryard,max20. Naval state is separate from infantry and uses strict schema13, preserving old schemas and Town charters. Existing art reused, scene ship foreground clipped at runtime. [Scope/tester/release status](MILESTONE56.md). New branch ui/v056-first-harbour; PR76/v055 release candidate is separate. No self-merge/deploy.

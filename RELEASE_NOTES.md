@@ -1,3 +1,7 @@
+# v0.57.0 — Boat Builders (candidate)
+
+Build fishing boats at the Fishery and warships/trade ships at the Shipyard, with Fleet retained. Shipyard is last in Construction with shared styling; Fleet has ×/Escape close. Typed saved vessels migrate schema13 to14. Combat and cargo routes remain future work. [Scope and tester](docs/MILESTONE57.md). No merge/deployment.
+
 # v0.56.0 — First Harbour (candidate)
 
 Build a real coastal Shipyard with selected workers, fund a first boat, and use Menu → Fleet to sail, stop and return to its berth. Shipwright staffing controls build time. Construction/voyages survive Save/Return in schema13; older saves remain loadable. Existing paid artwork, illustrated story screens, music and town bells retained. [Playtest and limits](docs/MILESTONE56.md). Candidate only; not deployed.

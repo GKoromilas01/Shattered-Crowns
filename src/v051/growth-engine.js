@@ -4,7 +4,7 @@ function scGrowthSnapshot(){
  const city=scScenario==='city',owned=cityOwned(),network=getRoadNetwork(),staff=cityAllocateEmployment(owned.filter(b=>cityJobSlots[b.type]));
  const served=owned.filter(b=>b.type==='house').filter(h=>{const t=houseTier(h,{owned,network});return t.water&&t.access;}).length;
  const market=owned.some(b=>b.type==='market'&&marketHasTradeAccess(b,network)&&(staff.byId.get(b.id)?.efficiency||0)>=.5);
- const demand=Math.ceil(population*.45*(window.scRationFactor||1)),production=owned.reduce((n,b)=>n+(b.type==='farm'?13:b.type==='fishery'?9:0)*(staff.byId.get(b.id)?.efficiency||0),0);
+ const demand=Math.ceil(population*.45*(window.scRationFactor||1)),production=owned.reduce((n,b)=>n+(b.type==='farm'?13:b.type==='fishery'?scNavalFisheryBase(b):0)*(staff.byId.get(b.id)?.efficiency||0),0);
  const checks=[
   {id:'residents',label:'20 residents',value:population,goal:20,ok:population>=20},
   {id:'homes',label:'6 homes with water and road access',value:served,goal:6,ok:served>=6},

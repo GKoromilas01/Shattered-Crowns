@@ -69,3 +69,6 @@ Existing paid runtime camp.webp reused as a decorative story-screen emblem. No c
 ## v0.56 reuse — 2026-11-22
 
 Existing runtime shipyard.webp used as a constructed building and icon; ship.webp is a full scene, with its foreground boat clipped by runtime canvas paths for the map. Fleet uses the original as a thumbnail. No source/runtime image bytes edited, no new artwork generation, credits or purchases.
+
+## v0.57 Boat Builders
+Existing painted Shipyard icon and ship art reused; vessel scale varies by kind. No new assets, Leonardo generation, purchases or music/video changes.
