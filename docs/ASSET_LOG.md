@@ -61,3 +61,7 @@ No new asset generation or purchase. Existing v047 Chapel/School originals/runti
 ## v0.54 reuse audit — 2026-11-22
 
 Existing v047 runtime bridge.webp reused at the original river crossing, with canvas rotation only. Source/runtime asset bytes unchanged. Existing shipyard/ship graphics confirmed present, not yet playable entities. No new generation, purchases or token spending. Town/school bells are original synthesized effects; recorded Leonardo music unchanged.
+
+## v0.55 reuse — 2026-11-22
+
+Existing paid runtime camp.webp reused as a decorative story-screen emblem. No changes to the image bytes or embedded asset bundle, no new generation or spending.

@@ -1,3 +1,7 @@
+# v0.55.0 — Between the Chapters (candidate)
+
+Restores separate dark story screens between videos while retaining every passage. A small existing painted settlement emblem and warm headings frame the narration; no frozen video remains behind it. Button-free clips and transparent subtitles stay, along with v054 map/bells improvements. [Playtest](docs/MILESTONE55.md). No new assets or simulation changes.
+
 # v0.54.0 — A Quieter Town (candidate)
 
 Idle worksite rings, percentages and progress bars appear on demand. Existing painted bridge art replaces the planks at the same crossing. Quiet School and Chapel bells follow town time, honor sound controls, and skip background/pause/catch-up playback. Advisor Tester contains the new checks. Includes v053 frozen-frame opening. [Playtest and clock scale](docs/MILESTONE54.md). No new assets, save schema or deployment.

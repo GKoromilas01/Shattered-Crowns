@@ -1,3 +1,7 @@
+## v0.55 candidate — Between the Chapters
+
+Owner explicitly chose separate dark story screens between videos, keeping the full narration, rather than frozen-frame narration. Ended videos are hidden during prose; an opaque warm-dark surface and small existing painted camp emblem frame the text. Full story, captions, durations and other v054 features stay. Current instructions are in Advisor Tester. [Scope and preview](MILESTONE55.md). Same combined PR76; no merge/deployment.
+
 ## v0.54 candidate — A Quieter Town
 
 Owner confirmed school bell uses game time. Worksite rings/bars/percentages now appear only on hover, selected-builder target or selected Worksites entry. Existing bridge art is reused at the unchanged crossing. Daily town ambience uses saved elapsed time (06:00 start, 24 active minutes/day): School at 08:00, Chapel every 15 active minutes. Sound controls and separate remembered bells toggle apply; no hidden/pause/catch-up bells. Existing seasonal council calendar is independent. [Scope, tester and naval audit](MILESTONE54.md). Ship/shipyard art exists but their gameplay/save registries are not yet implemented; next naval slice is recorded there. Includes v053; no merge/deploy.
