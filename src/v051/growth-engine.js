@@ -22,7 +22,7 @@ function scGrowthClaim(){
 }
 function scGrowthTradeReady(){return !!scGrowthState&&scTradePolicyReady()&&cityOwned().some(b=>b.type==='market'&&marketHasTradeAccess(b)&&(employment.byId.get(b.id)?.efficiency||0)>=.5);}
 function scGrowthPrepare(q,data){
- if(data.schema<12)return null;
+ if(data.schema<12||data.schema>=13&&q===null)return null;
  if(data.campaign?.mode!=='city'||!q||typeof q!=='object'||Array.isArray(q)||Object.keys(q).length!==2||q.version!==1||!Object.hasOwn(q,'charteredAt')||!Number.isFinite(q.charteredAt)||q.charteredAt<0||q.charteredAt>data.state.clock.elapsed)throw Error('Invalid Town charter. Your city has not changed.');
  return scClone(q);
 }

@@ -1,3 +1,7 @@
+# v0.56.0 — First Harbour (candidate)
+
+Build a real coastal Shipyard with selected workers, fund a first boat, and use Menu → Fleet to sail, stop and return to its berth. Shipwright staffing controls build time. Construction/voyages survive Save/Return in schema13; older saves remain loadable. Existing paid artwork, illustrated story screens, music and town bells retained. [Playtest and limits](docs/MILESTONE56.md). Candidate only; not deployed.
+
 # v0.55.0 — Between the Chapters (candidate)
 
 Restores separate dark story screens between videos while retaining every passage. A small existing painted settlement emblem and warm headings frame the narration; no frozen video remains behind it. Button-free clips and transparent subtitles stay, along with v054 map/bells improvements. [Playtest](docs/MILESTONE55.md). No new assets or simulation changes.

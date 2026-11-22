@@ -1,3 +1,7 @@
+## v0.56 candidate — First Harbour
+
+Owner authorized coastal Shipyard and first paid boat. Selected map workers build the120wood/90gold/40stone foundation; two resident shipwright jobs finish80wood/40gold boats in30full-staff seconds. Fleet has explicit sea-only east/west/stop/berth controls, one boat/order peryard,max20. Naval state is separate from infantry and uses strict schema13, preserving old schemas and Town charters. Existing art reused, scene ship foreground clipped at runtime. [Scope/tester/release status](MILESTONE56.md). New branch ui/v056-first-harbour; PR76/v055 release candidate is separate. No self-merge/deploy.
+
 ## v0.55 candidate — Between the Chapters
 
 Owner explicitly chose separate dark story screens between videos, keeping the full narration, rather than frozen-frame narration. Ended videos are hidden during prose; an opaque warm-dark surface and small existing painted camp emblem frame the text. Full story, captions, durations and other v054 features stay. Current instructions are in Advisor Tester. [Scope and preview](MILESTONE55.md). Same combined PR76; no merge/deployment.

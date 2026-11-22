@@ -65,3 +65,7 @@ Existing v047 runtime bridge.webp reused at the original river crossing, with ca
 ## v0.55 reuse — 2026-11-22
 
 Existing paid runtime camp.webp reused as a decorative story-screen emblem. No changes to the image bytes or embedded asset bundle, no new generation or spending.
+
+## v0.56 reuse — 2026-11-22
+
+Existing runtime shipyard.webp used as a constructed building and icon; ship.webp is a full scene, with its foreground boat clipped by runtime canvas paths for the map. Fleet uses the original as a thumbnail. No source/runtime image bytes edited, no new artwork generation, credits or purchases.
