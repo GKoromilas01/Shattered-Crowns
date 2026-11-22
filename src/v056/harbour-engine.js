@@ -17,7 +17,7 @@ function scNavalCommand(id,p){if(!scVillageActionReady()||!p||!Number.isFinite(p
  if(!enemy&&!scNavalWater(p))return false;
  const port=b.kind==='trade'?scNavalPortAt(p):null,ground=b.kind==='fishing'?scNavalGroundAt(p):null;if(port&&!scNavalPortReady(port.id))return false;
  const point=port?{x:port.x,y:port.y}:{x:p.x,y:p.y};
- if(ground&&b.mission?.type==='fish'){const m=b.mission;m.destination=point;m.repeat=true;if(!m.cargo){m.phase='outbound';m.progress=0;b.target={...point};}scNavalChanged();return true;}
+ if(ground&&b.mission?.type==='fish'){b.nextOrder=null;const m=b.mission;m.destination=point;m.repeat=true;if(!m.cargo){m.phase='outbound';m.progress=0;b.target={...point};}scNavalChanged();return true;}
  if(b.mission?.cargo){b.nextOrder={point};b.mission.repeat=false;b.mission.phase='home';b.target={...b.mission.origin};scNavalChanged();return true;}
  b.mission=null;b.nextOrder=null;
  if(enemy)return scNavalDispatch(id,'attack',{x:enemy.x,y:enemy.y});
@@ -49,7 +49,8 @@ function scNavalDispatch(id,type,point=null){
  if(!b||b.mission||!home||!['fish','trade','guard','attack'].includes(type)||({fish:'fishing',trade:'trade',guard:'warship',attack:'warship'})[type]!==b.kind)return false;
  const enemy=type==='attack'?scNavalHostiles().sort((a,c)=>Math.hypot(a.x-(point?.x??b.x),a.y-(point?.y??b.y))-Math.hypot(c.x-(point?.x??b.x),c.y-(point?.y??b.y)))[0]:null;
  if(type==='attack'&&!enemy||type==='trade'&&tradeGoods<10||type==='fish'&&!(employment.byId.get(home.id)?.efficiency>0))return false;
- const origin={x:home.x,y:840},choice=type==='fish'?scNavalGrounds.reduce((a,c)=>Math.hypot(a.x-home.x,a.y-840)<Math.hypot(c.x-home.x,c.y-840)?a:c):scNavalPorts.reduce((a,c)=>Math.hypot(a.x-home.x,a.y-840)<Math.hypot(c.x-home.x,c.y-840)?a:c),destination=point?{x:point.x,y:point.y}:type==='attack'?{x:Math.max(35,Math.min(W-35,enemy.x)),y:840}:type==='guard'?{...origin}:{x:choice.x,y:choice.y};
+ const ports=scNavalPorts.filter(p=>type!=='trade'||scNavalPortReady(p.id));if(type==='trade'&&!ports.length)return false;
+ const origin={x:home.x,y:840},choice=type==='fish'?scNavalGrounds.reduce((a,c)=>Math.hypot(a.x-home.x,a.y-840)<Math.hypot(c.x-home.x,c.y-840)?a:c):ports.reduce((a,c)=>Math.hypot(a.x-home.x,a.y-840)<Math.hypot(c.x-home.x,c.y-840)?a:c),destination=point?{x:point.x,y:point.y}:type==='attack'?{x:Math.max(35,Math.min(W-35,enemy.x)),y:840}:type==='guard'?{...origin}:{x:choice.x,y:choice.y};
  if(type==='attack')destination.y=840;
  if(!scNavalWater(destination)||type==='fish'&&!scNavalGroundAt(destination)||type==='trade'&&(!scNavalPortAt(destination)||!scNavalPortReady(scNavalPortAt(destination).id)))return false;
  b.mission={type,phase:type==='guard'?'patrol':'outbound',progress:0,cargo:type==='trade'?10:0,cargoType:type==='trade'?'goods':null,targetId:enemy?.id||null,origin,destination,repeat:type==='fish'};
