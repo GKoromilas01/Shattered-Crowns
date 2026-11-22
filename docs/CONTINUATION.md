@@ -1,3 +1,5 @@
+PR: [78](https://github.com/GKoromilas01/Shattered-Crowns/pull/78), draft against main. First v060 source commit: `2bd7c0b74b5541925c89ae384187981ae96bc06b`. Exact-head Actions [45052181237](https://github.com/GKoromilas01/Shattered-Crowns/actions/runs/45052181237) was in progress when checked. Read the PR for final validation and source links.
+
 ## Current candidate — v0.60 A Slower Frontier
 
 Continue branch `ui/v060-slower-frontier`. Read [MILESTONE60.md](MILESTONE60.md) and [validation/v060-slower-frontier.md](validation/v060-slower-frontier.md). This includes the completed v059 naval/terrain work and the approved slower pace plus first land-war loop. Historical v059 blockers are resolved. Do not merge main or describe pending CI as verified.
