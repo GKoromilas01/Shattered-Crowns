@@ -1,3 +1,7 @@
+## Start here for Claude or another assistant
+
+[Current continuation checkpoint](CONTINUATION.md) records the latest playable commit, PR, verification, owner preferences and next steps. Root [CLAUDE.md](../CLAUDE.md) points here for discovery.
+
 ## v0.57 candidate — Boat Builders
 
 Build fishing boats at the Fishery and warships/trade ships at the Shipyard, with Fleet retained. Shipyard is last in Construction with shared styling; Fleet has ×/Escape close. Typed saved vessels migrate schema13 to14. Combat and cargo routes remain future work. [Scope and tester](MILESTONE57.md). No merge/deployment.
