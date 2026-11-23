@@ -9805,7 +9805,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  const modalTracks=Object.entries(modalDefs).map(([name,d])=>({name,...modalTheme(d)}));
  window.scModalThemes={names:Object.keys(modalDefs),notes(name,bars){const t=modalTracks.find(x=>x.name===name),out=[];for(let i=0;i<bars;i++)t.schedule(i,i*t.beat*4,(f,at,d,k,amp,fl)=>out.push({f,at,d,amp,fl}));return out}};
  // Rotating playlist: each theme plays for playlist.seconds (default 5 minutes), fades out, then the next fades in. Add new themes to playlistTracks.
- const playlist={seconds:60,fade:6,gap:0},archivedSynthTracks=[{name:'city',schedule:scheduleCityBar,beat:cityBeat},{name:'anthem',schedule:scheduleAnthemBar,beat:anthemBeat},...modalTracks],playlistTracks=[{name:'leo_dawn',file:'dawn'},{name:'leo_march',file:'march'},{name:'leo_hearth',file:'hearth'},{name:'leo_road',file:'road'},{name:'leo_host',file:'host'},{name:'leo_byzantine',file:'byzantine'},{name:'leo_celtic',file:'celtic'},{name:'leo_silk',file:'silkroad'}];let playlistIndex=0,playlistStart=null,playlistFading=false;
+ const playlist={seconds:60,fade:6,gap:0},archivedSynthTracks=[{name:'city',schedule:scheduleCityBar,beat:cityBeat},{name:'anthem',schedule:scheduleAnthemBar,beat:anthemBeat},...modalTracks],playlistTracks=[{name:'leo_host',file:'host'},{name:'leo_byzantine',file:'byzantine'},{name:'leo_celtic',file:'celtic'},{name:'leo_silk',file:'silkroad'},{name:'leo_dawn',file:'dawn'},{name:'leo_march',file:'march'},{name:'leo_hearth',file:'hearth'},{name:'leo_road',file:'road'}];let playlistIndex=0,playlistStart=null,playlistFading=false;
  const stringWaves=new WeakMap();const hornWaves=new WeakMap();
  function createAudioVoice(ctx,destination,frequency,at,duration,kind,amplitude,flavor='pad'){
   const osc=ctx.createOscillator(),gain=ctx.createGain(),voice={osc,gain,kind};
@@ -10589,7 +10589,7 @@ window.sc50OpeningStory=[
 /* One continuous opening for every New Game. Narrative time is presentation only. */
 (()=>{'use strict';let active=null,epoch=0,keyHandler=null;function cancel(){epoch++;if(active){const close=active;active=null;close()}}
  function play(onDone=()=>{}){cancel();if(navigator.webdriver&&!/[?&]intro=1/.test(location.search)){onDone();return}const cityId=window.scCitySave.status().cityId,token=epoch,steps=window.sc50OpeningStory||[],reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  try{window.scMusic?.select?.('leo_march')}catch(_){}
+  try{window.scMusic?.select?.('leo_host')}catch(_){}
   const pause=document.getElementById('sc154Pause');let ownsPause=false;if(pause&&!window.scCitySave.status().paused){pause.click();ownsPause=true}
   const o=document.createElement('div');o.id='sc47Intro';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','Opening story');o.style.cssText='position:fixed;inset:0;z-index:2147483000;background:#080d0c;color:#fff0ce;overflow:auto;transition:opacity .65s';
   const cap=document.createElement('p');cap.id='sc50StoryCaption';cap.style.cssText='position:absolute;left:0;right:0;bottom:20%;margin:0;padding:12px 8%;text-align:center;color:#fff0ce;font:italic clamp(16px,2vw,22px)/1.5 Georgia,serif;text-shadow:0 2px 12px #000,0 0 3px #000;background:transparent';

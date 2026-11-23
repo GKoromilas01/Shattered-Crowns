@@ -1,7 +1,7 @@
 /* One continuous opening for every New Game. Narrative time is presentation only. */
 (()=>{'use strict';let active=null,epoch=0,keyHandler=null;function cancel(){epoch++;if(active){const close=active;active=null;close()}}
  function play(onDone=()=>{}){cancel();if(navigator.webdriver&&!/[?&]intro=1/.test(location.search)){onDone();return}const cityId=window.scCitySave.status().cityId,token=epoch,steps=window.sc50OpeningStory||[],reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  try{window.scMusic?.select?.('leo_march')}catch(_){}
+  try{window.scMusic?.select?.('leo_host')}catch(_){}
   const pause=document.getElementById('sc154Pause');let ownsPause=false;if(pause&&!window.scCitySave.status().paused){pause.click();ownsPause=true}
   const o=document.createElement('div');o.id='sc47Intro';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','Opening story');o.style.cssText='position:fixed;inset:0;z-index:2147483000;background:#080d0c;color:#fff0ce;overflow:auto;transition:opacity .65s';
   const cap=document.createElement('p');cap.id='sc50StoryCaption';cap.style.cssText='position:absolute;left:0;right:0;bottom:20%;margin:0;padding:12px 8%;text-align:center;color:#fff0ce;font:italic clamp(16px,2vw,22px)/1.5 Georgia,serif;text-shadow:0 2px 12px #000,0 0 3px #000;background:transparent';
