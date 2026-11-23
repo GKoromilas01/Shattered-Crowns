@@ -61,7 +61,7 @@ function scNavalMissionTick(b,dt){const m=b.mission;if(!m)return;
   const enemies=scNavalHostiles(),target=m.type==='attack'?enemies.find(x=>x.id===m.targetId):enemies.filter(x=>Math.hypot(x.x-b.x,x.y-b.y)<=200).sort((a,c)=>Math.hypot(a.x-b.x,a.y-b.y)-Math.hypot(c.x-b.x,c.y-b.y))[0];
   if(m.type==='attack'&&!target&&m.phase!=='home'){m.phase='home';b.target={...m.origin};}
   else if(m.phase!=='home'){
-   if(target){b.target={x:Math.max(35,Math.min(W-35,target.x)),y:840};if(Math.hypot(target.x-b.x,target.y-b.y)<=200){const hit=Math.min(target.hp,16*dt);target.hp-=hit;stats.damage[0]+=hit;if(target.hp<=0)stats.kills[0]++;}}
+   if(target){b.target={x:Math.max(35,Math.min(W-35,target.x)),y:840};if(Math.hypot(target.x-b.x,target.y-b.y)<=200){const hit=Math.min(target.hp,16*dt*scFastRate);target.hp-=hit;stats.damage[0]+=hit;if(target.hp<=0)stats.kills[0]++;}}
    else if(m.type==='guard'){const working=scNavalState.boats.filter(x=>x.kind!=='warship'&&x.mission&&x.mission.phase!=='unloading').sort((a,c)=>Math.hypot(a.x-b.x,a.y-b.y)-Math.hypot(c.x-b.x,c.y-b.y))[0];b.target=working?{x:working.x,y:Math.max(820,Math.min(H-25,working.y))}:null;}
    return;
   }
@@ -84,7 +84,7 @@ function scNavalTick(dt){
  }
  for(const enemy of scNavalHostiles().filter(x=>units.includes(x))){const near=q.boats.filter(b=>b.hp>0&&Math.hypot(b.x-enemy.x,b.y-enemy.y)<=180).sort((a,c)=>Math.hypot(a.x-enemy.x,a.y-enemy.y)-Math.hypot(c.x-enemy.x,c.y-enemy.y))[0];if(near)near.hp=Math.max(0,near.hp-4*dt);}
  const sunk=q.boats.filter(b=>b.hp<=0);if(sunk.length){q.boats=q.boats.filter(b=>b.hp>0);msg(sunk.length+' vessel(s) lost to coastal enemies, including any cargo.');scNavalChanged();}
- for(const b of q.boats){scNavalMissionTick(b,dt);if(!b.target)continue;const d=Math.hypot(b.target.x-b.x,b.target.y-b.y),step=45*dt;if(d<=step){b.x=b.target.x;b.y=b.target.y;b.target=null;}else{b.x+=(b.target.x-b.x)*step/d;b.y+=(b.target.y-b.y)*step/d;}}
+ for(const b of q.boats){scNavalMissionTick(b,dt);if(!b.target)continue;const d=Math.hypot(b.target.x-b.x,b.target.y-b.y),step=45*dt*scFastRate;if(d<=step){b.x=b.target.x;b.y=b.target.y;b.target=null;}else{b.x+=(b.target.x-b.x)*step/d;b.y+=(b.target.y-b.y)*step/d;}}
 }
 function scNavalPrepareBase(q,data,kinds=null,durations=null){
  if(data.schema<13)return null;const fail=()=>{throw Error('Invalid harbour checkpoint. Your city has not changed.');};

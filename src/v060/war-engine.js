@@ -1,6 +1,6 @@
 // Frontier escalation uses the same saved simulation clock and land combat as the town.
 let scWarState=null;
-const scPaceStep=dt=>dt/3;
+const scPaceStep=dt=>dt/3;const scFastRate=3;
 const scWarHome=()=>buildings.find(b=>b.team===0&&b.type==='keep'&&alive(b));
 const scWarMature=()=>!!scWarHome()&&buildings.filter(b=>b.team===0&&b.type==='house'&&alive(b)).length>=2&&buildings.some(b=>b.team===0&&['farm','fishery'].includes(b.type)&&alive(b));
 function scWarChanged(title,message){if(message){msg(message);window.sc50UI?.notify(title,message)}updateUI();window.dispatchEvent(new Event('sc-war-changed'));}
