@@ -38,3 +38,8 @@ Humble village clergy: worn ochre/brown robes, plain rope ties and a practical, 
 Warm stone streets, simple timber market stalls, worn ochre/terracotta cloth, practical baskets/crates/sacks and restrained hanging goods. Markets begin modestly and grow in activity with the settlement; game-scale access, selection and worker readability take priority over screen clutter. A village priest among a few people suggests the chapel's community role. See [market brief](MARKET_VISUAL_BRIEF.md) and [chapel brief](CHAPEL_VISUAL_BRIEF.md). These record original-art direction, not permission to copy film scenes or buy/generate assets.
 
 Later port stage reference: sheltered rocky inlet, short stone quay/beacon, small boats close to land and larger sailing vessels offshore. Recorded in SHIPYARD_VISUAL_BRIEF.md; not added to the v0.51 implementation scope.
+
+## 2026-11-23 — Owner reference ideas (not agreed, not scheduled)
+- **Polar regions (north and south poles):** snow slopes, frozen rivers, dark rock arches, cold blue dusk light, travellers in fur cloaks. Candidate for a polar terrain/biome graphic in a later version (one graphic per version).
+- **Advisor meetings:** dim council hall, one beam of light across a long table with candles and goblets, advisors seated around a ruler; close-ups of a grim councillor for the dialogue portrait. Candidate for the Advisor scenes (Shakespearean lines) and for a single scene graphic.
+- The owner's examples came from a TV series. Use only as mood and composition reference; all game art must be original and commercially usable. No frames, characters or costumes are to be copied.
