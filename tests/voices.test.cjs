@@ -6,9 +6,9 @@ async function ready(t){const {page:p}=await browserPage(t,browser,{viewport:{wi
 const pick=(p,units)=>p.evaluate(u=>{window.dispatchEvent(new CustomEvent('sc-selection-changed',{detail:{units:u.map(type=>({type}))}}));},units);
 test('Selecting a worker or soldier speaks an acknowledgement at a character pitch',async t=>{
  const p=await ready(t);await p.mouse.click(600,400);await pick(p,['worker']);
- const w=await p.evaluate(()=>window.__said);assert.equal(w.length,1);assert.ok(['Aye, my good lord.','What task awaits my hands?','The day is young; command me.','Thy servant is at hand.'].includes(w[0].text));
+ const w=await p.evaluate(()=>window.__said);assert.equal(w.length,1);assert.ok(['Aye, my good lord.','What task awaits my hands?','The day is young; command me.','Thy servant is at hand.','Good morrow! What shall I mend?','By thy leave, I toil gladly.','Hammer and hoe are ready, my lord.','A willing hand and a ready heart.'].includes(w[0].text));
  await p.waitForTimeout(1900);await p.mouse.click(600,400);await pick(p,['soldier']);
- const all=await p.evaluate(()=>window.__said);assert.equal(all.length,2);assert.ok(all[1].pitch<all[0].pitch);assert.ok(['Thy sword awaits, my liege.','Lead on; we follow.','For the Crown and for the hearth!','Command, and it is done.'].includes(all[1].text));
+ const all=await p.evaluate(()=>window.__said);assert.equal(all.length,2);assert.ok(all[1].pitch<all[0].pitch);assert.ok(['Thy sword awaits, my liege.','Lead on; we follow.','For the Crown and for the hearth!','Command, and it is done.','Steel and honour, my liege.','We stand where thou dost bid.','No foe shall pass while we draw breath.','The banner leads; we follow it.'].includes(all[1].text));
 });
 test('Voice lines are throttled and can be switched off and stay off after reload',async t=>{
  const p=await ready(t);await p.mouse.click(600,400);await pick(p,['worker']);await pick(p,['worker']);assert.equal((await p.evaluate(()=>window.__said)).length,1);
@@ -29,7 +29,7 @@ test('A slow box selection of a whole group still gets an acknowledgement',async
 test('Selecting a ship answers in verse with its own greeting',async t=>{
  const p=await ready(t);await p.waitForTimeout(1900);await p.mouse.click(600,400);
  await p.evaluate(()=>window.dispatchEvent(new CustomEvent('sc-ship-selected',{detail:{id:1,kind:'fishing'}})));
- const said=await p.evaluate(()=>window.__said);assert.equal(said.length,1);assert.ok(['Ahoy, my captain! The nets are mended.','The shoals are rich; give the word.','Cast off, and let us fill the hold.','The tide is kind; where shall we sail?'].includes(said[0].text));
+ const said=await p.evaluate(()=>window.__said);assert.equal(said.length,1);assert.ok(['Ahoy, my captain! The nets are mended.','The shoals are rich; give the word.','Cast off, and let us fill the hold.','The tide is kind; where shall we sail?','The gulls are circling; the fish are near.','A full net makes a merry table.','We ride the swell with a fisher’s patience.','The sea is generous to the patient.'].includes(said[0].text));
  await p.waitForTimeout(1900);await p.mouse.click(600,400);await p.evaluate(()=>window.dispatchEvent(new CustomEvent('sc-ship-selected',{detail:{id:2,kind:'warship'}})));
- const all=await p.evaluate(()=>window.__said);assert.equal(all.length,2);assert.ok(/captain|foe|helm|fleet/i.test(all[1].text));assert.ok(all[1].pitch<all[0].pitch);
+ const all=await p.evaluate(()=>window.__said);assert.equal(all.length,2);assert.ok(/captain|foe|helm|fleet|decks|raiders|waters|horn/i.test(all[1].text));assert.ok(all[1].pitch<all[0].pitch);
 });
