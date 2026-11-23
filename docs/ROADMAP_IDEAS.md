@@ -55,3 +55,8 @@ Owner agreed to these guiding principles (not a version plan; features still nee
 7. Living world: day/night, seasons, weather affecting play, reactive music (one song + one graphic per version).
 8. Fair business model: paid game or cosmetics only; never sell power.
 Open decisions for the owner: core fantasy wording, when to start multiplayer/determinism work, business model.
+
+### Owner decisions (2026-11-23)
+- Core fantasy: "You rule a kingdom you can see growing, and feel threatened." (agreed)
+- Multiplayer/deterministic simulation: not now; finish single-player first. New game-rule code must avoid unseeded randomness and real-time clocks where practical.
+- Business model: free at first to build a player base, then earn money to grow the game. Preferred route when the time comes: optional cosmetics or a paid expansion/premium edition; never sell power. Decide the exact model together before launch.
