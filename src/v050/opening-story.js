@@ -1,41 +1,75 @@
-// Original opening narration; shared by every supported village start.
+// Original opening narration (Shakespeare-style verse); shared by every supported village start.
+// Each clip is slowed to 12-20 s; the caption opens it and the verse lines follow, describing what is on screen.
 window.sc50OpeningStory=[
   {
     "video": "village",
-    "caption": "We thought tomorrow would be much like today.",
+    "caption": "Morning in our village.",
     "title": "Before the fire",
-    "text": "Home was not a name on a king’s map. It was the mill turning before dawn, a neighbour keeping a place at the table, children learning which orchard paths led back to the river. We had lean winters and ordinary quarrels. We had enough. When travellers spoke of war beyond the hills, we listened—and went back to our fields."
+    "lines": [
+      "Behold the morn, that gilds our thatchèd eaves,",
+      "Where Marian bears the water from the well,",
+      "And patient oxen draw the harvest home.",
+      "We were not rich, yet had we all enough."
+    ]
   },
   {
     "video": "attack",
-    "caption": "Then the fires beyond the hills became our own.",
+    "caption": "Then the night turned red.",
     "title": "The night the roads changed",
-    "text": "The riders came before the warning bells. We called them barbarians; we never learned whose war had driven them to our gates. Doors that had stood open for a lifetime were broken in a night. We could not save every roof, every keepsake, every person we loved. Those who reached the road carried what they could, and helped carry those who could not walk."
+    "lines": [
+      "But hark! The night puts on a crimson cloak;",
+      "Our roofs are torches to the weeping sky.",
+      "Iron-clad strangers stride where children played,",
+      "And neighbours flee with all that hands can hold."
+    ]
   },
   {
     "video": "march",
-    "caption": "We left our homes. We did not leave one another."
+    "caption": "We left our homes. We did not leave one another.",
+    "lines": [
+      "A weary line of mothers, beasts and banners,",
+      "Winding through the mist toward the unknown."
+    ]
   },
   {
     "video": "hill",
     "caption": "Beyond the last ridge, there was room to begin again.",
     "title": "A place without a name",
-    "text": "On the road we were strangers, asking shelter where yesterday we might have offered it. We shared blankets, counted the remaining grain and kept moving. Then the hills opened onto a valley. There was water, timber and ground that could bear a harvest. No walls promised safety. But for the first time, the youngest among us asked where we would build—not how much farther we must go."
+    "lines": [
+      "Beyond the ridge the sun climbs up the valley.",
+      "Here let our banner stand upon the stone:",
+      "The families gather round; the oxen rest.",
+      "No walls, no throne, but water, wood and soil."
+    ]
   },
   {
     "video": "house",
-    "caption": "First, a roof. In time, perhaps, a town."
+    "caption": "First, a roof. In time, perhaps, a town.",
+    "lines": [
+      "First rise the beams; then thatch; then, God willing, a town.",
+      "Yon child runs laughing through the straw."
+    ]
   },
   {
     "video": "market",
     "caption": "One day these roads might bring neighbours instead of armies.",
     "title": "The town we could make",
-    "text": "The homes and market are a hope, not something we have already built. Imagine doors opening to neighbours, bread cooling beside a hearth, a road worth travelling because someone welcomes you at its end. Such a place will need more than stone. It will need patient work, fair bargains and the choice to care for people when supplies run short."
+    "lines": [
+      "Imagine streets where bargains sweetly sound,",
+      "Where scarlet banners flutter over bread,",
+      "And grain-carts roll in through an open gate.",
+      "Such a town needs patient hands and fair dealing."
+    ]
   },
   {
     "video": "raiders",
-    "caption": "Their shadow is a memory, not our future.",
+    "caption": "But the world has not forgotten us.",
     "title": "The first hearth",
-    "text": "The riders are behind us now. We begin here in peace, with a small camp and the tools to make it a home. There is no throne waiting for you, and no finished town. Give these people shelter. Keep bread on their tables. What was lost cannot be restored in a day. What comes next can still be ours."
+    "lines": [
+      "Yet look: far torches on the darkening plain.",
+      "The world forgets us not, nor shall it long.",
+      "No throne awaits you; only these your people.",
+      "Make ready, friends; for peace is but a guest."
+    ]
   }
 ];

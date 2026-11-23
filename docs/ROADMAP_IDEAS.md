@@ -1,5 +1,7 @@
 # Roadmap ideas (owner brainstorm, 2026-11-17) - for later versions
 
+> Reviewed and ordered in [ROADMAP_CONTENT_2026-11-23.md](ROADMAP_CONTENT_2026-11-23.md).
+
 Status: ideas only, nothing here is built yet. Discuss before implementing.
 
 ## Daily art refresh
