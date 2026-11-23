@@ -1,5 +1,7 @@
 # Roadmap ideas (owner brainstorm, 2026-11-17) - for later versions
 
+> Reviewed and ordered in [ROADMAP_CONTENT_2026-11-23.md](ROADMAP_CONTENT_2026-11-23.md).
+
 Status: ideas only, nothing here is built yet. Discuss before implementing.
 
 ## Daily art refresh
@@ -36,3 +38,25 @@ Humble village clergy: worn ochre/brown robes, plain rope ties and a practical, 
 Warm stone streets, simple timber market stalls, worn ochre/terracotta cloth, practical baskets/crates/sacks and restrained hanging goods. Markets begin modestly and grow in activity with the settlement; game-scale access, selection and worker readability take priority over screen clutter. A village priest among a few people suggests the chapel's community role. See [market brief](MARKET_VISUAL_BRIEF.md) and [chapel brief](CHAPEL_VISUAL_BRIEF.md). These record original-art direction, not permission to copy film scenes or buy/generate assets.
 
 Later port stage reference: sheltered rocky inlet, short stone quay/beacon, small boats close to land and larger sailing vessels offshore. Recorded in SHIPYARD_VISUAL_BRIEF.md; not added to the v0.51 implementation scope.
+
+## 2026-11-23 — Owner reference ideas (not agreed, not scheduled)
+- **Polar regions (north and south poles):** snow slopes, frozen rivers, dark rock arches, cold blue dusk light, travellers in fur cloaks. Candidate for a polar terrain/biome graphic in a later version (one graphic per version).
+- **Advisor meetings:** dim council hall, one beam of light across a long table with candles and goblets, advisors seated around a ruler; close-ups of a grim councillor for the dialogue portrait. Candidate for the Advisor scenes (Shakespearean lines) and for a single scene graphic.
+- The owner's examples came from a TV series. Use only as mood and composition reference; all game art must be original and commercially usable. No frames, characters or costumes are to be copied.
+
+## 2026-11-23 — Vision agreed with the owner: "best RTS of all time" principles
+Owner agreed to these guiding principles (not a version plan; features still need his agreement per version):
+1. One-sentence core fantasy; every feature serves it or is cut.
+2. A very good first 10 minutes (build, see people work, survive a small threat).
+3. Few rules, real depth: about 3 resources, 6-8 unit roles, clear counters.
+4. Every match tells a story: raids, betrayals, last stands, comebacks; advisor voices (Shakespearean) and a few memorable heroes.
+5. Deterministic simulation as the foundation for fair online play, replays, spectating and anti-cheat (decide early; hard to retrofit).
+6. Long-term learning: ranked ladders, 1v1/2v2, map variety, replay viewer, regular data-driven balance patches.
+7. Living world: day/night, seasons, weather affecting play, reactive music (one song + one graphic per version).
+8. Fair business model: paid game or cosmetics only; never sell power.
+Open decisions for the owner: core fantasy wording, when to start multiplayer/determinism work, business model.
+
+### Owner decisions (2026-11-23)
+- Core fantasy: "You rule a kingdom you can see growing, and feel threatened." (agreed)
+- Multiplayer/deterministic simulation: not now; finish single-player first. New game-rule code must avoid unseeded randomness and real-time clocks where practical.
+- Business model: free at first to build a player base, then earn money to grow the game. Preferred route when the time comes: optional cosmetics or a paid expansion/premium edition; never sell power. Decide the exact model together before launch.

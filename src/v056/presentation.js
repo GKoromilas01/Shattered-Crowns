@@ -5,7 +5,7 @@
  const source=document.querySelector('#quickDock [data-action=shipyard]')||make('button',document.getElementById('quickDock'),'Shipyard · 120 wood · 90 gold · 40 stone');source.type='button';source.dataset.action='shipyard';source.onclick=()=>api.arm();
  const panel=make('section',document.body,null,'sc59BoatInspector');panel.hidden=true;panel.setAttribute('aria-label','Selected ship');
  const allowed=e=>e===epoch&&window.sc50UI.activationAllowed()&&window.scCaravan.activationAllowed();
- function select(id){if(!api.boats().some(b=>b.id===id))return false;if(!api.select(id))return false;selectedId=id;panelId=null;refreshShip();return true;}
+ function select(id){if(!api.boats().some(b=>b.id===id))return false;if(!api.select(id))return false;selectedId=id;panelId=null;refreshShip();try{window.dispatchEvent(new CustomEvent('sc-ship-selected',{detail:{id,kind:api.boats().find(b=>b.id===id)?.kind}}))}catch(_){}return true;}
  function operation(id,type){const ok=type==='home'?api.berth(id):type==='stop'?api.stop(id):api.dispatch(id,type);api.notify(ok?'Ship order accepted.':'Order unavailable. Check staff, cargo, trading agreement and current voyage.');refreshShip();window.scBuildingMenus.render(true);return ok;}
  function controls(b){return (b.kind==='fishing'?[['fish','Send fishing']]:b.kind==='trade'?[['trade','Send to trade']]:[['guard','Defend working boats'],['attack','Attack coastal raider']]).concat([['home','Return to berth'],['stop','Stop sailing']]);}
  function status(b){const m=b.mission;return 'Hull '+Math.ceil(b.hp)+'/'+api.kinds[b.kind].hp+' · '+(m?m.type+' · '+m.phase+(m.cargo?' · '+m.cargo+' '+m.cargoType:''):(b.target?'Sailing':'Ready for orders'))+(b.nextOrder?' · next destination queued':'');}

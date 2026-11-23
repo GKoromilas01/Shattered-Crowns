@@ -4,9 +4,9 @@ const dir=path.join(root,'assets/v047/runtime'),art={};
 for(const f of fs.readdirSync(dir).sort())if(f.endsWith('.webp'))art[f.slice(0,-5)]='data:image/webp;base64,'+fs.readFileSync(path.join(dir,f)).toString('base64');
 // v0.52: owner requested original one-minute recordings; extended copies remain archived.
 const mdir=path.join(root,'assets/v048/music-originals'),mus={};
-for(const f of fs.readdirSync(mdir).sort())if(f.endsWith('.mp3'))mus[f.slice(0,-4)]='data:audio/mpeg;base64,'+fs.readFileSync(path.join(mdir,f)).toString('base64');
+for(const dir of [mdir,path.join(root,'assets/v062/music')])if(fs.existsSync(dir))for(const f of fs.readdirSync(dir).sort())if(f.endsWith('.mp3'))mus[f.slice(0,-4)]='data:audio/mpeg;base64,'+fs.readFileSync(path.join(dir,f)).toString('base64');
 const vdir=path.join(root,'assets/v047/video'),vid={};
-if(fs.existsSync(vdir))for(const f of fs.readdirSync(vdir).sort())if(f.endsWith('.webm'))vid[f.slice(0,-5)]='data:video/webm;base64,'+fs.readFileSync(path.join(vdir,f)).toString('base64');
+for(const dir of [vdir,path.join(root,'assets/v062/video')])if(fs.existsSync(dir))for(const f of fs.readdirSync(dir).sort())if(f.endsWith('.webm'))vid[f.slice(0,-5)]='data:video/webm;base64,'+fs.readFileSync(path.join(dir,f)).toString('base64');
 const tag='<script id="sc47Art">window.sc47Art='+JSON.stringify(art)+';</script>'+
  '<script id="sc47Media" type="application/json">'+JSON.stringify({music:mus,video:vid})+'</script>'+
  '<script id="sc47MediaLoader">(function(){let c;const el=document.getElementById("sc47Media"),txt=el?el.textContent:"{}";if(el)el.remove();const art=document.getElementById("sc47Art");if(art)art.remove();const d=()=>c||(c=JSON.parse(txt));Object.defineProperty(window,"sc47Music",{get:()=>d().music,configurable:true});Object.defineProperty(window,"sc47Video",{get:()=>d().video,configurable:true})})();</script>';
