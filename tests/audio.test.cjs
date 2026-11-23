@@ -53,7 +53,7 @@ test('Explicit enable-and-test recovers saved silent settings without altering t
 });
 
 test('Default city music reaches a useful listening level rather than only a nonzero signal',async t=>{
- const p=await game(t);await p.locator('#sc1310Skip').click();await p.waitForFunction(()=>window.scAudio.status().contextState==='running');const rms=await p.evaluate(async()=>{let power=0;for(let n=0;n<25;n++){const level=window.scAudio.status().level;power+=level*level;await new Promise(r=>setTimeout(r,80));}return Math.sqrt(power/25)});assert.ok(rms>.008,'Default-volume music RMS must exceed .008; measured '+rms);
+ const p=await game(t);await p.locator('#sc1310Skip').click();await p.waitForFunction(()=>window.scAudio.status().contextState==='running');await p.waitForFunction(()=>window.scPlaylist.status().age>7,null,{timeout:20000});const rms=await p.evaluate(async()=>{let power=0;for(let n=0;n<25;n++){const level=window.scAudio.status().level;power+=level*level;await new Promise(r=>setTimeout(r,80));}return Math.sqrt(power/25)});assert.ok(rms>.008,'Default-volume music RMS must exceed .008; measured '+rms);
 });
 test('Default worker cue reaches a useful level through the real audio graph',async t=>{const p=await game(t);const peak=await p.evaluate(()=>window.__audioWorkerProbe());assert.ok(peak>.035,'Worker cue must exceed .035 RMS across a complete native render; measured '+peak);});
 
