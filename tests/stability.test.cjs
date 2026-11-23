@@ -33,7 +33,7 @@ test('atlas renders kingdoms and settlements; supply has no JavaScript errors be
  const {page:p,errors}=await game(t);await p.locator('#sc146MenuButton').click();await p.locator('#sc146Menu').getByRole('button',{name:'Maps',exact:false}).click();
  await p.locator('#history1200Region').selectOption('tharwen');assert.match(await p.locator('#history1200Details').innerText(),/Tharwen/);assert.match(await p.locator('#scAtlasArms').innerText(),/Tharwen/);
  await p.locator('#history1200Region').selectOption('realm017');assert.ok((await p.locator('#history1200Details').innerText()).length>50);
- await p.waitForTimeout(6000);assert.match(await p.locator('#sc1411Logistics').innerText(),/Supply 0\/0/);assert.deepEqual(errors,[]);
+ await p.waitForFunction(()=>/Supply 0\/0/.test(document.querySelector('#sc1411Logistics')?.innerText||''),null,{timeout:45000});assert.match(await p.locator('#sc1411Logistics').innerText(),/Supply 0\/0/);assert.deepEqual(errors,[]);
 });
 test('House placement spends resources, rejects occupied ground, and undo refunds',async t=>{
  const {page:p}=await game(t);await p.locator('#sc154Pause').click();const before=await p.locator('#resWood').innerText();

@@ -12,7 +12,7 @@ test('Selecting a worker or soldier speaks an acknowledgement at a character pit
 });
 test('Voice lines are throttled and can be switched off and stay off after reload',async t=>{
  const p=await ready(t);await p.mouse.click(600,400);await pick(p,['worker']);await pick(p,['worker']);assert.equal((await p.evaluate(()=>window.__said)).length,1);
- await p.locator('#sc146MenuButton').click();await p.locator('#scAudioVoices').uncheck();assert.equal(await p.evaluate(()=>localStorage.getItem('shattered-crowns-voice-v1')),'off');
+ await p.locator('#sc146MenuButton').click();await p.locator('#scAudioVoices').uncheck();await p.locator('#sc146MenuButton').click();assert.equal(await p.locator('#scAudioSection').isVisible(),false);assert.equal(await p.evaluate(()=>localStorage.getItem('shattered-crowns-voice-v1')),'off');
  await p.waitForTimeout(1900);await p.mouse.click(600,400);await pick(p,['soldier']);assert.equal((await p.evaluate(()=>window.__said)).length,1);
  await p.reload();await p.waitForFunction(()=>!!window.scVoice);assert.equal(await p.evaluate(()=>window.scVoice.status().on),false);
 });
