@@ -67,7 +67,7 @@ function scFrontierPrepare(q,data){
  const exact=(o,keys)=>{if(!o||typeof o!=='object'||Array.isArray(o)||Object.keys(o).length!==keys.length||Object.keys(o).some(k=>!keys.includes(k)))fail();};
  const clock=data.state.clock.elapsed,num=(n,min=0,max=clock,int=false)=>{if(!Number.isFinite(n)||n<min-1e-5||n>max+1e-5||int&&!Number.isSafeInteger(n))fail();};
  const maybe=(n,min=0,max=clock)=>{if(n!==null)num(n,min,max);};
- exact(q,['version','contacts','survey','cargo','nextId','history']);if(q.version!==1||data.schema!==11||data.campaign?.mode!=='city')fail();exact(q.contacts,scFrontierIds);if(!Array.isArray(q.history)||q.history.length>512)fail();num(q.nextId,1,514,true);
+ exact(q,['version','contacts','survey','cargo','nextId','history']);if(q.version!==1||data.schema<11||data.campaign?.mode!=='city')fail();exact(q.contacts,scFrontierIds);if(!Array.isArray(q.history)||q.history.length>512)fail();num(q.nextId,1,514,true);
  let activated=false;const journeys=[];
  for(const id of scFrontierIds){const c=q.contacts[id];exact(c,['surveySentAt','surveyPaid','discoveredAt','refusedAt','talkClosed','intro','introAt','pactAt']);if(typeof c.talkClosed!=='boolean')fail();
   if(!scFrontierEnabled(id)){if(Object.entries(scFrontierContact()).some(([k,v])=>c[k]!==v))fail();continue;}

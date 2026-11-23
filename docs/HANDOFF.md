@@ -1,3 +1,73 @@
+## Current candidate — v0.60 A Slower Frontier
+
+Continue branch `ui/v060-slower-frontier`. Read [MILESTONE60.md](MILESTONE60.md) and [validation/v060-slower-frontier.md](validation/v060-slower-frontier.md). This includes the completed v059 naval/terrain work and the approved slower pace plus first land-war loop. Historical v059 blockers are resolved. Do not merge main or describe pending CI as verified.
+
+## Resume current v0.59 work
+
+See [CONTINUE_V059.md](CONTINUE_V059.md), remote branch `ui/v059-open-seas`. This is a durable WIP checkpoint with known blockers, not a completed release.
+
+## v0.58 candidate — Working Fleet
+
+Fishing voyages deliver catch through the Food ledger; coastal trading reserves goods and pays on return. Warships escort and attack real coastal raiders; hull damage and sinking make protection meaningful. Opening videos/captions fade smoothly; separate story screens remain. Schema15 preserves missions/hulls and migrates13/14. [Controls, balance and limits](MILESTONE58.md). No merge/deployment.
+
+## Start here for Claude or another assistant
+
+[Current continuation checkpoint](CONTINUATION.md) records the latest playable commit, PR, verification, owner preferences and next steps. Root [CLAUDE.md](../CLAUDE.md) points here for discovery.
+
+## v0.57 candidate — Boat Builders
+
+Build fishing boats at the Fishery and warships/trade ships at the Shipyard, with Fleet retained. Shipyard is last in Construction with shared styling; Fleet has ×/Escape close. Typed saved vessels migrate schema13 to14. Combat and cargo routes remain future work. [Scope and tester](MILESTONE57.md). No merge/deployment.
+
+## v0.56 candidate — First Harbour
+
+Owner authorized coastal Shipyard and first paid boat. Selected map workers build the120wood/90gold/40stone foundation; two resident shipwright jobs finish80wood/40gold boats in30full-staff seconds. Fleet has explicit sea-only east/west/stop/berth controls, one boat/order peryard,max20. Naval state is separate from infantry and uses strict schema13, preserving old schemas and Town charters. Existing art reused, scene ship foreground clipped at runtime. [Scope/tester/release status](MILESTONE56.md). New branch ui/v056-first-harbour; PR76/v055 release candidate is separate. No self-merge/deploy.
+
+## v0.55 candidate — Between the Chapters
+
+Owner explicitly chose separate dark story screens between videos, keeping the full narration, rather than frozen-frame narration. Ended videos are hidden during prose; an opaque warm-dark surface and small existing painted camp emblem frame the text. Full story, captions, durations and other v054 features stay. Current instructions are in Advisor Tester. [Scope and preview](MILESTONE55.md). Same combined PR76; no merge/deployment.
+
+## v0.54 candidate — A Quieter Town
+
+Owner confirmed school bell uses game time. Worksite rings/bars/percentages now appear only on hover, selected-builder target or selected Worksites entry. Existing bridge art is reused at the unchanged crossing. Daily town ambience uses saved elapsed time (06:00 start, 24 active minutes/day): School at 08:00, Chapel every 15 active minutes. Sound controls and separate remembered bells toggle apply; no hidden/pause/catch-up bells. Existing seasonal council calendar is independent. [Scope, tester and naval audit](MILESTONE54.md). Ship/shipyard art exists but their gameplay/save registries are not yet implemented; next naval slice is recorded there. Includes v053; no merge/deploy.
+
+## v0.53 candidate — A Seamless Beginning
+
+Owner requested no visible opening buttons, subtitles without the dark strip, and narration over the frozen last video frame. Implemented in src/v050/intro.js with gentle fade/upward motion, reduced-motion fades and preserved hidden-tab reading time. Existing media/story/durations unchanged. Keyboard shortcuts remain for accessibility. [Scope and in-game tester](MILESTONE53.md). Based on v052; no merge/deployment.
+
+## v0.52 candidate — Your Workers, Your Orders
+
+Owner's v0.51 reports drive this build: selected builders only, Leonardo-only one-minute originals, actual painted Chapel/School map/icons, and version-specific Advisor Tester steps. Source branch `ui/v052-player-control` includes PR74's ancestors; nothing merged or deployed. See [Milestone52](MILESTONE52.md). Tester path: **Journal & objectives → Open guide → Guide: Tester**. Future chat playtest instructions must also appear in this mode.
+
+Automatic fallback recruitment previously stole three gatherers when no worker was selected; it is removed. Explicit selections and existing builder follow-up/manual priority remain. Chapel/School paid assets already existed and were bypassed by procedural rendering. Original music files are embedded directly from assets/v048/music-originals; all synth source and extended copies remain archived. No new assets or spending. Reinforcement (100stone/80gold) remains the camp→castle trigger, not chapter completion.
+
+Owner asked about plan alternatives; see [ART_AND_SOUND_OPTIONS.md](ART_AND_SOUND_OPTIONS.md) and [LEONARDO_PLAN_NOTES.md](LEONARDO_PLAN_NOTES.md). These are research, not permission to purchase/generate anything. Same palette, camera, scale, lighting, materials and coherent sound identity remain priorities across providers.
+
+## v0.51 candidate — From Village to Town
+
+Owner's guiding purpose: immerse yourself in a medieval town, make decisions that affect it, and think deeply about their consequences. Recorded in DESIGN_GROWTH_AND_WAR.md.
+
+New work on `ui/v051-village-to-town`, based on v0.50 PR #73 (`0dac78c`), not main or deployed. `src/v051/growth-engine.js` owns one explicit paid Town charter; `src/v051/presentation.js` keeps progress in Keep/City Life/Advisor and manual mixed orders in Market → Neighbour trade. Existing trade-town engine owns production, reservations, yard construction and the new `town-mixed` cargo kind. Schema 12 validates incoming recognition; older schemas retain their terms and no Town progress is invented. See [Milestone 51](MILESTONE51.md) and the committed design/plan under `docs/superpowers/`.
+
+All owner screenshots (waterfront, chapel, market, advisors, northern snow scenes) are **future visual references, not next-version deliverables**. Claude/graphics AI should read [GRAPHICS_REFERENCE_BRIEF.md](GRAPHICS_REFERENCE_BRIEF.md) when that later asset work is commissioned. No paid art generated or integrated here.
+
+## v0.50 camera/camp/story follow-up
+
+Owner requested a visible centred starting settlement, the smaller camp graphic, and a richer story. New Game framing lives in `src/v050/entry.js` and runs before/after the movie with restore-generation protection. `src/v026/renderer.js` uses the existing painted camp for friendly unreinforced peaceful Keeps; reinforcement uses existing max-health state to show the castle. No resource/stat/footprint/schema changes; legacy basic Keeps also get the camp appearance.
+
+`src/v050/opening-story.js` contains seven clip captions and five original prose passages (309 narration words); `intro.js` plays them automatically with optional Pause/Continue/Skip, hidden-tab timing, keyboard containment and early shortcut blocking. House/market footage is explicitly a future hope; final riders are a memory, not a scheduled attack. `docs/STORY_V050_OPENING.md` records the full text. All media remains unchanged and embedded. Focused checks18/18, final keyboard1/1, packaged smoke7/7; final CI in PR73. Owner/Claude retains merge and production decisions.
+
+## v0.50 approved entry follow-up
+
+The final owner decision supersedes first-time-only videos: **New Game → Enter city / Advisor → village map → videos on every New Game → city**. **Return to Game** loads the newest valid manual/autosave without videos. A named profile is browser-local. New sources `src/v050/intro.js` and `src/v050/entry.js`; existing paid video/media blocks unchanged, old route/death/supply cards removed, ruler portrait compatibility retained.
+
+Autosave: five active foreground minutes, three independent rotating slots, manual checkpoint/backup unchanged. New Game confirms preservation/replacement when stored data exists. Return skips corrupt candidates. Storage failures preserve prior slots and warn through native save feedback. Cross-tab writes pause autosave; only explicit successful save/restore rearms it. File imports and movie fades are invalidated across city replacement/restore. Existing engine/component test fixtures bootstrap native controls; `entryFlow:true` tests and the new packaged-smoke case exercise the actual new title/map/return path.
+
+## v0.50 candidate — A Clearer Town
+
+Owner authorized quiet, on-demand information plus useful existing building menus. Branch `ui/v050-clearer-town` continues from released `e0b65bb`. See [Milestone 50](MILESTONE50.md) and [validation](validation/v050-clearer-town.md). New sources: `src/v050/presentation.js`, `src/v050/building-menus.js`; embed-v026 includes both. Small native producer hooks stay in the non-generated core of index.html. All sc47 art/media blocks are preserved byte-for-byte.
+
+Routine updates go to the bounded session journal; native Chronicle remains authoritative for persistent history. Automatic timed decisions minimize without canceling deadlines; old event callbacks cannot transact across restore. Native close controls coordinate panels. Workshop reuses existing workplace operations; School reads actual scPeople entries. No new simulation or schema. Owner/Claude retains merge/release responsibility.
+
 # Handoff: where each version stands
 
 Read this first when continuing. Newest at top. Details are in `docs/MILESTONE*.md`.

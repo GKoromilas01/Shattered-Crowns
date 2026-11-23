@@ -1,0 +1,13 @@
+# v0.50 — A Clearer Town
+
+Owner requested less unsolicited information, said pictures are unnecessary, and explicitly asked to proceed. This implements that on-demand direction and bundles two useful menu completions; no new economy system. Existing painted art/media stay intact. No merge/deploy authorization.
+
+Use the existing simulation and native panels with a small presentation coordinator, rather than adding another permanent dashboard. Reuse Chronicle access as Journal (objectives/recent updates/full Chronicle); compact notification shows one outstanding decision and its existing countdown/default. Routine story/chapter cards enter the journal instead of opening over the map. Guide and detailed labels open only on request. Player-opened People/City Life/Advisor/Trade/inspector/Guide use one main context at a time. Existing modal atlas/help keep native camera/focus handling. Close/Escape leaves an unobscured map and restores meaningful focus.
+
+Timed events retain existing options, prices, deadlines and cautious defaults. Their compact notification stays visible; opening/closing information never chooses or pays. Normal automatic events do not steal focus. Explicit developer/event API calls may still open the requested decision for existing integrations. Pause/hidden tab/atlas stop countdown; city restart/restore discards pending UI callbacks so old decisions cannot charge another city. Journal is bounded40recent informational entries per current session/city; native Chronicle remains authoritative persistent history. No save-schema/resource changes.
+
+Workshop menu: actual planks/timber, staffing/paused/priority state, open/pause and priority controls through existing workplace API, and access to trade. School menu: actual teacher/pupils from People, useful resident/pupil viewing, no invented jobs or education bonuses. Menus live inside the selected building panel, with stable controls and fresh eligibility/identity checks.
+
+Construction labels/ETA show on selection or explicit details, not every site all the time. Keep essential selection/placement feedback. No removal of resource deposits, trees, buildings or gameplay.
+
+Acceptance: clean opening/developed/narrow view; simultaneous routine stories/chapters/event create no panel stack; pending deadline stays discoverable; exact default/once-only costs; keyboard/focus/close/restore; real Workshop and School actions; saved cities/media/sound preserved. Actual before/after screenshots and short tester steps; targeted local checks then final-head fullCI once. A playable preview comes before release readiness; 2–4hour working estimate includes normal CI but excludes owner response time/failures requiring repair.

@@ -79,12 +79,12 @@ test('People: Show home centres the map; children grow up faster; survivors get 
  assert.equal(await p.evaluate(()=>{scCampaign.start('city','home');return window.scSmallKeep}),false);
 });
 
-test('Placing a School by clicking sends free workers to build it, and it finishes without selecting anyone',async t=>{
+test('School foundation waits for an explicit worker assignment and then finishes',async t=>{
  const p=await game(t,'home',1366,640);
  await p.locator('#sc140Build').click();await p.locator('#sc140Commands button',{hasText:'School'}).first().click();
  await p.mouse.click(700,350);await p.waitForTimeout(400);
  const a=await p.evaluate(()=>({builders:scCitySave.capture().state.units.filter(u=>u.order&&u.order.type==='build').length,sites:(scCitySave.capture().state.construction||[]).length}));
- assert.ok(a.builders>=1,'free workers are sent: '+JSON.stringify(a));
+ assert.equal(a.builders,0,'unselected workers keep their jobs');assert.equal(a.sites,1);await p.keyboard.press('Escape');await p.locator('#selectWorkers').evaluate(b=>b.click());await p.mouse.click(700,350,{button:'right'});assert.ok(await p.evaluate(()=>scCitySave.capture().state.units.some(u=>u.order?.type==='build')),'explicitly selected workers receive the construction order');
  const b=await p.evaluate(()=>{__sc38.advance(240);const st=scCitySave.capture().state;return {done:st.buildings.filter(x=>x.type==='school').length,sites:(st.construction||[]).length}});
  assert.equal(b.done,1,'the School is finished '+JSON.stringify(b));assert.equal(b.sites,0);
 });
@@ -105,21 +105,17 @@ test('School and Chapel show a placement rectangle and no weather exists',async 
  assert.equal(await p.evaluate(()=>typeof window.scWeather),'undefined');assert.equal(await p.locator('#sc37Weather').count(),0);assert.equal(await p.locator('#scWeatherQuick').count(),0);
  assert.deepEqual(errs,[]);
 });
-test('Story cards appear once at milestones and the School inspect panel shows its staff',async t=>{
- const p=await game(t,'home',1366,640);const errs=[];p.on('pageerror',e=>errs.push(e.message));
+test('Milestones enter the journal once and the School inspect panel shows its staff',async t=>{
+ const p=await game(t,'home',1366,640);
  await p.waitForTimeout(1500);assert.equal(await p.locator('#scStoryCard').count(),0,'no card for the starting state');
  await p.evaluate(()=>__sc38.seed('school',700,420));
- await p.waitForFunction(()=>document.querySelector('#scStoryCard'),null,{timeout:6000});
- assert.match(await p.locator('#scStoryCard').innerText(),/School Opens/);
- await p.locator('#scStoryCard').click();assert.equal(await p.locator('#scStoryCard').count(),0);
+ await p.waitForFunction(()=>sc50UI.snapshot().entries.some(x=>/School Opens/.test(x.title)),null,{timeout:6000});
+ assert.equal(await p.locator('#scStoryCard').count(),0,'routine milestone does not cover the map');
  await p.evaluate(()=>__sc38.seed('chapel',820,420));
- await p.waitForFunction(()=>document.querySelector('#scStoryCard'),null,{timeout:6000});
- const seen=[await p.locator('#scStoryCard').innerText()];await p.locator('#scStoryCard').click();await p.waitForFunction(()=>document.querySelector('#scStoryCard'),null,{timeout:6000});seen.push(await p.locator('#scStoryCard').innerText());
- assert.ok(seen.some(x=>/Chapel Bell/.test(x)),'Chapel card shown (cards queue instead of replacing each other): '+seen.join(' | '));
- await p.evaluate(()=>{__sc38.advance(2)});
- const info=await p.evaluate(()=>__sc38.inspect('school'));
- assert.match(info,/SCHOOL: \d+ Teacher/);
- assert.deepEqual(errs,[]);
+ await p.waitForFunction(()=>sc50UI.snapshot().entries.some(x=>/Chapel Bell/.test(x.title)),null,{timeout:6000});
+ await p.waitForTimeout(1200);
+ assert.equal(await p.evaluate(()=>sc50UI.snapshot().entries.filter(x=>/School Opens/.test(x.title)).length),1);
+ const info=await p.evaluate(()=>{__sc38.advance(2);return __sc38.inspect('school')});assert.match(info,/SCHOOL: \d+ Teacher/);
 });
 test('Events: refugees can be welcomed, a trader sells stone, saves stay valid, traits show in People',async t=>{
  const p=await game(t,'home',1366,640);const errs=[];p.on('pageerror',e=>errs.push(e.message));
@@ -159,7 +155,7 @@ test('Chapters show goals, advance when built, and sickness dips the mood with a
  assert.equal(await p.locator('#scChapters').evaluate(e=>getComputedStyle(e).pointerEvents),'none');
  await p.evaluate(()=>{for(const [t,x,y] of [['house',560,300],['house',560,360],['house',560,420],['farm',760,300]])__sc38.seed(t,x,y)});
  await p.waitForFunction(()=>/Chapter 2/.test(document.querySelector('#scChapters')?.innerText||''),null,{timeout:6000});
- await p.waitForFunction(()=>/Chapter 1 complete/.test(document.querySelector('#scStoryCard')?.innerText||''),null,{timeout:6000});
+ await p.waitForFunction(()=>sc50UI.snapshot().entries.some(x=>/Chapter 1 complete/.test(x.title)),null,{timeout:6000});
  const mood=()=>p.evaluate(()=>scCitySave.capture().state.people.happiness);
  const m0=await mood();await p.evaluate(()=>scEvents.fire('sickness'));
  await p.locator('#scEventCard [data-choice="pass"]').click();const m1=await mood();

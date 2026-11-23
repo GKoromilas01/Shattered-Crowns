@@ -1,0 +1,80 @@
+
+> shattered-crowns@1.0.0 test:quick
+> node scripts/run-tests.cjs quick
+
+Testing with Chromium 154.0.8037.57; artifacts: /workspace/work/v055-continuous-opening/test-results/v059-quick
+✔ Advisor explains real bottlenecks and navigates without changing city state at 390 (5743.434921ms)
+✔ Advisor explains real bottlenecks and navigates without changing city state at 768 (4716.199687ms)
+✔ Advisor explains real bottlenecks and navigates without changing city state at 1440 (4627.902208ms)
+✔ Advisor refreshes measured shortages and keeps keyboard and held pointer activation alive (6753.877949ms)
+✔ Advisor detailed advice refreshes after city changes while panel stays open (3935.350585ms)
+✔ Advisor preserves a focused review control through changing evidence and ignores paused vacancies (5512.326756ms)
+✔ Advisor Review preserves an armed placement and selected workers after restoring a city (6051.87657ms)
+✔ Static lists agree for every placeable building (277.900602ms)
+✔ Every placeable building shows a rectangle when armed and places a foundation by real clicks (27419.267544ms)
+✔ Peaceful city is the default and stays free of local enemies or false victory through a long opening (5203.392918ms)
+✔ Classic skirmish retains its enemy keep, AI raids and schema-one capture (5040.254262ms)
+✔ Campaign readiness uses measured city conditions, requires sustained prosperity and reverses on shortage (5751.807131ms)
+✔ Save restoration selects the saved scenario and rejects corrupt campaign state atomically (6154.699294ms)
+✔ Kingdom navigation freezes the city, cancels placement, preserves camera and returns focus without changing Pause (7574.872678ms)
+✔ Zooming past minimum opens the overview and repeated Return preserves city zoom (5627.870097ms)
+✔ Scenario choice requires confirmation and leaves existing checkpoints protected (5200.486255ms)
+✔ Campaign checkpoint reload restores progress and kingdom selection into a paused city (8470.277018ms)
+✔ Kingdom overview is keyboard reachable and contained at 390px (4899.890915ms)
+✔ Kingdom overview is keyboard reachable and contained at 768px (4644.60161ms)
+✔ Kingdom overview is keyboard reachable and contained at 1440px (5688.646267ms)
+✔ Kingdom modal isolates city hotkeys, held camera keys and selected troops (5532.366902ms)
+✔ Rapid overview reopen stays suspended and peaceful guidance matches the actual scenario (5046.267055ms)
+✔ A genuine released v0.6 checkpoint restores its classic city without conversion (5104.161107ms)
+✔ Portable campaign file import replaces classic memory with saved peaceful progress (5882.955048ms)
+✔ Normal zoom buttons reach 55 percent before the next click opens the kingdom map (5296.197534ms)
+✔ Tower explains missing worker and exact missing resources in visible construction details (4724.806835ms)
+✔ Tower rejects distant and occupied plots without charging, then builds once near the worker (6379.197102ms)
+✔ Defense placement rechecks resources spent after choosing the tower tool (5191.454721ms)
+✔ Mouse-selected worker retains readable tower rejection after deferred selection refresh at 390px (4807.924489ms)
+✔ Market panel shows prices, trading moves prices and gold, and cycling never prints gold (6025.691353ms)
+✔ Regions differ, the trader follows prices, and trading counts toward chapter 2 (10773.397455ms)
+✔ Keep menu sets taxes: High earns more gold and lowers the mood target, Low does the opposite (20693.462122ms)
+✔ Theater menu holds a festival and then waits for the cooldown (4675.684192ms)
+✔ Granary, Lumberyard and Farm have their own menus with a suggestion and a sell shortcut (6299.305556ms)
+✔ Residents are individuals with jobs and stats, listed and inspectable (4873.517635ms)
+✔ Working residents match filled jobs and the day turns through dawn, day, dusk and night (4123.120179ms)
+✔ People list has a summary, filters and household families that grow up (4968.769431ms)
+✔ Native-scrollbar palette shows full cards and reaches every choice at 1366x606 (6837.502095ms)
+✔ Native-scrollbar palette shows full cards and reaches every choice at 1440x900 (6737.404466ms)
+✔ Native-scrollbar palette shows full cards and reaches every choice at 768x800 (7985.079097ms)
+✔ Native-scrollbar palette shows full cards and reaches every choice at 390x844 (14286.5538ms)
+✔ Opening title paints before late engine UI scripts and waits until ready (4567.627056ms)
+✔ Opening remains reachable and shows again on reload at 390x844 (7281.442005ms)
+✔ Opening remains reachable and shows again on reload at 1366x606 (6902.713234ms)
+✔ School is a placeable building with a teacher and attending children (4730.492824ms)
+✔ People panel fits above the bottom bar, shows the Ruler, and scrolls (3605.141072ms)
+✔ Music has a Next track button that changes the track (4041.363276ms)
+✔ Every kingdom has stone and gold within a short walk (26654.211898ms)
+✔ A farm foundation placed with no workers selected tells the player what to do, and the opening food lasts (4190.148771ms)
+✔ Rank promotions never push a unit above its maximum health (saves stay valid) (3772.860368ms)
+✔ School can be placed by clicking the build button and then the map (real UI path) (4741.368146ms)
+✔ Chapel is placed by clicking, finishes, and gives the town a Priest (5087.440453ms)
+✔ People: Show home centres the map; children grow up faster; survivors get a smaller keep flag (4472.661138ms)
+✔ School foundation waits for an explicit worker assignment and then finishes (4943.655858ms)
+✔ Survivors camp and the focus ring render without errors (4215.909491ms)
+✔ School and Chapel show a placement rectangle and no weather exists (5895.377415ms)
+✔ Milestones enter the journal once and the School inspect panel shows its staff (8539.493103ms)
+✔ Events: refugees can be welcomed, a trader sells stone, saves stay valid, traits show in People (6714.066777ms)
+✔ Families move out of the Keep into a house with a well and road, and Show home targets that house (4200.217833ms)
+✔ Chapters show goals, advance when built, and sickness dips the mood with a real choice (5106.193155ms)
+✔ Events are decisions: advisor star, countdown default, advisor record, bandits never destroy the Keep (7317.564645ms)
+✔ Chapters 4 and 5 follow chapter 3 (5683.796516ms)
+ℹ tests 62
+ℹ suites 0
+ℹ pass 62
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 411336.41691
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

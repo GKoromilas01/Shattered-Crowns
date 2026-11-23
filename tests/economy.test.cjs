@@ -24,7 +24,7 @@ window.__cityTest = {
 `;
 async function game(t, width = 1440, height = 900) {
   const {context,page} = await browserPage(t,browser,{ viewport: { width, height } }); const errors = [];
-  page.on('pageerror', e => errors.push(e.message)); page.setDefaultTimeout(6000);
+  page.on('pageerror', e => errors.push(e.message)); page.setDefaultTimeout(6000); page.setDefaultNavigationTimeout(30000);
   t.after(() => assert.deepEqual(errors, []));
   await page.route('**/*', route => route.fulfill({ contentType: 'text/html', body: fs.readFileSync('index.html', 'utf8').replace('gold=260;wood=240;stone=50;', 'gold=2400;wood=2000;stone=2000;').replace('window.scHoverBuildings=buildings;function frame', adapter + '\nwindow.scHoverBuildings=buildings;function frame') }));
   await page.goto(url); await page.locator('#sc1310Skip').click(); await page.locator('#sc154Pause').click();
@@ -69,7 +69,7 @@ test('five simulated minutes sustain a growing city, preserve recruitment and ha
   const p=await game(t);await seed(p,[...neighborhood,['fortress',770,310],['fortress',770,220],['fortress',770,400]]);const initialCycles=(await snapshot(p)).cycles;
   for(let i=0;i<60;i++){await advance(p,5);const s=await snapshot(p);conserved(s);assert.ok(s.prosperity.score>=0&&s.prosperity.score<=100)}
   let s=await snapshot(p);assert.equal(s.cycles,initialCycles+60,'The full 300 simulated seconds must run');assert.ok(s.population>8);assert.ok(s.housing.houses.some(h=>h.tier>=3));assert.ok(s.food.stock>0);assert.equal(await p.evaluate(()=>window.__cityTest.ended()),false,await p.locator('#report').innerText());
-  const before=await p.evaluate(()=>window.scRTSUnits.filter(u=>u.team===0&&u.type==='worker').length);await p.locator('#sc140Keep').click();await p.locator('#sc140Commands').getByRole('button',{name:/worker/i}).click();await advance(p,7);assert.equal(await p.evaluate(()=>window.scRTSUnits.filter(u=>u.team===0&&u.type==='worker').length),before+1);
+  const beforeIds=await p.evaluate(()=>window.scRTSUnits.filter(u=>u.team===0&&u.type==='worker').map(u=>u.id));await p.locator('#sc140Keep').click();await p.locator('#sc140Commands').getByRole('button',{name:/worker/i}).click();await advance(p,7);const afterIds=await p.evaluate(()=>window.scRTSUnits.filter(u=>u.team===0&&u.type==='worker').map(u=>u.id));assert.equal(afterIds.filter(id=>!beforeIds.includes(id)).length,1,'Exactly one new worker is recruited (a raider may kill an older one at normal combat speed)');
   await p.evaluate(()=>window.__cityTest.remove('house'));s=await snapshot(p);assert.ok(s.housing.displaced>0);conserved(s);await advance(p,15);conserved(await snapshot(p));
   await p.evaluate(()=>window.__cityTest.reset());s=await snapshot(p);assert.equal(s.population,8);assert.equal(s.housing.houses.length,0);assert.equal(s.prosperity.score,0);assert.equal(s.cycles,0);
 });

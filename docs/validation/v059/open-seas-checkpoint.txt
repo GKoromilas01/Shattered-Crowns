@@ -1,0 +1,42 @@
+✔ Expanded sea loads legacy900-high saves and preserves land coordinates (5492.905338ms)
+✔ Own building controls and selectable ships replace the Fleet intermediary (4501.677254ms)
+✔ Clicking a fishing boat then right-clicking rich water sends it there without a menu (3961.171729ms)
+✔ Fishing grounds change catch, loaded redirects retain cargo, and recall stops repeating (4576.336568ms)
+✔ Trade requires an agreement, water only moves and a marked port starts escrow once (3849.289842ms)
+✔ River bends keep the bridge and sea mouth aligned (3802.343438ms)
+✖ Market opens the world map and an existing envoy charter unlocks its sea port (33840.233457ms)
+✔ Fish schools have finite saved stocks, reveal their quality, and deep stocks recover (4579.946612ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 7
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 65012.452192
+
+✖ failing tests:
+
+test at tests/open-seas.test.cjs:14:1
+✖ Market opens the world map and an existing envoy charter unlocks its sea port (33840.233457ms)
+  locator.click: Timeout 30000ms exceeded.
+  Call log:
+  [2m  - waiting for locator('#sc59SeaTrade [data-port=ironmere]').getByRole('button', { name: /Send envoy/ })[22m
+  [2m    - locator resolved to <button disabled type="button">Send envoy · 30 gold · 2 active minutes</button>[22m
+  [2m  - attempting click action[22m
+  [2m    2 × waiting for element to be visible, enabled and stable[22m
+  [2m      - element is not enabled[22m
+  [2m    - retrying click action[22m
+  [2m    - waiting 20ms[22m
+  [2m    2 × waiting for element to be visible, enabled and stable[22m
+  [2m      - element is not enabled[22m
+  [2m    - retrying click action[22m
+  [2m      - waiting 100ms[22m
+  [2m    56 × waiting for element to be visible, enabled and stable[22m
+  [2m       - element is not enabled[22m
+  [2m     - retrying click action[22m
+  [2m       - waiting 500ms[22m
+  
+      at TestContext.<anonymous> (/workspace/work/v055-continuous-opening/tests/open-seas.test.cjs:14:659) {
+    name: 'TimeoutError'
+  }

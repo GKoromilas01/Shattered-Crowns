@@ -1,3 +1,7 @@
+## v060 — existing assets reused
+
+No new media generated or purchased. Existing painted terrain/bridge, buildings, ships, music and videos retained. River/meadow changes use procedural terrain accents in the established palette.
+
 # Asset log
 
 Record every third-party or AI-generated image here: asset, source, plan and privacy, date, prompt, licence/terms note, edits.
@@ -53,3 +57,25 @@ Policy for this project: key assets that define the game's identity (main portra
 - Later, when credits allow: ask Leonardo for 3-5 minute versions in the same style (docs say 1-10 min is possible; no "extend" button documented). Quote the exact token cost to the owner first and get his go. Keep both the 1-minute originals and the stretched stopgaps.
 
 - 2026-11-21 Videos: Leonardo Video (Auto Video / Hailuo-class), 6 s, 1344x768, Private Mode ON, 90 tokens each (180 total, balance 594 -> 414): `village` (warm morning village life) and `attack` (barbarians storm the burning village). Prompts: village = "Warm golden morning in a small medieval village of thatched timber-framed houses, villagers going about daily life... slow gentle cinematic pan... painterly medieval realism, muted warm earth palette, no text."; attack = "Barbarian warriors in dark furs and iron helmets storm into a medieval village at dusk, thatched roofs burning... no text, no gore." Compressed to 960px VP9 WebM, silent, embedded as sc47Video; played first in the opening story. Originals kept by the owner. Commercial licence for Leonardo video still to confirm.
+
+## v0.52 playback/render integration — 22 November 2026
+
+No new asset generation or purchase. Existing v047 Chapel/School originals/runtime cutouts now used for completed map buildings and command icons, replacing procedural bypasses. Original one-minute v048 music MP3 bytes embedded directly at owner's request; extended v049 copies and old synthesized compositions retained as archives. No audio file edited or re-encoded. Art and video assets unchanged.
+
+## v0.54 reuse audit — 2026-11-22
+
+Existing v047 runtime bridge.webp reused at the original river crossing, with canvas rotation only. Source/runtime asset bytes unchanged. Existing shipyard/ship graphics confirmed present, not yet playable entities. No new generation, purchases or token spending. Town/school bells are original synthesized effects; recorded Leonardo music unchanged.
+
+## v0.55 reuse — 2026-11-22
+
+Existing paid runtime camp.webp reused as a decorative story-screen emblem. No changes to the image bytes or embedded asset bundle, no new generation or spending.
+
+## v0.56 reuse — 2026-11-22
+
+Existing runtime shipyard.webp used as a constructed building and icon; ship.webp is a full scene, with its foreground boat clipped by runtime canvas paths for the map. Fleet uses the original as a thumbnail. No source/runtime image bytes edited, no new artwork generation, credits or purchases.
+
+## v0.57 Boat Builders
+Existing painted Shipyard icon and ship art reused; vessel scale varies by kind. No new assets, Leonardo generation, purchases or music/video changes.
+
+## v0.58 Working Fleet
+Existing painted ships, buildings, soldier graphics, original music and all seven clips reused unchanged. Fades are presentation only; no new generated assets, purchases or Leonardo spending.

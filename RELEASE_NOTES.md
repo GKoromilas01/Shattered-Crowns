@@ -1,3 +1,57 @@
+# v0.60.0 — A Slower Frontier (candidate)
+
+Resources, construction and recruitment now take three times longer. A warned local frontier brings real raids and Keep commands to defend home or attack the rival outpost. Direct ship orders, richer fishing grounds, first-contact trade agreements, a larger sea and winding river complete the preceding naval work. Includes current Advisor Tester instructions and an optional quick raid save. [Scope and limits](docs/MILESTONE60.md). Local checks are recorded separately from pending GitHub CI; no verified release claimed.
+
+# v0.58.0 — Working Fleet (candidate)
+
+Fishing voyages deliver catch through the Food ledger; coastal trading reserves goods and pays on return. Warships escort and attack real coastal raiders; hull damage and sinking make protection meaningful. Opening videos/captions fade smoothly; separate story screens remain. Schema15 preserves missions/hulls and migrates13/14. [Controls, balance and limits](docs/MILESTONE58.md). No merge/deployment.
+
+# v0.57.0 — Boat Builders (candidate)
+
+Build fishing boats at the Fishery and warships/trade ships at the Shipyard, with Fleet retained. Shipyard is last in Construction with shared styling; Fleet has ×/Escape close. Typed saved vessels migrate schema13 to14. Combat and cargo routes remain future work. [Scope and tester](docs/MILESTONE57.md). No merge/deployment.
+
+# v0.56.0 — First Harbour (candidate)
+
+Build a real coastal Shipyard with selected workers, fund a first boat, and use Menu → Fleet to sail, stop and return to its berth. Shipwright staffing controls build time. Construction/voyages survive Save/Return in schema13; older saves remain loadable. Existing paid artwork, illustrated story screens, music and town bells retained. [Playtest and limits](docs/MILESTONE56.md). Candidate only; not deployed.
+
+# v0.55.0 — Between the Chapters (candidate)
+
+Restores separate dark story screens between videos while retaining every passage. A small existing painted settlement emblem and warm headings frame the narration; no frozen video remains behind it. Button-free clips and transparent subtitles stay, along with v054 map/bells improvements. [Playtest](docs/MILESTONE55.md). No new assets or simulation changes.
+
+# v0.54.0 — A Quieter Town (candidate)
+
+Idle worksite rings, percentages and progress bars appear on demand. Existing painted bridge art replaces the planks at the same crossing. Quiet School and Chapel bells follow town time, honor sound controls, and skip background/pause/catch-up playback. Advisor Tester contains the new checks. Includes v053 frozen-frame opening. [Playtest and clock scale](docs/MILESTONE54.md). No new assets, save schema or deployment.
+
+# v0.53.0 — A Seamless Beginning (candidate)
+
+The opening runs without visible Continue, Skip or Pause buttons. Subtitles sit directly over the video with soft text shadows. Longer story passages fade in over each paused final frame, drift gently upward, then fade out before playback continues automatically. Reduced motion removes movement. Existing words, reading times, videos and save behavior remain. Advisor Tester contains the new checks. [Playtest](docs/MILESTONE53.md).
+
+# v0.52.0 — Your Workers, Your Orders (candidate)
+
+Placing a foundation now uses only explicitly selected workers. With none selected it waits, leaving miners and woodcutters on their existing jobs. Explicit assignment, saved orders and builder follow-up are retained.
+
+Music rotates the four unmodified one-minute Leonardo originals. Extended copies and synthesized themes remain archived for later upgrades. Existing sound preferences stay effective. Chapel and School now use their already-created painted artwork on the map and command icons; no new art or credits required.
+
+Advisor Tester contains this version's actions and expected results. Open **Journal & objectives → Open guide → Guide: Tester**. Camp-to-castle remains tied to the paid Reinforce Keep upgrade. No schema or economic changes. [Scope and playtest](docs/MILESTONE52.md). Candidate only; not merged or deployed.
+
+# v0.51.0 — From Village to Town (candidate)
+
+Earn a permanent Town charter through residents, serviced housing, happiness, a staffed connected Market and food security. Inspect the Keep to see requirements and explicitly pay 80 gold plus 8 real planks. Recognition appears in City Life, Advisor and the player's atlas settlement.
+
+Town recognition opens the existing builder-funded Market loading yard without requiring Ironmere's old agreements. Once built, manually send 8 planks plus 12 reserved bread baskets for 110 gold over the existing two-minute shared cargo route. Original contracts, production and food-reserve policies retain their terms.
+
+Strict schema 12 records earned recognition and new orders. Schemas 1–11 remain loadable without invented progress. Older versions cannot load schema 12; retain an earlier exported checkpoint to downgrade. No new artwork, ships, winter systems or council simulation. [Scope and tester steps](docs/MILESTONE51.md). Candidate only; not merged or deployed.
+
+# v0.50.0 — A Clearer Town (candidate)
+
+New villages now begin with the existing painted camp in view. The normal reinforcement upgrade reveals the castle. A fuller original story connects the seven existing clips with automatically paced prose, with Pause/Continue/Skip for reading; no supply, route or death choices return.
+
+New Game now chooses a village on the world map, plays the existing videos, then enters the city with optional Advisor guidance. Return to Game loads the newest valid save without videos. A named browser profile, three five-minute active-play autosaves, separate manual saves/exports and clear save status support returning players. The obsolete illustrated journey and its supply/death choices are removed.
+
+Routine milestones, sayings, trade offers and shipment notices move into an on-demand town journal. Timed decisions retain their real countdown and default in a compact notice; Guide and chapter details open when requested. Native panels close cleanly when switching context, and construction labels follow the selected worksite.
+
+Workshop and School inspectors gain useful stock/production and teacher/pupil information using existing gameplay and workplace controls. Painted art, embedded media, economic terms and save schemas are preserved. [Scope and quick playtest](docs/MILESTONE50.md). Feature-branch candidate; not merged or deployed.
+
 # v0.28.0 — Beyond the Town Gates: Valewatch prototype
 
 Explore a northern woodland route, meet Warden Mira, supply real goods and earn a permanent better-paying pact. Diplomacy begins in every peaceful city. Original portrait artwork and an atlas route reflect actual discoveries. Strict schema 11 preserves older saves without inventing progress. [Prototype scope and economics](docs/MILESTONE28.md) · [Validation](docs/validation/v028-prototype.md).
