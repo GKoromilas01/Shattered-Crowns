@@ -60,3 +60,6 @@ Open decisions for the owner: core fantasy wording, when to start multiplayer/de
 - Core fantasy: "You rule a kingdom you can see growing, and feel threatened." (agreed)
 - Multiplayer/deterministic simulation: not now; finish single-player first. New game-rule code must avoid unseeded randomness and real-time clocks where practical.
 - Business model: free at first to build a player base, then earn money to grow the game. Preferred route when the time comes: optional cosmetics or a paid expansion/premium edition; never sell power. Decide the exact model together before launch.
+
+## Owner decision (23 Nov 2026): gradual art replacement
+Each version replaces a few more existing sprites (units, workers, soldiers, archers, buildings, deposits, terrain) with newer, clearly better art, until everything matches the newest standard. v0.63 started with the stone and gold deposits and the river. Candidates for v0.64: worker, soldier and archer sprites, then house and market. Old files are archived (see assets/v062/art-previous/), never deleted.
