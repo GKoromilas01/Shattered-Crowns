@@ -1,0 +1,21 @@
+const {test,before,after}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),http=require('node:http');
+const {launchBrowser,browserPage}=require('./support/browser.cjs');let browser,server,url;
+before(async()=>{server=http.createServer((q,r)=>{r.setHeader('Content-Type','text/html');r.end(fs.readFileSync('index.html'))});await new Promise(r=>server.listen(0,'127.0.0.1',r));url='http://127.0.0.1:'+server.address().port;browser=await launchBrowser()});after(async()=>{await browser?.close();server?.close()});
+async function start(t,query=''){const {page:p}=await browserPage(t,browser,{viewport:{width:1280,height:720}});p.setDefaultTimeout(15000);await p.goto(url+query);await p.locator('#sc1310Skip').click();await p.waitForFunction(()=>window.sc64Calendar&&window.sc64Throne&&window.sc64Core&&window.scCitySave);return p}
+test('The Egyptian song is in the playlist and the file is embedded (v0.64)',async t=>{const html=fs.readFileSync('index.html','utf8');assert.ok(html.includes("{name:'leo_nile',file:'nile'}"));assert.ok(html.includes("leo_nile:'Sands of the Nile'"));assert.ok(/"nile":"data:audio\/mpeg;base64,/.test(html))});
+test('Parade, chapel holiday and castle feast act only when their needs are met (v0.64)',async t=>{const p=await start(t);
+ const before=await p.evaluate(()=>sc64Core.stock());const r=await p.evaluate(()=>sc64Calendar.trigger('parade'));assert.equal(r.ok,true);
+ assert.match(await p.locator('#sc64Banner').innerText(),/anniversary parade/);assert.ok((await p.evaluate(()=>sc64Core.stock())).happiness>before.happiness);
+ const chapel=await p.evaluate(()=>sc64Core.has('chapel'));assert.equal((await p.evaluate(()=>sc64Calendar.trigger('holiday'))).ok,chapel);
+ await p.evaluate(()=>sc64Core.give(0,100));const keep=await p.evaluate(()=>sc64Core.has('keep'));const f0=(await p.evaluate(()=>sc64Core.stock())).food;
+ assert.equal((await p.evaluate(()=>sc64Calendar.trigger('feast'))).ok,keep);if(keep)assert.ok((await p.evaluate(()=>sc64Core.stock())).food<f0);
+ assert.deepEqual(await p.evaluate(()=>sc64Calendar.kinds()),['parade','holiday','feast','holiday2'])});
+test('The throne quarrel offers two real choices, pauses the game and is shown once (v0.64)',async t=>{const p=await start(t);
+ await p.evaluate(()=>sc64Throne.reset());assert.equal(await p.evaluate(()=>sc64Throne.open()),true);const dlg=p.locator('#sc64ThroneScene');await dlg.waitFor();assert.equal(await dlg.locator('button[data-choice]').count(),2);assert.equal(await p.evaluate(()=>scCitySave.status().paused),true);
+ const g0=(await p.evaluate(()=>sc64Core.stock())).gold,h0=(await p.evaluate(()=>sc64Core.stock())).happiness;
+ await dlg.locator('button[data-choice="share"]').click();const s1=await p.evaluate(()=>sc64Core.stock());assert.equal(s1.gold,g0-12);assert.ok(s1.happiness>h0);assert.match(await dlg.innerText(),/stream is shared/);
+ await p.locator('#sc64ThroneDone').click();await p.locator('#sc64ThroneScene').waitFor({state:'detached'});assert.equal(await p.evaluate(()=>scCitySave.status().paused),false);
+ assert.equal(await p.evaluate(()=>sc64Throne.maybeOpen()),false,'not shown twice');
+ await p.evaluate(()=>sc64Throne.reset());await p.evaluate(()=>sc64Throne.open());const g1=(await p.evaluate(()=>sc64Core.stock())).gold;await p.locator('#sc64ThroneScene button[data-choice="miller"]').click();assert.equal((await p.evaluate(()=>sc64Core.stock())).gold,g1+15)});
+test('With ?festivals=fast the anniversary parade appears by itself within about a minute (v0.64)',async t=>{const p=await start(t,'/?festivals=fast');await p.evaluate(()=>sc64Throne.reset());
+ await p.waitForFunction(()=>/anniversary parade/.test(document.getElementById('sc64Banner')?.textContent||''),null,{timeout:60000})});
