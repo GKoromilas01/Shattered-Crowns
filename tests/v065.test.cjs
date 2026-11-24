@@ -6,9 +6,9 @@ test('Opening has a calm village clip between the village and the attack, and th
 test('Three banners exist, can be chosen in the Royal Keep panel and are remembered (v0.65)',async t=>{const p=await start(t);
  assert.deepEqual(await p.evaluate(()=>sc65Banner.list().map(b=>b.id)),['crimson','green','blue']);
  for(const b of await p.evaluate(()=>sc65Banner.list()))assert.ok(b.motto.length>10);
- await p.evaluate(()=>{window.sc134KeepSelected=true;sc65Banner.set('green')});assert.equal(await p.evaluate(()=>sc65Banner.current()),'green');
+ await p.evaluate(()=>{const k=window.scHoverBuildings.find(b=>b.team===0&&b.type==='keep');scCityEconomy.inspect(k.id)});await p.waitForSelector('#scBuildingMenu #sc65Banner button');await p.locator('#scBuildingMenu #sc65Banner button[data-banner="green"]').click();assert.equal(await p.evaluate(()=>sc65Banner.current()),'green');
  assert.equal(await p.evaluate(()=>localStorage.getItem('shattered-crowns-banner-v1')),'green');
- assert.equal(await p.locator('#sc65Banner button').count(),3)});
+ assert.equal(await p.locator('#scBuildingMenu #sc65Banner button').count(),3);assert.equal(await p.locator('#scBuildingMenu #sc65Banner button[aria-pressed="true"]').getAttribute('data-banner'),'green')});
 test('The city motto appears once when the city begins and then fades (v0.65)',async t=>{const p=await start(t,'/?motto=1');await p.evaluate(()=>sc65Banner.showMotto());assert.match(await p.locator('#sc65Motto').innerText(),/motto of this city/i);await p.waitForSelector('#sc65Motto',{state:'detached',timeout:14000})});
 test('Proverbs come every five minutes and keep counting through a pause (v0.65)',()=>{const h=fs.readFileSync('index.html','utf8');assert.match(h,/const FIRST=60,EVERY=300,SHOW=16,/)});
 test('Women and diverse villagers have sprites and the painter picks them (v0.65)',async t=>{const p=await start(t);const keys=await p.evaluate(()=>['unit_woman_field','unit_woman_water','unit_woman_baker','unit_worker_dark','unit_woman_dark','unit_worker_asian','unit_woman_asian','banner_crimson','banner_green','banner_blue'].filter(k=>!window.sc47Art[k]));assert.deepEqual(keys,[]);
