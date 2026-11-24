@@ -93,3 +93,6 @@ Existing painted ships, buildings, soldier graphics, original music and all seve
 - 2026-11-23 (v0.63) River: code-only upgrade in src/v059/terrain.js (deep channel, bank foam, drifting glints); no new image asset.
 - 2026-11-23 (v0.63) Gameplay balance (not an asset): resource gathering lowered by 20% (city worker 2.5 -> 2 per second; skirmish/AI 17 -> 13.6).
 - 2026-11-23 (v0.63) Re-encode: school, chapel, theater and shipyard clips re-encoded 1.3x slower with motion-smoothed interpolation (originals unchanged in the owner's uploads; previous runtime files remain in git history).
+
+- 2026-11-24 Leonardo (GPT Image 2.6 Sunburst, High, 1024x1024, Private Mode ON, 70 tokens each, original prompts, no series names): unit style samples for gradual sprite replacement — labourer (3 candidates, supplied by owner), soldier (1), archer (1). Balance 4,759 -> 4,619. Not yet in the game; to be compared as a matched set before any swap. Raider not yet generated (page froze).
+- 2026-11-24 v0.64 candidate: swapped unit_worker, unit_soldier, unit_archer for the Leonardo sprites above (cut out with scripts/process-v047-art.py logic, 120 px wide; game draws units at fixed 34 px height so aspect is preserved). Previous art kept in assets/v062/art-previous/unit_*-v047.*. Raider unchanged (existing art already matches the new style).
