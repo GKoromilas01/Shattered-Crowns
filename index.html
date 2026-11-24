@@ -11232,7 +11232,7 @@ function build(){
   btn.append(im);btn.onclick=()=>set(b.id);box.append(btn)}
  const t=document.createElement('small');t.style.cssText='flex-basis:100%;font-style:italic';box.append(t);sel.append(box);render();
 }
-function refresh(){if(!box)return;const s=sel.querySelector('strong');box.hidden=!(s&&/Royal Keep/.test(s.textContent))}
+function refresh(){if(!box)return;const s=sel.querySelector('strong'),d=sel.querySelector('#sc140Details');box.hidden=!(s&&/Royal Keep/.test(s.textContent)&&d&&!/^\s*Select a building or unit\s*$/i.test(d.textContent))}
 build();setInterval(refresh,300);
 /* the motto, once, when a city begins */
 let card=null;
