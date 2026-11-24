@@ -32,9 +32,11 @@ jobs:
         run: npm run test:quick
   verify:
     runs-on: ubuntu-24.04
-    # Full regression took 41–43 minutes on v0.25; allow cold-runner variance
-    # plus packaging and smoke checks without cancelling near completion.
-    timeout-minutes: 90
+    # Full regression took 41–43 minutes on v0.25 and about 65–70 minutes on v0.65
+    # (720+ browser tests, each loading the single-file game). v0.66 exceeded the
+    # old 90-minute limit with no test failing, so allow cold-runner variance plus
+    # packaging and smoke checks without cancelling near completion.
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v4
         with:
