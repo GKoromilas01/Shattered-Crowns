@@ -2,6 +2,11 @@
 
 Shown over the slowed opening clips (12–20 s each) instead of separate text screens. Lines describe what is on screen, in order. Original writing in blank-verse style; shown as lines, about 2–4 per clip, spaced evenly across the clip. Sample video rendered by Claude on 23 November 2026 used the plain-English version of these same beats.
 
+## dawn (5 s, new in v0.64) — caption "An ordinary morning."
+Through morning mist the thatchèd chimneys breathe;
+An old man leads his cow down the sunlit lane.
+(First half of the clip: rooftops, mist and chimney smoke. Second half: an old man leading a brown-and-white cow along a muddy lane, sun rising behind the cottages. The lines were written to match exactly that.)
+
 ## village (20 s) — title "Before the fire"
 Behold the morn, that gilds our thatchèd eaves,
 Where Marian bears the water from the well,

@@ -2,6 +2,14 @@
 // Each clip is slowed to 12-20 s; the caption opens it and the verse lines follow, describing what is on screen.
 window.sc50OpeningStory=[
   {
+    "video": "dawn",
+    "caption": "An ordinary morning.",
+    "lines": [
+      "Through morning mist the thatchèd chimneys breathe;",
+      "An old man leads his cow down the sunlit lane."
+    ]
+  },
+  {
     "video": "village",
     "caption": "Morning in our village.",
     "title": "Before the fire",
