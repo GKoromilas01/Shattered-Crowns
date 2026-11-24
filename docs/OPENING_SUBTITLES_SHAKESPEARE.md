@@ -74,3 +74,10 @@ Hard by the river's brim the ribs are bent,
 And patient hands do coax a hull from oak.
 The mist doth lift; the water beckons forth:
 Make fast the rope, and let the keel be laid.
+
+## calm (10 s, new in v0.65, between "Morning in our village" and the attack) — caption "Evening, and bread to share."
+On screen: golden light on thatched roofs, neighbours around a small fire sharing bread, a woman pouring water, children laughing. Verse (original):
+The sun lies golden on the thatchèd eaves;
+Round the small fire the neighbours break their bread;
+A goodwife pours the water, children laugh.
+(The dawn clip was re-rendered in v0.65 at 15 s, motion-smoothed, so its two lines are readable.)

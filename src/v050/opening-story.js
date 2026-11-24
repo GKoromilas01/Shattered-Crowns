@@ -21,6 +21,15 @@ window.sc50OpeningStory=[
     ]
   },
   {
+    "video": "calm",
+    "caption": "Evening, and bread to share.",
+    "lines": [
+      "The sun lies golden on the thatchèd eaves;",
+      "Round the small fire the neighbours break their bread;",
+      "A goodwife pours the water, children laugh."
+    ]
+  },
+  {
     "video": "attack",
     "caption": "Then the night turned red.",
     "title": "The night the roads changed",

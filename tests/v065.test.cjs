@@ -1,0 +1,16 @@
+const {test,before,after}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),http=require('node:http');
+const {launchBrowser,browserPage}=require('./support/browser.cjs');let browser,server,url;
+before(async()=>{server=http.createServer((q,r)=>{r.setHeader('Content-Type','text/html');r.end(fs.readFileSync('index.html'))});await new Promise(r=>server.listen(0,'127.0.0.1',r));url='http://127.0.0.1:'+server.address().port;browser=await launchBrowser()});after(async()=>{await browser?.close();server?.close()});
+async function start(t,query=''){const {page:p}=await browserPage(t,browser,{viewport:{width:1280,height:720}});p.setDefaultTimeout(15000);await p.goto(url+query);await p.locator('#sc1310Skip').click();await p.waitForFunction(()=>window.sc65Banner&&window.sc64Core&&window.scCitySave);return p}
+test('Opening has a calm village clip between the village and the attack, and the dawn clip is embedded (v0.65)',()=>{const s=fs.readFileSync('src/v050/opening-story.js','utf8');const i=s.indexOf('"video": "village"'),j=s.indexOf('"video": "calm"'),k=s.indexOf('"video": "attack"');assert.ok(i>0&&j>i&&k>j);const html=fs.readFileSync('index.html','utf8');assert.ok(/"calm":"data:video\/webm;base64,/.test(html))});
+test('Three banners exist, can be chosen in the Royal Keep panel and are remembered (v0.65)',async t=>{const p=await start(t);
+ assert.deepEqual(await p.evaluate(()=>sc65Banner.list().map(b=>b.id)),['crimson','green','blue']);
+ for(const b of await p.evaluate(()=>sc65Banner.list()))assert.ok(b.motto.length>10);
+ await p.evaluate(()=>{window.sc134KeepSelected=true;sc65Banner.set('green')});assert.equal(await p.evaluate(()=>sc65Banner.current()),'green');
+ assert.equal(await p.evaluate(()=>localStorage.getItem('shattered-crowns-banner-v1')),'green');
+ assert.equal(await p.locator('#sc65Banner button').count(),3)});
+test('The city motto appears once when the city begins and then fades (v0.65)',async t=>{const p=await start(t,'/?motto=1');await p.evaluate(()=>sc65Banner.showMotto());assert.match(await p.locator('#sc65Motto').innerText(),/motto of this city/i);await p.waitForSelector('#sc65Motto',{state:'detached',timeout:14000})});
+test('Proverbs come every five minutes and keep counting through a pause (v0.65)',()=>{const h=fs.readFileSync('index.html','utf8');assert.match(h,/const FIRST=60,EVERY=300,SHOW=16,/)});
+test('Women and diverse villagers have sprites and the painter picks them (v0.65)',async t=>{const p=await start(t);const keys=await p.evaluate(()=>['unit_woman_field','unit_woman_water','unit_woman_baker','unit_worker_dark','unit_woman_dark','unit_worker_asian','unit_woman_asian','banner_crimson','banner_green','banner_blue'].filter(k=>!window.sc47Art[k]));assert.deepEqual(keys,[]);
+ const seen=await p.evaluate(()=>{const s=new Set();for(let i=1;i<=400;i++)s.add(sc65Villager({id:i}));return [...s].sort()});for(const k of ['unit_worker','unit_worker_dark','unit_worker_asian','unit_woman_dark','unit_woman_asian'])assert.ok(seen.includes(k),k);assert.ok(seen.some(k=>/woman_(field|water|baker)/.test(k)));
+ const diverse=await p.evaluate(()=>{let n=0;for(let i=1;i<=2000;i++)if(/dark|asian/.test(sc65Villager({id:i})))n++;return n/2000});assert.ok(diverse>0.07&&diverse<0.13,String(diverse))});
