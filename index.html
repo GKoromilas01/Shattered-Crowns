@@ -11113,25 +11113,17 @@ if(typeof base==='function'){
   if(ok&&(k==='keep')){const im=image(current);if(im){const w=26,h=w*im.naturalHeight/im.naturalWidth;g.drawImage(im,b.x+50,b.y+17-h-18,w,h)}}
   return ok};
 }
-/* picker inside the Royal Keep panel */
-const sel=document.getElementById('sc140Selection');
-let box=null;
-function render(){
- if(!box)return;box.querySelectorAll('button').forEach(btn=>btn.setAttribute('aria-pressed',String(btn.dataset.banner===current.id)));
- const t=box.querySelector('small');if(t)t.textContent=current.name+' · “'+current.motto+'”';
+/* picker inside the Royal Keep's own building menu (the panel that opens when the keep is selected) */
+function pickerHtml(){
+ return '<section id="sc65Banner" aria-label="Keep banner"><strong>Banner</strong><div style="display:flex;gap:6px;margin:4px 0">'+BANNERS.map(b=>'<button type="button" data-banner="'+b.id+'" title="'+b.name+'" aria-label="Fly the '+b.name+' banner" aria-pressed="'+String(b.id===current.id)+'" style="padding:2px 6px;min-width:40px;height:42px;border:2px solid '+(b.id===current.id?'#e0b44a':'#8a6a36')+';border-radius:6px;background:rgba(0,0,0,.25);cursor:pointer"><img alt="" data-art="'+b.art+'" src="'+(art()[b.art]||'')+'" style="height:34px;width:auto;display:block;margin:0 auto"></button>').join('')+'</div><small style="font-style:italic">'+current.name+' · “'+current.motto+'”</small></section>';
 }
-function set(id){current=find(id);try{localStorage.setItem(KEY,current.id)}catch(_){}render();window.dispatchEvent(new CustomEvent('sc-banner-changed',{detail:{id:current.id}}))}
-function build(){
- if(!sel||document.getElementById('sc65Banner'))return;
- box=document.createElement('div');box.id='sc65Banner';box.hidden=true;box.style.cssText='display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px';
- const lab=document.createElement('span');lab.textContent='Banner:';lab.style.cssText='font-size:13px';box.append(lab);
- for(const b of BANNERS){const btn=document.createElement('button');btn.type='button';btn.dataset.banner=b.id;btn.title=b.name;btn.setAttribute('aria-label','Fly the '+b.name+' banner');btn.style.cssText='padding:2px 6px;min-width:40px;height:42px;border:2px solid #8a6a36;border-radius:6px;background:rgba(0,0,0,.25);cursor:pointer';
-  const im=document.createElement('img');im.alt='';im.style.cssText='height:34px;width:auto;display:block;margin:0 auto';const put=()=>{if(art()[b.art]){im.src=art()[b.art];return true}return false};if(!put()){const w=setInterval(()=>{if(put())clearInterval(w)},500)}
-  btn.append(im);btn.onclick=()=>set(b.id);box.append(btn)}
- const t=document.createElement('small');t.style.cssText='flex-basis:100%;font-style:italic';box.append(t);sel.append(box);render();
+function set(id){current=find(id);try{localStorage.setItem(KEY,current.id)}catch(_){}window.dispatchEvent(new CustomEvent('sc-banner-changed',{detail:{id:current.id}}));if(window.scBuildingMenus)window.scBuildingMenus.render(true)}
+function install(){
+ const menus=window.scBuildingMenus;if(!menus||menus.__sc65)return;menus.__sc65=true;
+ const original=menus.get('keep');
+ menus.register('keep',b=>{const base=original?original(b):null;return {html:(base?.html||'')+pickerHtml(),bind:h=>{if(base?.bind)base.bind(h);h.querySelectorAll('#sc65Banner button').forEach(btn=>{btn.onclick=()=>set(btn.dataset.banner)})}}});
 }
-function refresh(){if(!box)return;const s=sel.querySelector('strong'),d=sel.querySelector('#sc140Details');box.hidden=!(s&&/Royal Keep/.test(s.textContent)&&d&&!/^\s*Select a building or unit\s*$/i.test(d.textContent))}
-build();setInterval(refresh,300);
+install();
 /* the motto, once, when a city begins */
 let card=null;
 function motto(){
