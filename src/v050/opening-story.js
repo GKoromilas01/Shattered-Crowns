@@ -5,8 +5,8 @@ window.sc50OpeningStory=[
     "video": "dawn",
     "caption": "An ordinary morning.",
     "lines": [
-      "The mist lifts slow; the oxen know the way.",
-      "Naught here foretells the sorrow of the night."
+      "Through morning mist the thatchèd chimneys breathe;",
+      "An old man leads his cow down the sunlit lane."
     ]
   },
   {
