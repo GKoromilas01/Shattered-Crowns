@@ -2,6 +2,8 @@
 
 Project: Shattered Crowns, a browser RTS and city builder by Sand Labs (owner: Giannis). It is sold commercially, so everything must be original and legally usable. Read `docs/HANDOFF.md`, `docs/ROADMAP_IDEAS.md`, `docs/ART_DIRECTION.md`, `docs/ASSET_LOG.md` and `RELEASE_NOTES.md` first.
 
+For future single-player versions, start with the [single-player roadmap and version briefs](docs/ROADMAP_SINGLE_PLAYER.md).
+
 ## Roles
 - **Claude**: owns releases, art/music/video integration, reviews and merges pull requests, and sets version priorities.
 - **Codex**: engineering on its own branch: bug fixes with tests, performance, refactors, new systems. One topic per branch, one pull request per topic, never merge your own.

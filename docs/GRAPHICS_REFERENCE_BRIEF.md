@@ -7,6 +7,10 @@
 
 ## Read this first
 
+Use the scene artwork from all supplied examples as visual direction for original cutscenes and gameplay. Focus on the landscape and interiors within the scene, architecture, costume materials, character scale, lighting and composition. Ignore browser and desktop graphics, page backgrounds, lettering, subtitles, logos, player controls and game HUD overlays. If image files are provided for the reference archive, keep the scene area and crop away surrounding interface wherever possible.
+
+The descriptions in this file are the durable reference for Claude. Screenshot originals are currently held in the owner conversation. Keep the conversation or a local copy if the original images are needed later.
+
 The owner requested **similar atmosphere and practical medieval materials, not copies**. Create original faces, garments, buildings, boats, layouts and compositions. The supplied film stills are not game assets. Do not reproduce actors, recognizable costumes, franchise insignia, screenshots or exact camera compositions.
 
 Retain the game's established painted medieval look. These references do not request a switch to live-action photorealism. Follow [ART_DIRECTION.md](ART_DIRECTION.md), [ASSET_LOG.md](ASSET_LOG.md) and [AGENTS.md](../AGENTS.md). The main palette is warm limestone/parchment, timber/leather/earth browns, muted ochre/terracotta, olive vegetation and deep teal-blue water. Use natural light, restrained saturation and clear silhouettes.
@@ -138,3 +142,88 @@ The owner added examples of court gatherings in enclosed gardens, ceremonial fig
 ## Current implementation boundary
 
 v0.51 work is **From Village to Town**: an earned charter and a real mixed-cargo progression through existing production and Market controls. The owner clarified that all screenshots in this brief are for later builds, not the next version. Store this direction for future asset production. It does not authorize expanding the release into ships, warfare, religious systems, new crowds or paid asset generation without following the owner's scope and the repository rules.
+
+## Strategy-game screenshots supplied 26 November 2026
+
+The owner supplied four screenshots as graphics references for future versions. Read them in the order below. Use these cues to guide original Shattered Crowns artwork and presentation.
+
+| Reference | What to carry forward |
+| --- | --- |
+| 1. Fortified river gate | Give a city entrance a clear silhouette with round towers, continuous walls, a distinct roof and banners. Connect the paved approach, bridge and gate visually. Use limestone, muted grass and teal water to distinguish each surface at normal play zoom. |
+| 2. Characters at the bridge | Keep individual figures legible against open ground through silhouette, costume accents and contact shadows. Blend dirt tracks into grass and use the bridge and riverbank to frame the scene. |
+| 3. Portrait over the city | Frame important dialogue with a large original character portrait, a readable speaker label and enough open space to keep the surrounding city visible. Use localized firelight and smoke to draw attention to the affected building. |
+| 4. Formations at a crossing | Distinguish opposing groups through heraldry, color and formation shape. Use a visible destination and restrained route markers to make an order readable across the bridge. |
+
+For future uploads, keep the source images together under `docs/graphics-references/` and add a descriptive caption for each. The four screenshots above were visible in the conversation. Their original files still need to be attached to this reference collection.
+
+## Cinematic screenshots supplied 26 November 2026
+
+The owner wants this atmosphere in both cutscenes and the playable world. Use close framing and greater material detail in cutscenes, and translate the same stone, foliage, textiles and light into clear shapes at normal gameplay zoom.
+
+| Reference | Cutscene direction | Gameplay direction |
+| --- | --- | --- |
+| 5. Travellers on a cypress-lined path | Frame an original group through layers of dark cypress, olive-toned foliage and a rough stone path. Use warm daylight and subdued earth tones. | Make the road easy to follow with gaps between trees, rocky verges and a distinct walking surface. Keep silhouettes visible beside dense foliage. |
+| 6. Stone stair and round tower | Let foliage frame the climb and gradually reveal the tower. Convey height with broad steps, warm masonry and deep shade at the entry. | Use the stair and tower as landmarks. Give the approach a clear route and the tower a recognizable silhouette over the canopy. |
+| 7. Character close-up beside warm masonry | Use original faces and costume construction, layered weathered materials, soft background focus and natural warm light. | Carry the material palette and clothing shapes into portraits and units. Keep class and allegiance recognizable at map scale. |
+| 8. Torchlit arch and dark passage | Use a warm pool of moving light to reveal masonry, the figure and the corridor entrance in stages. | Use warm localized lighting for original interiors and gates while keeping crossings, exits and interactable areas readable. |
+
+Use the earlier shipyard, market, chapel, council, regional and strategy-game references above as part of the same collection. The source stills are currently visible in the owner conversation and their image files are still pending. The visual direction calls for original Shattered Crowns characters, locations and compositions.
+
+## Additional cinematic screenshots supplied 26 November 2026
+
+The owner clarified that these are examples of mood, scale and visual language. Create original Shattered Crowns scenes from the cues in both columns.
+
+| Reference | Cutscene direction | Gameplay direction |
+| --- | --- | --- |
+| 9. Rock spire against an open sky | Use a low viewpoint, weathered rock and open sky to establish scale and isolation. | Give original cliffs and outcrops distinctive silhouettes. Keep their bases and the routes around them legible at map zoom. |
+| 10. Quiet conversation in woodland | Use close framing, soft side light and weathered armour to make a small exchange feel personal. | Carry the woodland palette and original equipment materials into character portraits and readable unit silhouettes. |
+| 11. Figure beside a weathered carving | Use cool, low light across an original stone carving to suggest local history and tension. | Give regional ruins and gateways distinctive carvings that remain readable through broad shapes and edge lighting. |
+| 12. Survivors passing through a damaged settlement | Layer broken timbers, stone and blue-grey haze to show the aftermath through the environment. | Show damaged buildings with broken rooflines and controlled haze. Keep walkable routes visible through the debris. |
+| 13. Wolves at a ruined gateway | Use original wildlife and a layered doorway composition to convey scale and uncertainty. | Give wildlife distinct silhouettes and keep arches, rubble and the route ahead visually clear. |
+
+These five stills are indexed in the order supplied. The source image files are pending alongside the earlier screenshots.
+
+## Forest, siege aftermath and torchlit interiors
+
+| Reference | Cutscene direction | Gameplay direction |
+| --- | --- | --- |
+| 14. Survivors crossing a sunlit forest | Use shafts of light through mist, an old tree for scale, and leaf litter to ground the figures as they cross the clearing. | Use scattered light and roots to give forest paths depth while keeping moving units and walkable ground visible. |
+| 15. A gathering beneath a pale tree beside water | Frame a quiet gathering with an original landmark tree, a contrasting canopy and reflections in still water. | Use a distinctive tree and pond as a navigation landmark. Keep the shoreline and walkable approaches clear. |
+| 16. Smoke rising beyond a hillside settlement | Use a wide silhouette and windblown smoke to establish the aftermath from a distance. | Let smoke identify affected buildings or districts while preserving contrast around gates, roads and units. |
+| 17. Torch beside a reinforced door | Use warm light to reveal rough masonry, iron fittings and an original figure near the doorway. | Light doorways and other points of interest with a small amber glow that keeps their outlines visible. |
+| 18. A torch in a circular stone chamber | Let one light source reveal the chamber's depth, with arches receding around a central stone feature. | Use the layout, pools of light and clear exit silhouettes to orient players in dark interiors. |
+
+The five examples are listed in the order supplied. The source image files are pending alongside the earlier screenshots.
+
+## Winter architecture, portraits and firelight
+
+These references describe visual qualities for original Shattered Crowns art. Apply them to both cutscenes and the playable world at their respective viewing distances.
+
+| Reference | Visual direction |
+| --- | --- |
+| 19. Towering hall in cold light | Use tall shadowed walls, steps and a narrow opening of blue daylight. Design original ironwork and keep entrances readable from the map camera. |
+| 20. Gesture in falling snow | Isolate a small movement against a soft dark background, with cool rim light and a trace of amber in the distance. |
+| 21. Fortification in a whiteout | Treat snow and mist as layers that simplify the view. Preserve the gate silhouette and enough contrast to follow the approach during play. |
+| 22. Winter shelter | Let wind and snow reveal the shape of a weathered fabric roof. Give the shelter an original frame, roofline and regional markers. |
+| 23. Figure in a dim shelter | Use a faint edge of light to reveal hair, cloth and the depth between layered hanging fabrics. |
+| 24. Amber-lit shelter interior | Use woven walls, timber, bedding and diffuse warm light for a lived-in atmosphere. Layer foreground materials to give cutscenes depth. |
+| 25. Warm portrait in deep shade | Let soft side light catch the eyes and the texture of an original face. Keep the background understated. |
+| 26. Portrait in filtered daylight | Use warm, soft backlight and a quiet expression. Borrow the lighting for original character portraits. |
+| 27. Family moment inside a shelter | Convey warmth through figures grouped close together, cloth textures and muted amber light. Use this mood for civilian and settlement scenes. |
+| 28. Figures in a dark stone room | Use restrained overhead light, rough walls and foreground shapes to build tension around original characters and props. |
+| 29. Figure through firelit smoke | Use warm light from below against a cooler silhouette. Keep smoke translucent enough for the subject to read. |
+| 30. Flames and reflected light on the ground | Study the shape of flames, drifting embers and amber light across rough flooring. Apply the effect to original braziers or damaged scenery. |
+
+The entries follow the order of the two screenshot batches. The original image files are unavailable to archive.
+
+## Snowbound travel and northern clothing
+
+| Reference | Visual direction |
+| --- | --- |
+| 31. Travellers crossing a snowy slope | Use a wide view, scattered dark rocks and spaced figures to show the scale of the pass. Keep the route and each traveller readable at game zoom. |
+| 32. Winter travellers at close range | Design original layered wool, fur and hide garments with frost along seams and hems. Distinguish travellers by silhouette and material tones against the snow. |
+| 33. Low viewpoint in a snowy encounter | Use a close foreground silhouette and softly blurred figures against pale ground to give the scene depth and tension. |
+| 34. Two figures framed by distant ridges | Place a small exchange against receding blue-grey mountain layers. Keep the figures readable through contrast between dark clothing and snow. |
+| 35. Ceremonial winter clothing | Use pale carved ornaments, heavy woven layers and frost as inspiration for original northern ritual attire. Simplify the details into a recognizable silhouette for gameplay. |
+
+These entries follow the order supplied. The source screenshots remain in the owner conversation.
