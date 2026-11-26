@@ -11,3 +11,22 @@ test('The first completed building of a kind plays its scene once; Escape skips 
  await p.evaluate(()=>window.dispatchEvent(new CustomEvent('sc-construction-completed',{detail:{id:9002,type:'chapel'}})));await p.waitForTimeout(1600);assert.equal(await p.locator('#sc62Scene').count(),0,'a scene is remembered for this city and does not repeat');
  await p.evaluate(()=>window.dispatchEvent(new CustomEvent('sc-construction-completed',{detail:{id:9003,type:'farm'}})));await p.waitForTimeout(1200);assert.equal(await p.locator('#sc62Scene').count(),0)});
 test('Automated sessions without the intro flag never open building scenes',async t=>{const p=await start(t);await p.evaluate(()=>window.dispatchEvent(new CustomEvent('sc-construction-completed',{detail:{id:9101,type:'school'}})));await p.waitForTimeout(1500);assert.equal(await p.locator('#sc62Scene').count(),0)});
+test('Finishing or skipping a building scene restores the city camera',async t=>{
+ const p=await start(t,'/?intro=1');
+ for(const exit of ['ended','Escape']){
+  const before=await p.evaluate(()=>{
+   const viewport=document.getElementById('field').parentElement;
+   viewport.scrollLeft=120;viewport.scrollTop=100;
+   const position=sc148Camera.state();
+   sc62Scenes.play('school');
+   viewport.scrollLeft=0;viewport.scrollTop=0;
+   return position;
+  });
+  assert.ok(before.x>0&&before.y>0,'fixture must start away from the origin');
+  assert.notDeepEqual(await p.evaluate(()=>sc148Camera.state()),before);
+  if(exit==='Escape')await p.keyboard.press('Escape');
+  else await p.locator('#sc62Scene video').evaluate(video=>video.dispatchEvent(new Event('ended')));
+  await p.locator('#sc62Scene').waitFor({state:'detached'});
+  assert.deepEqual(await p.evaluate(()=>sc148Camera.state()),before);
+ }
+});

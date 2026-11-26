@@ -14,12 +14,14 @@ test('Market panel shows prices, trading moves prices and gold, and cycling neve
  await p.waitForFunction(()=>{const m=document.querySelector('#scCityInspection #scBuildingMenu');return m&&!m.hidden&&/Trade/.test(m.innerText)},null,{timeout:3000});
  assert.equal(await p.locator('#scMarketPanel').count(),0,'no floating panel any more');
  const txt=await p.locator('#scBuildingMenu').innerText();
- assert.match(txt,/Food[\s\S]*Planks[\s\S]*Stone/);assert.match(txt,/Advisor:/);
- const st=()=>p.evaluate(()=>({g:scCitySave.capture().state.resources,p:scMarket.state().prices}));
+ assert.match(txt,/Food[\s\S]*Wood[\s\S]*Stone/);assert.match(txt,/Advisor:/);
+ assert.equal(await p.locator('#scBuildingMenu div[data-good="wood"] > div > b').innerText(),'Wood','the sale names the raw resource it consumes');
+ const st=()=>p.evaluate(()=>({g:scCitySave.capture().state.resources,p:scMarket.state().prices,planks:scTradeTown.snapshot().planks}));
  const a=await st();
  await p.locator('#scBuildingMenu [data-side="sell"][data-good="wood"]').click();
  const b=await st();
  assert.ok(b.g.gold>a.g.gold,'selling gives gold');assert.equal(b.g.wood,a.g.wood-10);assert.ok(b.p.wood<a.p.wood,'selling lowers the price');
+ assert.equal(b.planks,a.planks,'selling raw wood preserves manufactured planks');
  await p.locator('#scBuildingMenu [data-side="buy"][data-good="stone"]').click();
  const c=await st();assert.equal(c.g.stone,b.g.stone+10);assert.ok(c.p.stone>b.p.stone,'buying raises the price');assert.ok(c.g.gold<b.g.gold);
  // no gold printing: buy and sell the same good repeatedly, total wealth (gold + goods at base value) must never grow
