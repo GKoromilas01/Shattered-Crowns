@@ -1405,7 +1405,7 @@ window.scBuildingMenus=(function(){
  return {register:(type,fn)=>{menus[type]=fn},render,has:t=>!!menus[t],get:t=>menus[t]};
 })();
 window.scMarket=(function(){
- const GOODS=[{id:'food',label:'Food',base:1.2},{id:'wood',label:'Planks',base:1.45},{id:'stone',label:'Stone',base:1.5}];
+ const GOODS=[{id:'food',label:'Food',base:1.2},{id:'wood',label:'Wood',base:1.45},{id:'stone',label:'Stone',base:1.5}];
  const REGION={home:{food:1,wood:1,stone:1},brookstead:{food:.8,wood:1,stone:1.3}};
  const LOT=10,SPREAD=.15,STEP=.04,LOW=.5,HIGH=2;
  let prices={},traded=0,box=null,last='',trend={};
@@ -1473,8 +1473,9 @@ window.scTax=(function(){
   const t=pct>=90?'Storage is nearly full. Build another granary or sell surplus food at the Market.':(f<30?'Food is low. Add a farm or fishery, and keep the granary staffed.':suggestion(b,'Stock is healthy.'));
   return {html:'<b>Granary</b>'+line('Stock: '+f+' / '+cap+' food ('+pct+'%)')+line(staff(b))+(marketBuilt()?line(btn('sell','Sell 10 food',f<10)):'<div style="opacity:.7;margin:3px 0">Build a Market to sell surplus.</div>')+tip(t),bind:bindActs(a=>{if(a==='sell'){const r=window.scMarket.trade('sell','food',10);if(!r.ok)msg('Cannot sell: '+r.why+'.');R()}})}});
  // Lumberyard
- M.register('lumberyard',b=>{const w=Math.floor(wood);
-  return {html:'<b>Lumberyard</b>'+line(staff(b)+' · up to 5 wood per cycle')+line('Wood in store: '+w+(marketBuilt()?' · Market price '+window.scMarket.price('wood').toFixed(2):''))+(marketBuilt()?line(btn('sell','Sell 10 planks',w<10)):'')+tip(w<80?'Wood is running low. Keep it staffed before starting big builds.':(marketBuilt()?'You have spare wood. Selling a few planks is a quick source of gold.':suggestion(b,'Wood supply looks fine.'))),bind:bindActs(a=>{if(a==='sell'){const r=window.scMarket.trade('sell','wood',10);if(!r.ok)msg('Cannot sell: '+r.why+'.');R()}})}});
+ M.register('lumberyard',b=>{const w=Math.floor(wood),canTrade=marketBuilt();
+  const sale=canTrade?line(btn('sell','Sell 10 wood',w<10))+(w<10?line('Need '+(10-w)+' more wood to sell.'):''):line('Build a Market to sell surplus wood.');
+  return {html:'<b>Lumberyard</b>'+line(staff(b)+' · up to 5 wood per cycle')+line('Wood in store: '+w+(canTrade?' · Market price '+window.scMarket.price('wood').toFixed(2):''))+sale+tip(w<80?'Wood is running low. Keep it staffed before starting big builds.':(marketBuilt()?'You have spare wood. Selling surplus wood is a quick source of gold.':suggestion(b,'Wood supply looks fine.'))),bind:bindActs(a=>{if(a==='sell'){const r=window.scMarket.trade('sell','wood',10);if(!r.ok)msg('Cannot sell: '+r.why+'.');R()}})}});
  // Farm and Fishery
  for(const type of ['farm','fishery'])M.register(type,b=>{const e=entry(b),h=e&&e.last?e.last.harvest:0;
   return {html:'<b>'+(type==='farm'?'Farm':'Fishery')+'</b>'+line(staff(b))+line('Harvest this cycle: '+Math.round(h*10)/10+(e&&e.last&&e.last.logistics?' (+'+Math.round(e.last.logistics*10)/10+' by road)':''))+tip(suggestion(b,'Well supplied. Keep it staffed.'))}});
