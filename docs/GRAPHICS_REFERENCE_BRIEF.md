@@ -190,3 +190,24 @@ These five stills are indexed in the order supplied. The source image files are 
 | 18. A torch in a circular stone chamber | Let one light source reveal the chamber's depth, with arches receding around a central stone feature. | Use the layout, pools of light and clear exit silhouettes to orient players in dark interiors. |
 
 The five examples are listed in the order supplied. The source image files are pending alongside the earlier screenshots.
+
+## Winter architecture, portraits and firelight
+
+These references describe visual qualities for original Shattered Crowns art. Apply them to both cutscenes and the playable world at their respective viewing distances.
+
+| Reference | Visual direction |
+| --- | --- |
+| 19. Towering hall in cold light | Use tall shadowed walls, steps and a narrow opening of blue daylight. Design original ironwork and keep entrances readable from the map camera. |
+| 20. Gesture in falling snow | Isolate a small movement against a soft dark background, with cool rim light and a trace of amber in the distance. |
+| 21. Fortification in a whiteout | Treat snow and mist as layers that simplify the view. Preserve the gate silhouette and enough contrast to follow the approach during play. |
+| 22. Winter shelter | Let wind and snow reveal the shape of a weathered fabric roof. Give the shelter an original frame, roofline and regional markers. |
+| 23. Figure in a dim shelter | Use a faint edge of light to reveal hair, cloth and the depth between layered hanging fabrics. |
+| 24. Amber-lit shelter interior | Use woven walls, timber, bedding and diffuse warm light for a lived-in atmosphere. Layer foreground materials to give cutscenes depth. |
+| 25. Warm portrait in deep shade | Let soft side light catch the eyes and the texture of an original face. Keep the background understated. |
+| 26. Portrait in filtered daylight | Use warm, soft backlight and a quiet expression. Borrow the lighting for original character portraits. |
+| 27. Family moment inside a shelter | Convey warmth through figures grouped close together, cloth textures and muted amber light. Use this mood for civilian and settlement scenes. |
+| 28. Figures in a dark stone room | Use restrained overhead light, rough walls and foreground shapes to build tension around original characters and props. |
+| 29. Figure through firelit smoke | Use warm light from below against a cooler silhouette. Keep smoke translucent enough for the subject to read. |
+| 30. Flames and reflected light on the ground | Study the shape of flames, drifting embers and amber light across rough flooring. Apply the effect to original braziers or damaged scenery. |
+
+The entries follow the order of the two screenshot batches. The original image files are unavailable to archive.
