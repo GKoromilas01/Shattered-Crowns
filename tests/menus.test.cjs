@@ -50,3 +50,17 @@ test('Granary, Lumberyard and Farm have their own menus with a suggestion and a 
  m=await open(p,'farm','Farm');assert.match(await m.innerText(),/Farm[\s\S]*Staff[\s\S]*Harvest this cycle[\s\S]*Suggestion:/);
  assert.deepEqual(errs,[]);
 });
+test('House details start compact and can be expanded without hiding upgrades',async t=>{
+ const p=await game(t);
+ await p.evaluate(()=>{
+  __sc38.seed('house',640,400);
+  scCityEconomy.inspect(sc66World.buildings().find(b=>b.team===0&&b.type==='house').id);
+ });
+ await p.locator('#scBuildingMenu [data-sc66up]').waitFor();
+ const details=p.getByRole('button',{name:'Show housing details'});
+ assert.equal(await details.getAttribute('aria-expanded'),'false');
+ assert.match(await p.locator('#scBuildingMenu').innerText(),/Upgrade/);
+ await details.click();
+ assert.equal(await p.getByRole('button',{name:'Hide housing details'}).getAttribute('aria-expanded'),'true');
+ assert.ok(!await p.locator('#scCityInspection').evaluate(el=>el.classList.contains('sc33Compact')));
+});
