@@ -69,3 +69,20 @@ test('House details start compact and can be expanded without hiding upgrades',a
  assert.equal(await p.getByRole('button',{name:'Hide housing details'}).getAttribute('aria-expanded'),'true');
  assert.ok(!await p.locator('#scCityInspection').evaluate(el=>el.classList.contains('sc33Compact')));
 });
+for(const compact of [false,true])test('House inspection preserves the previous workplace detail preference: '+(compact?'compact':'expanded'),async t=>{
+ const p=await game(t);
+ const ids=await p.evaluate(()=>{
+  __sc38.seed('house',640,400);__sc38.seed('farm',780,400);
+  const owned=sc66World.buildings().filter(b=>b.team===0);
+  return {house:owned.find(b=>b.type==='house').id,farm:owned.find(b=>b.type==='farm').id};
+ });
+ await p.evaluate(id=>scCityEconomy.inspect(id),ids.farm);
+ if(compact)await p.locator('#sc33More').click();
+ assert.equal(await p.locator('#sc33More').getAttribute('aria-expanded'),String(!compact));
+ await p.evaluate(id=>scCityEconomy.inspect(id),ids.house);
+ assert.equal(await p.getByRole('button',{name:'Show housing details'}).getAttribute('aria-expanded'),'false');
+ if(compact)await p.getByRole('button',{name:'Show housing details'}).click();
+ await p.evaluate(id=>scCityEconomy.inspect(id),ids.farm);
+ assert.equal(await p.locator('#sc33More').getAttribute('aria-expanded'),String(!compact),'House disclosure must not change the workplace preference');
+ assert.equal(await p.locator('#scCityInspection').evaluate(el=>el.classList.contains('sc33Compact')),compact);
+});
