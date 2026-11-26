@@ -211,3 +211,15 @@ These references describe visual qualities for original Shattered Crowns art. Ap
 | 30. Flames and reflected light on the ground | Study the shape of flames, drifting embers and amber light across rough flooring. Apply the effect to original braziers or damaged scenery. |
 
 The entries follow the order of the two screenshot batches. The original image files are unavailable to archive.
+
+## Snowbound travel and northern clothing
+
+| Reference | Visual direction |
+| --- | --- |
+| 31. Travellers crossing a snowy slope | Use a wide view, scattered dark rocks and spaced figures to show the scale of the pass. Keep the route and each traveller readable at game zoom. |
+| 32. Winter travellers at close range | Design original layered wool, fur and hide garments with frost along seams and hems. Distinguish travellers by silhouette and material tones against the snow. |
+| 33. Low viewpoint in a snowy encounter | Use a close foreground silhouette and softly blurred figures against pale ground to give the scene depth and tension. |
+| 34. Two figures framed by distant ridges | Place a small exchange against receding blue-grey mountain layers. Keep the figures readable through contrast between dark clothing and snow. |
+| 35. Ceremonial winter clothing | Use pale carved ornaments, heavy woven layers and frost as inspiration for original northern ritual attire. Simplify the details into a recognizable silhouette for gameplay. |
+
+These entries follow the order supplied. The source screenshots remain in the owner conversation.
