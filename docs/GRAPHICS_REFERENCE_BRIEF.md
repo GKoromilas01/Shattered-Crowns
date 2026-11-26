@@ -164,3 +164,17 @@ The owner wants this atmosphere in both cutscenes and the playable world. Use cl
 | 8. Torchlit arch and dark passage | Use a warm pool of moving light to reveal masonry, the figure and the corridor entrance in stages. | Use warm localized lighting for original interiors and gates while keeping crossings, exits and interactable areas readable. |
 
 Use the earlier shipyard, market, chapel, council, regional and strategy-game references above as part of the same collection. The source stills are currently visible in the owner conversation and their image files are still pending. The visual direction calls for original Shattered Crowns characters, locations and compositions.
+
+## Additional cinematic screenshots supplied 26 November 2026
+
+The owner clarified that these are examples of mood, scale and visual language. Create original Shattered Crowns scenes from the cues in both columns.
+
+| Reference | Cutscene direction | Gameplay direction |
+| --- | --- | --- |
+| 9. Rock spire against an open sky | Use a low viewpoint, weathered rock and open sky to establish scale and isolation. | Give original cliffs and outcrops distinctive silhouettes. Keep their bases and the routes around them legible at map zoom. |
+| 10. Quiet conversation in woodland | Use close framing, soft side light and weathered armour to make a small exchange feel personal. | Carry the woodland palette and original equipment materials into character portraits and readable unit silhouettes. |
+| 11. Figure beside a weathered carving | Use cool, low light across an original stone carving to suggest local history and tension. | Give regional ruins and gateways distinctive carvings that remain readable through broad shapes and edge lighting. |
+| 12. Survivors passing through a damaged settlement | Layer broken timbers, stone and blue-grey haze to show the aftermath through the environment. | Show damaged buildings with broken rooflines and controlled haze. Keep walkable routes visible through the debris. |
+| 13. Wolves at a ruined gateway | Use original wildlife and a layered doorway composition to convey scale and uncertainty. | Give wildlife distinct silhouettes and keep arches, rubble and the route ahead visually clear. |
+
+These five stills are indexed in the order supplied. The source image files are pending alongside the earlier screenshots.
