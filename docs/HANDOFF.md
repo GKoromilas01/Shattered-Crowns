@@ -1,3 +1,7 @@
+# Handoff
+
+Start future single-player version planning with the [single-player roadmap and version index](ROADMAP_SINGLE_PLAYER.md). The sections below retain historical development checkpoints.
+
 ## Current candidate — v0.60 A Slower Frontier
 
 Continue branch `ui/v060-slower-frontier`. Read [MILESTONE60.md](MILESTONE60.md) and [validation/v060-slower-frontier.md](validation/v060-slower-frontier.md). This includes the completed v059 naval/terrain work and the approved slower pace plus first land-war loop. Historical v059 blockers are resolved. Do not merge main or describe pending CI as verified.
