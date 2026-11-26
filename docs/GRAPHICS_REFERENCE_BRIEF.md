@@ -178,3 +178,15 @@ The owner clarified that these are examples of mood, scale and visual language. 
 | 13. Wolves at a ruined gateway | Use original wildlife and a layered doorway composition to convey scale and uncertainty. | Give wildlife distinct silhouettes and keep arches, rubble and the route ahead visually clear. |
 
 These five stills are indexed in the order supplied. The source image files are pending alongside the earlier screenshots.
+
+## Forest, siege aftermath and torchlit interiors
+
+| Reference | Cutscene direction | Gameplay direction |
+| --- | --- | --- |
+| 14. Survivors crossing a sunlit forest | Use shafts of light through mist, an old tree for scale, and leaf litter to ground the figures as they cross the clearing. | Use scattered light and roots to give forest paths depth while keeping moving units and walkable ground visible. |
+| 15. A gathering beneath a pale tree beside water | Frame a quiet gathering with an original landmark tree, a contrasting canopy and reflections in still water. | Use a distinctive tree and pond as a navigation landmark. Keep the shoreline and walkable approaches clear. |
+| 16. Smoke rising beyond a hillside settlement | Use a wide silhouette and windblown smoke to establish the aftermath from a distance. | Let smoke identify affected buildings or districts while preserving contrast around gates, roads and units. |
+| 17. Torch beside a reinforced door | Use warm light to reveal rough masonry, iron fittings and an original figure near the doorway. | Light doorways and other points of interest with a small amber glow that keeps their outlines visible. |
+| 18. A torch in a circular stone chamber | Let one light source reveal the chamber's depth, with arches receding around a central stone feature. | Use the layout, pools of light and clear exit silhouettes to orient players in dark interiors. |
+
+The five examples are listed in the order supplied. The source image files are pending alongside the earlier screenshots.
