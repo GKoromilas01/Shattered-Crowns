@@ -2,7 +2,7 @@
 
 For new single-player versions, start with the [roadmap and version briefs](docs/ROADMAP_SINGLE_PLAYER.md). The branch named in the historical guidance below is an older checkpoint. Verify the current baseline and branch before editing.
 
-For graphics in gameplay and cutscenes, read the consolidated [owner graphics reference brief](docs/GRAPHICS_REFERENCE_BRIEF.md), including both sets of screenshots from 26 November.
+For graphics in gameplay and cutscenes, read the consolidated [owner graphics reference brief](docs/GRAPHICS_REFERENCE_BRIEF.md), including all screenshot batches from 26 November.
 
 For every change, record the version, branch or PR, what changed, verification results, and the next actionable step in the relevant version brief or [handoff](docs/HANDOFF.md). If the owner needs to act, tell him directly what to do and where, including any approval required for a merge, deployment, or credit spend.
 
