@@ -26,6 +26,16 @@ Use the owner's [four screenshot examples](GRAPHICS_REFERENCE_BRIEF.md#strategy-
 
 Start with one playable river-gate scene in the current renderer. Judge it at normal play zoom with real movement and crossing orders. Evaluate a larger renderer project after that test. The historical estimate is 420–840 Leonardo tokens for 6–12 still generations, based on the logged rate of 70 per image. Check the current rate and get owner approval before spending credits on art, music or video.
 
+## Continental starting villages and music
+
+Each continent's starting village should have a distinct cultural identity. Express it through architecture, visual arts and paintings, religious traditions and spaces, poetry, literature, customs, and music. Begin with one playable starting village per continent as regions are added. Later villages on the same continent can share architecture and traditions while varying their banners, leaders, proverbs and music.
+
+The owner's inspiration list is Aztec, Indian, Persian, Roman, Greek, Arab, Egyptian, Ottoman, Gaulish, African, Spanish, Visigothic, Gothic, and Viking. Use these as inspiration for original fictional regions. Choose specific periods and traditions when designing a region, especially for the broad Indian, Arab and African references. Keep Visigothic and Gothic as separate entries in the inspiration list pending that research. The list does not set a release order or map every inspiration to a separate continent.
+
+Plan one new original anthem for every version. Use its music to establish the identity of the featured village or culture. Ask the owner before any new Leonardo.ai anthem generation, with the proposed style and an estimate of the credits. Record the approval and track details in the version brief and asset log.
+
+Add new owner direction to this roadmap as it arrives. Carry the relevant details into the affected version brief, and record what was implemented and tested for Claude at the end of each version.
+
 ## Progression and later work
 
 - Earn city stages through visible achievements in the settlement. Plan six Keep appearances over time, with three meaningful stages for the first campaign. Use the existing three-look upgrade pattern for ordinary buildings where it adds a visible benefit. Tie benefits to staffing, education or production.
