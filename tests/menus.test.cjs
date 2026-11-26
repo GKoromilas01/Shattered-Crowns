@@ -1,6 +1,6 @@
 const {test,before,after}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),http=require('node:http');
 const {launchBrowser,browserPage}=require('./support/browser.cjs');
-const adapter=`window.__sc38={inspect(type){inspectedBuilding=buildings.find(b=>b.team===0&&b.type===type);selected=[];updateUI();return el('buildingInspector').textContent},seed(type,x,y){const b=addBuilding(0,type,x,y);updateUI();return !!b},advance(s){for(let left=s;left>1e-8;left-=.25)tick(Math.min(.25,left));}};`;
+const adapter=`window.__sc38={inspect(type){inspectedBuilding=buildings.find(b=>b.team===0&&b.type===type);selected=[];updateUI();return el('buildingInspector').textContent},seed(type,x,y){const b=addBuilding(0,type,x,y);updateUI();return !!b},setWood(amount){wood=amount;updateUI()},advance(s){for(let left=s;left>1e-8;left-=.25)tick(Math.min(.25,left));}};`;
 let browser,server,url;
 before(async()=>{server=http.createServer((q,r)=>{r.setHeader('Content-Type','text/html');r.end(fs.readFileSync('index.html','utf8').replace('window.scHoverBuildings=buildings;function frame',adapter+'window.scHoverBuildings=buildings;function frame'))});await new Promise(r=>server.listen(0,'127.0.0.1',r));url='http://127.0.0.1:'+server.address().port;browser=await launchBrowser()});
 after(async()=>{await browser?.close();server?.close()});
@@ -44,9 +44,28 @@ test('Granary, Lumberyard and Farm have their own menus with a suggestion and a 
  assert.equal(b.food,a.food-10);assert.ok(b.gold>a.gold);
  await closePanel(p);
  m=await open(p,'lumberyard','Lumberyard');assert.match(await m.innerText(),/Lumberyard[\s\S]*Wood in store[\s\S]*Market price/);
- const c=await res(p);await m.locator('button[data-act="sell"]').click();assert.equal((await res(p)).wood,c.wood-10);
+ const c=await res(p);
+ await m.getByRole('button',{name:'Sell 10 wood',exact:true}).click();
+ assert.equal((await res(p)).wood,c.wood-10);
+ await p.evaluate(()=>__sc38.setWood(7));
+ await p.waitForFunction(()=>document.querySelector('#scBuildingMenu')?.innerText.includes('Need 3 more wood'));
+ assert.equal(await m.getByRole('button',{name:'Sell 10 wood',exact:true}).isDisabled(),true);
  await closePanel(p);
  await p.evaluate(()=>{__sc38.seed('farm',780,400)});
  m=await open(p,'farm','Farm');assert.match(await m.innerText(),/Farm[\s\S]*Staff[\s\S]*Harvest this cycle[\s\S]*Suggestion:/);
  assert.deepEqual(errs,[]);
+});
+test('House details start compact and can be expanded without hiding upgrades',async t=>{
+ const p=await game(t);
+ await p.evaluate(()=>{
+  __sc38.seed('house',640,400);
+  scCityEconomy.inspect(sc66World.buildings().find(b=>b.team===0&&b.type==='house').id);
+ });
+ await p.locator('#scBuildingMenu [data-sc66up]').waitFor();
+ const details=p.getByRole('button',{name:'Show housing details'});
+ assert.equal(await details.getAttribute('aria-expanded'),'false');
+ assert.match(await p.locator('#scBuildingMenu').innerText(),/Upgrade/);
+ await details.click();
+ assert.equal(await p.getByRole('button',{name:'Hide housing details'}).getAttribute('aria-expanded'),'true');
+ assert.ok(!await p.locator('#scCityInspection').evaluate(el=>el.classList.contains('sc33Compact')));
 });
