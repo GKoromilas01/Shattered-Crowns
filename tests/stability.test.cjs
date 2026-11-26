@@ -41,7 +41,11 @@ test('House placement spends resources, rejects occupied ground, and undo refund
  await p.waitForFunction(()=>window.scHoverBuildings.some(b=>b.team===0&&b.type==='house'));
  assert.equal(Number(await p.locator('#resWood').innerText()),Number(before)-60);
  await choose(p,'House');await p.mouse.click(at.x,at.y);assert.equal(await p.evaluate(()=>window.scHoverBuildings.filter(b=>b.type==='house'&&b.team===0).length),1);
- await p.locator('#sc1369Undo').click();assert.equal(await p.evaluate(()=>window.scHoverBuildings.filter(b=>b.type==='house'&&b.team===0).length),0);assert.equal(await p.locator('#resWood').innerText(),before);
+ await p.locator('#sc1369Undo').click();
+ // Undo replaces the building array before the next frame publishes the hover data.
+ const houseCount=await p.evaluate(()=>window.scCitySave.capture().state.buildings.filter(b=>b.type==='house'&&b.team===0).length);
+ assert.equal(houseCount,0);
+ assert.equal(await p.locator('#resWood').innerText(),before);
 });
 for(const size of [3,6,9])test(`Road drag preserves ${size}×${size} perimeter, costs, and undo`,async t=>{
  const {page:p}=await game(t,{wealth:true});await p.locator('#sc154Pause').click();await choose(p,'Road');
