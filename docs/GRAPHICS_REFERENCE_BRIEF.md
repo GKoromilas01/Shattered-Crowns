@@ -7,6 +7,10 @@
 
 ## Read this first
 
+Use the scene artwork from all supplied examples as visual direction for original cutscenes and gameplay. Focus on the landscape and interiors within the scene, architecture, costume materials, character scale, lighting and composition. Ignore browser and desktop graphics, page backgrounds, lettering, subtitles, logos, player controls and game HUD overlays. If image files are provided for the reference archive, keep the scene area and crop away surrounding interface wherever possible.
+
+The descriptions in this file are the durable reference for Claude. Screenshot originals are currently held in the owner conversation. Keep the conversation or a local copy if the original images are needed later.
+
 The owner requested **similar atmosphere and practical medieval materials, not copies**. Create original faces, garments, buildings, boats, layouts and compositions. The supplied film stills are not game assets. Do not reproduce actors, recognizable costumes, franchise insignia, screenshots or exact camera compositions.
 
 Retain the game's established painted medieval look. These references do not request a switch to live-action photorealism. Follow [ART_DIRECTION.md](ART_DIRECTION.md), [ASSET_LOG.md](ASSET_LOG.md) and [AGENTS.md](../AGENTS.md). The main palette is warm limestone/parchment, timber/leather/earth browns, muted ochre/terracotta, olive vegetation and deep teal-blue water. Use natural light, restrained saturation and clear silhouettes.
