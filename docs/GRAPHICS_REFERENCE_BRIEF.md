@@ -138,3 +138,16 @@ The owner added examples of court gatherings in enclosed gardens, ceremonial fig
 ## Current implementation boundary
 
 v0.51 work is **From Village to Town**: an earned charter and a real mixed-cargo progression through existing production and Market controls. The owner clarified that all screenshots in this brief are for later builds, not the next version. Store this direction for future asset production. It does not authorize expanding the release into ships, warfare, religious systems, new crowds or paid asset generation without following the owner's scope and the repository rules.
+
+## Strategy-game screenshots supplied 26 November 2026
+
+The owner supplied four screenshots as graphics references for future versions. Read them in the order below. Use these cues to guide original Shattered Crowns artwork and presentation.
+
+| Reference | What to carry forward |
+| --- | --- |
+| 1. Fortified river gate | Give a city entrance a clear silhouette with round towers, continuous walls, a distinct roof and banners. Connect the paved approach, bridge and gate visually. Use limestone, muted grass and teal water to distinguish each surface at normal play zoom. |
+| 2. Characters at the bridge | Keep individual figures legible against open ground through silhouette, costume accents and contact shadows. Blend dirt tracks into grass and use the bridge and riverbank to frame the scene. |
+| 3. Portrait over the city | Frame important dialogue with a large original character portrait, a readable speaker label and enough open space to keep the surrounding city visible. Use localized firelight and smoke to draw attention to the affected building. |
+| 4. Formations at a crossing | Distinguish opposing groups through heraldry, color and formation shape. Use a visible destination and restrained route markers to make an order readable across the bridge. |
+
+For future uploads, keep the source images together under `docs/graphics-references/` and add a descriptive caption for each. The four screenshots above were visible in the conversation. Their original files still need to be attached to this reference collection.
