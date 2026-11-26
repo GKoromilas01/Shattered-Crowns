@@ -1,3 +1,7 @@
 # Start here — Shattered Crowns
 
+For new single-player versions, start with the [roadmap and version briefs](docs/ROADMAP_SINGLE_PLAYER.md). The branch named in the historical guidance below is an older checkpoint. Verify the current baseline and branch before editing.
+
+For every change, record the version, branch or PR, what changed, verification results, and the next actionable step in the relevant version brief or [handoff](docs/HANDOFF.md). If the owner needs to act, tell him directly what to do and where, including any approval required for a merge, deployment, or credit spend.
+
 Read [AGENTS.md](AGENTS.md), then [docs/CONTINUATION.md](docs/CONTINUATION.md), [docs/MILESTONE60.md](docs/MILESTONE60.md), [docs/MILESTONE61.md](docs/MILESTONE61.md), [docs/MILESTONE62.md](docs/MILESTONE62.md), [docs/MILESTONE63.md](docs/MILESTONE63.md), [docs/MILESTONE64.md](docs/MILESTONE64.md), [docs/MILESTONE65.md](docs/MILESTONE65.md), [docs/MILESTONE66.md](docs/MILESTONE66.md) and [validation](docs/validation/v060-slower-frontier.md). Continue `ui/v060-slower-frontier`; main is older. Preserve existing media, strict save compatibility and selected builders. Keep each version’s manual checks inside Advisor Tester. Do not self-merge. The owner approved publishing verified releases, but this session cannot create GitHub Releases: device login succeeded in the browser, then CLI completion failed Forbidden. Do not repeat OAuth; use the owner’s manual release workflow after CI passes.
