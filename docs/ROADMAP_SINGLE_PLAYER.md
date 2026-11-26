@@ -10,7 +10,7 @@ Single-player sets the priorities. Multiplayer will have separate goals, rules a
 
 ## Version index
 
-The numbers below are proposed planning slots. Each linked Markdown file starts empty. When the owner approves a version's scope, fill in its brief with the verified starting commit, agreed scope, assets and budget, acceptance checks, save compatibility, and open questions. Read the brief before starting implementation. An empty brief means the version still needs its scope recorded.
+The numbers below are proposed planning slots. Each linked Markdown file carries the proposed scope and a player check. Before implementing a version, record its approved scope, verified starting commit, assets and budget, save compatibility, and open questions in that brief. After implementation, add the tested commit, verification results and next owner action under the same brief.
 
 | Version brief | Proposed focus | Player check |
 | --- | --- | --- |
