@@ -151,3 +151,16 @@ The owner supplied four screenshots as graphics references for future versions. 
 | 4. Formations at a crossing | Distinguish opposing groups through heraldry, color and formation shape. Use a visible destination and restrained route markers to make an order readable across the bridge. |
 
 For future uploads, keep the source images together under `docs/graphics-references/` and add a descriptive caption for each. The four screenshots above were visible in the conversation. Their original files still need to be attached to this reference collection.
+
+## Cinematic screenshots supplied 26 November 2026
+
+The owner wants this atmosphere in both cutscenes and the playable world. Use close framing and greater material detail in cutscenes, and translate the same stone, foliage, textiles and light into clear shapes at normal gameplay zoom.
+
+| Reference | Cutscene direction | Gameplay direction |
+| --- | --- | --- |
+| 5. Travellers on a cypress-lined path | Frame an original group through layers of dark cypress, olive-toned foliage and a rough stone path. Use warm daylight and subdued earth tones. | Make the road easy to follow with gaps between trees, rocky verges and a distinct walking surface. Keep silhouettes visible beside dense foliage. |
+| 6. Stone stair and round tower | Let foliage frame the climb and gradually reveal the tower. Convey height with broad steps, warm masonry and deep shade at the entry. | Use the stair and tower as landmarks. Give the approach a clear route and the tower a recognizable silhouette over the canopy. |
+| 7. Character close-up beside warm masonry | Use original faces and costume construction, layered weathered materials, soft background focus and natural warm light. | Carry the material palette and clothing shapes into portraits and units. Keep class and allegiance recognizable at map scale. |
+| 8. Torchlit arch and dark passage | Use a warm pool of moving light to reveal masonry, the figure and the corridor entrance in stages. | Use warm localized lighting for original interiors and gates while keeping crossings, exits and interactable areas readable. |
+
+Use the earlier shipyard, market, chapel, council, regional and strategy-game references above as part of the same collection. The source stills are currently visible in the owner conversation and their image files are still pending. The visual direction calls for original Shattered Crowns characters, locations and compositions.

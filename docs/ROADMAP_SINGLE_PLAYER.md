@@ -24,6 +24,8 @@ The numbers below are proposed planning slots. Each linked Markdown file carries
 
 Use the owner's [four screenshot examples](GRAPHICS_REFERENCE_BRIEF.md#strategy-game-screenshots-supplied-26-november-2026) as the visual target for the map and game. Aim for elevated perspective and depth, readable stone fortifications and bridges, natural banks and paths, grounded character scale and shadows, and legible formations. Design original architecture, heraldry, portraits and interface elements. The screenshots are visible in the owner conversation. The source image files still need to be added to the reference collection.
 
+Use the [cinematic references](GRAPHICS_REFERENCE_BRIEF.md#cinematic-screenshots-supplied-26-november-2026) for cutscene framing and carry the same materials, landscape and lighting into the playable world.
+
 Start with one playable river-gate scene in the current renderer. Judge it at normal play zoom with real movement and crossing orders. Evaluate a larger renderer project after that test. The historical estimate is 420–840 Leonardo tokens for 6–12 still generations, based on the logged rate of 70 per image. Check the current rate and get owner approval before spending credits on art, music or video.
 
 ## Continental starting villages and music
