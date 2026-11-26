@@ -72,6 +72,17 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: candidate
+      - name: Wait until GitHub lists the github-pages artifact
+        shell: bash
+        run: |
+          # deploy-pages looks the artifact up by name right after upload; on 2026-11-25 three attempts
+          # found 0 artifacts <1s after a successful upload, so poll until the listing shows it.
+          for i in $(seq 1 30); do
+            n=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?name=github-pages" --jq '.total_count' || echo 0)
+            if [ "$n" -ge 1 ]; then echo "github-pages visible after $i check(s)"; sleep 10; exit 0; fi
+            sleep 5
+          done
+          echo "github-pages artifact never became visible" >&2; exit 1
       - id: publish
         name: Publish approved verified candidate
         uses: actions/deploy-pages@v5
@@ -102,6 +113,18 @@ jobs:
         with:
           name: rollback-pages
           path: fallback
+      - name: Wait until GitHub lists the rollback-pages artifact
+        if: always() && (failure() || cancelled()) && (steps.publish.outcome == 'success' || steps.publish.outcome == 'failure' || steps.publish.outcome == 'cancelled')
+        shell: bash
+        run: |
+          # deploy-pages looks the artifact up by name right after upload; on 2026-11-25 three attempts
+          # found 0 artifacts <1s after a successful upload, so poll until the listing shows it.
+          for i in $(seq 1 30); do
+            n=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?name=rollback-pages" --jq '.total_count' || echo 0)
+            if [ "$n" -ge 1 ]; then echo "rollback-pages visible after $i check(s)"; sleep 10; exit 0; fi
+            sleep 5
+          done
+          echo "rollback-pages artifact never became visible" >&2; exit 1
       - id: restore
         name: Restore last verified stable site after publish or live-smoke failure
         if: always() && (failure() || cancelled()) && (steps.publish.outcome == 'success' || steps.publish.outcome == 'failure' || steps.publish.outcome == 'cancelled')
