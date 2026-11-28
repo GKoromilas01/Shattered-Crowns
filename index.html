@@ -287,7 +287,7 @@ const api={DURATION,EVENTS,AT,start,pending,choose,checks,assess,parse};if(typeo
 </script><script id="sc52TesterData">
 /* Current-release manual checks; these are never marked passed automatically. */
 window.sc52TesterSteps=Object.freeze([
- {text:"v0.68 First Winter: select your Keep, then Begin First Winter. EXPECT six live readiness checks and about24 active minutes to prepare. Select idle workers here, right-click deposits, and select builders before placing construction.",manual:true},
+ {text:"v0.69 Settlement Cinema: inspect a building for Needs and Preview road; confirm inside the panel without moving the map. Video subtitles are matching italic text without strips. New Leonardo clips/anthem pending. First Winter: select your Keep, then Begin First Winter. EXPECT six live readiness checks and about24 active minutes to prepare. Select idle workers here, right-click deposits, and select builders before placing construction.",manual:true},
  {text:"Winter council: after about6/12/18 active minutes, review the food caravan, cold snap and stone merchant at the Keep. EXPECT explicit costs/consequences, no repeated payment, and decisions retained in city backups. Pause does not advance the timer.",manual:true},
  {text:"After preparation and three decisions, Assess settlement readiness. EXPECT deficits explained without losing your city; fix them and reassess. Success leaves sandbox play open. Export a backup, restore it, and verify the charter and decisions remain.",manual:true},
 ].map(Object.freeze));
@@ -4533,6 +4533,25 @@ window.scFirstWinter=Object.freeze({
  assess:()=>{if(!scWinterAllowed())return {ok:false};const r=window.scWinterRules.assess(scWinterState,elapsed,scWinterFacts());if(r.ok){scWinterState=r.state;scWinterChanged(r.message)}return r}
 });
 
+/* Inspector-only road transactions. The existing planner owns geometry/costs. */
+let sc69Epoch=0;
+for(const event of ['sc-city-started','sc-city-restored'])window.addEventListener(event,()=>sc69Epoch++);
+function sc69Plan(id){
+ const b=buildings.find(b=>b.id===id&&b.team===0&&alive(b)&&b.type!=='road');if(!b)return null;
+ const p=scConnectPlan(b);if(!p)return null;
+ return {id:b.id,epoch:sc69Epoch,cityId:window.scCitySave.status().cityId,cost:p.cost,blocked:p.blocked||0,start:{x:b.x,y:b.y},target:{id:p.target.id,x:p.target.x,y:p.target.y},points:p.points.map(p=>({x:p.x,y:p.y}))};
+}
+window.scSettlementAccess=Object.freeze({
+ plan:sc69Plan,
+ connect(id,expected){
+  if(!scVillageActionReady()||inspectedBuilding?.id!==id||!window.scCaravan.activationAllowed()||!window.sc50UI.activationAllowed())return {ok:false,reason:'Select this building again before connecting.'};
+  const plan=sc69Plan(id);if(!expected||!plan||JSON.stringify(expected)!==JSON.stringify(plan))return {ok:false,reason:'City or route changed. Preview the path again.'};
+  if(plan.blocked)return {ok:false,reason:'No clear path: water or an obstacle blocks this route.'};
+  if(!plan.points.length)return {ok:false,reason:'Already connected to the nearest town anchor.'};
+  const result=scConnectToTown(buildings.find(b=>b.id===id));if(result.ok&&result.placed){window.scConnectUsed=true;updateUI();msg('Path laid to town for '+result.cost+' stone.');}return result;
+ }
+});
+
 // Earned settlement recognition. Snapshots never create charter/save state.
 let scGrowthState=null;
 function scGrowthSnapshot(){
@@ -4696,7 +4715,7 @@ function scFrontierPrepare(q,data){
 window.scFrontiers=Object.freeze({snapshot:scFrontierSnapshot,survey:scFrontierSurvey,dispatch:scFrontierDispatch,refuse:scFrontierRefuse,reopen:scFrontierReopen,sign:scFrontierSign});
 
 /* sc26-engine-end */
-const scSaveFormat='shattered-crowns-city' ,scSaveLimit=1048576;window.scGameVersion='0.68.0';
+const scSaveFormat='shattered-crowns-city' ,scSaveLimit=1048576;window.scGameVersion='0.69.0';
 const scUnitTypes=['worker','soldier','archer'];
 const scBuildingTypes=['keep','house','farm','fishery','road','market','well','lumberyard','granary','bakery','theater','school','chapel','clinic','garden','plaza','tower','fortress','wall','workshop','loadingyard','shipyard'];
 const scUnitNumbers=['id','team','x','y','hp','max','speed','damage','range','radius','cool','carry'];
@@ -4860,7 +4879,7 @@ function scConnectPlan(b){if(!b||b.team!==0||b.type==='road')return null;const a
  const pts=raw.filter(p=>!scRoadExists(p)&&canPlace('road',p,null));return {target:t,points:pts,cost:pts.length*12,blocked:raw.filter(p=>!scRoadExists(p)).length-pts.length}}
 function scConnectToTown(b){const plan=scConnectPlan(b);if(!plan)return {ok:false,reason:'No town centre, market or road to connect to.'};if(!plan.points.length)return {ok:true,placed:0,cost:0};if(stone<plan.cost)return {ok:false,reason:'Needs '+plan.cost+' stone for the path.',cost:plan.cost};let placed=0;for(const p of plan.points){if(scRoadExists(p))continue;addBuilding(0,'road',p.x,p.y);placed++}stone-=placed*12;window.dispatchEvent(new Event('sc-construction-changed'));return {ok:true,placed,cost:placed*12}}
 window.scConnectToTown=id=>{const b=buildings.find(o=>o.id===id)||inspectedBuilding;return scConnectToTown(b)};window.scConnectPlan=id=>{const b=buildings.find(o=>o.id===id)||inspectedBuilding;const p=scConnectPlan(b);return p&&{count:p.points.length,cost:p.cost}};
-(function(){const btn=document.createElement('button');btn.id='scConnectTown';btn.type='button';btn.hidden=true;btn.style.cssText='position:fixed;left:50%;bottom:92px;transform:translateX(-50%);z-index:60;padding:8px 14px;background:#433121;color:#d7c4a8;border:1px solid #a07250;border-radius:6px;font:600 13px system-ui;cursor:pointer';btn.onclick=()=>{const r=scConnectToTown(inspectedBuilding);if(r.ok&&r.placed)window.scConnectUsed=true;msg(r.ok?(r.placed?'Path laid to town for '+r.cost+' stone.':'Already connected.'):r.reason);refresh()};document.body.appendChild(btn);function refresh(){const b=inspectedBuilding;const plan=b&&b.team===0&&b.type!=='road'&&alive(b)?scConnectPlan(b):null;if(plan&&!document.hidden){btn.hidden=false;if(plan.points.length){btn.disabled=false;btn.style.opacity='1';btn.textContent='Connect to town · '+plan.cost+' stone'}else if(plan.blocked>0){btn.disabled=true;btn.style.opacity='.6';btn.textContent='No clear path (water or obstacle)'}else{btn.disabled=true;btn.style.opacity='.6';btn.textContent='Connected to town ✓'}}else btn.hidden=true}setInterval(refresh,500)})();
+/* Road controls live in src/v069/presentation.js. */
 /* v0.31 unit icons: one emblem style in the shared palette */
 (function(){const ICON={worker:'data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2048%2048%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%270%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%236d4a31%27%2F%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23321e13%27%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Ccircle%20cx%3D%2724%27%20cy%3D%2724%27%20r%3D%2722%27%20fill%3D%27url(%23g)%27%20stroke%3D%27%23a07250%27%20stroke-width%3D%272%27%2F%3E%3Cpath%20d%3D%27M12%2036%20L33%2015%27%20stroke%3D%27%23d7c4a8%27%20stroke-width%3D%273.4%27%20stroke-linecap%3D%27round%27%2F%3E%3Cpath%20d%3D%27M27%2010%20q10%200%2012%209%20l-4%20-2%20q-2%20-4%20-8%20-3z%27%20fill%3D%27%23b88b5b%27%20stroke%3D%27%23d7c4a8%27%20stroke-width%3D%271.2%27%2F%3E%3Cpath%20d%3D%27M36%2036%20L15%2015%27%20stroke%3D%27%23d7c4a8%27%20stroke-width%3D%273.4%27%20stroke-linecap%3D%27round%27%2F%3E%3Crect%20x%3D%278%27%20y%3D%2711%27%20width%3D%2713%27%20height%3D%278%27%20rx%3D%272%27%20transform%3D%27rotate(-45%2014%2015)%27%20fill%3D%27%23b88b5b%27%20stroke%3D%27%23d7c4a8%27%20stroke-width%3D%271.2%27%2F%3E%3C%2Fsvg%3E',archer:'data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2048%2048%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%270%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%235d5834%27%2F%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%232a2a14%27%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Ccircle%20cx%3D%2724%27%20cy%3D%2724%27%20r%3D%2722%27%20fill%3D%27url(%23g)%27%20stroke%3D%27%23a07250%27%20stroke-width%3D%272%27%2F%3E%3Cpath%20d%3D%27M16%208%20Q36%2024%2016%2040%27%20fill%3D%27none%27%20stroke%3D%27%23b88b5b%27%20stroke-width%3D%273.6%27%20stroke-linecap%3D%27round%27%2F%3E%3Cpath%20d%3D%27M16%208%20L16%2040%27%20stroke%3D%27%23d7c4a8%27%20stroke-width%3D%271.3%27%2F%3E%3Cpath%20d%3D%27M9%2024%20L39%2024%27%20stroke%3D%27%23d7c4a8%27%20stroke-width%3D%272.6%27%20stroke-linecap%3D%27round%27%2F%3E%3Cpath%20d%3D%27M39%2024%20l-7%20-5%20v10z%27%20fill%3D%27%23d9a93c%27%2F%3E%3Cpath%20d%3D%27M9%2024%20l5%20-4%20M9%2024%20l5%204%27%20stroke%3D%27%238e2f2a%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%2F%3E%3C%2Fsvg%3E',soldier:'data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2048%2048%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%270%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%232d4e66%27%2F%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%2315232d%27%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Ccircle%20cx%3D%2724%27%20cy%3D%2724%27%20r%3D%2722%27%20fill%3D%27url(%23g)%27%20stroke%3D%27%23a07250%27%20stroke-width%3D%272%27%2F%3E%3Cpath%20d%3D%27M24%206%20L24%2033%27%20stroke%3D%27%23d7c4a8%27%20stroke-width%3D%273.6%27%20stroke-linecap%3D%27round%27%2F%3E%3Cpath%20d%3D%27M24%205%20l3%206%20h-6z%27%20fill%3D%27%23d7c4a8%27%2F%3E%3Cpath%20d%3D%27M16%2031%20h16%27%20stroke%3D%27%23d9a93c%27%20stroke-width%3D%273.2%27%20stroke-linecap%3D%27round%27%2F%3E%3Cpath%20d%3D%27M24%2031%20v8%27%20stroke%3D%27%23b88b5b%27%20stroke-width%3D%273.2%27%20stroke-linecap%3D%27round%27%2F%3E%3Cpath%20d%3D%27M10%2020%20h12%20v10%20q0%207%20-6%209%20q-6%20-2%20-6%20-9z%27%20fill%3D%27%238e2f2a%27%20stroke%3D%27%23d7c4a8%27%20stroke-width%3D%271.6%27%2F%3E%3C%2Fsvg%3E'};const css=document.createElement('style');css.textContent=Object.keys(ICON).map(k=>'#sc140Commands button[data-sc31="'+k+'"] .sc140Icon{display:block!important;width:34px;height:34px;margin:0 auto;background:url("'+ICON[k]+'") center/contain no-repeat;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}#sc140Commands button[data-sc31="'+k+'"] .sc140Icon canvas{display:none!important}').join('');document.head.appendChild(css);
 function paint(){for(const b of document.querySelectorAll('#sc140Commands button')){const label=(b.childNodes[1]&&b.childNodes[1].textContent||'').trim().toLowerCase();const k=label.startsWith('worker')?'worker':label.startsWith('archer')?'archer':label.startsWith('soldier')?'soldier':'';if(k&&b.dataset.sc31!==k)b.dataset.sc31=k}}
@@ -4945,6 +4964,8 @@ setInterval(paint,300);paint()})();
   else if(kind==='crowd'){for(let i=0;i<14;i++){const x=40+i*26,y=H*.8+Math.sin(i*2)*5;g.fillStyle=i%3?'#b88b5b':'#6e6f4e';g.fillRect(x,y-18,8,18);g.fillStyle='#caa87b';g.beginPath();g.arc(x+4,y-22,5,0,7);g.fill()}}
   else if(kind==='caravan'){for(let i=0;i<2;i++){const x=90+i*140;g.fillStyle='#6d4a31';g.fillRect(x,H*.68,80,26);g.fillStyle='#d7c4a8';g.beginPath();g.arc(x+40,H*.68,34,Math.PI,0);g.fill();g.fillStyle='#321e13';g.beginPath();g.arc(x+16,H*.68+28,9,0,7);g.arc(x+64,H*.68+28,9,0,7);g.fill()}}}
  function show(){if(open||!queue.length)return;const id=queue.shift(),d=defs[id];open=true;
+  const clip={homes:'milestone_homes',market:'milestone_market',growth:'milestone_growth'}[id];
+  if(clip&&window.sc47Video?.[clip]&&window.sc62Scenes){window.sc62Scenes.play(id,()=>{open=false;setTimeout(show,800)});return;}
   const o=document.createElement('div');o.id='sc34Milestone';o.setAttribute('role','dialog');o.setAttribute('aria-label',d.title);o.style.cssText='position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;background:rgba(18,30,28,.72);opacity:0;transition:opacity .6s';
   o.innerHTML='<div style="width:min(440px,92vw);background:#1f3a38;border:2px solid #d9a93c;border-radius:12px;padding:14px;text-align:center;color:#d7c4a8;font-family:Georgia,serif;box-shadow:0 10px 40px #000a"><canvas width="420" height="170" style="width:100%;border-radius:8px;border:1px solid #a07250"></canvas><h2 style="margin:10px 0 6px;color:#d9a93c;font-size:22px">'+d.title+'</h2><p style="margin:0 0 12px;line-height:1.45">'+d.text+'</p><button type="button" id="sc34MilestoneGo" style="padding:7px 18px;background:#6d4a31;color:#d7c4a8;border:1px solid #d9a93c;border-radius:6px;font:600 14px system-ui;cursor:pointer">Continue</button></div>';
   document.body.append(o);draw(o.querySelector('canvas'),d.scene);requestAnimationFrame(()=>o.style.opacity='1');
@@ -10711,9 +10732,9 @@ window.sc50OpeningStory=[
   try{window.scMusic?.select?.('leo_host')}catch(_){}
   const pause=document.getElementById('sc154Pause');let ownsPause=false;if(pause&&!window.scCitySave.status().paused){pause.click();ownsPause=true}
   const o=document.createElement('div');o.id='sc47Intro';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','Opening story');o.style.cssText='position:fixed;inset:0;z-index:2147483000;background:#080d0c;color:#fff0ce;overflow:auto;transition:opacity .65s';
-  const cap=document.createElement('p');cap.id='sc50StoryCaption';cap.style.cssText='position:absolute;left:0;right:0;bottom:20%;margin:0;padding:12px 8%;text-align:center;color:#fff0ce;font:italic clamp(16px,2vw,22px)/1.5 Georgia,serif;text-shadow:0 2px 12px #000,0 0 3px #000;background:transparent';
-  const sub=document.createElement('p');sub.id='sc50Subtitle';sub.setAttribute('aria-live','polite');sub.style.cssText='position:absolute;left:0;right:0;bottom:6%;margin:0 auto;max-width:min(860px,88%);padding:10px 18px;text-align:center;color:#fff6dc;font:clamp(17px,2.1vw,25px)/1.5 Georgia,serif;text-shadow:0 2px 10px #000,0 0 3px #000;background:rgba(8,13,12,.55);border-radius:6px;opacity:0;pointer-events:none';
-  const ttl=document.createElement('p');ttl.id='sc50StoryTitle';ttl.setAttribute('aria-hidden','true');ttl.style.cssText='position:absolute;left:4%;top:5%;margin:0;color:#e8cd94;font:600 clamp(16px,2vw,24px)/1.3 Georgia,serif;text-shadow:0 2px 10px #000,0 0 3px #000;opacity:0;pointer-events:none';
+  const cap=document.createElement('p');cap.id='sc50StoryCaption';cap.style.cssText='position:absolute;left:0;right:0;bottom:20%;margin:0;padding:12px 8%;text-align:center;color:#fff6dc;font:italic 22px/1.5 Georgia,serif;text-shadow:0 2px 12px #000,0 0 3px #000;background:transparent';
+  const sub=document.createElement('p');sub.id='sc50Subtitle';sub.setAttribute('aria-live','polite');sub.style.cssText='position:absolute;left:0;right:0;bottom:6%;margin:0 auto;max-width:min(860px,88%);padding:10px 18px;text-align:center;color:#fff6dc;font:italic 22px/1.5 Georgia,serif;text-shadow:0 2px 10px #000,0 0 3px #000;background:transparent;opacity:0;pointer-events:none';
+  const ttl=document.createElement('p');ttl.id='sc50StoryTitle';ttl.setAttribute('aria-hidden','true');ttl.style.cssText='position:absolute;left:4%;top:5%;margin:0;color:#fff6dc;font:italic 22px/1.5 Georgia,serif;text-shadow:0 2px 10px #000,0 0 3px #000;opacity:0;pointer-events:none';
   o.tabIndex=-1;o.append(cap,sub,ttl);document.body.append(o);
   let video=null,i=0,done=false,fade=0,phase=0,paused=false,last=performance.now(),fadeFrame=0;
   function fresh(){return !done&&token===epoch&&cityId===window.scCitySave.status().cityId}
@@ -11013,6 +11034,9 @@ window.sc50OpeningStory=[
 /* v0.62: one short film when the first school, chapel, theatre or shipyard is finished. Verse subtitles describe the picture; the game's music keeps playing. */
 (()=>{'use strict';
 const SCENES={
+ homes:{video:'milestone_homes',title:'A Hearth for Every Family',caption:'A hearth for every family.',lines:['Smoke rises. At last, a place to call home.']},
+ market:{video:'milestone_market',title:'Market Day',caption:'The first market opens.',lines:['Bread, honest trade, and stories shared.']},
+ growth:{video:'milestone_growth',title:'The Village Grows',caption:'Our village grows.',lines:['New neighbours. New hands. A future together.']},
  school:{video:'school',title:'The first school',caption:'The first school opens its door.',lines:['The beams are laid, the tiles upon the roof.','A scholar opens wide the oaken door,','And little feet step in to meet the light.','Here shall our children learn what swords forget.']},
  chapel:{video:'chapel',title:'The first chapel',caption:'At dawn the first chapel is blessed.',lines:['At dawn the stones are set, the bell is raised;','A humble priest doth bless the threshold new.','Let candles keep the vigil of our hopes,','And let this hamlet pray for gentler days.']},
  theater:{video:'theater',title:'The first theatre',caption:'The players take the first stage.',lines:['Behold a stage of timber, bright with banners,','Where players practise sorrow, wit and war.','The town doth gather round to laugh and weep:','This village is a stage, and we its players.']},
@@ -11027,9 +11051,9 @@ function play(type,onDone=()=>{}){const scene=SCENES[type];if(!scene||!window.sc
  const o=document.createElement('div');o.id='sc62Scene';o.dataset.scene=type;o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label',scene.title);o.tabIndex=-1;o.style.cssText='position:fixed;inset:0;z-index:2147482000;background:#080d0c;color:#fff0ce;transition:opacity .6s';
  const video=document.createElement('video');video.muted=true;video.playsInline=true;video.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:'+(reduce?'1':'0');
  const mk=(id,css)=>{const e=document.createElement('p');e.id=id;e.style.cssText='position:absolute;margin:0;pointer-events:none;opacity:0;text-shadow:0 2px 10px #000,0 0 3px #000;'+css;return e};
- const cap=mk('sc62Caption','left:0;right:0;bottom:20%;padding:12px 8%;text-align:center;color:#fff0ce;font:italic clamp(16px,2vw,22px)/1.5 Georgia,serif');
- const sub=mk('sc62Subtitle','left:0;right:0;bottom:6%;margin:0 auto;max-width:min(860px,88%);padding:10px 18px;text-align:center;color:#fff6dc;font:clamp(17px,2.1vw,25px)/1.5 Georgia,serif;background:rgba(8,13,12,.55);border-radius:6px');sub.setAttribute('aria-live','polite');
- const ttl=mk('sc62Title','left:4%;top:5%;color:#e8cd94;font:600 clamp(16px,2vw,24px)/1.3 Georgia,serif');ttl.setAttribute('aria-hidden','true');
+ const cap=mk('sc62Caption','left:0;right:0;bottom:20%;padding:12px 8%;text-align:center;color:#fff6dc;font:italic 22px/1.5 Georgia,serif');
+ const sub=mk('sc62Subtitle','left:0;right:0;bottom:6%;margin:0 auto;max-width:min(860px,88%);padding:10px 18px;text-align:center;color:#fff6dc;font:italic 22px/1.5 Georgia,serif;background:transparent');sub.setAttribute('aria-live','polite');
+ const ttl=mk('sc62Title','left:4%;top:5%;color:#fff6dc;font:italic 22px/1.5 Georgia,serif');ttl.setAttribute('aria-hidden','true');
  const next=document.createElement('button');next.type='button';next.id='sc62Continue';next.textContent='Continue';next.style.cssText='position:absolute;right:4%;top:5%;padding:8px 16px;border:1px solid #e8cd94;border-radius:6px;background:rgba(8,13,12,.6);color:#fff0ce;font:15px Georgia,serif;cursor:pointer;opacity:0;transition:opacity .5s';
  cap.textContent=scene.caption;ttl.textContent=scene.title;o.append(video,cap,sub,ttl,next);document.body.append(o);
  let done=false,raf=0;const fresh=()=>!done&&token===epoch;
@@ -11047,7 +11071,7 @@ function cityKey(type){let id='';try{id=window.scCitySave.status().cityId||''}ca
 function onBuilt(e){const type=e.detail?.type;if(!SCENES[type])return;if(navigator.webdriver&&!/[?&]intro=1/.test(location.search))return;const key=cityKey(type);if(seen()[key])return;
  const count=(window.scHoverBuildings||[]).filter(b=>b.team===0&&b.type===type&&b.hp>0).length;if(count>1)return;remember(key);setTimeout(()=>play(type),900)}
 window.addEventListener('sc-construction-completed',onBuilt);for(const ev of ['sc-city-restored','sc-city-started'])window.addEventListener(ev,cancel);
-window.sc62Scenes={play,cancel,types:()=>Object.keys(SCENES),status:()=>({open:!!active})};
+window.sc62Scenes={play,cancel,types:()=>Object.keys(SCENES).filter(k=>!!window.sc47Video?.[SCENES[k].video]),status:()=>({open:!!active})};
 })();
 
 </script><script id="sc64Calendar">
@@ -11291,6 +11315,34 @@ function showMotto(){
 }
 window.addEventListener('sc-city-started',()=>{if(!(navigator.webdriver&&!new URLSearchParams(location.search).has('motto')))motto()});
 window.sc65Banner={list:()=>BANNERS.map(b=>({...b})),current:()=>current.id,set,motto:()=>current.motto,showMotto};
+})();
+
+</script><script id="sc69SettlementPresentation">
+/* Read-only needs and a guarded, building-local road preview. No sidecar save. */
+(()=>{'use strict';
+const host=document.getElementById('scCityInspection'),api=window.scSettlementAccess;if(!host||!api)return;
+const panel=document.createElement('section');panel.id='sc69Building';panel.innerHTML='<h3>Settlement needs</h3><div id="sc69Needs" role="status"></div><section id="sc69Road"><strong>Connect building to town</strong><p data-road-status></p><button type="button" id="sc69Preview">Preview road</button><div id="sc69Route" hidden></div><button type="button" id="sc69Confirm" hidden>Confirm road</button><p data-road-feedback role="status"></p></section><section id="sc69Overview" hidden></section>';
+host.append(panel);
+const style=document.createElement('style');style.textContent='#sc69Building{border-top:1px solid #aa8956;margin-top:8px;padding-top:8px;font:13px/1.5 Georgia,serif}#sc69Building h3{margin:4px 0}#sc69Building p{white-space:normal;overflow-wrap:anywhere}#sc69Building button{position:static!important;float:none!important;transform:none!important;margin:5px 5px 5px 0;padding:7px 10px;max-width:100%;white-space:normal;background:#433121;color:#fff6dc;border:1px solid #a07250;border-radius:5px}#sc69Building [hidden],#sc69Building[hidden]{display:none!important}#sc69Route svg{display:block;width:100%;height:100px;background:#172d29;border:1px solid #86724e}#sc69Building ul{padding-left:18px}';document.head.append(style);
+const needs=panel.querySelector('#sc69Needs'),road=panel.querySelector('#sc69Road'),status=panel.querySelector('[data-road-status]'),preview=panel.querySelector('#sc69Preview'),route=panel.querySelector('#sc69Route'),confirm=panel.querySelector('#sc69Confirm'),feedback=panel.querySelector('[data-road-feedback]'),overview=panel.querySelector('#sc69Overview');
+let selected=null,prepared=null;
+function clear(){prepared=null;route.hidden=true;route.replaceChildren();confirm.hidden=true;feedback.textContent='';}
+function line(parent,text){const p=document.createElement('p');p.textContent=text;parent.append(p);}
+function refresh(){
+ const b=window.scRTSInspectedBuilding,visible=b&&b.team===0&&b.hp>0&&!host.hidden;panel.hidden=!visible;if(!visible){selected=null;clear();return;}
+ if(selected!==b.id){selected=b.id;clear();}
+ const s=window.scCityEconomy.snapshot(),facts=s.buildings.find(x=>x.id===b.id);needs.replaceChildren();
+ if(facts){if(facts.staff)line(needs,'Staff: '+facts.staff.filled+'/'+facts.staff.need+(facts.workplace?.paused?' · Workplace paused':''));const blockers=facts.blockers||[];for(const text of blockers)line(needs,'Needs: '+text);if(!blockers.length)line(needs,'No current shortages reported.');if(facts.nextAction)line(needs,'Next: '+facts.nextAction);}
+ const p=api.plan(b.id);road.hidden=!p||b.type==='road';if(p){status.textContent=p.blocked?'Route blocked by water or an obstacle. Place a different road manually.':!p.points.length?'Connected to the nearest town anchor.':p.points.length+' road sections · '+p.cost+' stone. Preview before confirming. Nearest anchor access does not guarantee every service requirement.';preview.disabled=!!p.blocked||!p.points.length;preview.textContent='Preview road · '+p.cost+' stone';if(prepared&&JSON.stringify(p)!==JSON.stringify(prepared)){clear();feedback.textContent='Route changed. Preview again.';}}
+ overview.hidden=b.type!=='keep';if(!overview.hidden){overview.replaceChildren();const title=document.createElement('h3');title.textContent='Your settlement';overview.append(title);line(overview,'Population: '+s.population+' · Happiness: '+s.happiness+' · Food: '+Math.floor(s.food.stock)+' (production '+s.food.production.toFixed(1)+' / demand '+s.food.demand+' per cycle)');const winter=window.scFirstWinter.snapshot(),growth=window.scSettlementGrowth.snapshot();line(overview,'First Winter: '+(winter.state? winter.state.outcome:'not started')+'.');const checks=winter.state&&winter.state.outcome!=='won'?winter.checks:growth.checks;const next=checks.filter(c=>!c.ok);line(overview,'Next: '+(next[0]?.label||'All current readiness checks met. Review your Keep charter.'));const ul=document.createElement('ul');for(const c of checks){const li=document.createElement('li');li.textContent=(c.ok?'✓ ':'○ ')+c.label;ul.append(li)}overview.append(ul);}
+}
+preview.onclick=()=>{refresh();const p=api.plan(selected);if(!p||p.blocked||!p.points.length)return;prepared=p;route.replaceChildren();const pts=[p.start,...p.points,p.target],xs=pts.map(p=>p.x),ys=pts.map(p=>p.y),x=Math.min(...xs)-20,y=Math.min(...ys)-20,w=Math.max(80,Math.max(...xs)-x+20),h=Math.max(80,Math.max(...ys)-y+20),ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox',[x,y,w,h].join(' '));svg.setAttribute('role','img');svg.setAttribute('aria-label','Planned route from selected building to nearest town anchor');const path=document.createElementNS(ns,'polyline');path.setAttribute('points',pts.map(p=>p.x+','+p.y).join(' '));path.setAttribute('fill','none');path.setAttribute('stroke','#e8cd94');path.setAttribute('stroke-width','4');svg.append(path);route.append(svg);line(route,'Route preview · '+p.points.length+' sections · '+p.cost+' stone. No resources spent yet.');route.hidden=false;confirm.hidden=false;confirm.textContent='Confirm connection · '+p.cost+' stone';};
+confirm.onclick=()=>{const r=api.connect(selected,prepared);clear();refresh();feedback.textContent=r.ok?'Road connected · '+r.cost+' stone spent.':r.reason;};
+// Do not let panel gestures reach map or global edge-pan/keyboard handlers.
+for(const name of ['pointerdown','pointerup','mousedown','mouseup','click','dblclick','wheel','keydown','keyup'])panel.addEventListener(name,e=>{if(name==='keydown'&&['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key))e.preventDefault();e.stopPropagation();},{passive:false});
+for(const event of ['sc-city-started','sc-city-restored'])window.addEventListener(event,()=>{selected=null;clear();refresh();});
+for(const event of ['sc-building-inspected','sc-selection-changed','sc-construction-changed','sc-workplace-changed'])window.addEventListener(event,refresh);
+setInterval(refresh,500);refresh();
 })();
 
 </script></body></html>

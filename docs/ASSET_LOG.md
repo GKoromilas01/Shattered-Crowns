@@ -1,3 +1,6 @@
+## v0.69 — existing media retained; new Leonardo media pending
+No images, videos or music generated/purchased. Uniform caption styling and optional milestone hooks only. See LEONARDO_V069.md for three clip briefs and a two-minute original anthem prompt. Each generation still needs displayed-cost review and Private Mode ON.
+
 ## v0.68 — existing artwork and music retained
 No assets generated, purchased or changed. Existing painted media reused for the optional First Winter gameplay charter. No Leonardo credits spent.
 

@@ -1,3 +1,6 @@
+## v0.69 Settlement Cinema candidate — 28 November 2026
+Owner approved uniform italic transparent video captions, inspector-local road preview/confirmation, live building Needs and Keep readiness summary. Branch `feat/settlement-cinema` builds on the v0.68 candidate. See [MILESTONE69.md](MILESTONE69.md) and [LEONARDO_V069.md](LEONARDO_V069.md). Three clips and the 120-second anthem remain pending owner generation/cost review; no credits spent. No merge or deployment.
+
 
 
 ## v0.68 First Winter candidate — 28 November2026
