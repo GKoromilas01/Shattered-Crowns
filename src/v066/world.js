@@ -56,7 +56,7 @@ function menuFor(b){
 }
 function hookMenus(){
  const M=window.scBuildingMenus;if(!M||M.sc66)return false;M.sc66=true;
- const wrap=(type,prev)=>b=>{const mine=menuFor(b),p=prev?prev(b):{html:''};return {html:(p.html||'')+mine.html,bind:h=>{if(p.bind)p.bind(h);mine.bind(h)}}};
+ const wrap=(type,prev)=>b=>{const mine=menuFor(b),p=prev?prev(b):{html:''};if((p.html||'').includes('class="sc66Up"'))return p;return {html:(p.html||'')+mine.html,bind:h=>{if(p.bind)p.bind(h);mine.bind(h)}}};
  const reg=M.register;
  M.register=(type,fn)=>reg(type,TIERS[type]?wrap(type,fn):fn);
  for(const type of Object.keys(TIERS))reg(type,wrap(type,M.has(type)?M.get(type):null));

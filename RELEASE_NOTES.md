@@ -1,3 +1,6 @@
+# v0.68 candidate — First Winter
+Optional guided settlement charter at the Keep: live readiness, three single-use resource decisions and a recoverable assessment after about24 active minutes. Progress travels with native schema18 backups; older saves remain supported. Existing media reused, no Leonardo spending. Pending owner/Claude release approval; see docs/MILESTONE68.md.
+
 # v0.60.0 — A Slower Frontier (candidate)
 
 Resources, construction and recruitment now take three times longer. A warned local frontier brings real raids and Keep commands to defend home or attack the rival outpost. Direct ship orders, richer fishing grounds, first-contact trade agreements, a larger sea and winding river complete the preceding naval work. Includes current Advisor Tester instructions and an optional quick raid save. [Scope and limits](docs/MILESTONE60.md). Local checks are recorded separately from pending GitHub CI; no verified release claimed.

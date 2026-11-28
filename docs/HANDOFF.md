@@ -1,3 +1,7 @@
+
+
+## v0.68 First Winter candidate — 28 November2026
+Owner approved proceeding with the settlement-first proposal. See [MILESTONE68.md](MILESTONE68.md) and superpowers spec/plan2026-11-28-first-winter. Branch feat/first-winter is based on main v0.66, leaving the separate v0.67 fixes intact. Optional saved Keep charter, three economic decisions and live readiness/reassessment; no new media/credits. No self-merge/deploy. Current verification goes in validation/v068-first-winter.md.
 ## Current candidate — v0.60 A Slower Frontier
 
 Continue branch `ui/v060-slower-frontier`. Read [MILESTONE60.md](MILESTONE60.md) and [validation/v060-slower-frontier.md](validation/v060-slower-frontier.md). This includes the completed v059 naval/terrain work and the approved slower pace plus first land-war loop. Historical v059 blockers are resolved. Do not merge main or describe pending CI as verified.
