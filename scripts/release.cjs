@@ -1,5 +1,5 @@
 const fs=require('node:fs');const path=require('node:path');const crypto=require('node:crypto');const {execFileSync}=require('node:child_process');
-const GIT_MAX_BUFFER=64*1024*1024;
+const GIT_MAX_BUFFER=128*1024*1024;
 const SHA=/^[a-f0-9]{40}$/;const FILES=['index.html','release-manifest.json','release.json'];
 function demand(ok,message){if(!ok)throw new Error(message)}
 const digest=data=>crypto.createHash('sha256').update(data).digest('hex');
