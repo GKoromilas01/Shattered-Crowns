@@ -1,3 +1,6 @@
+# v0.70 candidate — Hearths and Homecoming
+Four owner-supplied films replace Homes/Market/Growth cards and add earned homecoming parade. Three original recordings added at their actual durations; Menu films/music replay. Matching italic captions retained, cinematic queue/restore guards. No new generation/credits. Future larger buildings/zoom/gameplay direction recorded separately; narrator voiceovers pending. See docs/MILESTONE70.md.
+
 # v0.69 candidate — Settlement Cinema
 Uniform italic video subtitles without dark strips. Building-local road route preview and guarded confirmation, live workplace needs and Keep settlement goals. Optional homes/market/growth clip hooks retain cards until approved Leonardo footage arrives; new anthem also pending. No new media or credits spent. See docs/MILESTONE69.md. Owner/Claude retain merge/release decisions.
 

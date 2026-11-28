@@ -6,8 +6,8 @@ test('Milestone story cards show once, in order, and can be continued',async t=>
  assert.equal(await p.evaluate(()=>scMilestones.trigger('harvest')),true);assert.equal(await p.evaluate(()=>scMilestones.trigger('harvest')),false);
  await p.locator('#sc34Milestone').waitFor({state:'visible'});assert.match(await p.locator('#sc34Milestone').innerText(),/First Harvest/);
  await p.evaluate(()=>scMilestones.trigger('market'));assert.equal(await p.locator('#sc34Milestone').count(),1);
- await p.locator('#sc34MilestoneGo').click();await p.waitForFunction(()=>/Market Day/.test(document.getElementById('sc34Milestone')?.innerText||''),null,{timeout:5000});
- await p.locator('#sc34MilestoneGo').click();assert.equal(await p.evaluate(()=>scMilestones.defs.length),6);
+ await p.locator('#sc34MilestoneGo').click();await p.locator('#sc62Scene[data-scene=market]').waitFor();
+ await p.keyboard.press('Escape');await p.locator('#sc62Scene').waitFor({state:'detached'});assert.equal(await p.evaluate(()=>scMilestones.defs.length),6);
 });
 test('Southveil settlements sit centred and inside the continent view',async t=>{
  const p=await game(t);await p.evaluate(()=>scKingdomUI.openWorld());await p.locator('[data-continent="southveil"]').click();await p.waitForTimeout(300);

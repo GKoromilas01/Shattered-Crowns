@@ -1,3 +1,9 @@
+## URGENT CREDIT-LIMIT HANDOFF
+Owner requested immediate ZIP/checkpoint. Read [START-HERE-CLAUDE.md](../START-HERE-CLAUDE.md) for complete status, media, remaining checks and continuation.0.70 is not yet on Sand Labs; no protected release.
+
+## v0.70 Hearths and Homecoming candidate —28 November2026
+Owner supplied four real films and three unique MP3s. Branch `feat/owner-cinematics` continues0.69; see [MILESTONE70.md](MILESTONE70.md), assets/v070/inventory.json and [future graphics/gameplay direction](FUTURE_VISUAL_GAMEPLAY_UPGRADES.md). First two tracks have owner-approved neutral titles Crown Anthem I/II; actual lengths120s/120s/170s. No new credits. Subtitle voiceovers still need narrator media; major renderer/gameplay upgrades are future work, not claimed complete. No selfmerge/protected game release.
+
 ## v0.69 Settlement Cinema candidate — 28 November 2026
 Owner approved uniform italic transparent video captions, inspector-local road preview/confirmation, live building Needs and Keep readiness summary. Branch `feat/settlement-cinema` builds on the v0.68 candidate. See [MILESTONE69.md](MILESTONE69.md) and [LEONARDO_V069.md](LEONARDO_V069.md). Three clips and the 120-second anthem remain pending owner generation/cost review; no credits spent. No merge or deployment.
 
