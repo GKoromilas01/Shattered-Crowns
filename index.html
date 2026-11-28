@@ -11068,7 +11068,7 @@ function play(type,onDone=()=>{}){const scene=SCENES[type];if(!scene||!window.sc
  next.addEventListener('click',()=>finish());video.addEventListener('ended',()=>finish());video.addEventListener('error',()=>finish());document.addEventListener('keydown',key,true);document.addEventListener('visibilitychange',vis);
  active=closer;video.src=window.sc47Video[scene.video];video.play().catch(()=>finish());o.focus();raf=requestAnimationFrame(frame);return true}
 function cityKey(type){let id='';try{id=window.scCitySave.status().cityId||''}catch(_){}return id+':'+type}
-function onBuilt(e){const type=e.detail?.type;if(!SCENES[type])return;if(navigator.webdriver&&!/[?&]intro=1/.test(location.search))return;const key=cityKey(type);if(seen()[key])return;
+function onBuilt(e){const type=e.detail?.type;if(!['school','chapel','theater','shipyard'].includes(type))return;if(navigator.webdriver&&!/[?&]intro=1/.test(location.search))return;const key=cityKey(type);if(seen()[key])return;
  const count=(window.scHoverBuildings||[]).filter(b=>b.team===0&&b.type===type&&b.hp>0).length;if(count>1)return;remember(key);setTimeout(()=>play(type),900)}
 window.addEventListener('sc-construction-completed',onBuilt);for(const ev of ['sc-city-restored','sc-city-started'])window.addEventListener(ev,cancel);
 window.sc62Scenes={play,cancel,types:()=>Object.keys(SCENES).filter(k=>!!window.sc47Video?.[SCENES[k].video]),status:()=>({open:!!active})};

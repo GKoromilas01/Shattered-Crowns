@@ -19,3 +19,10 @@ Owner-approved three 6–7 second Leonardo clips and 120-second anthem: prompts 
 
 Pipeline regressions: `node --test tests/pipeline.test.cjs` —22/22 passed with required execution permissions. Both `sc47Art` and `sc47Media` embedded blocks compared byte-for-byte with base: unchanged.
 Final feature + player-control run: `CHROMIUM_PATH=/usr/bin/chromium node --test tests/settlement-cinema.test.cjs tests/player-control.test.cjs` —11/11 passed, including all seven new feature tests and version-aware Advisor Tester guidance. Earlier 22-test cinematic/menu/winter/road run also passed. Focused union:27 unique tests, plus22 pipeline tests. The full suite remains running; do not describe it as passed.
+
+## Final media-trigger correction
+A real runtime fixture with a supplied Market clip reproduced duplicate ownership: construction-completed played it before the milestone queue. RED: expected no scene from construction, got one. Restricting construction scenes to the original School/Chapel/Theatre/Shipyard leaves Market exclusively to the milestone queue. Fresh independent reviewer approved this minimal correction. Final feature+first-scenes run11/11 passed (eight feature regressions plus three retained first-scene tests).
+
+Initial committed artifact f5ac958 built/verified and all7 packaged smoke tests passed (223.5s), including gathering, roads/undo, camera, economy, funded survey and New Game/Return. The media-trigger-only follow-up is packaged again and checked with all eight feature regressions plus entry/provenance smoke. Final artifact metadata is recorded in the Sand Labs shared continuation note.
+
+The duplicate local full suite was stopped after passing early suites in favor of required exact-head GitHub full verification. No full-suite success is claimed. Required CI remains a gate before production release; the owner-authorized separate Sand Labs playtest is labelled accordingly.
