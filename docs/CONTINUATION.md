@@ -1,3 +1,7 @@
+
+
+## v0.68 First Winter candidate — 28 November2026
+Owner approved proceeding with the settlement-first proposal. See [MILESTONE68.md](MILESTONE68.md) and superpowers spec/plan2026-11-28-first-winter. Branch feat/first-winter is based on main v0.66, leaving the separate v0.67 fixes intact. Optional saved Keep charter, three economic decisions and live readiness/reassessment; no new media/credits. No self-merge/deploy. Current verification goes in validation/v068-first-winter.md.
 PR: [78](https://github.com/GKoromilas01/Shattered-Crowns/pull/78), draft against main. First v060 source commit: `2bd7c0b74b5541925c89ae384187981ae96bc06b`. Exact-head Actions [45052181237](https://github.com/GKoromilas01/Shattered-Crowns/actions/runs/45052181237) was in progress when checked. Read the PR for final validation and source links.
 
 ## Current candidate — v0.60 A Slower Frontier

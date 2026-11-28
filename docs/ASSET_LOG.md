@@ -1,3 +1,6 @@
+## v0.68 — existing artwork and music retained
+No assets generated, purchased or changed. Existing painted media reused for the optional First Winter gameplay charter. No Leonardo credits spent.
+
 ## v060 — existing assets reused
 
 No new media generated or purchased. Existing painted terrain/bridge, buildings, ships, music and videos retained. River/meadow changes use procedural terrain accents in the established palette.
