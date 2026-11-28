@@ -1,6 +1,9 @@
 /* v0.62: one short film when the first school, chapel, theatre or shipyard is finished. Verse subtitles describe the picture; the game's music keeps playing. */
 (()=>{'use strict';
 const SCENES={
+ homes:{video:'milestone_homes',title:'A Hearth for Every Family',caption:'A hearth for every family.',lines:['Smoke rises. At last, a place to call home.']},
+ market:{video:'milestone_market',title:'Market Day',caption:'The first market opens.',lines:['Bread, honest trade, and stories shared.']},
+ growth:{video:'milestone_growth',title:'The Village Grows',caption:'Our village grows.',lines:['New neighbours. New hands. A future together.']},
  school:{video:'school',title:'The first school',caption:'The first school opens its door.',lines:['The beams are laid, the tiles upon the roof.','A scholar opens wide the oaken door,','And little feet step in to meet the light.','Here shall our children learn what swords forget.']},
  chapel:{video:'chapel',title:'The first chapel',caption:'At dawn the first chapel is blessed.',lines:['At dawn the stones are set, the bell is raised;','A humble priest doth bless the threshold new.','Let candles keep the vigil of our hopes,','And let this hamlet pray for gentler days.']},
  theater:{video:'theater',title:'The first theatre',caption:'The players take the first stage.',lines:['Behold a stage of timber, bright with banners,','Where players practise sorrow, wit and war.','The town doth gather round to laugh and weep:','This village is a stage, and we its players.']},
@@ -15,9 +18,9 @@ function play(type,onDone=()=>{}){const scene=SCENES[type];if(!scene||!window.sc
  const o=document.createElement('div');o.id='sc62Scene';o.dataset.scene=type;o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label',scene.title);o.tabIndex=-1;o.style.cssText='position:fixed;inset:0;z-index:2147482000;background:#080d0c;color:#fff0ce;transition:opacity .6s';
  const video=document.createElement('video');video.muted=true;video.playsInline=true;video.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:'+(reduce?'1':'0');
  const mk=(id,css)=>{const e=document.createElement('p');e.id=id;e.style.cssText='position:absolute;margin:0;pointer-events:none;opacity:0;text-shadow:0 2px 10px #000,0 0 3px #000;'+css;return e};
- const cap=mk('sc62Caption','left:0;right:0;bottom:20%;padding:12px 8%;text-align:center;color:#fff0ce;font:italic clamp(16px,2vw,22px)/1.5 Georgia,serif');
- const sub=mk('sc62Subtitle','left:0;right:0;bottom:6%;margin:0 auto;max-width:min(860px,88%);padding:10px 18px;text-align:center;color:#fff6dc;font:clamp(17px,2.1vw,25px)/1.5 Georgia,serif;background:rgba(8,13,12,.55);border-radius:6px');sub.setAttribute('aria-live','polite');
- const ttl=mk('sc62Title','left:4%;top:5%;color:#e8cd94;font:600 clamp(16px,2vw,24px)/1.3 Georgia,serif');ttl.setAttribute('aria-hidden','true');
+ const cap=mk('sc62Caption','left:0;right:0;bottom:20%;padding:12px 8%;text-align:center;color:#fff6dc;font:italic 22px/1.5 Georgia,serif');
+ const sub=mk('sc62Subtitle','left:0;right:0;bottom:6%;margin:0 auto;max-width:min(860px,88%);padding:10px 18px;text-align:center;color:#fff6dc;font:italic 22px/1.5 Georgia,serif;background:transparent');sub.setAttribute('aria-live','polite');
+ const ttl=mk('sc62Title','left:4%;top:5%;color:#fff6dc;font:italic 22px/1.5 Georgia,serif');ttl.setAttribute('aria-hidden','true');
  const next=document.createElement('button');next.type='button';next.id='sc62Continue';next.textContent='Continue';next.style.cssText='position:absolute;right:4%;top:5%;padding:8px 16px;border:1px solid #e8cd94;border-radius:6px;background:rgba(8,13,12,.6);color:#fff0ce;font:15px Georgia,serif;cursor:pointer;opacity:0;transition:opacity .5s';
  cap.textContent=scene.caption;ttl.textContent=scene.title;o.append(video,cap,sub,ttl,next);document.body.append(o);
  let done=false,raf=0;const fresh=()=>!done&&token===epoch;
@@ -32,8 +35,8 @@ function play(type,onDone=()=>{}){const scene=SCENES[type];if(!scene||!window.sc
  next.addEventListener('click',()=>finish());video.addEventListener('ended',()=>finish());video.addEventListener('error',()=>finish());document.addEventListener('keydown',key,true);document.addEventListener('visibilitychange',vis);
  active=closer;video.src=window.sc47Video[scene.video];video.play().catch(()=>finish());o.focus();raf=requestAnimationFrame(frame);return true}
 function cityKey(type){let id='';try{id=window.scCitySave.status().cityId||''}catch(_){}return id+':'+type}
-function onBuilt(e){const type=e.detail?.type;if(!SCENES[type])return;if(navigator.webdriver&&!/[?&]intro=1/.test(location.search))return;const key=cityKey(type);if(seen()[key])return;
+function onBuilt(e){const type=e.detail?.type;if(!['school','chapel','theater','shipyard'].includes(type))return;if(navigator.webdriver&&!/[?&]intro=1/.test(location.search))return;const key=cityKey(type);if(seen()[key])return;
  const count=(window.scHoverBuildings||[]).filter(b=>b.team===0&&b.type===type&&b.hp>0).length;if(count>1)return;remember(key);setTimeout(()=>play(type),900)}
 window.addEventListener('sc-construction-completed',onBuilt);for(const ev of ['sc-city-restored','sc-city-started'])window.addEventListener(ev,cancel);
-window.sc62Scenes={play,cancel,types:()=>Object.keys(SCENES),status:()=>({open:!!active})};
+window.sc62Scenes={play,cancel,types:()=>Object.keys(SCENES).filter(k=>!!window.sc47Video?.[SCENES[k].video]),status:()=>({open:!!active})};
 })();

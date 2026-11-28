@@ -1,3 +1,6 @@
+# v0.69 candidate — Settlement Cinema
+Uniform italic video subtitles without dark strips. Building-local road route preview and guarded confirmation, live workplace needs and Keep settlement goals. Optional homes/market/growth clip hooks retain cards until approved Leonardo footage arrives; new anthem also pending. No new media or credits spent. See docs/MILESTONE69.md. Owner/Claude retain merge/release decisions.
+
 # v0.68 candidate — First Winter
 Optional guided settlement charter at the Keep: live readiness, three single-use resource decisions and a recoverable assessment after about24 active minutes. Progress travels with native schema18 backups; older saves remain supported. Existing media reused, no Leonardo spending. Pending owner/Claude release approval; see docs/MILESTONE68.md.
 
