@@ -1,0 +1,258 @@
+{
+  "received": "2026-11-28",
+  "source": "Seven owner-supplied Leonardo ZIPs",
+  "files": [
+    {
+      "name": "roman",
+      "original": "music-v1_Create_an_original_three-minute_Roman-inspired_anthem_for_Shattered_Crowns_a_med-0_e3f1420f-68b4-46b8-858c-c559a2ade870.mp3",
+      "sha256": "fa2b193abe2fc71aaf623e950f8fa11c2c7faf1509158428e1e3af0579a17a8f",
+      "bytes": 2720122,
+      "info": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "codec_type": "audio",
+            "sample_rate": "44100",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "170.004875",
+          "tags": {
+            "encoder": "Lavf63.1.102"
+          }
+        }
+      },
+      "source_path": "assets/v070/music/roman_rebuilding.mp3",
+      "privacy": "Owner screenshot showed Private Mode ON; account plan and per-file generation charge not verified",
+      "source_archive": "generation_1f1eb3f0-9a21-6440-beb1-2819d40c37d4_images.zip",
+      "decoded_audio_sha256": "bf504659954a497c397cd930e3d784e5d5fbef3f3b2f3a23b2b2ac5f6aedb739"
+    },
+    {
+      "name": "anthem-b",
+      "original": "music-v1_Create_an_original_four-minute_cinematic_anthem_for_Shattered_Crowns_a_medieval_-0_54734d62-b9ab-4257-a29b-1dcb9644012b.mp3",
+      "sha256": "d549f0e21b0d1ef88647dda5eea5218e066798033deb0f2a1b0587e1138b2893",
+      "bytes": 1919730,
+      "info": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "codec_type": "audio",
+            "sample_rate": "44100",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "119.980375",
+          "tags": {
+            "encoder": "Lavf63.1.102"
+          }
+        }
+      },
+      "source_path": "assets/v070/music/crown_anthem_ii.mp3",
+      "privacy": "Owner screenshot showed Private Mode ON; account plan and per-file generation charge not verified",
+      "source_archive": "generation_1f1eb3ea-2edc-6ff0-aff4-10b8b087d27a_images.zip",
+      "decoded_audio_sha256": "1b31a5af075188e4d911a3879e2c2bdafba30cc09b8308e35f257c9b62d1ee16"
+    },
+    {
+      "name": "homes",
+      "original": "hailuo-03_A_single_continuous_cinematic_shot_of_three_modest_newly_built_timber-and-stone_-0_f2deb3a3-1d61-44a9-9898-d1c3e09691b0.mp4",
+      "sha256": "4406bca24ddc6254f9400c6d9b43b34bff8f6ab61ec1abb0b629fa4bcb5bc115",
+      "bytes": 10761195,
+      "info": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1344,
+            "height": 768
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "32000",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "7.291667",
+          "tags": {
+            "major_brand": "isom",
+            "minor_version": "512",
+            "compatible_brands": "isomiso2avc1mp41",
+            "encoder": "Lavf63.20.101"
+          }
+        }
+      },
+      "source_path": "assets/v070/originals/homes.mp4",
+      "privacy": "Owner screenshot showed Private Mode ON; account plan and per-file generation charge not verified",
+      "source_archive": "generation_1f1eb3cf-1998-6010-ba70-d2a4ce717c2c_images.zip",
+      "runtime": {
+        "path": "assets/v070/video/milestone_homes.webm",
+        "sha256": "a9a0f7b25b670a77166a4bbfe6b476d414b66bd81aea415cf0a4bc8c40d0ac18",
+        "bytes": 1700498,
+        "conversion": "FFmpeg VP9 CRF28, original dimensions/timing, audio omitted for game music mix"
+      }
+    },
+    {
+      "name": "anthem-a",
+      "original": "music-v1_Create_an_original_four-minute_cinematic_anthem_for_Shattered_Crowns_a_medieval_-0_b03e3c29-4b16-4f1d-a691-0f3d6073d4a9.mp3",
+      "sha256": "4a54bf336d825337b08ba4a2b3d981338fd4668d89d088c66458c1cdea363b3c",
+      "bytes": 1920566,
+      "info": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "codec_type": "audio",
+            "sample_rate": "44100",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "120.032625",
+          "tags": {
+            "encoder": "Lavf63.1.102"
+          }
+        }
+      },
+      "source_path": "assets/v070/music/crown_anthem_i.mp3",
+      "privacy": "Owner screenshot showed Private Mode ON; account plan and per-file generation charge not verified",
+      "source_archive": "generation_1f1eb3df-ccd9-6560-9d22-785578b78405_images.zip",
+      "decoded_audio_sha256": "e7deddd1c9cb2ff702d4437676716916829aa84c43d8e6f5c5e621a800f2798d"
+    },
+    {
+      "name": "growth",
+      "original": "hailuo-03_A_single_continuous_cinematic_shot_of_a_small_medieval_settlement_becoming_a_thr-0_7157b8b2-a4e1-4249-bda6-7ef14ee90ac2.mp4",
+      "sha256": "924cc180e2575c05f79bbf8f3bc6feafb50e7419671c8559e18ece32319a1f7b",
+      "bytes": 9321234,
+      "info": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1344,
+            "height": 768
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "32000",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "7.291667",
+          "tags": {
+            "major_brand": "isom",
+            "minor_version": "512",
+            "compatible_brands": "isomiso2avc1mp41",
+            "encoder": "Lavf63.20.101"
+          }
+        }
+      },
+      "source_path": "assets/v070/originals/growth.mp4",
+      "privacy": "Owner screenshot showed Private Mode ON; account plan and per-file generation charge not verified",
+      "source_archive": "generation_1f1eb3d1-6f4f-6240-b4a6-ec6570d91fdf_images.zip",
+      "runtime": {
+        "path": "assets/v070/video/milestone_growth.webm",
+        "sha256": "990f95687ea30788be94001c62a1551c10ad88aba015f6ad131d444fbc8b3652",
+        "bytes": 1755574,
+        "conversion": "FFmpeg VP9 CRF28, original dimensions/timing, audio omitted for game music mix"
+      }
+    },
+    {
+      "name": "parade",
+      "original": "hailuo-03_A_single_continuous_cinematic_shot_of_a_modest_medieval_victory_parade_entering_-0_1914175a-41f7-4d23-8605-f91feecae2db.mp4",
+      "sha256": "5773822fe03563699f067b67e3d2e558edc2b0563c046cd413434adb4a1dba18",
+      "bytes": 11063352,
+      "info": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1344,
+            "height": 768
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "32000",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "6.583333",
+          "tags": {
+            "major_brand": "isom",
+            "minor_version": "512",
+            "compatible_brands": "isomiso2avc1mp41",
+            "encoder": "Lavf63.20.101"
+          }
+        }
+      },
+      "source_path": "assets/v070/originals/parade.mp4",
+      "privacy": "Owner screenshot showed Private Mode ON; account plan and per-file generation charge not verified",
+      "source_archive": "generation_1f1eb3cc-83c0-6da0-a3c2-15d960acfae4_images.zip",
+      "runtime": {
+        "path": "assets/v070/video/milestone_parade.webm",
+        "sha256": "40189f293e693ffab7d01b33c3d124b6d31dca67b9e522b347f7420f378d42bb",
+        "bytes": 3776374,
+        "conversion": "FFmpeg VP9 CRF28, original dimensions/timing, audio omitted for game music mix"
+      }
+    },
+    {
+      "name": "market",
+      "original": "hailuo-03_A_single_continuous_cinematic_shot_of_the_first_market_morning_in_a_modest_medie-0_1f1a4919-b660-46ec-82fb-b48ca26333c2.mp4",
+      "sha256": "7449723db306777055bb2e0f6d82b37edfdbb5a022a26900aaa867c56c4a8bf7",
+      "bytes": 9390833,
+      "info": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1344,
+            "height": 768
+          },
+          {
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "sample_rate": "32000",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "7.291667",
+          "tags": {
+            "major_brand": "isom",
+            "minor_version": "512",
+            "compatible_brands": "isomiso2avc1mp41",
+            "encoder": "Lavf63.20.101"
+          }
+        }
+      },
+      "source_path": "assets/v070/originals/market.mp4",
+      "privacy": "Owner screenshot showed Private Mode ON; account plan and per-file generation charge not verified",
+      "source_archive": "generation_1f1eb3d0-184d-6150-a0f3-6b98430b7ecc_images.zip",
+      "runtime": {
+        "path": "assets/v070/video/milestone_market.webm",
+        "sha256": "58214489a5d55e1807d5aba136aa968366e21511072ba16bf0b6eb9292e81b7f",
+        "bytes": 1401468,
+        "conversion": "FFmpeg VP9 CRF28, original dimensions/timing, audio omitted for game music mix"
+      }
+    }
+  ]
+}

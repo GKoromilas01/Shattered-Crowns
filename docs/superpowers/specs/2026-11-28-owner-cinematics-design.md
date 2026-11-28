@@ -1,0 +1,13 @@
+# Owner-supplied films and anthems — approved continuation
+
+Owner supplied seven ZIPs and explicitly requested adding all files to the new version. This continues approved Settlement Cinema scope and the subsequent approved parade prompt. Four real clips: homes/market/growth/parade. Three unique MP3s: Crown Anthem I, Crown Anthem II (owner approved provisional neutral titles), Roman-inspired anthem. Use actual durations, never claim four-minute music when supplied files are two minutes. Preserve original bytes and filenames/hashes in an asset inventory, transcode video only for optimized silent cinematic playback.
+
+v0.70 builds on0.69; no protected production merge/release. Integrate via existing embedded single-file media pipeline/player and existing original playlist. All video captions remain Georgia Italic22px on transparent background. Parade caption: Our defenders return. Subtitle: For hearth and home, the village welcomes them. Trigger once per city after a dispatched land raid is cleared and own Keep survives; no false victory on merely dispatching a raid or destroying outpost with enemies remaining. Provide Menu replay/listening controls to let owner inspect supplied media without changing progression.
+
+Existing cards are replaced only for the corresponding supplied clips; existing unrelated scenes/music remain. Queue films without overlapping opening/building films; hidden/restored city cannot leave old-city playback or paused state behind. Prefer native existing state and small per-city parade presentation receipt, no simulation bonuses/save schema change.
+
+Wordless/sung lyrics cannot be inferred from filenames: do not claim pronunciation/lyrics verified. No recorded narrator supplied, no artificial fallback announced as finished voiceover. Future every-subtitle natural narration remains pending a reviewed sample/provider. No new Leonardo generations/credits.
+
+Owner's broader direction applies to subsequent versions: significantly richer map/buildings, larger readable building scale, smooth usable zoom and more meaningful gameplay. Record staged roadmap and available references; do not silently ship an unreviewed renderer overhaul in a media integration version. Existing reference briefs/concept are available; exact screenshots of the other game were not located in this workspace. Preserve original designs and game readability.
+
+Approach: embed owner assets in current player/playlist; no unrelated stock substitutions or third-party media service. Alternatives of immediate wholesale renderer rewrite or buying more media would delay the requested file integration without established graphics scope. User specifically requested media now and general directions for next versions.

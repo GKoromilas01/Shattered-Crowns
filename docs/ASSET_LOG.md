@@ -1,3 +1,6 @@
+## v0.70 — seven owner-supplied Leonardo media files
+Received28 November2026: four Hailuo03 MP4s (Homes/Market/Growth/Parade), three Music-v1 MP3s (Crown Anthem I, Crown Anthem II, Roman Rebuilding). Explicit owner request to integrate all files. Owner screenshot showed Private Mode ON; account subscription tier and each generation price not independently verified. No agent-side generation or credits. Original bytes, archive names, actual durations, source/runtime SHA256: `assets/v070/inventory.json`. Optimized silent VP9 video copies only; original MP3s unchanged. Videos visually inspected as supplied, no added caption text baked in. Runtime overlays supply matching italic captions. MP3 vocal language/lyrics not inferred or claimed verified. See MILESTONE70.md.
+
 ## v0.69 — existing media retained; new Leonardo media pending
 No images, videos or music generated/purchased. Uniform caption styling and optional milestone hooks only. See LEONARDO_V069.md for three clip briefs and a two-minute original anthem prompt. Each generation still needs displayed-cost review and Private Mode ON.
 
