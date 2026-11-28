@@ -64,3 +64,5 @@ PR76 is a separate v055 release candidate (`3252d57e5a4f506f020fa5eb868221ba7237
 4. Run relevant tests, update in-game Tester and documentation, package the committed source, deliver an exact-commit ZIP and report CI honestly. Never overwrite the separate release candidate accidentally.
 
 This documentation update does not change game behavior, media or save format.
+
+v0.68 delivery checkpoint: PR92, game commit05bdc0bf5741e62fb1b71bc53845b3e012a685f1. Local feature/gameplay23/23, pipeline22/22, packaged smoke7/7 passed. Read docs/validation/v068-first-winter.md. Full remoteCI still pending at handoff. Sand Labs4.22 links review only; no Shattered Crowns merge or deployment. Next: inspect exact-head CI, owner playtest Keep→Begin First Winter, then owner/Claude release decision; update hub live version only after approved verified release.
